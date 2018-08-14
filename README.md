@@ -10,6 +10,11 @@ Java servlet containers such as Apache Tomcat or Jetty.
 
 ### Getting started
 
+[*JDK
+1.8*](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
+and [*npm*](https://nodejs.org/) are required. To install *yarn*, run `npm i -g
+yarn`.
+
 - `./gradlew build` for building a WAR file that can be deployed on Java servlet
   containers
 - `./gradlew client:build` and `./gradlew server:build` to build only the client
