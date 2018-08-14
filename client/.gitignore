@@ -1,0 +1,10 @@
+/.gradle
+/node_modules
+/build
+/.idea/workspace.xml
+/.idea/usage.statistics.xml
+/.idea/tasks.xml
+/.git_private
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

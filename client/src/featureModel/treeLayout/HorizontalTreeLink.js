@@ -1,0 +1,75 @@
+import AbstractTreeLink from './AbstractTreeLink';
+import Constants from '../../Constants';
+import {attrIfPresent, drawCurve, drawLine} from '../../helpers/svgUtils';
+
+function leftSideX(x, rectInfo) {
+    return x + rectInfo.x;
+}
+
+function rightSide(x, rectInfo, estimatedTextWidth) {
+    return x + rectInfo.x + Constants.treeLayout.node.estimateRectWidth(estimatedTextWidth);
+}
+
+function sideY(y, rectInfo) {
+    return y + rectInfo.y + rectInfo.height / 2;
+}
+
+class HorizontalTreeLink extends AbstractTreeLink {
+    groupAnchor(node) {
+        const rectInfo = this.getRectInfo();
+        return {x: rightSide(0, rectInfo, this.estimateTextWidth(node)), y: sideY(0, rectInfo)};
+    }
+
+    sweepFlag() {
+        return false;
+    }
+
+    emptyArcPath(relativeGroupAnchor, arcPathFn) {
+        return arcPathFn(relativeGroupAnchor, 0, -90, 90, this.sweepFlag());
+    }
+
+    arcPath(arcPathFn, center, radius, startAngle, endAngle, sweepFlag) {
+        return arcPathFn(center, radius, -90, 90, sweepFlag);
+    }
+
+    drawLink(selection, selector, {klass, from, to, style}) {
+        const g = (!selector ? selection.append('g') : selection.select(selector))
+                .call(attrIfPresent, 'class', klass),
+            _to = d => {
+                const {x, y} = to(d);
+                return {x: Math.max(x, from(d).x - Constants.treeLayout.horizontal.layerMargin), y}
+            };
+        drawLine(g, !selector ? null : 'path.innerLine', {
+            klass: 'innerLine', from: _to, to, style,
+            fn: innerLine => innerLine.attr('opacity', d => d.parent.children[0] === d ? 1 : 0)
+        });
+        drawCurve(g, !selector ? null : 'path.curve', {
+            klass: 'curve', from, to: _to, style,
+            inset: Constants.treeLayout.horizontal.layerMargin / 2
+        });
+        return g;
+    }
+
+    from(node, phase) {
+        return {
+            x: leftSideX(this.nodeX(node), this.getRectInfo()),
+            y: sideY(this.nodeY(node), this.getRectInfo())
+        };
+    }
+
+    to(node, phase) {
+        const rectInfo = this.getRectInfo();
+        return phase === 'enter' ? {
+            x: rightSide(this.getPreviousParentCoordinate(node, 'x'), rectInfo, this.estimateTextWidth(node.parent)),
+            y: sideY(this.getPreviousParentCoordinate(node, 'y'), rectInfo)
+        } : phase === 'update' ? {
+            x: rightSide(this.nodeX(node.parent), rectInfo, this.estimateTextWidth(node.parent)),
+            y: sideY(this.nodeY(node.parent), rectInfo)
+        } : {
+            x: rightSide(this.getCurrentParentCoordinate(node, 'x'), rectInfo, this.estimateTextWidth(node.parent)),
+            y: sideY(this.getCurrentParentCoordinate(node, 'y'), rectInfo)
+        };
+    }
+}
+
+export default HorizontalTreeLink;

@@ -1,0 +1,17 @@
+task build {
+    dependsOn 'client:build'
+    dependsOn 'server:build'
+    doLast() {
+        copy {
+            from 'server/build/libs/server.war'
+            into 'build'
+            rename 'server.war', 'variED.war'
+        }
+    }
+}
+
+task clean {
+    doLast {
+        delete 'build'
+    }
+}

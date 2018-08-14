@@ -1,0 +1,24 @@
+plugins {
+    id 'com.moowork.node' version '1.2.0'
+}
+
+task build {
+    dependsOn 'clean'
+    dependsOn 'yarn'
+    dependsOn 'yarn_build'
+    doLast {
+        copy {
+            from 'build'
+            into '../server/src/main/webapp'
+        }
+    }
+}
+
+task run(dependsOn: 'yarn_start')
+
+task clean {
+    doLast {
+        delete 'build'
+        delete '../server/src/main/webapp'
+    }
+}

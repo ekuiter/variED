@@ -1,0 +1,12 @@
+/.gradle
+/build
+/.idea/workspace.xml
+/.idea/usage.statistics.xml
+/.idea/tasks.xml
+/.idea/modules.xml
+/.idea/gradle.xml
+/.idea/libraries
+/.idea/artifacts
+*.iml
+/.git_private
+/src/main/webapp

@@ -1,0 +1,30 @@
+plugins {
+    id 'war'
+    id 'idea'
+    id 'org.gretty' version '2.2.0'
+}
+
+repositories {
+    jcenter()
+}
+
+gretty {
+    host = 'localhost'
+    httpPort = 8080
+    contextPath = '/'
+}
+
+dependencies {
+    providedCompile 'javax.servlet:javax.servlet-api:4.0.1'
+    compile 'com.google.code.gson:gson:2.8.5'
+    compile fileTree(dir: 'lib', include: '*.jar')
+}
+
+idea {
+    module {
+        outputDir file('build/classes/main')
+    }
+}
+
+build.mustRunAfter ':client:build'
+task run(dependsOn: 'appRun')
