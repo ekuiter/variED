@@ -4,12 +4,18 @@ plugins {
     id 'org.gretty' version '2.2.0'
 }
 
+configurations {
+    copyOnly
+}
+
 repositories {
     jcenter()
 }
 
 dependencies {
     providedCompile 'javax.servlet:javax.servlet-api:4.0.1'
+    copyOnly 'com.github.jsimone:webapp-runner:9.0.8.1'
+    copyOnly 'org.apache.tomcat.embed:tomcat-embed-websocket:9.0.8'
     compile 'com.google.code.gson:gson:2.8.5'
     compile fileTree(dir: 'lib', include: '*.jar')
 }
@@ -26,5 +32,22 @@ idea {
     }
 }
 
+task copyWebappRunner {
+    doLast {
+        copy {
+            from(configurations.copyOnly) {
+                include 'tomcat-embed-websocket*'
+                include 'webapp-runner*'
+            }
+            into "$buildDir/libs"
+        }
+        copy {
+            from 'src/main/build'
+            into "$buildDir/libs"
+        }
+    }
+}
+
 build.mustRunAfter ':client:build'
+build.dependsOn 'war', 'copyWebappRunner'
 task run(dependsOn: 'appRun')

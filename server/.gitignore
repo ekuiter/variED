@@ -9,4 +9,5 @@
 /.idea/artifacts
 *.iml
 /.git_private
-/src/main/webapp
+/src/main/webapp/*
+!/src/main/webapp/WEB-INF

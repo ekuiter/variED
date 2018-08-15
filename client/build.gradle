@@ -19,6 +19,6 @@ task run(dependsOn: 'yarn_start')
 task clean {
     doLast {
         delete 'build'
-        delete '../server/src/main/webapp'
+        delete fileTree(dir: '../server/src/main/webapp', exclude: 'WEB-INF')
     }
 }

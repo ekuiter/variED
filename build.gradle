@@ -1,11 +1,11 @@
 task build {
+    dependsOn 'clean'
     dependsOn 'client:build'
     dependsOn 'server:build'
     doLast() {
         copy {
-            from 'server/build/libs/server.war'
+            from 'server/build/libs'
             into 'build'
-            rename 'server.war', 'variED.war'
         }
     }
 }

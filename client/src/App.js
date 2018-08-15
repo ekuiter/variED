@@ -23,7 +23,7 @@ class App extends React.Component {
                 console.log('sent', message);
                 webSocket.send(JSON.stringify(message));
             };
-            return key === 'x' ? send({"type": "FEATURE_ADD", "belowFeature": "local"})
+            return key === 'x' ? send({"type": "FEATURE_ADD", "belowFeature": "B"})
                 : key === 'y' ? send({"type": "UNDO"}) : null;
         });
     }

@@ -16,7 +16,7 @@ and [*npm*](https://nodejs.org/) are required. To install *yarn*, run `npm i -g
 yarn`.
 
 - `./gradlew build` for building a WAR file that can be deployed on Java servlet
-  containers
+  containers, the `variED.sh` script runs the WAR file in apache Tomcat
 - `./gradlew client:build` and `./gradlew server:build` to build only the client
   or server
 - `yarn start` from the `client` directory to run the client on
