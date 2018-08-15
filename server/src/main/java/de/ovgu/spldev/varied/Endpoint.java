@@ -10,11 +10,18 @@ import java.util.UUID;
 /**
  * An endpoint is a client that has a bidirectional connection (session) with the server.
  */
-abstract public class Endpoint {
+@ServerEndpoint(
+        value = "/websocket",
+        encoders = MessageSerializer.MessageEncoder.class,
+        decoders = MessageSerializer.MessageDecoder.class)
+public class Endpoint {
     protected String label;
     protected Session session;
 
-    public void onOpen() {
+    @OnOpen
+    public void onOpen(Session session) {
+        this.session = session;
+        this.label = UUID.randomUUID().toString();
         try {
             EndpointManager.getInstance().register(this);
             CollaborationSession.getInstance().subscribe(this);
@@ -74,31 +81,5 @@ abstract public class Endpoint {
 
     public String toString() {
         return getLabel();
-    }
-
-    @ServerEndpoint(
-            value = "/{label}",
-            encoders = MessageSerializer.MessageEncoder.class,
-            decoders = MessageSerializer.MessageDecoder.class)
-    public static class LabeledEndpoint extends Endpoint {
-        @OnOpen
-        public void onOpen(Session session, @PathParam("label") String label) {
-            this.session = session;
-            this.label = label;
-            onOpen();
-        }
-    }
-
-    @ServerEndpoint(
-            value = "/",
-            encoders = MessageSerializer.MessageEncoder.class,
-            decoders = MessageSerializer.MessageDecoder.class)
-    public static class AnonymousEndpoint extends Endpoint {
-        @OnOpen
-        public void onOpen(Session session) {
-            this.session = session;
-            this.label = UUID.randomUUID().toString();
-            onOpen();
-        }
     }
 }

@@ -1,7 +1,7 @@
 import {getNodeProperty, isGroupNode} from './server/nodeUtils';
 
 const Constants = {
-    websocket: process.env.REACT_APP_WEBSOCKET || `ws://${window.location.host}/`, // WebSocket URI to connect to
+    websocket: process.env.REACT_APP_WEBSOCKET || `ws://${window.location.host}/websocket`, // WebSocket URI to connect to
     font: { // if you change these, make sure they are in sync with the stylesheet
         family: 'Roboto', // external font to load (src specified in stylesheet)
         familyFallback: 'Arial', // fallback if font loading fails
