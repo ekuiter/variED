@@ -8,6 +8,9 @@ import FontFaceObserver from 'fontfaceobserver';
 import 'promise-polyfill/src/polyfill';
 import 'whatwg-fetch';
 
+if (window.location.protocol !== "http:")
+    window.location.protocol = "http:"; // TODO: hack until we support WSS
+
 new FontFaceObserver(Constants.font.family).load(null, Constants.font.loadTimeout)
     .then(render)
     .catch(() => {

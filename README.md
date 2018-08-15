@@ -18,12 +18,14 @@ and [*npm*](https://nodejs.org/) are required. To install *yarn*, run `npm i -g
 yarn`.
 
 - `./gradlew build` for building a WAR file that can be deployed on Java servlet
-  containers, the `variED.sh` script runs the WAR file in apache Tomcat
+  containers, the `variED.sh` script runs the WAR file in Apache Tomcat
 - `./gradlew client:build` and `./gradlew server:build` to build only the client
   or server
 - `yarn start` from the `client` directory to run the client on
   `http://localhost:3000`
 - `./gradlew server:run` to run the server on `http://localhost:8080`
+- simple deployment to Heroku using the button above or with `heroku create &&
+  git push heroku master`
 
 ### IDE setup
 
@@ -42,3 +44,7 @@ Choose to *use local gradle distribution* and supply the Gradle home, e.g.
 `/usr/local/Cellar/gradle/4.9/libexec` (on macOS, this can be determined with
 `brew info gradle`). Add a *Gradle* run configuration with Gradle project
 `server` and task `run` to run the server from within IntelliJ.
+
+### License
+
+This project is released under the [LGPL v3 license](LICENSE.txt).
