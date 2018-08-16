@@ -12,20 +12,21 @@ Java servlet containers such as Apache Tomcat or Jetty.
 
 ### Getting started
 
-[*JDK
-1.8*](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
-and [*npm*](https://nodejs.org/) are required. To install *yarn*, run `npm i -g
-yarn`.
+The only dependency required for building is [JDK
+1.8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html).
+[Gradle](https://gradle.org/), [npm](https://nodejs.org/) and
+[yarn](https://yarnpkg.com/) are downloaded and set up automatically by the
+build process.
 
-- `./gradlew build` for building a WAR file that can be deployed on Java servlet
+- `./gradlew build` builds a WAR file that can be deployed on Java servlet
   containers, the `variED.sh` script runs the WAR file in Apache Tomcat
-- `./gradlew client:build` and `./gradlew server:build` to build only the client
-  or server
-- `yarn start` from the `client` directory to run the client on
+- `./gradlew client:build` and `./gradlew server:build` build only the client or
+  server
+- `yarn start` inside the `client` directory runs the client on
   `http://localhost:3000`
-- `./gradlew server:run` to run the server on `http://localhost:8080`
-- simple deployment to Heroku using the button above or with `heroku create &&
-  git push heroku master`
+- `./gradlew server:run` runs the server on `http://localhost:8080`
+- you can deploy to Heroku by simply using the button above or with `heroku
+  create && git push heroku master`
 
 ### IDE setup
 

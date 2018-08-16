@@ -31,7 +31,7 @@ class App extends React.Component {
     render() {
         return this.state.data
             ? <FeatureModel layout="horizontalTree" data={this.state.data}/>
-            : null;
+            : <div className="loading"/>;
     }
 }
 

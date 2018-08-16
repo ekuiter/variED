@@ -10,3 +10,15 @@
     url('fonts/roboto-v18-latin-regular.ttf') format('truetype'),
     url('fonts/roboto-v18-latin-regular.svg#Roboto') format('svg');
 }
+
+.loading {
+    margin: 0 auto;
+    padding: 74px;
+    width: 0;
+    height: 0;
+    background-image: url(images/loading.svg);
+}
+
+#root > .loading {
+    margin-top: calc(50vh - 74px);
+}
