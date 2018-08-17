@@ -15,7 +15,7 @@ function serverReducer(state = {}, action) {
 }
 
 function uiReducer(state = initialUiState, action) {
-    if (action.type === 'UI_LAYOUT')
+    if (action.type === 'UI_SET_LAYOUT')
         return {...state, layout: action.layout};
     if (action.type === 'UI_TOGGLE_DEBUG')
         return {...state, debug: !state.debug};

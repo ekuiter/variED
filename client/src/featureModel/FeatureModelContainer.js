@@ -9,8 +9,7 @@ export default connect(
         debug: state.ui.debug,
         useTransitions: state.ui.useTransitions
     })
-)(({featureModel, layout, debug, useTransitions, ...props}) =>
-    featureModel
-        ? <FeatureModel featureModel={featureModel} layout={layout} debug={debug}
-                        useTransitions={useTransitions} {...props}/>
+)(props =>
+    props.featureModel
+        ? <FeatureModel {...props}/>
         : <div className="loading"/>);
