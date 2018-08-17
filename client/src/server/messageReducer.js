@@ -1,5 +1,8 @@
-const messageReducers = {
-    FEATURE_MODEL(state, action) {
+import Constants from '../Constants';
+
+const messageTypes = Constants.server.messageTypes,
+    messageReducers = {
+    [messageTypes.FEATURE_MODEL](state, action) {
         return {...state, featureModel: action.featureModel};
     }
 };
