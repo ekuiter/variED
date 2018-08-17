@@ -150,6 +150,9 @@ class AbstractTreeLayout extends React.Component {
                     width: estimatedBboxWidth,
                     height: estimatedBboxHeight
                 });
+        else
+            this.transition(rect)
+                .attr('stroke', 'none');
 
         svgRoot.call(zoom
             .translateExtent(estimatedBbox)

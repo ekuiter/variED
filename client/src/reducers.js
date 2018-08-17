@@ -4,6 +4,7 @@ import {combineReducers} from 'redux';
 
 const initialUiState = {
     layout: 'horizontalTree',
+    debug: false,
     useTransitions: true
 };
 
@@ -16,6 +17,8 @@ function serverReducer(state = {}, action) {
 function uiReducer(state = initialUiState, action) {
     if (action.type === 'UI_LAYOUT')
         return {...state, layout: action.layout};
+    if (action.type === 'UI_TOGGLE_DEBUG')
+        return {...state, debug: !state.debug};
     if (action.type === 'UI_TOGGLE_USE_TRANSITIONS')
         return {...state, useTransitions: !state.useTransitions};
     return state;

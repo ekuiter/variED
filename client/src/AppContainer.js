@@ -11,7 +11,8 @@ class AppContainer extends React.Component {
             return key === 'x' ? sendMessage({"type": "FEATURE_ADD", "belowFeature": "B"})
                 : key === 'y' ? sendMessage({"type": "UNDO"})
                     : key === 'c' ? this.props.handleMessage({"type": "UI_TOGGLE_USE_TRANSITIONS"})
-                        : key === 'v' ? this.props.handleMessage({"type": "UI_LAYOUT", layout: this.props.layout === 'verticalTree' ? 'horizontalTree' : 'verticalTree'}) : null;
+                        : key === 'v' ? this.props.handleMessage({"type": "UI_TOGGLE_DEBUG"}) :
+                            key === 'b' ? this.props.handleMessage({"type": "UI_LAYOUT", layout: this.props.layout === 'verticalTree' ? 'horizontalTree' : 'verticalTree'}) : null;
         });
     }
 

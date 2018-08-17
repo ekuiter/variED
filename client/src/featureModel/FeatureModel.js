@@ -12,12 +12,18 @@ class FeatureModel extends React.Component {
 
     layoutRef = React.createRef();
 
+    key(props) {
+        // The key uniquely identifies the layout component instance. If the key changes,
+        // the instance is unmounted and a new one is mounted. This is useful for forcing
+        return props.debug; // rerenders, i.e. when the debug flag changes.
+    }
+
     render() {
         const {layout, ...props} = this.props,
             LayoutComponent = FeatureModel.layoutMap[layout];
 
         return (
-            <LayoutComponent ref={this.layoutRef} {...props} />
+            <LayoutComponent key={this.key(props)} ref={this.layoutRef} {...props} />
         );
     }
 
