@@ -4,12 +4,12 @@ import {event as d3Event, select as d3Select} from 'd3-selection';
 import {zoom as d3Zoom} from 'd3-zoom';
 import 'd3-transition';
 import Constants from '../../Constants';
-import {getNodeName} from '../../server/nodeUtils';
+import {getNodeName, getStruct} from '../../server/featureModel';
 import {updateRect} from '../../helpers/svgUtils';
 
 class AbstractTreeLayout extends React.Component {
     static defaultProps = {
-        data: null, width: '100%', height: '100%',
+        featureModel: null, width: '100%', height: '100%',
         fitOnResize: false, debug: false, useTransitions: true
     };
     svgRef = React.createRef();
@@ -100,9 +100,9 @@ class AbstractTreeLayout extends React.Component {
     createLayoutHook(nodes) {
     }
 
-    createLayout({data}) {
+    createLayout({featureModel}) {
         const estimateTextWidth = this.treeNode.estimateTextWidth.bind(this.treeNode),
-            hierarchy = d3Hierarchy(data),
+            hierarchy = d3Hierarchy(getStruct(featureModel)),
             tree = d3Tree()
                 .nodeSize(Constants.treeLayout.node.size)
                 .separation(this.getSeparationFn(estimateTextWidth)),

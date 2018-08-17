@@ -5,7 +5,7 @@ import {
     cartesianToAngle,
     drawCircle
 } from '../../helpers/svgUtils';
-import {getNodeType, isNonEmptyGroupNode} from '../../server/nodeUtils';
+import {getNodeType, isNonEmptyGroupNode} from '../../server/featureModel';
 
 class AbstractTreeLink {
     constructor(getCurrentParentCoordinate, getPreviousParentCoordinate, treeNode) {
@@ -77,7 +77,7 @@ class AbstractTreeLink {
                         startAngle, endAngle, this.sweepFlag());
                 });
         drawArc(arcSegment, arcSegmentPath);
-        drawArc(arcSlice, arcSlicePath, d => getNodeType(d) === Constants.featureModelTags.OR);
+        drawArc(arcSlice, arcSlicePath, d => getNodeType(d) === Constants.server.featureModelTags.OR);
     }
 
     enter(link, zIndex) {

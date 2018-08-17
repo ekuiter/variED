@@ -1,4 +1,4 @@
-import {getNodeProperty} from '../server/nodeUtils';
+import {getNodeProperty} from '../server/featureModel';
 
 function toPath(x, y) {
     if (typeof x === 'object')

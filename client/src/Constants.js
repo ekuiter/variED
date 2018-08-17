@@ -1,4 +1,4 @@
-import {getNodeProperty, isGroupNode} from './server/nodeUtils';
+import {getNodeProperty, isGroupNode} from './server/featureModel';
 
 const Constants = {
     websocket: process.env.REACT_APP_WEBSOCKET || `ws://${window.location.host}/websocket`, // WebSocket URI to connect to
@@ -57,12 +57,12 @@ const Constants = {
         style: { // adapted from FeatureIDE/plugins/de.ovgu.featureide.fm.ui/src/de/ovgu/featureide/fm/ui/editors/featuremodel/GUIDefaults.java
             node: {
                 abstract: { // style applied to a node's rectangle to distinguish abstract and concrete features
-                    property: () => Constants.featureModelTags.ABSTRACT,
+                    property: () => Constants.server.featureModelTags.ABSTRACT,
                     yes: {fill: '#f2f2ff', stroke: '#b6b6bf'},
                     no: {fill: '#ccccff', stroke: '#9999bf'}
                 },
                 hidden: { // style applied to a node's text to distinguish hidden and visible features
-                    property: () => Constants.featureModelTags.HIDDEN,
+                    property: () => Constants.server.featureModelTags.HIDDEN,
                     yes: {fill: '#676767'}
                 },
                 arcSegment: { // style applied to a node's arc segment (for ALT groups)
@@ -82,7 +82,7 @@ const Constants = {
                 },
                 mandatory: { // style applied to a link's circle to distinguish mandatory and optional features
                     property: () => node =>
-                        isGroupNode(node.parent) ? 'none' : getNodeProperty(node, Constants.featureModelTags.MANDATORY),
+                        isGroupNode(node.parent) ? 'none' : getNodeProperty(node, Constants.server.featureModelTags.MANDATORY),
                     yes: {
                         stroke: () => Constants.treeLayout.style.link.line.stroke,
                         'stroke-width': () => Constants.treeLayout.style.link.line['stroke-width'],
@@ -114,61 +114,72 @@ const Constants = {
     viewport: {
         throttleResize: 10 // limits number of window resize events to one per ... ms (avoids unnecessary rendering)
     },
-    message: { // message type enumeration used by the server
-        ERROR: 'ERROR',
-        ENDPOINT_SUBSCRIBE: 'ENDPOINT_SUBSCRIBE',
-        ENDPOINT_UNSUBSCRIBE: 'ENDPOINT_UNSUBSCRIBE',
-        FEATURE_MODEL: 'FEATURE_MODEL',
-        FEATURE_MODEL_PATCH: 'FEATURE_MODEL_PATCH',
-        UNDO: 'UNDO',
-        REDO: 'REDO',
-        CONSTRAINT_MOVE: 'CONSTRAINT_MOVE',
-        CONSTRAINT_MODIFY: 'CONSTRAINT_MODIFY',
-        CONSTRAINT_DELETE: 'CONSTRAINT_DELETE',
-        CONSTRAINT_ADD: 'CONSTRAINT_ADD',
-        CONSTRAINT_SELECTED: 'CONSTRAINT_SELECTED',
-        FEATURE_MODIFY: 'FEATURE_MODIFY',
-        FEATURE_DELETE: 'FEATURE_DELETE',
-        FEATURE_ADD_ABOVE: 'FEATURE_ADD_ABOVE',
-        FEATURE_ADD: 'FEATURE_ADD',
-        FEATURE_NAME_CHANGED: 'FEATURE_NAME_CHANGED',
-        ALL_FEATURES_CHANGED_NAME_TYPE: 'ALL_FEATURES_CHANGED_NAME_TYPE',
-        COLOR_CHANGED: 'COLOR_CHANGED',
-        HIDDEN_CHANGED: 'HIDDEN_CHANGED',
-        COLLAPSED_CHANGED: 'COLLAPSED_CHANGED',
-        COLLAPSED_ALL_CHANGED: 'COLLAPSED_ALL_CHANGED',
-        LOCATION_CHANGED: 'LOCATION_CHANGED',
-        ATTRIBUTE_CHANGED: 'ATTRIBUTE_CHANGED',
-        GROUP_TYPE_CHANGED: 'GROUP_TYPE_CHANGED',
-        PARENT_CHANGED: 'PARENT_CHANGED',
-        MANDATORY_CHANGED: 'MANDATORY_CHANGED',
-        STRUCTURE_CHANGED: 'STRUCTURE_CHANGED',
-        LEGEND_LAYOUT_CHANGED: 'LEGEND_LAYOUT_CHANGED',
-        MODEL_LAYOUT_CHANGED: 'MODEL_LAYOUT_CHANGED',
-        MODEL_DATA_CHANGED: 'MODEL_DATA_CHANGED',
-        MODEL_DATA_SAVED: 'MODEL_DATA_SAVED',
-        MODEL_DATA_LOADED: 'MODEL_DATA_LOADED',
-        MODEL_DATA_OVERRIDDEN: 'MODEL_DATA_OVERRIDDEN',
-        REDRAW_DIAGRAM: 'REDRAW_DIAGRAM',
-        REFRESH_ACTIONS: 'REFRESH_ACTIONS',
-        CHILDREN_CHANGED: 'CHILDREN_CHANGED',
-        DEPENDENCY_CALCULATED: 'DEPENDENCY_CALCULATED',
-        ACTIVE_EXPLANATION_CHANGED: 'ACTIVE_EXPLANATION_CHANGED',
-        FEATURE_ATTRIBUTE_CHANGED: 'FEATURE_ATTRIBUTE_CHANGED',
-        ACTIVE_REASON_CHANGED: 'ACTIVE_REASON_CHANGED',
-        DEFAULT: 'DEFAULT'
-    },
-    featureModelTags: { // tags and attributes used in serialized feature models
-        TYPE: 'type',
-        FEATURE: 'feature',
-        OR: 'or',
-        ALT: 'alt',
-        AND: 'and',
-        NAME: 'name',
-        DESCRIPTION: 'description',
-        MANDATORY: 'mandatory',
-        ABSTRACT: 'abstract',
-        HIDDEN: 'hidden'
+    server: {
+        messageTypes: { // message type enumeration used by the server
+            ERROR: 'ERROR',
+            ENDPOINT_SUBSCRIBE: 'ENDPOINT_SUBSCRIBE',
+            ENDPOINT_UNSUBSCRIBE: 'ENDPOINT_UNSUBSCRIBE',
+            FEATURE_MODEL: 'FEATURE_MODEL',
+            FEATURE_MODEL_PATCH: 'FEATURE_MODEL_PATCH',
+            UNDO: 'UNDO',
+            REDO: 'REDO',
+            CONSTRAINT_MOVE: 'CONSTRAINT_MOVE',
+            CONSTRAINT_MODIFY: 'CONSTRAINT_MODIFY',
+            CONSTRAINT_DELETE: 'CONSTRAINT_DELETE',
+            CONSTRAINT_ADD: 'CONSTRAINT_ADD',
+            CONSTRAINT_SELECTED: 'CONSTRAINT_SELECTED',
+            FEATURE_MODIFY: 'FEATURE_MODIFY',
+            FEATURE_DELETE: 'FEATURE_DELETE',
+            FEATURE_ADD_ABOVE: 'FEATURE_ADD_ABOVE',
+            FEATURE_ADD: 'FEATURE_ADD',
+            FEATURE_NAME_CHANGED: 'FEATURE_NAME_CHANGED',
+            ALL_FEATURES_CHANGED_NAME_TYPE: 'ALL_FEATURES_CHANGED_NAME_TYPE',
+            COLOR_CHANGED: 'COLOR_CHANGED',
+            HIDDEN_CHANGED: 'HIDDEN_CHANGED',
+            COLLAPSED_CHANGED: 'COLLAPSED_CHANGED',
+            COLLAPSED_ALL_CHANGED: 'COLLAPSED_ALL_CHANGED',
+            LOCATION_CHANGED: 'LOCATION_CHANGED',
+            ATTRIBUTE_CHANGED: 'ATTRIBUTE_CHANGED',
+            GROUP_TYPE_CHANGED: 'GROUP_TYPE_CHANGED',
+            PARENT_CHANGED: 'PARENT_CHANGED',
+            MANDATORY_CHANGED: 'MANDATORY_CHANGED',
+            STRUCTURE_CHANGED: 'STRUCTURE_CHANGED',
+            LEGEND_LAYOUT_CHANGED: 'LEGEND_LAYOUT_CHANGED',
+            MODEL_LAYOUT_CHANGED: 'MODEL_LAYOUT_CHANGED',
+            MODEL_DATA_CHANGED: 'MODEL_DATA_CHANGED',
+            MODEL_DATA_SAVED: 'MODEL_DATA_SAVED',
+            MODEL_DATA_LOADED: 'MODEL_DATA_LOADED',
+            MODEL_DATA_OVERRIDDEN: 'MODEL_DATA_OVERRIDDEN',
+            REDRAW_DIAGRAM: 'REDRAW_DIAGRAM',
+            REFRESH_ACTIONS: 'REFRESH_ACTIONS',
+            CHILDREN_CHANGED: 'CHILDREN_CHANGED',
+            DEPENDENCY_CALCULATED: 'DEPENDENCY_CALCULATED',
+            ACTIVE_EXPLANATION_CHANGED: 'ACTIVE_EXPLANATION_CHANGED',
+            FEATURE_ATTRIBUTE_CHANGED: 'FEATURE_ATTRIBUTE_CHANGED',
+            ACTIVE_REASON_CHANGED: 'ACTIVE_REASON_CHANGED',
+            DEFAULT: 'DEFAULT'
+        },
+        isMessageType(type) {
+            return Object.values(this.messageTypes).includes(type);
+        },
+        featureModelTags: { // tags and attributes used in serialized feature models
+            STRUCT: 'struct',
+            CONSTRAINTS: 'constraints',
+            PROPERTIES: 'properties',
+            CALCULATIONS: 'calculations',
+            COMMENTS: 'comments',
+            FEATURE_ORDER: 'featureOrder',
+            TYPE: 'type',
+            FEATURE: 'feature',
+            OR: 'or',
+            ALT: 'alt',
+            AND: 'and',
+            NAME: 'name',
+            DESCRIPTION: 'description',
+            MANDATORY: 'mandatory',
+            ABSTRACT: 'abstract',
+            HIDDEN: 'hidden'
+        }
     }
 };
 

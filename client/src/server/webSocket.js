@@ -58,7 +58,7 @@ export function openWebSocket(_handleMessage) {
 export function sendMessage(message) {
     if (!message)
         throw new Error('not a valid message');
-    if (!Object.values(Constants.message).includes(message.type))
+    if (!Constants.server.isMessageType(message.type))
         throw new Error('not a valid message type: ' + message.type);
     return getWebSocket().then(webSocket => {
         webSocket.send(JSON.stringify(message));

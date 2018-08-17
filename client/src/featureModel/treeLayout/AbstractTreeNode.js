@@ -2,7 +2,7 @@ import 'd3-selection-multi';
 import Constants from '../../Constants';
 import measureTextWidth from '../../helpers/measureTextWidth';
 import {addStyle, appendCross, translateTransform} from '../../helpers/svgUtils';
-import {getNodeName} from '../../server/nodeUtils';
+import {getNodeName} from '../../server/featureModel';
 
 function widenBbox({x, y, width, height}, paddingX, paddingY) {
     return {x: x - paddingX, y: y - paddingY, width: width + 2 * paddingX, height: height + 2 * paddingY};

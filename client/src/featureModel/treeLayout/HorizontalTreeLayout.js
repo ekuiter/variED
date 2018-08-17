@@ -3,7 +3,7 @@ import HorizontalTreeLink from './HorizontalTreeLink';
 import HorizontalTreeNode from './HorizontalTreeNode';
 import measureTextWidth from '../../helpers/measureTextWidth';
 import Constants from '../../Constants';
-import {getNodeName} from '../../server/nodeUtils';
+import {getNodeName} from '../../server/featureModel';
 
 class HorizontalTreeLayout extends AbstractTreeLayout {
     widestTextOnLayer = {};

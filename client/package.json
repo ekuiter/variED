@@ -14,8 +14,13 @@
     "promise-polyfill": "^8.1.0",
     "react": "^16.4.2",
     "react-dom": "^16.4.2",
+    "react-redux": "^5.0.7",
     "react-scripts": "1.1.4",
+    "redux": "^4.0.0",
     "whatwg-fetch": "^2.0.4"
+  },
+  "devDependencies": {
+    "redux-devtools": "^3.4.1"
   },
   "scripts": {
     "start": "react-scripts start",

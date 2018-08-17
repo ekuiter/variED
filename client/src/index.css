@@ -11,6 +11,10 @@
     url('fonts/roboto-v18-latin-regular.svg#Roboto') format('svg');
 }
 
+#root {
+    display: flex;
+}
+
 .loading {
     margin: 0 auto;
     padding: 74px;
@@ -20,5 +24,5 @@
 }
 
 #root > .loading {
-    margin-top: calc(50vh - 74px);
+    margin: auto;
 }
