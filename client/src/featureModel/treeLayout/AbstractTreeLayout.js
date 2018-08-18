@@ -159,10 +159,12 @@ class AbstractTreeLayout extends React.Component {
             .scaleExtent(Constants.treeLayout.scaleExtent)
             .on('zoom', () => g.attr('transform', d3Event.transform)));
 
-        if (isCreating || (fitOnResize && isResize))
+        if (isCreating || (fitOnResize && isResize)) {
+            const svgBbox = this.svgRef.current.getBoundingClientRect();
             svgRoot.call(zoom.scaleTo, Math.min(1,
-                this.svgRef.current.clientWidth / estimatedBboxWidth,
-                this.svgRef.current.clientHeight / estimatedBboxHeight));
+                svgBbox.width / estimatedBboxWidth,
+                svgBbox.height / estimatedBboxHeight));
+        }
         if (isCreating)
             this.treeNode.createSvgHook(g);
 

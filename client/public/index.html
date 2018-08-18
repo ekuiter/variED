@@ -20,13 +20,13 @@
             user-select: none;
         }
 
-        noscript {
+        .noscript {
             display: block;
             line-height: 100vh;
             text-align: center;
         }
 
-        noscript div {
+        .noscript div {
             font-family: Arial, sans-serif;
             display: inline-block;
             vertical-align: middle;
@@ -40,13 +40,15 @@
 </head>
 <body>
 <noscript>
-    <div>
-        <p>
-            <strong>JavaScript is disabled. :(</strong>
-        </p>
-        <p>
-            To use variED, you have to enable JavaScript or upgrade your browser.
-        </p>
+    <div class="noscript">
+        <div>
+            <p>
+                <strong>JavaScript is disabled. :(</strong>
+            </p>
+            <p>
+                To use variED, you have to enable JavaScript or upgrade your browser.
+            </p>
+        </div>
     </div>
 </noscript>
 <div id="root">

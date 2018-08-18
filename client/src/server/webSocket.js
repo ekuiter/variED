@@ -33,12 +33,12 @@ function onOpen() {
 }
 
 function onClose(e) {
-    console.log('closed WebSocket with code', e.code, 'and reason', e.reason);
+    console.warn('closed WebSocket with code', e.code, 'and reason', e.reason);
     // TODO: notify user that WebSocket was closed (with button to reopen)
 }
 
 function onError(e) {
-    console.log('WebSocket error:', e);
+    console.warn('WebSocket error:', e);
     // TODO: notify user of error (and IF WebSocket is closed now, a button to reopen it)
 }
 
@@ -59,7 +59,7 @@ export function sendMessage(message) {
     if (!message)
         throw new Error('not a valid message');
     if (!Constants.server.isMessageType(message.type))
-        throw new Error('not a valid message type: ' + message.type);
+        throw new Error(`not a valid message type: ${message.type}`);
     return getWebSocket().then(webSocket => {
         webSocket.send(JSON.stringify(message));
         console.log('sent:', message);
