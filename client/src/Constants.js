@@ -107,6 +107,10 @@ const Constants = {
                     'text-anchor': 'start'
                 }
             }
+        },
+        featureCallout: {
+            throttleUpdate: 50, // how often to reposition the feature callout on zoom or pan in ms
+            gapSpace: 5 // space between node and feature callout in px
         }
     },
     viewport: {

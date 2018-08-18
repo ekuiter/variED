@@ -1,17 +1,6 @@
 import React from 'react';
 import Constants from '../Constants';
-
-function throttle(func, wait) {
-    let timer = null;
-    return function(...args) {
-        if (timer === null) {
-            timer = setTimeout(() => {
-                func.apply(this, args);
-                timer = null;
-            }, wait);
-        }
-    };
-}
+import throttle from './throttle';
 
 function getViewportDimension(key) {
     return Math.max(document.documentElement[key], 0);

@@ -7,7 +7,7 @@ class HorizontalTreeLayout extends AbstractTreeLayout {
     widestTextOnLayer = {};
 
     constructor(props) {
-        super(props, HorizontalTreeNode, HorizontalTreeLink);
+        super(props, 'horizontal', HorizontalTreeNode, HorizontalTreeLink);
         this.treeNode.getWidestTextOnLayer = this.getWidestTextOnLayer.bind(this);
     }
 

@@ -4,6 +4,7 @@ import FeatureModelContainer from './featureModel/FeatureModelViewContainer';
 import {connect} from 'react-redux';
 import actions from './actions';
 import withKeys from './helpers/withKeys';
+import { Fabric } from 'office-ui-fabric-react/lib/Fabric';
 
 class AppContainer extends React.Component {
     componentDidMount() {
@@ -11,7 +12,11 @@ class AppContainer extends React.Component {
     }
 
     render() {
-        return <FeatureModelContainer/>;
+        return (
+            <Fabric className="fabric">
+                <FeatureModelContainer/>
+            </Fabric>
+        );
     }
 }
 

@@ -6,6 +6,8 @@ import 'd3-transition';
 import Constants from '../../Constants';
 import {updateRect} from '../../helpers/svgUtils';
 import './AbstractTreeLayout.css';
+import FeatureCallout from '../FeatureCallout';
+import throttle from '../../helpers/throttle';
 
 class AbstractTreeLayout extends React.Component {
     static defaultProps = {
@@ -13,15 +15,16 @@ class AbstractTreeLayout extends React.Component {
         fitOnResize: false, debug: false, useTransitions: true
     };
     svgRef = React.createRef();
-    state = {activeNode: null};
+    state = {activeNode: null, activeNodeRef: null};
     currentCoordinates = {};
     previousCoordinates = {};
 
-    constructor(props, TreeNode, TreeLink) {
+    constructor(props, direction, TreeNode, TreeLink) {
         super(props);
+        this.direction = direction;
         this.treeNode = new TreeNode(
             props.debug,
-            activeNode => this.setState({activeNode}));
+            this.setActiveNode.bind(this));
         this.treeLink = new TreeLink(
             this.getParentCoordinateFn('currentCoordinates'),
             this.getParentCoordinateFn('previousCoordinates'),
@@ -43,10 +46,22 @@ class AbstractTreeLayout extends React.Component {
     render() {
         return (
             <div className="treeLayout">
+                <FeatureCallout
+                    direction={this.direction}
+                    node={this.state.activeNode}
+                    nodeRef={this.state.activeNodeRef}
+                    onDismiss={() => this.setActiveNode(null, null)}/>
                 <svg ref={this.svgRef}/>
             </div>
         );
     }
+
+    updateCallout = throttle(
+        () => {
+            if (this.state.activeNode)
+                return this.setState({}); // triggers a rerender for the feature callout to catch up
+        },
+        Constants.treeLayout.featureCallout.throttleUpdate);
 
     canExport() {
         return !!this.svgRef.current;
@@ -75,6 +90,10 @@ class AbstractTreeLayout extends React.Component {
 
     getKeyFn(kind) {
         return d => `${kind}_${d.feature().name}`;
+    }
+
+    setActiveNode(activeNode, activeNodeRef) {
+        this.setState({activeNode, activeNodeRef});
     }
 
     updateCoordinates(key, nodes) {
@@ -164,7 +183,10 @@ class AbstractTreeLayout extends React.Component {
         svgRoot.call(zoom
             .translateExtent(estimatedBbox)
             .scaleExtent(Constants.treeLayout.scaleExtent)
-            .on('zoom', () => g.attr('transform', d3Event.transform)));
+            .on('zoom', () => {
+                this.updateCallout();
+                return g.attr('transform', d3Event.transform);
+            }));
 
         if (isCreating || (fitOnResize && isResize)) {
             const svgBbox = this.svgRef.current.getBoundingClientRect();
@@ -198,8 +220,14 @@ class AbstractTreeLayout extends React.Component {
         return {node, linkInBack, linkInFront, nodes};
     }
 
-    transition(selection, useTransitions, duration = Constants.treeLayout.duration) {
-        return this.props.useTransitions ? selection.transition().duration(duration) : selection;
+    transition(selection, onEnd = this.updateCallout, duration = Constants.treeLayout.duration) {
+        if (this.props.useTransitions) {
+            let transition = selection.transition().duration(duration);
+            if (onEnd)
+                transition = transition.on('end', onEnd);
+            return transition;
+        } else
+            return onEnd ? selection.call(onEnd) : selection;
     }
 
     renderD3() {
@@ -218,14 +246,24 @@ class AbstractTreeLayout extends React.Component {
         // On following renders, enter new nodes/links at their beginning position.
         // Then merge with updating nodes/links and transition to the final position.
         // Exiting nodes/links are simply removed after a transition.
-        const {node, linkInBack, linkInFront, nodes} = this.joinData(false, isResize);
+        const self = this,
+            {node, linkInBack, linkInFront, nodes} = this.joinData(false, isResize);
         this.updateCoordinates('currentCoordinates', nodes);
+
         this.treeNode.update(this.transition(this.treeNode.enter(node.enter()).merge(node)));
         this.treeLink.update(this.transition(this.treeLink.enter(linkInBack.enter(), 'inBack').merge(linkInBack)), 'inBack');
         this.treeLink.update(this.transition(this.treeLink.enter(linkInFront.enter(), 'inFront').merge(linkInFront)), 'inFront');
+
         this.treeNode.exit(this.transition(node.exit()));
         this.treeLink.exit(this.transition(linkInBack.exit()), 'inBack');
         this.treeLink.exit(this.transition(linkInFront.exit()), 'inFront');
+
+        if (this.state.activeNode)
+            node.exit().each(function() {
+                if (this.contains(self.state.activeNodeRef))
+                    self.setActiveNode(null, null); // hide feature callout if active node exits
+            });
+
         this.updateCoordinates('previousCoordinates', nodes);
     }
 }

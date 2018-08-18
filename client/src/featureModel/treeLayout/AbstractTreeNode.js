@@ -58,22 +58,27 @@ class AbstractTreeNode {
     }
 
     enter(node) {
-        const nodeEnter = node.append('g')
+        const self = this,
+            nodeEnter = node.append('g')
                 .attr('class', 'node')
                 .call(translateTransform, d => this.x(d), d => this.y(d))
-                .attr('opacity', 0)
-                .on('click', this.setActiveNode),
-            bboxes = makeText(nodeEnter, false, this.getTextStyle());
+                .attr('opacity', 0),
+            rectAndText = nodeEnter.append('g')
+                .attr('class', 'rectAndText')
+                .on('click', function(d) {
+                    self.setActiveNode(d, this);
+                }),
+            bboxes = makeText(rectAndText, false, this.getTextStyle());
 
         let i = 0;
-        nodeEnter.insert('rect', 'text')
+        rectAndText.insert('rect', 'text')
             .attrs(() => makeRect(bboxes[i++]))
             .call(addStyle, Constants.treeLayout.style.node.abstract);
 
-        const arcSegment = nodeEnter.insert('path', 'rect')
+        const arcSegment = nodeEnter.insert('path', 'g.rectAndText')
                 .attr('class', 'arcSegment')
                 .call(addStyle, Constants.treeLayout.style.node.arcSegment),
-            arcSlice = nodeEnter.insert('path', 'rect')
+            arcSlice = nodeEnter.insert('path', 'g.rectAndText')
                 .attr('class', 'arcSlice')
                 .call(addStyle, Constants.treeLayout.style.node.arcSlice);
         this.treeLink.drawGroup(arcSegment, arcSlice);

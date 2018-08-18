@@ -5,7 +5,7 @@ import VerticalTreeNode from './VerticalTreeNode';
 
 class VerticalTreeLayout extends AbstractTreeLayout {
     constructor(props) {
-        super(props, VerticalTreeNode, VerticalTreeLink);
+        super(props, 'vertical', VerticalTreeNode, VerticalTreeLink);
     }
 
     estimateXOffset(sgn, estimatedTextWidth) {

@@ -11,18 +11,16 @@
     url('fonts/roboto-v18-latin-regular.svg#Roboto') format('svg');
 }
 
-#root {
+.fabric {
     display: flex;
+    width: 100%;
+    height: 100%;
 }
 
 .loading {
-    margin: 0 auto;
+    margin: auto;
     padding: 74px;
     width: 0;
     height: 0;
     background-image: url(images/loading.svg);
-}
-
-#root > .loading {
-    margin: auto;
 }
