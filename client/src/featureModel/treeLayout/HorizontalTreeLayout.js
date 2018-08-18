@@ -1,9 +1,7 @@
 import AbstractTreeLayout from './AbstractTreeLayout';
 import HorizontalTreeLink from './HorizontalTreeLink';
 import HorizontalTreeNode from './HorizontalTreeNode';
-import measureTextWidth from '../../helpers/measureTextWidth';
 import Constants from '../../Constants';
-import {getNodeName} from '../../server/featureModel';
 
 class HorizontalTreeLayout extends AbstractTreeLayout {
     widestTextOnLayer = {};
@@ -36,7 +34,7 @@ class HorizontalTreeLayout extends AbstractTreeLayout {
     updateWidestTextOnLayer(nodes) {
         this.widestTextOnLayer = {};
         nodes.forEach(node => {
-            const estimatedTextWidth = measureTextWidth(getNodeName(node));
+            const estimatedTextWidth = this.treeNode.estimateTextWidth(node);
             if (this.widestTextOnLayer.hasOwnProperty(node.depth))
                 this.widestTextOnLayer[node.depth] = Math.max(this.widestTextOnLayer[node.depth], estimatedTextWidth);
             else

@@ -5,7 +5,6 @@ import {
     cartesianToAngle,
     drawCircle
 } from '../../helpers/svgUtils';
-import {getNodeType, isNonEmptyGroupNode} from '../../server/featureModel';
 
 class AbstractTreeLink {
     constructor(getCurrentParentCoordinate, getPreviousParentCoordinate, treeNode) {
@@ -60,14 +59,15 @@ class AbstractTreeLink {
 
     drawGroup(arcSegment, arcSlice) {
         const drawArc = (node, arcPathFn, checkType = () => true) =>
-            node.attr('opacity', d => isNonEmptyGroupNode(d) && checkType(d) ? 1 : 0)
+            node
+                .attr('opacity', d => d.feature().isGroup && d.feature().hasChildren && checkType(d) ? 1 : 0)
                 .attr('d', d => {
                     const relativeGroupAnchor = this.groupAnchor(d),
                         absoluteGroupAnchor = {
                             x: relativeGroupAnchor.x + this.nodeX(d),
                             y: relativeGroupAnchor.y + this.nodeY(d)
                         };
-                    if (!isNonEmptyGroupNode(d) || !checkType(d))
+                    if (!d.feature().isGroup || !d.feature().hasChildren || !checkType(d))
                         return this.emptyArcPath(relativeGroupAnchor, arcPathFn);
                     const firstChild = d.children[0],
                         lastChild = d.children[d.children.length - 1],
@@ -77,7 +77,7 @@ class AbstractTreeLink {
                         startAngle, endAngle, this.sweepFlag());
                 });
         drawArc(arcSegment, arcSegmentPath);
-        drawArc(arcSlice, arcSlicePath, d => getNodeType(d) === Constants.server.featureModelTags.OR);
+        drawArc(arcSlice, arcSlicePath, d => d.feature().type === Constants.server.featureModelTags.OR);
     }
 
     enter(link, zIndex) {
@@ -92,7 +92,11 @@ class AbstractTreeLink {
                 .call(this.drawLink, null, {klass: 'line', from, to, style: Constants.treeLayout.style.link.line});
 
         if (zIndex === 'inFront')
-            linkEnter.call(drawCircle, null, {center: from, radius: 0, style: Constants.treeLayout.style.link.mandatory});
+            linkEnter.call(drawCircle, null, {
+                center: from,
+                radius: 0,
+                style: Constants.treeLayout.style.link.mandatory
+            });
 
         return linkEnter;
     }

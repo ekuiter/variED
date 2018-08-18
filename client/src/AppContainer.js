@@ -1,6 +1,6 @@
 import React from 'react';
 import {openWebSocket} from './server/webSocket';
-import FeatureModelContainer from './featureModel/FeatureModelContainer';
+import FeatureModelContainer from './featureModel/FeatureModelViewContainer';
 import {connect} from 'react-redux';
 import actions from './actions';
 import withKeys from './helpers/withKeys';

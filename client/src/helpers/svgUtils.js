@@ -1,5 +1,3 @@
-import {getNodeProperty} from '../server/featureModel';
-
 function toPath(x, y) {
     if (typeof x === 'object')
         ({x, y} = x);
@@ -73,7 +71,7 @@ export function drawCurve(selection, selector, {klass, from, to, inset = 0, styl
         .attr('d', d => {
             const _from = from(d), _to = to(d);
             if (_from.x - inset < _to.x)
-                throw new Error('too much inset or wrong order of points');
+                console.warn('too much inset or wrong order of points');
             return toD(MOVE, toPath(_to),
                 CURVE, toPath(_from.x - inset, _to.y), toPath(_from.x - inset, _from.y), toPath(_from));
         });
@@ -116,7 +114,7 @@ export function addStyle(selection, ...styleDescriptors) {
         property = typeof property === 'function' ? property() : property;
         if (property)
             Object.keys(styles).forEach(key =>
-                selection.filter(node => getNodeProperty(node, property) === key).call(
+                selection.filter(node => node.feature().getPropertyString(property) === key).call(
                 typeof styles[key] === 'function' ? styles[key] : selection => selection.attrs(styles[key])));
         else
             selection.attrs(styleDescriptor);

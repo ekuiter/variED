@@ -1,11 +1,11 @@
 import React from 'react';
-import {hierarchy as d3Hierarchy, tree as d3Tree} from 'd3-hierarchy';
+import {tree as d3Tree} from 'd3-hierarchy';
 import {event as d3Event, select as d3Select} from 'd3-selection';
 import {zoom as d3Zoom} from 'd3-zoom';
 import 'd3-transition';
 import Constants from '../../Constants';
-import {getNodeName, getStruct} from '../../server/featureModel';
 import {updateRect} from '../../helpers/svgUtils';
+import './AbstractTreeLayout.css';
 
 class AbstractTreeLayout extends React.Component {
     static defaultProps = {
@@ -13,12 +13,15 @@ class AbstractTreeLayout extends React.Component {
         fitOnResize: false, debug: false, useTransitions: true
     };
     svgRef = React.createRef();
+    state = {activeNode: null};
     currentCoordinates = {};
     previousCoordinates = {};
 
     constructor(props, TreeNode, TreeLink) {
         super(props);
-        this.treeNode = new TreeNode(props.debug);
+        this.treeNode = new TreeNode(
+            props.debug,
+            activeNode => this.setState({activeNode}));
         this.treeLink = new TreeLink(
             this.getParentCoordinateFn('currentCoordinates'),
             this.getParentCoordinateFn('previousCoordinates'),
@@ -38,7 +41,11 @@ class AbstractTreeLayout extends React.Component {
     }
 
     render() {
-        return <svg ref={this.svgRef}/>;
+        return (
+            <div className="treeLayout">
+                <svg ref={this.svgRef}/>
+            </div>
+        );
     }
 
     canExport() {
@@ -67,18 +74,18 @@ class AbstractTreeLayout extends React.Component {
     }
 
     getKeyFn(kind) {
-        return d => `${kind}_${getNodeName(d)}`;
+        return d => `${kind}_${d.feature().name}`;
     }
 
     updateCoordinates(key, nodes) {
         this[key] = {};
-        nodes.forEach(node => this[key][getNodeName(node)] = {x: this.treeNode.x(node), y: this.treeNode.y(node)});
+        nodes.forEach(node => this[key][node.feature().name] = {x: this.treeNode.x(node), y: this.treeNode.y(node)});
     }
 
     getParentCoordinateFn(key) {
         return (node, axis) => {
             if (node.parent) {
-                const coords = this[key][getNodeName(node.parent)];
+                const coords = this[key][node.parent.feature().name];
                 return coords ? coords[axis] : this.treeNode[axis](node.parent);
             } else
                 return this.treeNode[axis](node);
@@ -102,7 +109,7 @@ class AbstractTreeLayout extends React.Component {
 
     createLayout({featureModel}) {
         const estimateTextWidth = this.treeNode.estimateTextWidth.bind(this.treeNode),
-            hierarchy = d3Hierarchy(getStruct(featureModel)),
+            hierarchy = featureModel.hierarchy,
             tree = d3Tree()
                 .nodeSize(Constants.treeLayout.node.size)
                 .separation(this.getSeparationFn(estimateTextWidth)),

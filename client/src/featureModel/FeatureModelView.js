@@ -2,7 +2,7 @@ import React from 'react';
 import VerticalTreeLayout from './treeLayout/VerticalTreeLayout';
 import HorizontalTreeLayout from './treeLayout/HorizontalTreeLayout';
 
-class FeatureModel extends React.Component {
+class FeatureModelView extends React.Component {
     static defaultProps = {layout: 'verticalTree'};
 
     static layoutMap = {
@@ -20,7 +20,7 @@ class FeatureModel extends React.Component {
 
     render() {
         const {layout, ...props} = this.props,
-            LayoutComponent = FeatureModel.layoutMap[layout];
+            LayoutComponent = FeatureModelView.layoutMap[layout];
 
         return (
             <LayoutComponent key={this.key(props)} ref={this.layoutRef} {...props} />
@@ -36,4 +36,4 @@ class FeatureModel extends React.Component {
     }
 }
 
-export default FeatureModel;
+export default FeatureModelView;

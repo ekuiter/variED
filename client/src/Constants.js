@@ -1,5 +1,3 @@
-import {getNodeProperty, isGroupNode} from './server/featureModel';
-
 const Constants = {
     websocket: process.env.REACT_APP_WEBSOCKET || `ws://${window.location.host}/websocket`, // WebSocket URI to connect to
     font: { // if you change these, make sure they are in sync with the stylesheet
@@ -57,12 +55,12 @@ const Constants = {
         style: { // adapted from FeatureIDE/plugins/de.ovgu.featureide.fm.ui/src/de/ovgu/featureide/fm/ui/editors/featuremodel/GUIDefaults.java
             node: {
                 abstract: { // style applied to a node's rectangle to distinguish abstract and concrete features
-                    property: () => Constants.server.featureModelTags.ABSTRACT,
+                    property: 'isAbstract',
                     yes: {fill: '#f2f2ff', stroke: '#b6b6bf'},
                     no: {fill: '#ccccff', stroke: '#9999bf'}
                 },
                 hidden: { // style applied to a node's text to distinguish hidden and visible features
-                    property: () => Constants.server.featureModelTags.HIDDEN,
+                    property: 'isHidden',
                     yes: {fill: '#676767'}
                 },
                 arcSegment: { // style applied to a node's arc segment (for ALT groups)
@@ -82,7 +80,7 @@ const Constants = {
                 },
                 mandatory: { // style applied to a link's circle to distinguish mandatory and optional features
                     property: () => node =>
-                        isGroupNode(node.parent) ? 'none' : getNodeProperty(node, Constants.server.featureModelTags.MANDATORY),
+                         node.parent.feature().isGroup ? 'none' : node.feature().getPropertyString('isMandatory'),
                     yes: {
                         stroke: () => Constants.treeLayout.style.link.line.stroke,
                         'stroke-width': () => Constants.treeLayout.style.link.line['stroke-width'],

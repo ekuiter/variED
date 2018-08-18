@@ -1,30 +1,47 @@
 import Constants from '../Constants';
+import {hierarchy as d3Hierarchy} from 'd3-hierarchy';
 
-export function getStruct(featureModel) {
-    const STRUCT = Constants.server.featureModelTags.STRUCT;
-    if (!featureModel || !featureModel[STRUCT] || featureModel[STRUCT].length !== 1)
-        throw new Error('feature model has no struct');
-    return featureModel[STRUCT][0];
+const tags = Constants.server.featureModelTags;
+
+d3Hierarchy.prototype.feature = function() {
+    return this._feature || (this._feature = {
+        node: this,
+        name: this.data[tags.NAME],
+        type: this.data[tags.TYPE],
+        description: this.data[tags.DESCRIPTION],
+        isAbstract: this.data[tags.ABSTRACT],
+        isHidden: this.data[tags.HIDDEN],
+        isMandatory: this.data[tags.MANDATORY],
+        isGroup: this.data[tags.TYPE] === tags.OR || this.data[tags.TYPE] === tags.ALT,
+        hasChildren: this.children && this.children.length > 0,
+        getPropertyString: key => {
+            if (typeof key === 'function')
+                return key(this);
+            return this._feature[key] ? 'yes' : 'no';
+        }
+    });
+};
+
+export function getFeatureModel(state) {
+    return state.server.featureModel ? new FeatureModel(state.server.featureModel) : null;
 }
 
-export function getNodeName(node) {
-    return node.data[Constants.server.featureModelTags.NAME];
-}
+export default class FeatureModel {
+    // 'data' as supplied by FEATURE_MODEL messages from the server
+    constructor(featureModel) {
+        if (!featureModel)
+            throw new Error('no feature model given');
+        this._featureModel = featureModel;
+    }
 
-export function getNodeType(node) {
-    return node.data[Constants.server.featureModelTags.TYPE];
-}
+    get structure() {
+        const struct = Constants.server.featureModelTags.STRUCT;
+        if (!this._featureModel[struct] || this._featureModel[struct].length !== 1)
+            throw new Error('feature model has no structure');
+        return this._featureModel[struct][0];
+    }
 
-export function getNodeProperty(node, key) {
-    if (typeof key === 'function')
-        return key(node);
-    return node.data[key] ? 'yes' : 'no';
-}
-
-export function isGroupNode(node) {
-    return getNodeType(node) === Constants.server.featureModelTags.OR || getNodeType(node) === Constants.server.featureModelTags.ALT;
-}
-
-export function isNonEmptyGroupNode(node) {
-    return node.children && node.children.length > 0 && isGroupNode(node);
-}
+    get hierarchy() {
+        return this._hierarchy || (this._hierarchy = d3Hierarchy(this.structure));
+    }
+};

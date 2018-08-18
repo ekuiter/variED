@@ -2,7 +2,6 @@ import 'd3-selection-multi';
 import Constants from '../../Constants';
 import measureTextWidth from '../../helpers/measureTextWidth';
 import {addStyle, appendCross, translateTransform} from '../../helpers/svgUtils';
-import {getNodeName} from '../../server/featureModel';
 
 function widenBbox({x, y, width, height}, paddingX, paddingY) {
     return {x: x - paddingX, y: y - paddingY, width: width + 2 * paddingX, height: height + 2 * paddingY};
@@ -27,7 +26,7 @@ function makeText(selection, isGettingRectInfo, textStyle) {
     } else {
         const bboxes = [];
         selection.append('text')
-            .text(getNodeName)
+            .text(d => d.feature().name)
             .call(addStyle, textStyle, Constants.treeLayout.style.node.hidden)
             .each(function() {
                 bboxes.push(this.getBBox());
@@ -37,8 +36,9 @@ function makeText(selection, isGettingRectInfo, textStyle) {
 }
 
 class AbstractTreeNode {
-    constructor(debug) {
+    constructor(debug, setActiveNode) {
         this.debug = debug;
+        this.setActiveNode = setActiveNode;
     }
 
     x(node) {
@@ -61,7 +61,8 @@ class AbstractTreeNode {
         const nodeEnter = node.append('g')
                 .attr('class', 'node')
                 .call(translateTransform, d => this.x(d), d => this.y(d))
-                .attr('opacity', 0),
+                .attr('opacity', 0)
+                .on('click', this.setActiveNode),
             bboxes = makeText(nodeEnter, false, this.getTextStyle());
 
         let i = 0;
@@ -94,7 +95,7 @@ class AbstractTreeNode {
     }
 
     estimateTextWidth(node) {
-        return measureTextWidth(getNodeName(node));
+        return measureTextWidth(node.feature().name);
     }
 }
 
