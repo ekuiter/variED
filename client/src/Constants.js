@@ -76,8 +76,8 @@ const Constants = {
         fontComboBox: {
             suggestedFonts: [
                 'Arial', 'Calibri', 'Candara', 'Century Gothic', 'Courier New', 'Futura', 'Garamond', 'Geneva',
-                'Georgia', 'Helvetica', 'Helvetica Neue', 'Lucida Grande', 'Palatino', 'Segoe UI',
-                'Segoe UI Web (West European)', 'Tahoma', 'Times New Roman', 'Trebuchet MS', 'Verdana'
+                'Georgia', 'Helvetica', 'Helvetica Neue', 'Lucida Grande', 'Palatino', 'Segoe UI', 'Tahoma',
+                'Times New Roman', 'Trebuchet MS', 'Verdana'
             ]
         }
     }

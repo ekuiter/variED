@@ -7,7 +7,7 @@ export const defaultSettings = {
         featureDiagram: {
             layout: 'horizontalTree', // layout for displaying a feature diagram
             font: {
-                family: 'Segoe UI Web (West European)', // font family for feature diagrams, use same as Fabric by default
+                family: 'Arial', // font family for feature diagrams
                 size: 16 // main font size for feature names
             },
             treeLayout: {

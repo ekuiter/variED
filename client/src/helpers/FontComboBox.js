@@ -8,7 +8,7 @@ export default class extends React.Component {
     static defaultProps = {
         selectedFont: null,
         fonts: Constants.helpers.fontComboBox.suggestedFonts,
-        fallbacks: ['Segoe UI', 'Segoe UI Web (West European)', 'Dejavu Sans', 'Helvetica Neue', 'Arial', 'sans-serif'],
+        fallbacks: null,
         onChange: null
     };
 
@@ -26,10 +26,10 @@ export default class extends React.Component {
 
     render() {
         let {selectedFont, fonts, fallbacks, ...props} = this.props;
-        fallbacks = fallbacks.map(fallback => `'${fallback}'`).join(',');
+        fallbacks = fallbacks ? `,${fallbacks.map(fallback => `'${fallback}'`).join(',')}` : '';
         fonts = fonts
             .filter(isFontInstalled)
-            .map(font => ({key: font, text: font, fontFamily: `'${font}',${fallbacks}`}));
+            .map(font => ({key: font, text: font, fontFamily: `'${font}'${fallbacks}`}));
 
         return (
             <ComboBox

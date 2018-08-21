@@ -2,7 +2,8 @@ import React from 'react';
 import {Panel, PanelType} from 'office-ui-fabric-react/lib/Panel';
 import {Toggle} from 'office-ui-fabric-react/lib/Toggle';
 import {SpinButton} from 'office-ui-fabric-react/lib/SpinButton';
-import {getSetting, setSetting} from './settings';
+import {getSetting} from './settings';
+import Actions from './Actions';
 import i18n from './i18n';
 import FontComboBox from './helpers/FontComboBox';
 
@@ -16,14 +17,14 @@ const getSettingComponents = (settings, dispatch) => {
                 checked={getSetting(settings, path)}
                 onText={i18n.t('settingsPanel.toggleOn')}
                 offText={i18n.t('settingsPanel.toggleOn')}
-                onClick={() => dispatch(setSetting(path, bool => !bool))}/>
+                onClick={() => dispatch(Actions.setSetting(path, bool => !bool))}/>
         ),
         FontComboBox: ({path}) => (
             <FontComboBox
                 className="setting"
                 label={getLabel(path)}
                 selectedFont={getSetting(settings, path)}
-                onChanged={font => dispatch(setSetting(path, font))}/>
+                onChanged={font => dispatch(Actions.setSetting(path, font))}/>
         ),
         SpinButton: class extends React.Component {
             static defaultProps = {
@@ -45,7 +46,7 @@ const getSettingComponents = (settings, dispatch) => {
 
             getValue = path => getSetting(settings, path) + this.props.suffix;
 
-            onChange = value => dispatch(setSetting(this.props.path, value));
+            onChange = value => dispatch(Actions.setSetting(this.props.path, value));
 
             onValidate = value => {
                 value = this.removeSuffix(value);
