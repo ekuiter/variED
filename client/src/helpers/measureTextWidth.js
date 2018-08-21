@@ -1,5 +1,3 @@
-import Constants from '../Constants';
-
 function memoize(fn) {
     let cache = {};
     return (...args) => {
@@ -8,8 +6,8 @@ function memoize(fn) {
     };
 }
 
-export default memoize((text) => {
+export default memoize((fontFamily, fontSize, text) => {
     const context = document.createElement('canvas').getContext('2d');
-    context.font = Constants.font.textMeasure;
+    context.font = `${fontSize}px ${fontFamily}`;
     return context.measureText(text).width;
 });

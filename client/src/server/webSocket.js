@@ -9,7 +9,7 @@ const getWebSocket = (() => {
         return new Promise((resolve, reject) => {
             if (webSocket && webSocket.readyState !== webSocket.CLOSED)
                 throw new Error('can not connect while old WebSocket is still in use');
-            webSocket = new WebSocket(Constants.websocket);
+            webSocket = new WebSocket(Constants.server.webSocket);
             webSocket.onopen = () => {
                 onOpen();
                 resolve(webSocket);

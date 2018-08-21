@@ -1,12 +1,7 @@
-import Constants from './Constants';
 import messageReducer from './server/messageReducer';
 import {combineReducers} from 'redux';
-
-const initialUiState = {
-    layout: 'horizontalTree',
-    debug: false,
-    useTransitions: true
-};
+import Constants from './Constants';
+import {defaultSettings, getNewSettings, isSettingAction} from './Settings';
 
 function serverReducer(state = {}, action) {
     if (Constants.server.isMessageType(action.type))
@@ -14,14 +9,10 @@ function serverReducer(state = {}, action) {
     return state;
 }
 
-function uiReducer(state = initialUiState, action) {
-    if (action.type === 'UI_SET_LAYOUT')
-        return {...state, layout: action.layout};
-    if (action.type === 'UI_TOGGLE_DEBUG')
-        return {...state, debug: !state.debug};
-    if (action.type === 'UI_TOGGLE_USE_TRANSITIONS')
-        return {...state, useTransitions: !state.useTransitions};
+function settingsReducer(state = defaultSettings, action) {
+    if (isSettingAction(action))
+        return getNewSettings(state, action.path, action.value);
     return state;
 }
 
-export default combineReducers({server: serverReducer, ui: uiReducer});
+export default combineReducers({server: serverReducer, settings: settingsReducer});

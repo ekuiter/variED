@@ -1,5 +1,5 @@
-import Constants from '../Constants';
 import {sendMessage} from './webSocket';
+import Constants from '../Constants';
 
 const messageTypes = Constants.server.messageTypes;
 

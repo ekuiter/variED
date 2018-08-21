@@ -1,13 +1,14 @@
 import AbstractTreeLink from './AbstractTreeLink';
-import Constants from '../../Constants';
+import {getSetting} from '../../Settings';
 import {attrIfPresent, drawCurve, drawLine} from '../../helpers/svgUtils';
+import {estimateRectWidth} from './estimateUtils';
 
 function leftSideX(x, rectInfo) {
     return x + rectInfo.x;
 }
 
-function rightSide(x, rectInfo, estimatedTextWidth) {
-    return x + rectInfo.x + Constants.treeLayout.node.estimateRectWidth(estimatedTextWidth);
+function rightSide(settings, x, rectInfo, estimatedTextWidth) {
+    return x + rectInfo.x + estimateRectWidth(settings, estimatedTextWidth);
 }
 
 function sideY(y, rectInfo) {
@@ -17,7 +18,7 @@ function sideY(y, rectInfo) {
 class HorizontalTreeLink extends AbstractTreeLink {
     groupAnchor(node) {
         const rectInfo = this.getRectInfo();
-        return {x: rightSide(0, rectInfo, this.estimateTextWidth(node)), y: sideY(0, rectInfo)};
+        return {x: rightSide(this.settings, 0, rectInfo, this.estimateTextWidth(node)), y: sideY(0, rectInfo)};
     }
 
     sweepFlag() {
@@ -32,12 +33,13 @@ class HorizontalTreeLink extends AbstractTreeLink {
         return arcPathFn(center, radius, -90, 90, sweepFlag);
     }
 
-    drawLink(selection, selector, {klass, from, to, style}) {
-        const g = (!selector ? selection.append('g') : selection.select(selector))
+    drawLink = (selection, selector, {klass, from, to, style}) => {
+        const settings = this.settings,
+            g = (!selector ? selection.append('g') : selection.select(selector))
                 .call(attrIfPresent, 'class', klass),
             _to = d => {
                 const {x, y} = to(d);
-                return {x: Math.max(x, from(d).x - Constants.treeLayout.horizontal.layerMargin), y}
+                return {x: Math.max(x, from(d).x - getSetting(settings, 'featureModel.treeLayout.horizontal.layerMargin')), y}
             };
         drawLine(g, !selector ? null : 'path.innerLine', {
             klass: 'innerLine', from: _to, to, style,
@@ -45,10 +47,10 @@ class HorizontalTreeLink extends AbstractTreeLink {
         });
         drawCurve(g, !selector ? null : 'path.curve', {
             klass: 'curve', from, to: _to, style,
-            inset: Constants.treeLayout.horizontal.layerMargin / 2
+            inset: getSetting(this.settings, 'featureModel.treeLayout.horizontal.layerMargin') / 2
         });
         return g;
-    }
+    };
 
     from(node, phase) {
         return {
@@ -60,13 +62,13 @@ class HorizontalTreeLink extends AbstractTreeLink {
     to(node, phase) {
         const rectInfo = this.getRectInfo();
         return phase === 'enter' ? {
-            x: rightSide(this.getPreviousParentCoordinate(node, 'x'), rectInfo, this.estimateTextWidth(node.parent)),
+            x: rightSide(this.settings, this.getPreviousParentCoordinate(node, 'x'), rectInfo, this.estimateTextWidth(node.parent)),
             y: sideY(this.getPreviousParentCoordinate(node, 'y'), rectInfo)
         } : phase === 'update' ? {
-            x: rightSide(this.nodeX(node.parent), rectInfo, this.estimateTextWidth(node.parent)),
+            x: rightSide(this.settings, this.nodeX(node.parent), rectInfo, this.estimateTextWidth(node.parent)),
             y: sideY(this.nodeY(node.parent), rectInfo)
         } : {
-            x: rightSide(this.getCurrentParentCoordinate(node, 'x'), rectInfo, this.estimateTextWidth(node.parent)),
+            x: rightSide(this.settings, this.getCurrentParentCoordinate(node, 'x'), rectInfo, this.estimateTextWidth(node.parent)),
             y: sideY(this.getCurrentParentCoordinate(node, 'y'), rectInfo)
         };
     }

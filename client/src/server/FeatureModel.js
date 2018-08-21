@@ -1,5 +1,5 @@
-import Constants from '../Constants';
 import {hierarchy as d3Hierarchy} from 'd3-hierarchy';
+import Constants from '../Constants';
 
 const tags = Constants.server.featureModelTags;
 

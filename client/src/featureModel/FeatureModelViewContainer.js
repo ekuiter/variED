@@ -1,14 +1,14 @@
 import React from 'react';
 import FeatureModelView from './FeatureModelView';
 import {connect} from 'react-redux';
-import {getFeatureModel} from '../server/featureModel';
+import {getFeatureModel} from '../server/FeatureModel';
+import {getSetting} from '../Settings';
 
 export default connect(
     state => ({
-        featureModel: getFeatureModel(state),
-        layout: state.ui.layout,
-        debug: state.ui.debug,
-        useTransitions: state.ui.useTransitions
+        settings: state.settings,
+        layout: getSetting(state.settings, 'featureModel.layout'),
+        featureModel: getFeatureModel(state)
     })
 )(props =>
     props.featureModel

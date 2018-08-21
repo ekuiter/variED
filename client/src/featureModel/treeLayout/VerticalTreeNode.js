@@ -1,5 +1,6 @@
 import AbstractTreeNode from './AbstractTreeNode';
-import Constants from '../../Constants';
+import {getSetting} from '../../Settings';
+import Styles from './Styles';
 
 class VerticalTreeNode extends AbstractTreeNode {
     x(node) {
@@ -7,11 +8,11 @@ class VerticalTreeNode extends AbstractTreeNode {
     }
 
     y(node) {
-        return node.y * Constants.treeLayout.vertical.layerHeight;
+        return node.y * getSetting(this.settings, 'featureModel.treeLayout.vertical.layerHeight');
     }
 
     getTextStyle() {
-        return Constants.treeLayout.style.vertical.text;
+        return Styles.vertical.text;
     }
 };
 

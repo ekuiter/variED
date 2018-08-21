@@ -1,33 +1,35 @@
 import 'd3-selection-multi';
-import Constants from '../../Constants';
+import {getSetting} from '../../Settings';
 import measureTextWidth from '../../helpers/measureTextWidth';
 import {addStyle, appendCross, translateTransform} from '../../helpers/svgUtils';
+import Styles from './Styles';
 
 function widenBbox({x, y, width, height}, paddingX, paddingY) {
     return {x: x - paddingX, y: y - paddingY, width: width + 2 * paddingX, height: height + 2 * paddingY};
 }
 
-function makeRect(textBbox) {
+function makeRect(settings, textBbox) {
+    const nodeSettings = getSetting(settings, 'featureModel.treeLayout.node');
     return widenBbox(
         textBbox,
-        Constants.treeLayout.node.paddingX + Constants.treeLayout.node.strokeWidth,
-        Constants.treeLayout.node.paddingY + Constants.treeLayout.node.strokeWidth);
+        nodeSettings.paddingX + nodeSettings.strokeWidth,
+        nodeSettings.paddingY + nodeSettings.strokeWidth);
 }
 
-function makeText(selection, isGettingRectInfo, textStyle) {
+function makeText(settings, selection, isGettingRectInfo, textStyle) {
     if (isGettingRectInfo) {
         let rectInfo = null;
         selection.append('text')
             .text('some text used to determine rect y and height')
             .each(function() {
-                rectInfo = makeRect(this.getBBox());
+                rectInfo = makeRect(settings, this.getBBox());
             }).remove();
         return rectInfo;
     } else {
         const bboxes = [];
         selection.append('text')
             .text(d => d.feature().name)
-            .call(addStyle, textStyle, Constants.treeLayout.style.node.hidden)
+            .call(addStyle, textStyle, Styles.node.hidden)
             .each(function() {
                 bboxes.push(this.getBBox());
             });
@@ -36,25 +38,25 @@ function makeText(selection, isGettingRectInfo, textStyle) {
 }
 
 class AbstractTreeNode {
-    constructor(debug, setActiveNode) {
-        this.debug = debug;
+    constructor(settings, setActiveNode) {
+        this.settings = settings;
         this.setActiveNode = setActiveNode;
     }
 
     x(node) {
-        throw new Error("abstract method not implemented");
+        throw new Error('abstract method not implemented');
     }
 
     y(node) {
-        throw new Error("abstract method not implemented");
+        throw new Error('abstract method not implemented');
     }
 
     getTextStyle() {
-        throw new Error("abstract method not implemented");
+        throw new Error('abstract method not implemented');
     }
 
     createSvgHook(g) {
-        this.rectInfo = makeText(g, true, this.getTextStyle());
+        this.rectInfo = makeText(this.settings, g, true, this.getTextStyle());
     }
 
     enter(node) {
@@ -68,22 +70,22 @@ class AbstractTreeNode {
                 .on('click', function(d) {
                     self.setActiveNode(d, this);
                 }),
-            bboxes = makeText(rectAndText, false, this.getTextStyle());
+            bboxes = makeText(this.settings, rectAndText, false, this.getTextStyle());
 
         let i = 0;
         rectAndText.insert('rect', 'text')
-            .attrs(() => makeRect(bboxes[i++]))
-            .call(addStyle, Constants.treeLayout.style.node.abstract);
+            .attrs(() => makeRect(this.settings, bboxes[i++]))
+            .call(addStyle, Styles.node.abstract);
 
         const arcSegment = nodeEnter.insert('path', 'g.rectAndText')
                 .attr('class', 'arcSegment')
-                .call(addStyle, Constants.treeLayout.style.node.arcSegment),
+                .call(addStyle, Styles.node.arcSegment),
             arcSlice = nodeEnter.insert('path', 'g.rectAndText')
                 .attr('class', 'arcSlice')
-                .call(addStyle, Constants.treeLayout.style.node.arcSlice);
+                .call(addStyle, Styles.node.arcSlice);
         this.treeLink.drawGroup(arcSegment, arcSlice);
 
-        if (this.debug)
+        if (getSetting(this.settings, 'featureModel.treeLayout.debug'))
             appendCross(nodeEnter);
 
         return nodeEnter;
@@ -100,7 +102,10 @@ class AbstractTreeNode {
     }
 
     estimateTextWidth(node) {
-        return measureTextWidth(node.feature().name);
+        return measureTextWidth(
+            getSetting(this.settings, 'featureModel.font.family'),
+            getSetting(this.settings, 'featureModel.font.size'),
+            node.feature().name);
     }
 }
 

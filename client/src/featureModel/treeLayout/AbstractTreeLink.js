@@ -1,13 +1,16 @@
-import Constants from '../../Constants';
+import {getSetting} from '../../Settings';
 import {
     arcSegmentPath,
     arcSlicePath,
     cartesianToAngle,
     drawCircle
 } from '../../helpers/svgUtils';
+import Constants from '../../Constants';
+import Styles from './Styles';
 
 class AbstractTreeLink {
-    constructor(getCurrentParentCoordinate, getPreviousParentCoordinate, treeNode) {
+    constructor(settings, getCurrentParentCoordinate, getPreviousParentCoordinate, treeNode) {
+        this.settings = settings;
         this.getCurrentParentCoordinate = getCurrentParentCoordinate;
         this.getPreviousParentCoordinate = getPreviousParentCoordinate;
         this.treeNode = treeNode;
@@ -30,31 +33,31 @@ class AbstractTreeLink {
     }
 
     groupAnchor(node) {
-        throw new Error("abstract method not implemented");
+        throw new Error('abstract method not implemented');
     }
 
     sweepFlag() {
-        throw new Error("abstract method not implemented");
+        throw new Error('abstract method not implemented');
     }
 
     emptyArcPath(relativeGroupAnchor, arcPathFn) {
-        throw new Error("abstract method not implemented");
+        throw new Error('abstract method not implemented');
     }
 
     arcPath(...args) {
-        throw new Error("abstract method not implemented");
+        throw new Error('abstract method not implemented');
     }
 
     drawLink(...args) {
-        throw new Error("abstract method not implemented");
+        throw new Error('abstract method not implemented');
     }
 
     from(node, phase) {
-        throw new Error("abstract method not implemented");
+        throw new Error('abstract method not implemented');
     }
 
     to(node, phase) {
-        throw new Error("abstract method not implemented");
+        throw new Error('abstract method not implemented');
     }
 
     drawGroup(arcSegment, arcSlice) {
@@ -73,7 +76,7 @@ class AbstractTreeLink {
                         lastChild = d.children[d.children.length - 1],
                         startAngle = cartesianToAngle(absoluteGroupAnchor, this.from(firstChild)),
                         endAngle = cartesianToAngle(absoluteGroupAnchor, this.from(lastChild));
-                    return this.arcPath(arcPathFn, relativeGroupAnchor, Constants.treeLayout.link.groupRadius,
+                    return this.arcPath(arcPathFn, relativeGroupAnchor, getSetting(this.settings, 'featureModel.treeLayout.link.groupRadius'),
                         startAngle, endAngle, this.sweepFlag());
                 });
         drawArc(arcSegment, arcSegmentPath);
@@ -89,13 +92,13 @@ class AbstractTreeLink {
 
         if (zIndex === 'inBack')
             linkEnter
-                .call(this.drawLink, null, {klass: 'line', from, to, style: Constants.treeLayout.style.link.line});
+                .call(this.drawLink, null, {klass: 'line', from, to, style: Styles.link.line});
 
         if (zIndex === 'inFront')
             linkEnter.call(drawCircle, null, {
                 center: from,
                 radius: 0,
-                style: Constants.treeLayout.style.link.mandatory
+                style: Styles.link.mandatory
             });
 
         return linkEnter;
@@ -104,14 +107,14 @@ class AbstractTreeLink {
     update(link, zIndex) {
         const from = d => this.from(d, 'update'),
             to = d => this.to(d, 'update'),
-            radius = Constants.treeLayout.link.circleRadius;
+            radius = getSetting(this.settings, 'featureModel.treeLayout.link.circleRadius');
         link.attr('opacity', 1);
 
         if (zIndex === 'inBack')
             link.call(this.drawLink, '.line', {from, to});
 
         if (zIndex === 'inFront')
-            link.call(drawCircle, 'circle', {center: from, radius, style: Constants.treeLayout.style.link.mandatory});
+            link.call(drawCircle, 'circle', {center: from, radius, style: Styles.link.mandatory});
     }
 
     exit(link, zIndex) {

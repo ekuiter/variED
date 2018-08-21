@@ -11,6 +11,8 @@
     "d3-zoom": "^1.7.1",
     "fontfaceobserver": "^2.0.13",
     "normalize.css": "^8.0.0",
+    "object-path": "^0.11.4",
+    "object-path-immutable": "^3.0.0",
     "office-ui-fabric-react": "^6.50.1",
     "promise-polyfill": "^8.1.0",
     "react": "^16.4.2",

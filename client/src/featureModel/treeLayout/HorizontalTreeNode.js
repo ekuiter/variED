@@ -1,12 +1,14 @@
 import AbstractTreeNode from './AbstractTreeNode';
-import Constants from '../../Constants';
+import Styles from './Styles';
+import {estimateRectWidth} from './estimateUtils';
+import {getSetting} from '../../Settings';
 
 class HorizontalTreeNode extends AbstractTreeNode {
     x(node) {
         let x = 0, parent = node;
         while ((parent = parent.parent))
-            x += Constants.treeLayout.node.estimateRectWidth(this.getWidestTextOnLayer(parent)) +
-                Constants.treeLayout.horizontal.layerMargin;
+            x += estimateRectWidth(this.settings, this.getWidestTextOnLayer(parent)) +
+                getSetting(this.settings, 'featureModel.treeLayout.horizontal.layerMargin');
         return x;
     }
 
@@ -15,7 +17,7 @@ class HorizontalTreeNode extends AbstractTreeNode {
     }
 
     getTextStyle() {
-        return Constants.treeLayout.style.horizontal.text;
+        return Styles.horizontal.text;
     }
 }
 

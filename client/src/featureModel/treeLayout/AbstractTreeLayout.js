@@ -3,16 +3,15 @@ import {tree as d3Tree} from 'd3-hierarchy';
 import {event as d3Event, select as d3Select} from 'd3-selection';
 import {zoom as d3Zoom} from 'd3-zoom';
 import 'd3-transition';
-import Constants from '../../Constants';
+import {getSetting} from '../../Settings';
 import {updateRect} from '../../helpers/svgUtils';
 import './AbstractTreeLayout.css';
-import FeatureCallout from '../FeatureCallout';
+import FeatureCallout from './FeatureCallout';
 import throttle from '../../helpers/throttle';
 
 class AbstractTreeLayout extends React.Component {
     static defaultProps = {
-        featureModel: null, width: '100%', height: '100%',
-        fitOnResize: false, debug: false, useTransitions: true
+        featureModel: null, width: '100%', height: '100%', fitOnResize: false, settings: null
     };
     svgRef = React.createRef();
     state = {activeNode: null, activeNodeRef: null};
@@ -23,9 +22,10 @@ class AbstractTreeLayout extends React.Component {
         super(props);
         this.direction = direction;
         this.treeNode = new TreeNode(
-            props.debug,
+            props.settings,
             this.setActiveNode.bind(this));
         this.treeLink = new TreeLink(
+            props.settings,
             this.getParentCoordinateFn('currentCoordinates'),
             this.getParentCoordinateFn('previousCoordinates'),
             this.treeNode);
@@ -37,6 +37,7 @@ class AbstractTreeLayout extends React.Component {
     };
 
     componentDidUpdate(prevProps) {
+        this.treeNode.settings = this.treeLink.settings = this.props.settings;
         if (this.props !== prevProps)
             this.updateD3(
                 this.props.width !== prevProps.width ||
@@ -47,6 +48,7 @@ class AbstractTreeLayout extends React.Component {
         return (
             <div className="treeLayout">
                 <FeatureCallout
+                    settings={this.props.settings}
                     direction={this.direction}
                     node={this.state.activeNode}
                     nodeRef={this.state.activeNodeRef}
@@ -61,14 +63,15 @@ class AbstractTreeLayout extends React.Component {
             if (this.state.activeNode)
                 return this.setState({}); // triggers a rerender for the feature callout to catch up
         },
-        Constants.treeLayout.featureCallout.throttleUpdate);
+        getSetting(this.props.settings, 'featureModel.treeLayout.featureCallout.throttleUpdate'));
 
     canExport() {
         return !!this.svgRef.current;
     }
 
     export() {
-        return window.fetch(Constants.font.publicPath)
+        // TODO
+        return window.fetch(getSetting(this.props.settings, 'featureModel.font.publicPath'))
             .then(response => response.blob())
             .then(blob => new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -80,8 +83,8 @@ class AbstractTreeLayout extends React.Component {
                 const style = svgRoot.querySelector('style');
                 style.textContent = `
                     @font-face {
-                        font-family: '${Constants.font.family}';
-                        src: url("${fontData}");
+                        font-family: '${getSetting(this.props.settings, 'featureModel.font.family')}';
+                        src: url('${fontData}');
                     }
                 ${style.textContent}`;
                 return new XMLSerializer().serializeToString(svgRoot);
@@ -112,25 +115,25 @@ class AbstractTreeLayout extends React.Component {
     }
 
     getSeparationFn(estimateTextWidth) {
-        throw new Error("abstract method not implemented");
+        throw new Error('abstract method not implemented');
     }
 
     estimateXOffset(sgn, estimatedTextWidth) {
-        throw new Error("abstract method not implemented");
+        throw new Error('abstract method not implemented');
     }
 
     estimateYOffset(sgn) {
-        throw new Error("abstract method not implemented");
+        throw new Error('abstract method not implemented');
     }
 
     createLayoutHook(nodes) {
     }
 
-    createLayout({featureModel}) {
+    createLayout({featureModel, settings}) {
         const estimateTextWidth = this.treeNode.estimateTextWidth.bind(this.treeNode),
             hierarchy = featureModel.hierarchy,
             tree = d3Tree()
-                .nodeSize(Constants.treeLayout.node.size)
+                .nodeSize(getSetting(settings, 'featureModel.treeLayout.node.size'))
                 .separation(this.getSeparationFn(estimateTextWidth)),
             nodes = hierarchy.descendants();
         tree(hierarchy);
@@ -150,7 +153,7 @@ class AbstractTreeLayout extends React.Component {
         return {nodes, estimatedBbox};
     }
 
-    getSvgRoot({width, height, fitOnResize, debug}, estimatedBbox, isCreating, isResize) {
+    getSvgRoot({width, height, fitOnResize, settings}, estimatedBbox, isCreating, isResize) {
         const svgRoot = d3Select(this.svgRef.current)
                 .attr('style', `width: ${width}; height: ${height};`),
             defs = isCreating ? svgRoot.append('defs') : svgRoot.select('defs'),
@@ -163,12 +166,12 @@ class AbstractTreeLayout extends React.Component {
 
         style.attr('type', 'text/css').text(`
             svg {
-                font-family: '${Constants.font.family}';
-                font-size: ${Constants.font.size}px;
+                font-family: '${getSetting(settings, 'featureModel.font.family')}' !important;
+                font-size: ${getSetting(settings, 'featureModel.font.size')}px !important;
             }
         `);
 
-        if (debug)
+        if (getSetting(settings, 'featureModel.treeLayout.debug'))
             this.transition(rect)
                 .call(updateRect, {
                     x: estimatedBbox[0][0],
@@ -182,7 +185,7 @@ class AbstractTreeLayout extends React.Component {
 
         svgRoot.call(zoom
             .translateExtent(estimatedBbox)
-            .scaleExtent(Constants.treeLayout.scaleExtent)
+            .scaleExtent(getSetting(settings, 'featureModel.treeLayout.scaleExtent'))
             .on('zoom', () => {
                 this.updateCallout();
                 return g.attr('transform', d3Event.transform);
@@ -220,8 +223,8 @@ class AbstractTreeLayout extends React.Component {
         return {node, linkInBack, linkInFront, nodes};
     }
 
-    transition(selection, onEnd = this.updateCallout, duration = Constants.treeLayout.duration) {
-        if (this.props.useTransitions) {
+    transition(selection, onEnd = this.updateCallout, duration = getSetting(this.props.settings, 'featureModel.treeLayout.duration')) {
+        if (getSetting(this.props.settings, 'featureModel.treeLayout.useTransitions')) {
             let transition = selection.transition().duration(duration);
             if (onEnd)
                 transition = transition.on('end', onEnd);
