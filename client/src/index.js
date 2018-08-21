@@ -7,9 +7,12 @@ import 'promise-polyfill/src/polyfill';
 import {createStore} from 'redux';
 import {Provider} from 'react-redux';
 import reducers from './reducers';
+import { initializeIcons } from 'office-ui-fabric-react/lib/Icons';
 
 if (window.location.protocol !== 'http:')
     window.location.protocol = 'http:'; // TODO: hack until we support WSS
+
+initializeIcons();
 
 const store = createStore(
     reducers,

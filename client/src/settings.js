@@ -7,8 +7,8 @@ export const defaultSettings = {
         featureDiagram: {
             layout: 'horizontalTree', // layout for displaying a feature diagram
             font: {
-                family: 'Arial', // main font family for feature diagrams
-                size: 16 // main font size for feature names, used for bounding box estimation
+                family: 'Segoe UI Web (West European)', // font family for feature diagrams, use same as Fabric by default
+                size: 16 // main font size for feature names
             },
             treeLayout: {
                 debug: false, // whether to show the estimated bounding box and node anchors
@@ -53,7 +53,8 @@ export const defaultSettings = {
     }
 ;
 
-export function getSetting(settings, path) {
+export function getSetting(settings, ...paths) {
+    const path = paths.join('.');
     if (!objectPath.has(settings, path))
         throw new Error(`setting ${path} does not exist`);
     return objectPath.get(settings, path);

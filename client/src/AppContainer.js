@@ -3,10 +3,20 @@ import {openWebSocket} from './server/webSocket';
 import FeatureDiagramContainer from './featureDiagram/FeatureDiagramContainer';
 import {connect} from 'react-redux';
 import withKeys from './helpers/withKeys';
-import { Fabric } from 'office-ui-fabric-react/lib/Fabric';
+import {Fabric} from 'office-ui-fabric-react/lib/Fabric';
 import actions from './Actions';
+import SettingsPanel from './SettingsPanel';
+import {CommandBar} from 'office-ui-fabric-react/lib/CommandBar';
+import i18n from './i18n';
 
 class AppContainer extends React.Component {
+    state = {
+        isSettingsPanelOpen: false
+    };
+
+    onSettingsPanelOpen = () => this.setState({isSettingsPanelOpen: true});
+    onSettingsPanelDismiss = () => this.setState({isSettingsPanelOpen: false});
+
     componentDidMount() {
         openWebSocket(this.props.dispatch);
     }
@@ -14,14 +24,32 @@ class AppContainer extends React.Component {
     render() {
         return (
             <Fabric className="fabricRoot">
-                <FeatureDiagramContainer/>
+                <div className="header">
+                    <CommandBar
+                        items={[]}
+                        farItems={[
+                            {
+                                key: 'settings',
+                                text: i18n.t('settingsPanel.title'),
+                                iconOnly: true,
+                                iconProps: {iconName: 'Settings'},
+                                onClick: this.onSettingsPanelOpen
+                            }
+                        ]}/>
+                </div>
+                <FeatureDiagramContainer className="content"/>
+                <SettingsPanel
+                    settings={this.props.settings}
+                    dispatch={this.props.dispatch}
+                    isOpen={this.state.isSettingsPanelOpen}
+                    onDismiss={this.onSettingsPanelDismiss}/>
             </Fabric>
         );
     }
 }
 
 export default connect(
-    null,
+    state => ({settings: state.settings}),
     dispatch => ({dispatch})
 )(withKeys({
     key: e => e.isCommand('z'),

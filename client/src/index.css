@@ -1,9 +1,30 @@
 .ms-Fabric.fabricRoot {
-    display: flex;
     width: 100%;
     height: 100%;
+    display: flex;
+    flex-flow: column;
+}
+
+.ms-Fabric.fabricRoot .header {
+    flex: 0 1 auto;
+}
+
+.ms-Fabric.fabricRoot .content {
+    flex: 1 1 auto;
 }
 
 .ms-Spinner {
     margin: auto;
+}
+
+.settingsPanel .setting {
+    margin: 8px 0;
+}
+
+.settingsPanel h4 {
+    margin: 24px 0 0 0;
+}
+
+.settingsPanel h4:first-child {
+    margin: 8px 0 0 0;
 }

@@ -11,7 +11,7 @@ import throttle from '../../helpers/throttle';
 
 class AbstractTreeLayout extends React.Component {
     static defaultProps = {
-        featureModel: null, width: '100%', height: '100%', fitOnResize: false, settings: null
+        featureModel: null, width: null, height: null, className: null, fitOnResize: false, settings: null
     };
     svgRef = React.createRef();
     state = {activeNode: null, activeNodeRef: null};
@@ -46,15 +46,16 @@ class AbstractTreeLayout extends React.Component {
 
     render() {
         return (
-            <div className="treeLayout">
+            <React.Fragment>
+                <svg className={'treeLayout' + (this.props.className ? ` ${this.props.className}` : '')}
+                     ref={this.svgRef}/>
                 <FeatureCallout
                     settings={this.props.settings}
                     direction={this.direction}
                     node={this.state.activeNode}
                     nodeRef={this.state.activeNodeRef}
                     onDismiss={() => this.setActiveNode(null, null)}/>
-                <svg ref={this.svgRef}/>
-            </div>
+            </React.Fragment>
         );
     }
 
@@ -156,7 +157,7 @@ class AbstractTreeLayout extends React.Component {
 
     getSvgRoot({width, height, fitOnResize, settings}, estimatedBbox, isCreating, isResize) {
         const svgRoot = d3Select(this.svgRef.current)
-                .attr('style', `width: ${width}; height: ${height};`),
+                .call(svgRoot => width && height && svgRoot.attr('style', `width: ${width}; height: ${height};`)),
             defs = isCreating ? svgRoot.append('defs') : svgRoot.select('defs'),
             style = isCreating ? defs.append('style') : defs.select('style'),
             g = isCreating ? svgRoot.append('g') : svgRoot.select('g'),

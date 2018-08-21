@@ -3,6 +3,10 @@ import {Callout, DirectionalHint} from 'office-ui-fabric-react/lib/Callout';
 import {getSetting} from '../../settings';
 
 export default class extends React.Component {
+    static defaultProps = {
+        node: null, nodeRef: null, onDismiss: null, settings: null, direction: null
+    };
+
     render() {
         return (
             <Callout target={this.props.nodeRef}

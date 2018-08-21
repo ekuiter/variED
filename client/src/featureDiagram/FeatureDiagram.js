@@ -16,15 +16,21 @@ class FeatureDiagram extends React.Component {
     key({settings}) {
         // The key uniquely identifies the layout component instance. If the key changes, the
         // instance is unmounted and a new one is mounted. This is useful for forcing rerenders.
-        return JSON.stringify([
-           getSetting(settings, 'featureDiagram.treeLayout.debug')
-        ]);
+        const keyProperties = [],
+            addKeyProperty = path => keyProperties.push(getSetting(settings, path));
+
+        addKeyProperty('featureDiagram.font.family');
+        addKeyProperty('featureDiagram.font.size');
+
+        if (this.props.layout === 'verticalTree' || this.props.layout === 'horizontalTree')
+            addKeyProperty('featureDiagram.treeLayout.debug');
+
+        return JSON.stringify(keyProperties);
     }
 
     render() {
         const {layout, ...props} = this.props,
             LayoutComponent = FeatureDiagram.layoutMap[layout];
-
         return (
             <LayoutComponent key={this.key(props)} ref={this.layoutRef} {...props} />
         );
