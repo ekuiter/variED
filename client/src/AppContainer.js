@@ -1,10 +1,10 @@
 import React from 'react';
 import {openWebSocket} from './server/webSocket';
-import FeatureModelContainer from './featureModel/FeatureModelViewContainer';
+import FeatureDiagramContainer from './featureDiagram/FeatureDiagramContainer';
 import {connect} from 'react-redux';
 import withKeys from './helpers/withKeys';
 import { Fabric } from 'office-ui-fabric-react/lib/Fabric';
-import actions from './actions';
+import actions from './Actions';
 
 class AppContainer extends React.Component {
     componentDidMount() {
@@ -13,8 +13,8 @@ class AppContainer extends React.Component {
 
     render() {
         return (
-            <Fabric className="fabric">
-                <FeatureModelContainer/>
+            <Fabric className="fabricRoot">
+                <FeatureDiagramContainer/>
             </Fabric>
         );
     }
@@ -40,11 +40,11 @@ export default connect(
     action: () => actions.server.featureNameChanged(prompt('oldFeature'), prompt('newFeature'))
 }, {
     key: e => e.key === 'c',
-    action: (e, refs, {dispatch}) => dispatch(actions.setSetting('featureModel.treeLayout.useTransitions', bool => !bool))
+    action: (e, refs, {dispatch}) => dispatch(actions.setSetting('featureDiagram.treeLayout.useTransitions', bool => !bool))
 }, {
     key: e => e.key === 'v',
-    action: (e, refs, {dispatch}) => dispatch(actions.setSetting('featureModel.treeLayout.debug', bool => !bool))
+    action: (e, refs, {dispatch}) => dispatch(actions.setSetting('featureDiagram.treeLayout.debug', bool => !bool))
 }, {
     key: e => e.key === 'b',
-    action: (e, refs, {dispatch}) => dispatch(actions.setSetting('featureModel.layout', layout => layout === 'verticalTree' ? 'horizontalTree' : 'verticalTree'))
+    action: (e, refs, {dispatch}) => dispatch(actions.setSetting('featureDiagram.layout', layout => layout === 'verticalTree' ? 'horizontalTree' : 'verticalTree'))
 })(AppContainer));

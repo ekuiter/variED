@@ -1,4 +1,4 @@
-import {getSetting} from '../../Settings';
+import {getSetting} from '../../settings';
 import {
     arcSegmentPath,
     arcSlicePath,
@@ -76,11 +76,11 @@ class AbstractTreeLink {
                         lastChild = d.children[d.children.length - 1],
                         startAngle = cartesianToAngle(absoluteGroupAnchor, this.from(firstChild)),
                         endAngle = cartesianToAngle(absoluteGroupAnchor, this.from(lastChild));
-                    return this.arcPath(arcPathFn, relativeGroupAnchor, getSetting(this.settings, 'featureModel.treeLayout.link.groupRadius'),
+                    return this.arcPath(arcPathFn, relativeGroupAnchor, getSetting(this.settings, 'featureDiagram.treeLayout.link.groupRadius'),
                         startAngle, endAngle, this.sweepFlag());
                 });
         drawArc(arcSegment, arcSegmentPath);
-        drawArc(arcSlice, arcSlicePath, d => d.feature().type === Constants.server.featureModelTags.OR);
+        drawArc(arcSlice, arcSlicePath, d => d.feature().type === Constants.server.featureModel.serialization.OR);
     }
 
     enter(link, zIndex) {
@@ -107,7 +107,7 @@ class AbstractTreeLink {
     update(link, zIndex) {
         const from = d => this.from(d, 'update'),
             to = d => this.to(d, 'update'),
-            radius = getSetting(this.settings, 'featureModel.treeLayout.link.circleRadius');
+            radius = getSetting(this.settings, 'featureDiagram.treeLayout.link.circleRadius');
         link.attr('opacity', 1);
 
         if (zIndex === 'inBack')

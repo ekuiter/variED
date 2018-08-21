@@ -1,7 +1,7 @@
 import messageReducer from './server/messageReducer';
 import {combineReducers} from 'redux';
 import Constants from './Constants';
-import {defaultSettings, getNewSettings, isSettingAction} from './Settings';
+import {defaultSettings, getNewSettings, isSettingAction} from './settings';
 
 function serverReducer(state = {}, action) {
     if (Constants.server.isMessageType(action.type))

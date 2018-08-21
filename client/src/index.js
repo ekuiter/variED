@@ -17,21 +17,8 @@ const store = createStore(
     window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
 );
 
-//TODO
-/*new FontFaceObserver(Settings.font.family).load(null, Settings.font.loadTimeout)
-    .then(render)
-    .catch(() => {
-        Settings.font.family = Settings.font.familyFallback;
-        Settings.font.textMeasure = Settings.font.textMeasureFallback;
-        render();
-    });*/
-
-render();
-
-function render() {
-    ReactDOM.render((
-        <Provider store={store}>
-            <AppContainer/>
-        </Provider>
-    ), document.getElementById('root'));
-}
+ReactDOM.render((
+    <Provider store={store}>
+        <AppContainer/>
+    </Provider>
+), document.getElementById('root'));

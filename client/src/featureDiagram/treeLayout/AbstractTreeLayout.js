@@ -3,7 +3,7 @@ import {tree as d3Tree} from 'd3-hierarchy';
 import {event as d3Event, select as d3Select} from 'd3-selection';
 import {zoom as d3Zoom} from 'd3-zoom';
 import 'd3-transition';
-import {getSetting} from '../../Settings';
+import {getSetting} from '../../settings';
 import {updateRect} from '../../helpers/svgUtils';
 import './AbstractTreeLayout.css';
 import FeatureCallout from './FeatureCallout';
@@ -63,7 +63,7 @@ class AbstractTreeLayout extends React.Component {
             if (this.state.activeNode)
                 return this.setState({}); // triggers a rerender for the feature callout to catch up
         },
-        getSetting(this.props.settings, 'featureModel.treeLayout.featureCallout.throttleUpdate'));
+        getSetting(this.props.settings, 'featureDiagram.treeLayout.featureCallout.throttleUpdate'));
 
     canExport() {
         return !!this.svgRef.current;
@@ -71,7 +71,7 @@ class AbstractTreeLayout extends React.Component {
 
     export() {
         // TODO
-        return window.fetch(getSetting(this.props.settings, 'featureModel.font.publicPath'))
+        return window.fetch(getSetting(this.props.settings, 'featureDiagram.font.publicPath'))
             .then(response => response.blob())
             .then(blob => new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -83,7 +83,7 @@ class AbstractTreeLayout extends React.Component {
                 const style = svgRoot.querySelector('style');
                 style.textContent = `
                     @font-face {
-                        font-family: '${getSetting(this.props.settings, 'featureModel.font.family')}';
+                        font-family: '${getSetting(this.props.settings, 'featureDiagram.font.family')}';
                         src: url('${fontData}');
                     }
                 ${style.textContent}`;
@@ -133,7 +133,7 @@ class AbstractTreeLayout extends React.Component {
         const estimateTextWidth = this.treeNode.estimateTextWidth.bind(this.treeNode),
             hierarchy = featureModel.hierarchy,
             tree = d3Tree()
-                .nodeSize(getSetting(settings, 'featureModel.treeLayout.node.size'))
+                .nodeSize(getSetting(settings, 'featureDiagram.treeLayout.node.size'))
                 .separation(this.getSeparationFn(estimateTextWidth)),
             nodes = hierarchy.descendants();
         tree(hierarchy);
@@ -166,12 +166,12 @@ class AbstractTreeLayout extends React.Component {
 
         style.attr('type', 'text/css').text(`
             svg {
-                font-family: '${getSetting(settings, 'featureModel.font.family')}' !important;
-                font-size: ${getSetting(settings, 'featureModel.font.size')}px !important;
+                font-family: '${getSetting(settings, 'featureDiagram.font.family')}' !important;
+                font-size: ${getSetting(settings, 'featureDiagram.font.size')}px !important;
             }
         `);
 
-        if (getSetting(settings, 'featureModel.treeLayout.debug'))
+        if (getSetting(settings, 'featureDiagram.treeLayout.debug'))
             this.transition(rect)
                 .call(updateRect, {
                     x: estimatedBbox[0][0],
@@ -185,7 +185,7 @@ class AbstractTreeLayout extends React.Component {
 
         svgRoot.call(zoom
             .translateExtent(estimatedBbox)
-            .scaleExtent(getSetting(settings, 'featureModel.treeLayout.scaleExtent'))
+            .scaleExtent(getSetting(settings, 'featureDiagram.treeLayout.scaleExtent'))
             .on('zoom', () => {
                 this.updateCallout();
                 return g.attr('transform', d3Event.transform);
@@ -223,8 +223,8 @@ class AbstractTreeLayout extends React.Component {
         return {node, linkInBack, linkInFront, nodes};
     }
 
-    transition(selection, onEnd = this.updateCallout, duration = getSetting(this.props.settings, 'featureModel.treeLayout.duration')) {
-        if (getSetting(this.props.settings, 'featureModel.treeLayout.useTransitions')) {
+    transition(selection, onEnd = this.updateCallout, duration = getSetting(this.props.settings, 'featureDiagram.treeLayout.duration')) {
+        if (getSetting(this.props.settings, 'featureDiagram.treeLayout.useTransitions')) {
             let transition = selection.transition().duration(duration);
             if (onEnd)
                 transition = transition.on('end', onEnd);

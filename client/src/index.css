@@ -1,13 +1,9 @@
-.fabric {
+.ms-Fabric.fabricRoot {
     display: flex;
     width: 100%;
     height: 100%;
 }
 
-.loading {
+.ms-Spinner {
     margin: auto;
-    padding: 74px;
-    width: 0;
-    height: 0;
-    background-image: url(images/loading.svg);
 }

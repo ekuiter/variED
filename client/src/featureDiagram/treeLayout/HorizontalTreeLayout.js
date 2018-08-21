@@ -1,7 +1,7 @@
 import AbstractTreeLayout from './AbstractTreeLayout';
 import HorizontalTreeLink from './HorizontalTreeLink';
 import HorizontalTreeNode from './HorizontalTreeNode';
-import {getSetting} from '../../Settings';
+import {getSetting} from '../../settings';
 import {estimateRectHeight, estimateXOffset, estimateYOffset} from './estimateUtils';
 
 class HorizontalTreeLayout extends AbstractTreeLayout {
@@ -22,7 +22,7 @@ class HorizontalTreeLayout extends AbstractTreeLayout {
 
     getSeparationFn(estimateTextWidth) {
         return () => estimateRectHeight(this.props.settings) +
-            getSetting(this.props.settings, 'featureModel.treeLayout.horizontal.marginY');
+            getSetting(this.props.settings, 'featureDiagram.treeLayout.horizontal.marginY');
     }
 
     createLayoutHook(nodes) {

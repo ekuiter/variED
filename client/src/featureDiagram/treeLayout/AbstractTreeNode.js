@@ -1,5 +1,5 @@
 import 'd3-selection-multi';
-import {getSetting} from '../../Settings';
+import {getSetting} from '../../settings';
 import measureTextWidth from '../../helpers/measureTextWidth';
 import {addStyle, appendCross, translateTransform} from '../../helpers/svgUtils';
 import Styles from './Styles';
@@ -9,7 +9,7 @@ function widenBbox({x, y, width, height}, paddingX, paddingY) {
 }
 
 function makeRect(settings, textBbox) {
-    const nodeSettings = getSetting(settings, 'featureModel.treeLayout.node');
+    const nodeSettings = getSetting(settings, 'featureDiagram.treeLayout.node');
     return widenBbox(
         textBbox,
         nodeSettings.paddingX + nodeSettings.strokeWidth,
@@ -85,7 +85,7 @@ class AbstractTreeNode {
                 .call(addStyle, Styles.node.arcSlice);
         this.treeLink.drawGroup(arcSegment, arcSlice);
 
-        if (getSetting(this.settings, 'featureModel.treeLayout.debug'))
+        if (getSetting(this.settings, 'featureDiagram.treeLayout.debug'))
             appendCross(nodeEnter);
 
         return nodeEnter;
@@ -103,8 +103,8 @@ class AbstractTreeNode {
 
     estimateTextWidth(node) {
         return measureTextWidth(
-            getSetting(this.settings, 'featureModel.font.family'),
-            getSetting(this.settings, 'featureModel.font.size'),
+            getSetting(this.settings, 'featureDiagram.font.family'),
+            getSetting(this.settings, 'featureDiagram.font.size'),
             node.feature().name);
     }
 }

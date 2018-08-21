@@ -48,23 +48,25 @@ const Constants = {
             ACTIVE_REASON_CHANGED: 'ACTIVE_REASON_CHANGED',
             DEFAULT: 'DEFAULT'
         },
-        featureModelTags: { // tags and attributes used in serialized feature models
-            STRUCT: 'struct',
-            CONSTRAINTS: 'constraints',
-            PROPERTIES: 'properties',
-            CALCULATIONS: 'calculations',
-            COMMENTS: 'comments',
-            FEATURE_ORDER: 'featureOrder',
-            TYPE: 'type',
-            FEATURE: 'feature',
-            OR: 'or',
-            ALT: 'alt',
-            AND: 'and',
-            NAME: 'name',
-            DESCRIPTION: 'description',
-            MANDATORY: 'mandatory',
-            ABSTRACT: 'abstract',
-            HIDDEN: 'hidden'
+        featureModel: {
+            serialization: { // tags and attributes used in serialized feature models
+                STRUCT: 'struct',
+                CONSTRAINTS: 'constraints',
+                PROPERTIES: 'properties',
+                CALCULATIONS: 'calculations',
+                COMMENTS: 'comments',
+                FEATURE_ORDER: 'featureOrder',
+                TYPE: 'type',
+                FEATURE: 'feature',
+                OR: 'or',
+                ALT: 'alt',
+                AND: 'and',
+                NAME: 'name',
+                DESCRIPTION: 'description',
+                MANDATORY: 'mandatory',
+                ABSTRACT: 'abstract',
+                HIDDEN: 'hidden'
+            }
         }
     },
     helpers: {

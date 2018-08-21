@@ -1,5 +1,5 @@
 import AbstractTreeLink from './AbstractTreeLink';
-import {getSetting} from '../../Settings';
+import {getSetting} from '../../settings';
 import {attrIfPresent, drawCurve, drawLine} from '../../helpers/svgUtils';
 import {estimateRectWidth} from './estimateUtils';
 
@@ -39,7 +39,7 @@ class HorizontalTreeLink extends AbstractTreeLink {
                 .call(attrIfPresent, 'class', klass),
             _to = d => {
                 const {x, y} = to(d);
-                return {x: Math.max(x, from(d).x - getSetting(settings, 'featureModel.treeLayout.horizontal.layerMargin')), y}
+                return {x: Math.max(x, from(d).x - getSetting(settings, 'featureDiagram.treeLayout.horizontal.layerMargin')), y}
             };
         drawLine(g, !selector ? null : 'path.innerLine', {
             klass: 'innerLine', from: _to, to, style,
@@ -47,7 +47,7 @@ class HorizontalTreeLink extends AbstractTreeLink {
         });
         drawCurve(g, !selector ? null : 'path.curve', {
             klass: 'curve', from, to: _to, style,
-            inset: getSetting(this.settings, 'featureModel.treeLayout.horizontal.layerMargin') / 2
+            inset: getSetting(this.settings, 'featureDiagram.treeLayout.horizontal.layerMargin') / 2
         });
         return g;
     };

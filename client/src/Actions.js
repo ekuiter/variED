@@ -1,7 +1,9 @@
 import messageActions from './server/messageActions';
-import {setSetting} from './Settings';
+import {setSetting} from './settings';
 
-export default {
+const Actions = {
     server: messageActions,
     setSetting
 };
+
+export default Actions;

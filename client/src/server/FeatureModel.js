@@ -1,18 +1,20 @@
 import {hierarchy as d3Hierarchy} from 'd3-hierarchy';
 import Constants from '../Constants';
 
-const tags = Constants.server.featureModelTags;
+const serialization = Constants.server.featureModel.serialization;
 
 d3Hierarchy.prototype.feature = function() {
     return this._feature || (this._feature = {
         node: this,
-        name: this.data[tags.NAME],
-        type: this.data[tags.TYPE],
-        description: this.data[tags.DESCRIPTION],
-        isAbstract: this.data[tags.ABSTRACT],
-        isHidden: this.data[tags.HIDDEN],
-        isMandatory: this.data[tags.MANDATORY],
-        isGroup: this.data[tags.TYPE] === tags.OR || this.data[tags.TYPE] === tags.ALT,
+        name: this.data[serialization.NAME],
+        type: this.data[serialization.TYPE],
+        description: this.data[serialization.DESCRIPTION],
+        isAbstract: this.data[serialization.ABSTRACT],
+        isHidden: this.data[serialization.HIDDEN],
+        isMandatory: this.data[serialization.MANDATORY],
+        isGroup:
+            this.data[serialization.TYPE] === serialization.OR ||
+            this.data[serialization.TYPE] === serialization.ALT,
         hasChildren: this.children && this.children.length > 0,
         getPropertyString: key => {
             if (typeof key === 'function')
@@ -35,7 +37,7 @@ export default class FeatureModel {
     }
 
     get structure() {
-        const struct = Constants.server.featureModelTags.STRUCT;
+        const struct = Constants.server.featureModel.serialization.STRUCT;
         if (!this._featureModel[struct] || this._featureModel[struct].length !== 1)
             throw new Error('feature model has no structure');
         return this._featureModel[struct][0];

@@ -1,8 +1,10 @@
 import React from 'react';
 import VerticalTreeLayout from './treeLayout/VerticalTreeLayout';
 import HorizontalTreeLayout from './treeLayout/HorizontalTreeLayout';
+import stringify from 'json-stable-stringify';
+import {getSetting} from '../settings';
 
-class FeatureModelView extends React.Component {
+class FeatureDiagram extends React.Component {
     static defaultProps = {layout: 'verticalTree'};
 
     static layoutMap = {
@@ -12,15 +14,17 @@ class FeatureModelView extends React.Component {
 
     layoutRef = React.createRef();
 
-    key(props) {
-        // The key uniquely identifies the layout component instance. If the key changes,
-        // the instance is unmounted and a new one is mounted. This is useful for forcing
-        return props.debug; // rerenders, i.e. when the debug flag changes.
+    key({settings}) {
+        // The key uniquely identifies the layout component instance. If the key changes, the
+        // instance is unmounted and a new one is mounted. This is useful for forcing rerenders.
+        return JSON.stringify([
+           getSetting(settings, 'featureDiagram.treeLayout.debug')
+        ]);
     }
 
     render() {
         const {layout, ...props} = this.props,
-            LayoutComponent = FeatureModelView.layoutMap[layout];
+            LayoutComponent = FeatureDiagram.layoutMap[layout];
 
         return (
             <LayoutComponent key={this.key(props)} ref={this.layoutRef} {...props} />
@@ -36,4 +40,4 @@ class FeatureModelView extends React.Component {
     }
 }
 
-export default FeatureModelView;
+export default FeatureDiagram;

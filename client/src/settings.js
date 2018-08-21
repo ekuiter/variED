@@ -4,12 +4,11 @@ import objectPathImmutable from 'object-path-immutable';
 const SETTING = 'SETTING';
 
 export const defaultSettings = {
-    featureModel: {
-        layout: 'horizontalTree',
+    featureDiagram: {
+        layout: 'horizontalTree', // layout for displaying a feature diagram
         font: { // if you change these, make sure they are in sync with the stylesheet
             family: 'Arial', // main font family for feature diagrams
             size: 16, // main font size for feature names, used for bounding box estimation
-            loadTimeout: 1000, // time until fallback is used
             publicPath: 'TODO' // used for inlining the font on SVG export TODO
         },
         treeLayout: {
