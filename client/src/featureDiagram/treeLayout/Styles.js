@@ -11,11 +11,13 @@ const Styles = {
             property: 'isAbstract',
             yes: {
                 fill: getSetting(settings, 'featureDiagram.treeLayout.node.abstractFill'),
-                stroke: getSetting(settings, 'featureDiagram.treeLayout.node.abstractStroke')
+                stroke: getSetting(settings, 'featureDiagram.treeLayout.node.abstractStroke'),
+                'stroke-width': getSetting(settings, 'featureDiagram.treeLayout.node.strokeWidth')
             },
             no: {
                 fill: getSetting(settings, 'featureDiagram.treeLayout.node.concreteFill'),
-                stroke: getSetting(settings, 'featureDiagram.treeLayout.node.concreteStroke')
+                stroke: getSetting(settings, 'featureDiagram.treeLayout.node.concreteStroke'),
+                'stroke-width': getSetting(settings, 'featureDiagram.treeLayout.node.strokeWidth')
             }
         }),
         hidden: settings => ({ // style applied to a node's text to distinguish hidden and visible features

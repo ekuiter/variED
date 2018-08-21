@@ -7,6 +7,10 @@ import Actions from './Actions';
 import i18n from './i18n';
 import FontComboBox from './helpers/FontComboBox';
 
+function defer(fn) {
+    return (...args) => window.setTimeout(() => fn(...args), 0);
+}
+
 const getSettingComponents = (settings, dispatch) => {
     const getLabel = path => i18n.t('settingsPanel.labels', path);
     return {
@@ -37,9 +41,9 @@ const getSettingComponents = (settings, dispatch) => {
                     : String(value);
 
             sanitizeValue = value => {
-                if (this.props.min && value < this.props.min)
+                if (this.props.min !== null && value < this.props.min)
                     value = this.props.min;
-                if (this.props.max && value > this.props.max)
+                if (this.props.max !== null && value > this.props.max)
                     value = this.props.max;
                 return value;
             };
@@ -95,7 +99,7 @@ export default class extends React.Component {
 
     render() {
         const {settings, dispatch} = this.props,
-            Setting = getSettingComponents(settings, dispatch);
+            Setting = getSettingComponents(settings, defer(dispatch));
         return (
             <Panel
                 className="settingsPanel"
@@ -107,9 +111,12 @@ export default class extends React.Component {
                 <h4>{i18n.t('settingsPanel.headings.featureDiagram')}</h4>
                 <Setting.FontComboBox path="featureDiagram.font.family"/>
                 <Setting.SpinButton path="featureDiagram.font.size" min={5} max={50} suffix=" px"/>
-                <h4>{i18n.t('settingsPanel.headings.treeLayout')}</h4>
                 <Setting.Toggle path="featureDiagram.treeLayout.useTransitions"/>
                 <Setting.Toggle path="featureDiagram.treeLayout.debug"/>
+                <h4>{i18n.t('settingsPanel.headings.features')}</h4>
+                <Setting.SpinButton path="featureDiagram.treeLayout.node.paddingX" min={0} max={100} suffix=" px"/>
+                <Setting.SpinButton path="featureDiagram.treeLayout.node.paddingY" min={0} max={100} suffix=" px"/>
+                <Setting.SpinButton path="featureDiagram.treeLayout.node.strokeWidth" min={0} max={50} step={0.5} suffix=" px"/>
             </Panel>
         );
     }

@@ -7,7 +7,8 @@ export const strings = {
         toggleOff: 'Off',
         headings: {
             featureDiagram: 'Feature diagram',
-            treeLayout: 'Tree layout'
+            treeLayout: 'Tree layout',
+            features: 'Features'
         },
         labels: {
             featureDiagram: {
@@ -17,7 +18,12 @@ export const strings = {
                 },
                 treeLayout: {
                     debug: 'Show developer information',
-                    useTransitions: 'Animate feature model changes'
+                    useTransitions: 'Animate feature model changes',
+                    node: {
+                        paddingX: 'Horizontal padding',
+                        paddingY: 'Vertical padding',
+                        strokeWidth: 'Border width'
+                    }
                 }
             }
         },

@@ -22,8 +22,12 @@ class FeatureDiagram extends React.Component {
         addKeyProperty('featureDiagram.font.family');
         addKeyProperty('featureDiagram.font.size');
 
-        if (this.props.layout === 'verticalTree' || this.props.layout === 'horizontalTree')
+        if (this.props.layout === 'verticalTree' || this.props.layout === 'horizontalTree') {
             addKeyProperty('featureDiagram.treeLayout.debug');
+            addKeyProperty('featureDiagram.treeLayout.node.paddingX');
+            addKeyProperty('featureDiagram.treeLayout.node.paddingY');
+            addKeyProperty('featureDiagram.treeLayout.node.strokeWidth'); // TODO ... maybe do this by default?
+        }
 
         return JSON.stringify(keyProperties);
     }
