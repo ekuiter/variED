@@ -21,6 +21,10 @@ class HorizontalTreeLink extends AbstractTreeLink {
         return {x: rightSide(this.settings, 0, rectInfo, this.estimateTextWidth(node)), y: sideY(0, rectInfo)};
     }
 
+    groupRadius() {
+        return Math.floor(this.getRectInfo().height / 2);
+    }
+
     sweepFlag() {
         return false;
     }

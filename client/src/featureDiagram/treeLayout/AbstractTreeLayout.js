@@ -71,7 +71,8 @@ class AbstractTreeLayout extends React.Component {
 
     export() {
         // TODO
-        return window.fetch(getSetting(this.props.settings, 'featureDiagram.font.publicPath'))
+        return null;
+        /*return window.fetch(getSetting(this.props.settings, 'featureDiagram.font.publicPath')) // note: fetch polyfill removed
             .then(response => response.blob())
             .then(blob => new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -88,7 +89,7 @@ class AbstractTreeLayout extends React.Component {
                     }
                 ${style.textContent}`;
                 return new XMLSerializer().serializeToString(svgRoot);
-            });
+            });*/
     }
 
     getKeyFn(kind) {

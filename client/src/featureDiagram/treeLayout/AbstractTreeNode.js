@@ -29,7 +29,7 @@ function makeText(settings, selection, isGettingRectInfo, textStyle) {
         const bboxes = [];
         selection.append('text')
             .text(d => d.feature().name)
-            .call(addStyle, textStyle, Styles.node.hidden)
+            .call(addStyle, textStyle, Styles.node.hidden(settings))
             .each(function() {
                 bboxes.push(this.getBBox());
             });
@@ -75,14 +75,14 @@ class AbstractTreeNode {
         let i = 0;
         rectAndText.insert('rect', 'text')
             .attrs(() => makeRect(this.settings, bboxes[i++]))
-            .call(addStyle, Styles.node.abstract);
+            .call(addStyle, Styles.node.abstract(this.settings));
 
         const arcSegment = nodeEnter.insert('path', 'g.rectAndText')
                 .attr('class', 'arcSegment')
-                .call(addStyle, Styles.node.arcSegment),
+                .call(addStyle, Styles.node.arcSegment(this.settings)),
             arcSlice = nodeEnter.insert('path', 'g.rectAndText')
                 .attr('class', 'arcSlice')
-                .call(addStyle, Styles.node.arcSlice);
+                .call(addStyle, Styles.node.arcSlice(this.settings));
         this.treeLink.drawGroup(arcSegment, arcSlice);
 
         if (getSetting(this.settings, 'featureDiagram.treeLayout.debug'))

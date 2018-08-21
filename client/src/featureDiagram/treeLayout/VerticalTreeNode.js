@@ -1,6 +1,5 @@
 import AbstractTreeNode from './AbstractTreeNode';
 import {getSetting} from '../../settings';
-import Styles from './Styles';
 
 class VerticalTreeNode extends AbstractTreeNode {
     x(node) {
@@ -12,8 +11,8 @@ class VerticalTreeNode extends AbstractTreeNode {
     }
 
     getTextStyle() {
-        return Styles.vertical.text;
+        return {'text-anchor': 'middle'};
     }
-};
+}
 
 export default VerticalTreeNode;

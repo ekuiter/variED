@@ -36,6 +36,10 @@ class AbstractTreeLink {
         throw new Error('abstract method not implemented');
     }
 
+    groupRadius() {
+        throw new Error('abstract method not implemented');
+    }
+
     sweepFlag() {
         throw new Error('abstract method not implemented');
     }
@@ -76,7 +80,7 @@ class AbstractTreeLink {
                         lastChild = d.children[d.children.length - 1],
                         startAngle = cartesianToAngle(absoluteGroupAnchor, this.from(firstChild)),
                         endAngle = cartesianToAngle(absoluteGroupAnchor, this.from(lastChild));
-                    return this.arcPath(arcPathFn, relativeGroupAnchor, getSetting(this.settings, 'featureDiagram.treeLayout.link.groupRadius'),
+                    return this.arcPath(arcPathFn, relativeGroupAnchor, this.groupRadius(),
                         startAngle, endAngle, this.sweepFlag());
                 });
         drawArc(arcSegment, arcSegmentPath);
@@ -92,13 +96,13 @@ class AbstractTreeLink {
 
         if (zIndex === 'inBack')
             linkEnter
-                .call(this.drawLink, null, {klass: 'line', from, to, style: Styles.link.line});
+                .call(this.drawLink, null, {klass: 'line', from, to, style: Styles.link.line(this.settings)});
 
         if (zIndex === 'inFront')
             linkEnter.call(drawCircle, null, {
                 center: from,
                 radius: 0,
-                style: Styles.link.mandatory
+                style: Styles.link.mandatory(this.settings)
             });
 
         return linkEnter;
@@ -114,7 +118,7 @@ class AbstractTreeLink {
             link.call(this.drawLink, '.line', {from, to});
 
         if (zIndex === 'inFront')
-            link.call(drawCircle, 'circle', {center: from, radius, style: Styles.link.mandatory});
+            link.call(drawCircle, 'circle', {center: from, radius, style: Styles.link.mandatory(this.settings)});
     }
 
     exit(link, zIndex) {

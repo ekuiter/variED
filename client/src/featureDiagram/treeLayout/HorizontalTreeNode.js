@@ -1,5 +1,4 @@
 import AbstractTreeNode from './AbstractTreeNode';
-import Styles from './Styles';
 import {estimateRectWidth} from './estimateUtils';
 import {getSetting} from '../../settings';
 
@@ -17,7 +16,7 @@ class HorizontalTreeNode extends AbstractTreeNode {
     }
 
     getTextStyle() {
-        return Styles.horizontal.text;
+        return {'text-anchor': 'start'};
     }
 }
 

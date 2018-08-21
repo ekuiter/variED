@@ -1,7 +1,6 @@
 import React from 'react';
 import VerticalTreeLayout from './treeLayout/VerticalTreeLayout';
 import HorizontalTreeLayout from './treeLayout/HorizontalTreeLayout';
-import stringify from 'json-stable-stringify';
 import {getSetting} from '../settings';
 
 class FeatureDiagram extends React.Component {
@@ -36,7 +35,7 @@ class FeatureDiagram extends React.Component {
         if (layout && layout.canExport())
             return layout.export().then(console.log);
         else
-            return Promise.reject('can not export feature model');
+            return Promise.reject('can not export feature diagram');
     }
 }
 

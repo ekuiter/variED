@@ -4,7 +4,6 @@ import AppContainer from './AppContainer';
 import 'normalize.css';
 import './index.css';
 import 'promise-polyfill/src/polyfill';
-import 'whatwg-fetch';
 import {createStore} from 'redux';
 import {Provider} from 'react-redux';
 import reducers from './reducers';

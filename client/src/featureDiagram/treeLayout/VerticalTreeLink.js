@@ -1,5 +1,6 @@
 import AbstractTreeLink from './AbstractTreeLink';
 import {drawLine} from '../../helpers/svgUtils';
+import {getSetting} from '../../settings';
 
 function topSide(y, rectInfo) {
     return y + rectInfo.y;
@@ -12,6 +13,10 @@ function bottomSide(y, rectInfo) {
 class VerticalTreeLink extends AbstractTreeLink {
     groupAnchor(node) {
         return {x: 0, y: bottomSide(0, this.getRectInfo())};
+    }
+
+    groupRadius() {
+        return getSetting(this.settings, 'featureDiagram.treeLayout.vertical.groupRadius');
     }
 
     sweepFlag() {
