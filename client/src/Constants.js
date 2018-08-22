@@ -1,4 +1,6 @@
 const Constants = {
+    githubUri: 'https://github.com/ekuiter/variED',
+    licenseUri: 'https://github.com/ekuiter/variED/blob/master/LICENSE.txt',
     initialUi: {
         featureDiagramLayout: 'horizontalTree'
     },

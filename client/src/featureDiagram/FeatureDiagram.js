@@ -13,7 +13,7 @@ class FeatureDiagram extends React.Component {
 
     layoutRef = React.createRef();
 
-    key({settings}) {
+    getKey({settings}) {
         // The key uniquely identifies the layout component instance. If the key changes, the
         // instance is unmounted and a new one is mounted. This is useful for forcing rerenders.
         return stringify(settings); // For now, just rerender whenever any setting changes.
@@ -23,7 +23,7 @@ class FeatureDiagram extends React.Component {
         const {layout, ...props} = this.props,
             LayoutComponent = FeatureDiagram.layoutMap[layout];
         return (
-            <LayoutComponent key={this.key(props)} ref={this.layoutRef} {...props} />
+            <LayoutComponent key={this.getKey(props)} ref={this.layoutRef} {...props} />
         );
     }
 

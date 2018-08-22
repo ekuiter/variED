@@ -1,6 +1,20 @@
 import objectPath from 'object-path';
+import React from 'react';
+import Constants from './Constants';
+import {Link} from 'office-ui-fabric-react/lib/Link';
 
 export const strings = {
+    aboutPanel: {
+        title: 'About',
+        content: (
+            <div>
+                <h3>variED: The variability editor</h3>
+                <p>View, edit and analyze feature models in the browser - with support for real-time collaboration.</p>
+                <p>This project is released under the <Link href={Constants.licenseUri} target="_blank">LGPL v3 license</Link>.</p>
+                <p><Link href={Constants.githubUri} target="_blank">View source code on GitHub</Link></p>
+            </div>
+        )
+    },
     settingsPanel: {
         title: 'Settings',
         toggleOn: 'On',

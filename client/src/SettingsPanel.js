@@ -10,8 +10,7 @@ import {ColorPicker} from 'office-ui-fabric-react/lib/ColorPicker';
 import {DialogContextualMenu} from './helpers/Dialog';
 import {DefaultButton} from 'office-ui-fabric-react/lib/Button';
 
-const defer = fn => (...args) => window.setTimeout(() => fn(...args), 0),
-    getLabel = path => i18n.t('settingsPanel.labels', path);
+const getLabel = path => i18n.t('settingsPanel.labels', path);
 
 const Setting = {
     Toggle: ({settings, dispatch, path}) => (
@@ -122,21 +121,18 @@ export default class extends React.Component {
     };
     state = {canReset: false};
 
-    initializeCanReset = dispatch => (...args) => {
+    resettableDispatch = (...args) => {
         this.setState({canReset: true});
-        dispatch(...args);
+        this.props.dispatch(...args);
     };
 
-    onReset = dispatch => () => {
+    onReset = () => {
         this.setState({canReset: false});
-        dispatch(Actions.settings.reset());
+        this.props.dispatch(Actions.settings.reset());
     };
 
     render() {
-        const {settings, dispatch} = this.props,
-            props = {settings, dispatch: this.initializeCanReset(dispatch)},
-            deferredDispatch = defer(dispatch),
-            deferredProps = {settings, dispatch: this.initializeCanReset(deferredDispatch)},
+        const props = {settings: this.props.settings, dispatch: this.resettableDispatch},
             featureDiagramLayout = this.props.featureDiagramLayout;
         return (
             <Panel
@@ -148,31 +144,31 @@ export default class extends React.Component {
                 headerText={i18n.t('settingsPanel.title')}>
 
                 <DefaultButton
-                    onClick={this.onReset(deferredDispatch)}
+                    onClick={this.onReset}
                     disabled={!this.state.canReset}
                     text={i18n.t('settingsPanel.resetToDefaults')}/>
 
                 <h4>{i18n.t('settingsPanel.headings.featureDiagram')}</h4>
                 <Setting.FontComboBox
-                    {...deferredProps}
+                    {...props}
                     path="featureDiagram.font.family"/>
                 <Setting.SpinButton
-                    {...deferredProps}
+                    {...props}
                     path="featureDiagram.font.size"
                     min={5} max={50} suffix=" px"/>
 
                 {(featureDiagramLayout === 'verticalTree' || featureDiagramLayout === 'horizontalTree') &&
                 <React.Fragment>
                     <Setting.Toggle
-                        {...deferredProps}
+                        {...props}
                         path="featureDiagram.treeLayout.useTransitions"/>
                     <Setting.Toggle
-                        {...deferredProps}
+                        {...props}
                         path="featureDiagram.treeLayout.debug"/>
 
                     <h4>{i18n.t('settingsPanel.headings.features')}</h4>
                     <Setting.SpinButton
-                        {...deferredProps}
+                        {...props}
                         path="featureDiagram.treeLayout.node.paddingX"
                         iconProps={{
                             iconName: 'Padding',
@@ -180,17 +176,17 @@ export default class extends React.Component {
                         }}
                         min={0} max={100} suffix=" px"/>
                     <Setting.SpinButton
-                        {...deferredProps}
+                        {...props}
                         path="featureDiagram.treeLayout.node.paddingY"
                         iconProps={{iconName: 'Padding'}}
                         min={0} max={100} suffix=" px"/>
                     <Setting.SpinButton
-                        {...deferredProps}
+                        {...props}
                         path="featureDiagram.treeLayout.node.strokeWidth"
                         iconProps={{iconName: 'LineThickness'}}
                         min={0} max={50} step={0.5} suffix=" px"/>
                     <Setting.SpinButton
-                        {...deferredProps}
+                        {...props}
                         path="featureDiagram.treeLayout.link.circleRadius"
                         iconProps={{iconName: 'StatusCircleInner'}}
                         min={0} max={50} step={0.5} suffix=" px"/>
@@ -205,7 +201,7 @@ export default class extends React.Component {
 
                     <h4>{i18n.t('settingsPanel.headings.edges')}</h4>
                     <Setting.SpinButton
-                        {...deferredProps}
+                        {...props}
                         path="featureDiagram.treeLayout.link.strokeWidth"
                         iconProps={{iconName: 'LineThickness'}}
                         min={0} max={50} step={0.5} suffix=" px"/>
@@ -217,7 +213,7 @@ export default class extends React.Component {
                         ? <React.Fragment>
                             <h4>{i18n.t('settingsPanel.headings.verticalTree')}</h4>
                             <Setting.SpinButton
-                                {...deferredProps}
+                                {...props}
                                 path="featureDiagram.treeLayout.vertical.marginX"
                                 iconProps={{
                                     iconName: 'Spacer',
@@ -225,12 +221,12 @@ export default class extends React.Component {
                                 }}
                                 min={0} max={200} suffix=" px"/>
                             <Setting.SpinButton
-                                {...deferredProps}
+                                {...props}
                                 path="featureDiagram.treeLayout.vertical.layerHeight"
                                 iconProps={{iconName: 'Spacer'}}
                                 min={0} max={200} suffix=" px"/>
                             <Setting.SpinButton
-                                {...deferredProps}
+                                {...props}
                                 path="featureDiagram.treeLayout.vertical.groupRadius"
                                 iconProps={{iconName: 'QuarterCircle'}}
                                 min={0} max={50} step={0.5} suffix=" px"/>
@@ -240,7 +236,7 @@ export default class extends React.Component {
                             ? <React.Fragment>
                                 <h4>{i18n.t('settingsPanel.headings.horizontalTree')}</h4>
                                 <Setting.SpinButton
-                                    {...deferredProps}
+                                    {...props}
                                     path="featureDiagram.treeLayout.horizontal.layerMargin"
                                     iconProps={{
                                         iconName: 'Spacer',
@@ -248,7 +244,7 @@ export default class extends React.Component {
                                     }}
                                     min={0} max={200} suffix=" px"/>
                                 <Setting.SpinButton
-                                    {...deferredProps}
+                                    {...props}
                                     path="featureDiagram.treeLayout.horizontal.marginY"
                                     iconProps={{iconName: 'Spacer'}}
                                     min={0} max={200} suffix=" px"/>

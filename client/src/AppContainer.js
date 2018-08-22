@@ -8,14 +8,15 @@ import Actions from './Actions';
 import SettingsPanel from './SettingsPanel';
 import {CommandBar} from 'office-ui-fabric-react/lib/CommandBar';
 import i18n from './i18n';
+import AboutPanel from './AboutPanel';
 
 class AppContainer extends React.Component {
     state = {
-        isSettingsPanelOpen: false
+        isPanelOpen: null
     };
 
-    onSettingsPanelOpen = () => this.setState({isSettingsPanelOpen: true});
-    onSettingsPanelDismiss = () => this.setState({isSettingsPanelOpen: false});
+    onPanelOpen = panel => () => this.setState({isPanelOpen: panel});
+    onPanelDismiss = () => this.setState({isPanelOpen: null});
 
     componentDidMount() {
         openWebSocket(this.props.dispatch);
@@ -27,23 +28,30 @@ class AppContainer extends React.Component {
                 <div className="header">
                     <CommandBar
                         items={[]}
-                        farItems={[
-                            {
-                                key: 'settings',
-                                text: i18n.t('settingsPanel.title'),
-                                iconOnly: true,
-                                iconProps: {iconName: 'Settings'},
-                                onClick: this.onSettingsPanelOpen
-                            }
-                        ]}/>
+                        farItems={[{
+                            key: 'settings',
+                            text: i18n.t('settingsPanel.title'),
+                            iconOnly: true,
+                            iconProps: {iconName: 'Settings'},
+                            onClick: this.onPanelOpen('settings')
+                        }, {
+                            key: 'about',
+                            text: i18n.t('aboutPanel.title'),
+                            iconOnly: true,
+                            iconProps: {iconName: 'Info'},
+                            onClick: this.onPanelOpen('about')
+                        }]}/>
                 </div>
                 <FeatureDiagramContainer className="content"/>
                 <SettingsPanel
                     settings={this.props.settings}
                     dispatch={this.props.dispatch}
-                    isOpen={this.state.isSettingsPanelOpen}
+                    isOpen={this.state.isPanelOpen === 'settings'}
                     featureDiagramLayout={this.props.featureDiagramLayout}
-                    onDismiss={this.onSettingsPanelDismiss}/>
+                    onDismiss={this.onPanelDismiss}/>
+                <AboutPanel
+                    isOpen={this.state.isPanelOpen === 'about'}
+                    onDismiss={this.onPanelDismiss}/>
             </Fabric>
         );
     }
@@ -59,21 +67,15 @@ export default connect(
     key: e => e.isCommand('y'),
     action: Actions.server.redo
 }, {
-    key: e => e.key === 'x',
+    key: e => e.isCommand('a'),
     action: () => Actions.server.featureAdd(prompt('belowFeature'))
 }, {
-    key: e => e.key === 'y',
+    key: e => e.isCommand('s'),
     action: () => Actions.server.featureDelete(prompt('feature'))
 }, {
-    key: e => e.key === 'n',
+    key: e => e.isCommand('d'),
     action: () => Actions.server.featureNameChanged(prompt('oldFeature'), prompt('newFeature'))
 }, {
-    key: e => e.key === 'c',
-    action: (e, refs, {dispatch}) => dispatch(Actions.settings.set('featureDiagram.treeLayout.useTransitions', bool => !bool))
-}, {
-    key: e => e.key === 'v',
-    action: (e, refs, {dispatch}) => dispatch(Actions.settings.set('featureDiagram.treeLayout.debug', bool => !bool))
-}, {
-    key: e => e.key === 'b',
+    key: e => e.isCommand('f'),
     action: (e, refs, {dispatch, featureDiagramLayout}) => dispatch(Actions.ui.setFeatureDiagramLayout(featureDiagramLayout === 'verticalTree' ? 'horizontalTree' : 'verticalTree'))
 })(AppContainer));
