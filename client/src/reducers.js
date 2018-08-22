@@ -2,6 +2,7 @@ import messageReducer from './server/messageReducer';
 import {combineReducers} from 'redux';
 import Constants from './Constants';
 import {defaultSettings, getNewSettings, isSettingAction} from './settings';
+import {actionTypes} from './Actions';
 
 function serverReducer(state = {}, action) {
     if (Constants.server.isMessageType(action.type))
@@ -15,4 +16,10 @@ function settingsReducer(state = defaultSettings, action) {
     return state;
 }
 
-export default combineReducers({server: serverReducer, settings: settingsReducer});
+function uiReducer(state = Constants.initialUi, action) {
+    if (action.type === actionTypes.UI_SET_FEATURE_DIAGRAM_LAYOUT)
+        return {...state, featureDiagramLayout: action.featureDiagramLayout};
+    return state;
+}
+
+export default combineReducers({server: serverReducer, settings: settingsReducer, ui: uiReducer});

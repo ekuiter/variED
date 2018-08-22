@@ -1,10 +1,10 @@
 import React from 'react';
 import VerticalTreeLayout from './treeLayout/VerticalTreeLayout';
 import HorizontalTreeLayout from './treeLayout/HorizontalTreeLayout';
-import {getSetting} from '../settings';
+import stringify from 'json-stable-stringify';
 
 class FeatureDiagram extends React.Component {
-    static defaultProps = {layout: 'verticalTree'};
+    static defaultProps = {layout: null};
 
     static layoutMap = {
         verticalTree: VerticalTreeLayout,
@@ -16,20 +16,7 @@ class FeatureDiagram extends React.Component {
     key({settings}) {
         // The key uniquely identifies the layout component instance. If the key changes, the
         // instance is unmounted and a new one is mounted. This is useful for forcing rerenders.
-        const keyProperties = [],
-            addKeyProperty = path => keyProperties.push(getSetting(settings, path));
-
-        addKeyProperty('featureDiagram.font.family');
-        addKeyProperty('featureDiagram.font.size');
-
-        if (this.props.layout === 'verticalTree' || this.props.layout === 'horizontalTree') {
-            addKeyProperty('featureDiagram.treeLayout.debug');
-            addKeyProperty('featureDiagram.treeLayout.node.paddingX');
-            addKeyProperty('featureDiagram.treeLayout.node.paddingY');
-            addKeyProperty('featureDiagram.treeLayout.node.strokeWidth'); // TODO ... maybe do this by default?
-        }
-
-        return JSON.stringify(keyProperties);
+        return stringify(settings); // For now, just rerender whenever any setting changes.
     }
 
     render() {

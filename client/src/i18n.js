@@ -5,10 +5,14 @@ export const strings = {
         title: 'Settings',
         toggleOn: 'On',
         toggleOff: 'Off',
+        apply: 'Apply',
+        customizeColors: 'Customize colors',
         headings: {
             featureDiagram: 'Feature diagram',
-            treeLayout: 'Tree layout',
-            features: 'Features'
+            features: 'Features',
+            edges: 'Edges',
+            verticalTree: 'Vertical tree',
+            horizontalTree: 'Horizontal tree'
         },
         labels: {
             featureDiagram: {
@@ -22,8 +26,27 @@ export const strings = {
                     node: {
                         paddingX: 'Horizontal padding',
                         paddingY: 'Vertical padding',
-                        strokeWidth: 'Border width'
-                    }
+                        strokeWidth: 'Border thickness',
+                        abstractFill: 'Abstract feature (fill)',
+                        abstractStroke: 'Abstract feature (border)',
+                        concreteFill: 'Concrete feature (fill)',
+                        concreteStroke: 'Concrete feature (border)',
+                        hiddenFill: 'Hidden feature (text)'
+                    },
+                    link: {
+                        circleRadius: 'Circle radius',
+                        stroke: 'Edge',
+                        strokeWidth: 'Thickness'
+                    },
+                    vertical: {
+                        marginX: 'Horizontal gap',
+                        layerHeight: 'Vertical gap',
+                        groupRadius: 'Group radius'
+                    },
+                    horizontal: {
+                        marginY: 'Vertical gap',
+                        layerMargin: 'Horizontal gap'
+                    },
                 }
             }
         },

@@ -42,6 +42,7 @@ class AppContainer extends React.Component {
                     settings={this.props.settings}
                     dispatch={this.props.dispatch}
                     isOpen={this.state.isSettingsPanelOpen}
+                    featureDiagramLayout={this.props.featureDiagramLayout}
                     onDismiss={this.onSettingsPanelDismiss}/>
             </Fabric>
         );
@@ -49,7 +50,7 @@ class AppContainer extends React.Component {
 }
 
 export default connect(
-    state => ({settings: state.settings}),
+    state => ({settings: state.settings, featureDiagramLayout: state.ui.featureDiagramLayout}),
     dispatch => ({dispatch})
 )(withKeys({
     key: e => e.isCommand('z'),
@@ -68,11 +69,11 @@ export default connect(
     action: () => Actions.server.featureNameChanged(prompt('oldFeature'), prompt('newFeature'))
 }, {
     key: e => e.key === 'c',
-    action: (e, refs, {dispatch}) => dispatch(Actions.setSetting('featureDiagram.treeLayout.useTransitions', bool => !bool))
+    action: (e, refs, {dispatch}) => dispatch(Actions.settings.set('featureDiagram.treeLayout.useTransitions', bool => !bool))
 }, {
     key: e => e.key === 'v',
-    action: (e, refs, {dispatch}) => dispatch(Actions.setSetting('featureDiagram.treeLayout.debug', bool => !bool))
+    action: (e, refs, {dispatch}) => dispatch(Actions.settings.set('featureDiagram.treeLayout.debug', bool => !bool))
 }, {
     key: e => e.key === 'b',
-    action: (e, refs, {dispatch}) => dispatch(Actions.setSetting('featureDiagram.layout', layout => layout === 'verticalTree' ? 'horizontalTree' : 'verticalTree'))
+    action: (e, refs, {dispatch, featureDiagramLayout}) => dispatch(Actions.ui.setFeatureDiagramLayout(featureDiagramLayout === 'verticalTree' ? 'horizontalTree' : 'verticalTree'))
 })(AppContainer));

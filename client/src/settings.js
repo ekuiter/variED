@@ -38,7 +38,7 @@ export const defaultSettings = {
                 vertical: {
                     marginX: 12, // collapsing x margin for rectangles in px (= distance between rectangles)
                     layerHeight: 100, // height of a layer in the vertical tree layout in px
-                    groupRadius: 18 // radius of arcs denoting OR and ALT groups in px
+                    groupRadius: 20 // radius of arcs denoting OR and ALT groups in px
                 },
                 horizontal: {
                     marginY: 12, // collapsing y margin for rectangles in px (see vertical.marginX)

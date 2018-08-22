@@ -1,4 +1,7 @@
 const Constants = {
+    initialUi: {
+        featureDiagramLayout: 'horizontalTree'
+    },
     server: {
         webSocket: process.env.REACT_APP_WEBSOCKET || `ws://${window.location.host}/websocket`, // WebSocket URI to connect to
         isMessageType(type) {

@@ -21,12 +21,12 @@
     margin: 8px 0;
 }
 
-.settingsPanel .setting:last-child {
+.settingsPanel .ms-Panel-content > .setting:last-child {
     margin-bottom: 80px; /* make whole settings panel scrollable */
 }
 
 .settingsPanel h4 {
-    margin: 24px 0 0 0;
+    margin: 32px 0 0 0;
 }
 
 .settingsPanel h4:first-child {
