@@ -1,12 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import AppContainer from './AppContainer';
+import AppContainer from './containers/AppContainer';
 import 'normalize.css';
-import './index.css';
+import './stylesheets/index.css';
 import 'promise-polyfill/src/polyfill';
 import {createStore} from 'redux';
 import {Provider} from 'react-redux';
-import reducers from './reducers';
+import reducers from './store/reducers';
 import {initializeIcons} from 'office-ui-fabric-react/lib/Icons';
 
 if (window.location.protocol !== 'http:')

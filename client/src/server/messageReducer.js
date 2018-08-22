@@ -1,6 +1,6 @@
-import Constants from '../Constants';
+import constants from '../constants';
 
-const messageTypes = Constants.server.messageTypes,
+const messageTypes = constants.server.messageTypes,
     messageReducers = {
         [messageTypes.ERROR](state, action) {
             console.warn(action.error);

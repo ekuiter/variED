@@ -3,11 +3,11 @@ import {tree as d3Tree} from 'd3-hierarchy';
 import {event as d3Event, select as d3Select} from 'd3-selection';
 import {zoom as d3Zoom} from 'd3-zoom';
 import 'd3-transition';
-import {getSetting} from '../../settings';
-import {updateRect} from '../../helpers/svgUtils';
-import './AbstractTreeLayout.css';
+import {getSetting} from '../../../store/settings';
+import {updateRect} from '../../../helpers/svgUtils';
+import '../../../stylesheets/treeLayout.css';
 import FeatureCallout from './FeatureCallout';
-import throttle from '../../helpers/throttle';
+import throttle from '../../../helpers/throttle';
 
 class AbstractTreeLayout extends React.Component {
     static defaultProps = {

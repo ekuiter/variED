@@ -1,11 +1,11 @@
 // adapted from FeatureIDE/plugins/de.ovgu.featureide.fm.ui/src/de/ovgu/featureide/fm/ui/editors/featuremodel/GUIDefaults.java
-import {getSetting} from '../../settings';
+import {getSetting} from '../../../store/settings';
 
 function getLinkStrokeWidth(settings) {
     return `${getSetting(settings, 'featureDiagram.treeLayout.link.strokeWidth')}px`;
 }
 
-const Styles = {
+const styles = {
     node: {
         abstract: settings => ({ // style applied to a node's rectangle to distinguish abstract and concrete features
             property: 'isAbstract',
@@ -60,4 +60,4 @@ const Styles = {
     }
 };
 
-export default Styles;
+export default styles;

@@ -1,12 +1,12 @@
 import React from 'react';
-import {getSetting} from './settings';
-import i18n from './i18n';
-import FontComboBox from './helpers/FontComboBox';
+import {getSetting} from '../../store/settings';
+import i18n from '../../i18n';
+import FontComboBox from '../../helpers/FontComboBox';
 import {Panel, PanelType} from 'office-ui-fabric-react/lib/Panel';
 import {Toggle} from 'office-ui-fabric-react/lib/Toggle';
 import {SpinButton} from 'office-ui-fabric-react/lib/SpinButton';
 import {ColorPicker} from 'office-ui-fabric-react/lib/ColorPicker';
-import {DialogContextualMenu} from './helpers/Dialog';
+import {DialogContextualMenu} from '../../helpers/Dialog';
 import {DefaultButton} from 'office-ui-fabric-react/lib/Button';
 
 const getLabel = path => i18n.t('settingsPanel.labels', path);

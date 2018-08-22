@@ -1,8 +1,8 @@
 import AbstractTreeLayout from './AbstractTreeLayout';
-import {getSetting} from '../../settings';
+import {getSetting} from '../../../store/settings';
 import VerticalTreeLink from './VerticalTreeLink';
 import VerticalTreeNode from './VerticalTreeNode';
-import {estimateXOffset, estimateYOffset} from './estimateUtils';
+import {estimateXOffset, estimateYOffset} from './estimation';
 
 class VerticalTreeLayout extends AbstractTreeLayout {
     constructor(props) {

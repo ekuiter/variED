@@ -1,8 +1,8 @@
 import AbstractTreeLayout from './AbstractTreeLayout';
 import HorizontalTreeLink from './HorizontalTreeLink';
 import HorizontalTreeNode from './HorizontalTreeNode';
-import {getSetting} from '../../settings';
-import {estimateRectHeight, estimateXOffset, estimateYOffset} from './estimateUtils';
+import {getSetting} from '../../../store/settings';
+import {estimateRectHeight, estimateXOffset, estimateYOffset} from './estimation';
 
 class HorizontalTreeLayout extends AbstractTreeLayout {
     widestTextOnLayer = {};

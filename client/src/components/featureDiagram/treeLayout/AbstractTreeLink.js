@@ -1,12 +1,12 @@
-import {getSetting} from '../../settings';
+import {getSetting} from '../../../store/settings';
 import {
     arcSegmentPath,
     arcSlicePath,
     cartesianToAngle,
     drawCircle
-} from '../../helpers/svgUtils';
-import Constants from '../../Constants';
-import Styles from './Styles';
+} from '../../../helpers/svgUtils';
+import constants from '../../../constants';
+import styles from './styles';
 
 class AbstractTreeLink {
     constructor(settings, getCurrentParentCoordinate, getPreviousParentCoordinate, treeNode) {
@@ -84,7 +84,7 @@ class AbstractTreeLink {
                         startAngle, endAngle, this.sweepFlag());
                 });
         drawArc(arcSegment, arcSegmentPath);
-        drawArc(arcSlice, arcSlicePath, d => d.feature().type === Constants.server.featureModel.serialization.OR);
+        drawArc(arcSlice, arcSlicePath, d => d.feature().type === constants.server.featureModel.serialization.OR);
     }
 
     enter(link, zIndex) {
@@ -96,13 +96,13 @@ class AbstractTreeLink {
 
         if (zIndex === 'inBack')
             linkEnter
-                .call(this.drawLink, null, {klass: 'line', from, to, style: Styles.link.line(this.settings)});
+                .call(this.drawLink, null, {klass: 'line', from, to, style: styles.link.line(this.settings)});
 
         if (zIndex === 'inFront')
             linkEnter.call(drawCircle, null, {
                 center: from,
                 radius: 0,
-                style: Styles.link.mandatory(this.settings)
+                style: styles.link.mandatory(this.settings)
             });
 
         return linkEnter;
@@ -118,7 +118,7 @@ class AbstractTreeLink {
             link.call(this.drawLink, '.line', {from, to});
 
         if (zIndex === 'inFront')
-            link.call(drawCircle, 'circle', {center: from, radius, style: Styles.link.mandatory(this.settings)});
+            link.call(drawCircle, 'circle', {center: from, radius, style: styles.link.mandatory(this.settings)});
     }
 
     exit(link, zIndex) {

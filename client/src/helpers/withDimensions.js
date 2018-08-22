@@ -1,6 +1,6 @@
 import React from 'react';
 import throttle from './throttle';
-import Constants from '../Constants';
+import constants from '../constants';
 
 function getViewportDimension(key) {
     return Math.max(document.documentElement[key], 0);
@@ -25,7 +25,7 @@ export default WrappedComponent =>
             this.setState({
                 width: getViewportDimension('clientWidth'),
                 height: getViewportDimension('clientHeight')
-            }), Constants.helpers.withDimensions.throttleResize);
+            }), constants.helpers.withDimensions.throttleResize);
 
         render() {
             return <WrappedComponent width={this.state.width} height={this.state.height} {...this.props} />;

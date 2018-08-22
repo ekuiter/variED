@@ -1,7 +1,7 @@
 import {hierarchy as d3Hierarchy} from 'd3-hierarchy';
-import Constants from '../Constants';
+import constants from '../constants';
 
-const serialization = Constants.server.featureModel.serialization;
+const serialization = constants.server.featureModel.serialization;
 
 d3Hierarchy.prototype.feature = function() {
     return this._feature || (this._feature = {
@@ -33,7 +33,7 @@ export default class FeatureModel {
     }
 
     get structure() {
-        const struct = Constants.server.featureModel.serialization.STRUCT;
+        const struct = constants.server.featureModel.serialization.STRUCT;
         if (!this._featureModel[struct] || this._featureModel[struct].length !== 1)
             throw new Error('feature model has no structure');
         return this._featureModel[struct][0];

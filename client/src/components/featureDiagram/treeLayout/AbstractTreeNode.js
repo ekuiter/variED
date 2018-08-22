@@ -1,8 +1,8 @@
 import 'd3-selection-multi';
-import {getSetting} from '../../settings';
-import measureTextWidth from '../../helpers/measureTextWidth';
-import {addStyle, appendCross, translateTransform} from '../../helpers/svgUtils';
-import Styles from './Styles';
+import {getSetting} from '../../../store/settings';
+import measureTextWidth from '../../../helpers/measureTextWidth';
+import {addStyle, appendCross, translateTransform} from '../../../helpers/svgUtils';
+import styles from './styles';
 
 function widenBbox({x, y, width, height}, paddingX, paddingY) {
     return {x: x - paddingX, y: y - paddingY, width: width + 2 * paddingX, height: height + 2 * paddingY};
@@ -29,7 +29,7 @@ function makeText(settings, selection, isGettingRectInfo, textStyle) {
         const bboxes = [];
         selection.append('text')
             .text(d => d.feature().name)
-            .call(addStyle, textStyle, Styles.node.hidden(settings))
+            .call(addStyle, textStyle, styles.node.hidden(settings))
             .each(function() {
                 bboxes.push(this.getBBox());
             });
@@ -75,14 +75,14 @@ class AbstractTreeNode {
         let i = 0;
         rectAndText.insert('rect', 'text')
             .attrs(() => makeRect(this.settings, bboxes[i++]))
-            .call(addStyle, Styles.node.abstract(this.settings));
+            .call(addStyle, styles.node.abstract(this.settings));
 
         const arcSegment = nodeEnter.insert('path', 'g.rectAndText')
                 .attr('class', 'arcSegment')
-                .call(addStyle, Styles.node.arcSegment(this.settings)),
+                .call(addStyle, styles.node.arcSegment(this.settings)),
             arcSlice = nodeEnter.insert('path', 'g.rectAndText')
                 .attr('class', 'arcSlice')
-                .call(addStyle, Styles.node.arcSlice(this.settings));
+                .call(addStyle, styles.node.arcSlice(this.settings));
         this.treeLink.drawGroup(arcSegment, arcSlice);
 
         if (getSetting(this.settings, 'featureDiagram.treeLayout.debug'))

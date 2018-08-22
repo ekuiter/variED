@@ -1,4 +1,4 @@
-import {getSetting} from '../../settings';
+import {getSetting} from '../../../store/settings';
 
 // estimates the width of a node's rectangle
 export function estimateRectWidth(settings, estimatedTextWidth) {

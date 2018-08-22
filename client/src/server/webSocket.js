@@ -1,4 +1,4 @@
-import Constants from '../Constants';
+import constants from '../constants';
 
 let handleMessage;
 
@@ -9,7 +9,7 @@ const getWebSocket = (() => {
         return new Promise((resolve, reject) => {
             if (webSocket && webSocket.readyState !== webSocket.CLOSED)
                 throw new Error('can not connect while old WebSocket is still in use');
-            webSocket = new WebSocket(Constants.server.webSocket);
+            webSocket = new WebSocket(constants.server.webSocket);
             webSocket.onopen = () => {
                 onOpen();
                 resolve(webSocket);
@@ -58,7 +58,7 @@ export function openWebSocket(_handleMessage) {
 export function sendMessage(message) {
     if (!message)
         throw new Error('not a valid message');
-    if (!Constants.server.isMessageType(message.type))
+    if (!constants.server.isMessageType(message.type))
         throw new Error(`not a valid message type: ${message.type}`);
     return getWebSocket().then(webSocket => {
         webSocket.send(JSON.stringify(message));

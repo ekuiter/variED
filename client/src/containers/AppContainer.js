@@ -1,12 +1,12 @@
 import React from 'react';
-import {openWebSocket} from './server/webSocket';
+import {openWebSocket} from '../server/webSocket';
 import FeatureDiagramContainer from './featureDiagram/FeatureDiagramContainer';
 import {connect} from 'react-redux';
 import {Fabric} from 'office-ui-fabric-react/lib/Fabric';
 import {CommandBar} from 'office-ui-fabric-react/lib/CommandBar';
-import CommandBarItems from './CommandBarItems';
-import Actions from './Actions';
-import PanelContainer from './PanelContainer';
+import contextualMenuItems from '../components/contextualMenuItems';
+import actions from '../store/actions';
+import PanelContainer from './panels/PanelContainer';
 
 class AppContainer extends React.Component {
     componentDidMount() {
@@ -19,15 +19,15 @@ class AppContainer extends React.Component {
                 <div className="header">
                     <CommandBar
                         items={[
-                            CommandBarItems.featureDiagram.undo(),
-                            CommandBarItems.featureDiagram.redo(),
-                            CommandBarItems.featureDiagram.setLayout(
+                            contextualMenuItems.featureDiagram.undo(),
+                            contextualMenuItems.featureDiagram.redo(),
+                            contextualMenuItems.featureDiagram.setLayout(
                                 this.props.featureDiagramLayout,
                                 this.props.onSetFeatureDiagramLayout),
                         ]}
                         farItems={[
-                            CommandBarItems.settings(this.props.onShowPanel),
-                            CommandBarItems.about(this.props.onShowPanel)
+                            contextualMenuItems.settings(this.props.onShowPanel),
+                            contextualMenuItems.about(this.props.onShowPanel)
                         ]}/>
                 </div>
                 <FeatureDiagramContainer className="content"/>
@@ -44,7 +44,7 @@ export default connect(
     }),
     dispatch => ({
         handleMessage: dispatch,
-        onSetFeatureDiagramLayout: layout => dispatch(Actions.ui.setFeatureDiagramLayout(layout)),
-        onShowPanel: (panel, panelProps) => dispatch(Actions.ui.showPanel(panel, panelProps))
+        onSetFeatureDiagramLayout: layout => dispatch(actions.ui.setFeatureDiagramLayout(layout)),
+        onShowPanel: (panel, panelProps) => dispatch(actions.ui.showPanel(panel, panelProps))
     })
 )(AppContainer);

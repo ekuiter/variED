@@ -1,4 +1,4 @@
-import messageActions from './server/messageActions';
+import messageActions from '../server/messageActions';
 import {resetSettings, setSetting} from './settings';
 
 export const actionTypes = {
@@ -6,7 +6,7 @@ export const actionTypes = {
     UI_SHOW_PANEL: 'UI_SHOW_PANEL'
 };
 
-const Actions = {
+const actions = {
     server: messageActions,
     settings: {
         set: setSetting,
@@ -20,4 +20,4 @@ const Actions = {
     }
 };
 
-export default Actions;
+export default actions;

@@ -1,7 +1,7 @@
 import {sendMessage} from './webSocket';
-import Constants from '../Constants';
+import constants from '../constants';
 
-const messageTypes = Constants.server.messageTypes;
+const messageTypes = constants.server.messageTypes;
 
 export default {
     undo: () => sendMessage({type: messageTypes.UNDO}),

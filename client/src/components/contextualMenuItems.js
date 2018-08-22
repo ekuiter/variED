@@ -1,7 +1,7 @@
-import i18n from './i18n';
-import Actions from './Actions';
+import i18n from '../i18n';
+import actions from '../store/actions';
 
-const CommandBarItems = {
+const contextualMenuItems = {
     settings: onShowPanel => ({
         key: 'settings',
         text: i18n.t('settingsPanel.title'),
@@ -21,13 +21,13 @@ const CommandBarItems = {
             key: 'undo',
             text: i18n.t('featureDiagram.commands.undo'),
             iconProps: {iconName: 'Undo'},
-            onClick: () => Actions.server.undo()
+            onClick: () => actions.server.undo()
         }),
         redo: () => ({
             key: 'redo',
             text: i18n.t('featureDiagram.commands.redo'),
             iconProps: {iconName: 'Redo'},
-            onClick: () => Actions.server.redo()
+            onClick: () => actions.server.redo()
         }),
         setLayout: (featureDiagramLayout, onSetFeatureDiagramLayout) => ({
             key: 'setLayout',
@@ -57,7 +57,7 @@ const CommandBarItems = {
                     items: [{
                         key: 'featureBelow',
                         text: i18n.t('featureDiagram.commands.feature.featureBelow'),
-                        onClick: () => Actions.server.featureAdd(featureName).then(onClick)
+                        onClick: () => actions.server.featureAdd(featureName).then(onClick)
                     }, {
                         key: 'featureAbove',
                         text: i18n.t('featureDiagram.commands.feature.featureAbove')
@@ -68,7 +68,7 @@ const CommandBarItems = {
                 key: 'remove',
                 text: i18n.t('featureDiagram.commands.feature.remove'),
                 iconProps: {iconName: 'Remove'},
-                onClick: () => Actions.server.featureDelete(featureName).then(onClick)
+                onClick: () => actions.server.featureDelete(featureName).then(onClick)
             }),
             details: (featureName, onShowPanel) => ({
                 key: 'details',
@@ -81,4 +81,4 @@ const CommandBarItems = {
     }
 };
 
-export default CommandBarItems;
+export default contextualMenuItems;

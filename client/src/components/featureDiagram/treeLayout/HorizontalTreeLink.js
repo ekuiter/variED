@@ -1,7 +1,7 @@
 import AbstractTreeLink from './AbstractTreeLink';
-import {getSetting} from '../../settings';
-import {attrIfPresent, drawCurve, drawLine} from '../../helpers/svgUtils';
-import {estimateRectWidth} from './estimateUtils';
+import {getSetting} from '../../../store/settings';
+import {attrIfPresent, drawCurve, drawLine} from '../../../helpers/svgUtils';
+import {estimateRectWidth} from './estimation';
 
 function leftSideX(x, rectInfo) {
     return x + rectInfo.x;

@@ -1,5 +1,5 @@
 import AbstractTreeNode from './AbstractTreeNode';
-import {getSetting} from '../../settings';
+import {getSetting} from '../../../store/settings';
 
 class VerticalTreeNode extends AbstractTreeNode {
     x(node) {

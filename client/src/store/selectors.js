@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect';
-import FeatureModel from './server/FeatureModel';
+import FeatureModel from '../server/FeatureModel';
 
 export const getFeatureModel = createSelector(
     state => state.server.featureModel,

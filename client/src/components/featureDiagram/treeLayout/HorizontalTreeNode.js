@@ -1,6 +1,6 @@
 import AbstractTreeNode from './AbstractTreeNode';
-import {estimateRectWidth} from './estimateUtils';
-import {getSetting} from '../../settings';
+import {estimateRectWidth} from './estimation';
+import {getSetting} from '../../../store/settings';
 
 class HorizontalTreeNode extends AbstractTreeNode {
     x(node) {

@@ -1,10 +1,10 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import SettingsPanel from './SettingsPanel';
-import AboutPanel from './AboutPanel';
-import FeaturePanel from './featureDiagram/FeaturePanel';
-import Actions from './Actions';
-import {getFeatureModel} from './selectors';
+import SettingsPanel from '../../components/panels/SettingsPanel';
+import AboutPanel from '../../components/panels/AboutPanel';
+import FeaturePanel from '../../components/panels/FeaturePanel';
+import actions from '../../store/actions';
+import {getFeatureModel} from '../../store/selectors';
 
 class PanelContainer extends React.Component {
     render() {
@@ -40,8 +40,8 @@ export default connect(
         featureModel: getFeatureModel(state)
     }),
     dispatch => ({
-        onHidePanel: () => dispatch(Actions.ui.hidePanel()),
-        onSetSetting: (path, value) => dispatch(Actions.settings.set(path, value)),
-        onResetSettings: () => dispatch(Actions.settings.reset())
+        onHidePanel: () => dispatch(actions.ui.hidePanel()),
+        onSetSetting: (path, value) => dispatch(actions.settings.set(path, value)),
+        onResetSettings: () => dispatch(actions.settings.reset())
     })
 )(PanelContainer);

@@ -1,7 +1,7 @@
 import React from 'react';
 import {Callout, DirectionalHint} from 'office-ui-fabric-react/lib/Callout';
-import {getSetting} from '../../settings';
-import CommandBarItems from '../../CommandBarItems';
+import {getSetting} from '../../../store/settings';
+import contextualMenuItems from '../../contextualMenuItems';
 import {CommandBar} from 'office-ui-fabric-react/lib/CommandBar';
 
 export default class extends React.Component {
@@ -36,11 +36,11 @@ export default class extends React.Component {
                         : <div className="inner empty"/>}
                     <CommandBar
                         items={[
-                            CommandBarItems.featureDiagram.feature.new(feature.name, onDismiss),
-                            CommandBarItems.featureDiagram.feature.remove(feature.name, onDismiss)
+                            contextualMenuItems.featureDiagram.feature.new(feature.name, onDismiss),
+                            contextualMenuItems.featureDiagram.feature.remove(feature.name, onDismiss)
                         ]}
                         farItems={[
-                            CommandBarItems.featureDiagram.feature.details(feature.name, this.props.onShowPanel)
+                            contextualMenuItems.featureDiagram.feature.details(feature.name, this.props.onShowPanel)
                         ]}/>
                 </div>
             </Callout>

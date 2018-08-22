@@ -1,4 +1,4 @@
-const Constants = {
+const constants = {
     githubUri: 'https://github.com/ekuiter/variED',
     licenseUri: 'https://github.com/ekuiter/variED/blob/master/LICENSE.txt',
     initialUi: {
@@ -90,4 +90,4 @@ const Constants = {
     }
 };
 
-export default Constants;
+export default constants;

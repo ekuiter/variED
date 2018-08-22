@@ -2,12 +2,12 @@ import isFontInstalled from './isFontInstalled';
 import {ComboBox} from 'office-ui-fabric-react/lib/ComboBox';
 import React from 'react';
 import i18n from '../i18n';
-import Constants from '../Constants';
+import constants from '../constants';
 
 export default class extends React.Component {
     static defaultProps = {
         selectedFont: null,
-        fonts: Constants.helpers.fontComboBox.suggestedFonts,
+        fonts: constants.helpers.fontComboBox.suggestedFonts,
         fallbacks: null,
         onChange: null
     };
