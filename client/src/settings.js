@@ -45,6 +45,7 @@ export const defaultSettings = {
                 },
                 featureCallout: {
                     throttleUpdate: 50, // how often to reposition the feature callout on zoom or pan in ms
+                    width: 300, // width of feature callout in px
                     gapSpace: 5 // space between node and feature callout in px
                 }
             }

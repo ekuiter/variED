@@ -6,3 +6,25 @@
 .treeLayout .node .rectAndText {
     cursor: pointer;
 }
+
+.callout .header {
+    padding: 18px 24px 12px;
+}
+
+.callout .header p {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.callout .inner {
+    padding: 0 24px 20px;
+}
+
+.callout .inner.empty {
+    padding: 0 24px 8px;
+}
+
+.callout .inner p {
+    margin: 0;
+    font-size: 0.8rem;
+}

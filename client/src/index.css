@@ -28,3 +28,7 @@
 .settingsPanel h4 {
     margin: 32px 0 0 0;
 }
+
+p {
+    line-height: 1.5em;
+}
