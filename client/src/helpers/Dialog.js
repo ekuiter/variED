@@ -1,8 +1,8 @@
-import {Dialog, DialogFooter} from '../../node_modules/office-ui-fabric-react/lib/Dialog';
-import {DefaultButton, PrimaryButton} from '../../node_modules/office-ui-fabric-react/lib/Button';
+import {Dialog, DialogFooter} from 'office-ui-fabric-react/lib/Dialog';
+import {DefaultButton, PrimaryButton} from 'office-ui-fabric-react/lib/Button';
 import i18n from '../i18n';
 import React from 'react';
-import {Dropdown} from '../../node_modules/office-ui-fabric-react/lib/Dropdown';
+import {Dropdown} from 'office-ui-fabric-react/lib/Dropdown';
 
 const DialogWrapper = ({isOpen, onDismiss, onApply, children, label}) => (
     <Dialog

@@ -8,6 +8,7 @@ import {Toggle} from 'office-ui-fabric-react/lib/Toggle';
 import {SpinButton} from 'office-ui-fabric-react/lib/SpinButton';
 import {ColorPicker} from 'office-ui-fabric-react/lib/ColorPicker';
 import {DialogContextualMenu} from './helpers/Dialog';
+import {DefaultButton} from 'office-ui-fabric-react/lib/Button';
 
 const defer = fn => (...args) => window.setTimeout(() => fn(...args), 0),
     getLabel = path => i18n.t('settingsPanel.labels', path);
@@ -119,12 +120,23 @@ export default class extends React.Component {
     static defaultProps = {
         isOpen: false, onDismiss: null, featureDiagramLayout: null, settings: null, dispatch: null
     };
+    state = {canReset: false};
+
+    initializeCanReset = dispatch => (...args) => {
+        this.setState({canReset: true});
+        dispatch(...args);
+    };
+
+    onReset = dispatch => () => {
+        this.setState({canReset: false});
+        dispatch(Actions.settings.reset());
+    };
 
     render() {
         const {settings, dispatch} = this.props,
+            props = {settings, dispatch: this.initializeCanReset(dispatch)},
             deferredDispatch = defer(dispatch),
-            props = {settings, dispatch},
-            deferredProps = {settings, dispatch: deferredDispatch},
+            deferredProps = {settings, dispatch: this.initializeCanReset(deferredDispatch)},
             featureDiagramLayout = this.props.featureDiagramLayout;
         return (
             <Panel
@@ -134,6 +146,11 @@ export default class extends React.Component {
                 onDismiss={this.props.onDismiss}
                 isLightDismiss={true}
                 headerText={i18n.t('settingsPanel.title')}>
+
+                <DefaultButton
+                    onClick={this.onReset(deferredDispatch)}
+                    disabled={!this.state.canReset}
+                    text={i18n.t('settingsPanel.resetToDefaults')}/>
 
                 <h4>{i18n.t('settingsPanel.headings.featureDiagram')}</h4>
                 <Setting.FontComboBox

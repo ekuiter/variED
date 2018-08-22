@@ -7,6 +7,7 @@ export const strings = {
         toggleOff: 'Off',
         apply: 'Apply',
         customizeColors: 'Customize colors',
+        resetToDefaults: 'Reset to defaults',
         headings: {
             featureDiagram: 'Feature diagram',
             features: 'Features',

@@ -28,7 +28,3 @@
 .settingsPanel h4 {
     margin: 32px 0 0 0;
 }
-
-.settingsPanel h4:first-child {
-    margin: 8px 0 0 0;
-}

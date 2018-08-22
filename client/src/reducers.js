@@ -1,7 +1,7 @@
 import messageReducer from './server/messageReducer';
 import {combineReducers} from 'redux';
 import Constants from './Constants';
-import {defaultSettings, getNewSettings, isSettingAction} from './settings';
+import {defaultSettings, getNewSettings, isSettingsResetAction, isSettingsSetAction} from './settings';
 import {actionTypes} from './Actions';
 
 function serverReducer(state = {}, action) {
@@ -11,8 +11,10 @@ function serverReducer(state = {}, action) {
 }
 
 function settingsReducer(state = defaultSettings, action) {
-    if (isSettingAction(action))
+    if (isSettingsSetAction(action))
         return getNewSettings(state, action.path, action.value);
+    if (isSettingsResetAction(action))
+        return defaultSettings;
     return state;
 }
 

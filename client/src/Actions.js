@@ -1,5 +1,5 @@
 import messageActions from './server/messageActions';
-import {setSetting} from './settings';
+import {resetSettings, setSetting} from './settings';
 
 export const actionTypes = {
     UI_SET_FEATURE_DIAGRAM_LAYOUT: 'UI_SET_FEATURE_DIAGRAM_LAYOUT'
@@ -8,7 +8,8 @@ export const actionTypes = {
 const Actions = {
     server: messageActions,
     settings: {
-        set: setSetting
+        set: setSetting,
+        reset: resetSettings
     },
     ui: {
         setFeatureDiagramLayout: featureDiagramLayout =>
