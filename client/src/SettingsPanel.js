@@ -1,6 +1,5 @@
 import React from 'react';
 import {getSetting} from './settings';
-import Actions from './Actions';
 import i18n from './i18n';
 import FontComboBox from './helpers/FontComboBox';
 import {Panel, PanelType} from 'office-ui-fabric-react/lib/Panel';
@@ -13,27 +12,27 @@ import {DefaultButton} from 'office-ui-fabric-react/lib/Button';
 const getLabel = path => i18n.t('settingsPanel.labels', path);
 
 const Setting = {
-    Toggle: ({settings, dispatch, path}) => (
+    Toggle: ({settings, onSetSetting, path}) => (
         <Toggle
             className="setting"
             label={getLabel(path)}
             checked={getSetting(settings, path)}
             onText={i18n.t('settingsPanel.toggleOn')}
             offText={i18n.t('settingsPanel.toggleOn')}
-            onClick={() => dispatch(Actions.settings.set(path, bool => !bool))}/>
+            onClick={() => onSetSetting(path, bool => !bool)}/>
     ),
 
-    FontComboBox: ({settings, dispatch, path}) => (
+    FontComboBox: ({settings, onSetSetting, path}) => (
         <FontComboBox
             className="setting"
             label={getLabel(path)}
             selectedFont={getSetting(settings, path)}
-            onChanged={font => dispatch(Actions.settings.set(path, font))}/>
+            onChanged={font => onSetSetting(path, font)}/>
     ),
 
     SpinButton: class extends React.Component {
         static defaultProps = {
-            settings: null, dispatch: null, path: null, min: null, max: null, step: 1, suffix: '', iconProps: null
+            settings: null, onSetSetting: null, path: null, min: null, max: null, step: 1, suffix: '', iconProps: null
         };
 
         removeSuffix = value =>
@@ -50,7 +49,7 @@ const Setting = {
         };
 
         getValue = path => getSetting(this.props.settings, path) + this.props.suffix;
-        onChange = value => this.props.dispatch(Actions.settings.set(this.props.path, value));
+        onChange = value => this.props.onSetSetting(this.props.path, value);
 
         onValidate = value => {
             value = this.removeSuffix(value);
@@ -92,10 +91,10 @@ const Setting = {
     },
 
     ColorPickerContextualMenu: class extends React.Component {
-        static defaultProps = {settings: null, dispatch: null, paths: null};
+        static defaultProps = {settings: null, onSetSetting: null, paths: null};
         state = {color: null};
         onColorChanged = color => this.setState({color});
-        onApply = option => this.props.dispatch(Actions.settings.set(option.key, this.state.color));
+        onApply = option => this.props.onSetSetting(option.key, this.state.color);
         onRender = option => this.setState({color: getSetting(this.props.settings, option.key)});
 
         render() {
@@ -117,22 +116,23 @@ const Setting = {
 
 export default class extends React.Component {
     static defaultProps = {
-        isOpen: false, onDismiss: null, featureDiagramLayout: null, settings: null, dispatch: null
+        isOpen: false, onDismiss: null, featureDiagramLayout: null,
+        settings: null, onSetSetting: null, onResetSettings: null
     };
     state = {canReset: false};
 
-    resettableDispatch = (...args) => {
+    resettableSetSetting = (...args) => {
         this.setState({canReset: true});
-        this.props.dispatch(...args);
+        this.props.onSetSetting(...args);
     };
 
     onReset = () => {
         this.setState({canReset: false});
-        this.props.dispatch(Actions.settings.reset());
+        this.props.onResetSettings();
     };
 
     render() {
-        const props = {settings: this.props.settings, dispatch: this.resettableDispatch},
+        const props = {settings: this.props.settings, onSetSetting: this.resettableSetSetting},
             featureDiagramLayout = this.props.featureDiagramLayout;
         return (
             <Panel

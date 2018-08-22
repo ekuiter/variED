@@ -2,34 +2,34 @@ import i18n from './i18n';
 import Actions from './Actions';
 
 const CommandBarItems = {
-    settings: onClick => ({
+    settings: onShowPanel => ({
         key: 'settings',
         text: i18n.t('settingsPanel.title'),
         iconOnly: true,
         iconProps: {iconName: 'Settings'},
-        onClick
+        onClick: () => onShowPanel('settings')
     }),
-    about: onClick => ({
+    about: onShowPanel => ({
         key: 'about',
         text: i18n.t('aboutPanel.title'),
         iconOnly: true,
         iconProps: {iconName: 'Info'},
-        onClick
+        onClick: () => onShowPanel('about')
     }),
     featureDiagram: {
-        undo: onClick => ({
+        undo: () => ({
             key: 'undo',
             text: i18n.t('featureDiagram.commands.undo'),
             iconProps: {iconName: 'Undo'},
-            onClick: () => Actions.server.undo().then(onClick)
+            onClick: () => Actions.server.undo()
         }),
-        redo: onClick => ({
+        redo: () => ({
             key: 'redo',
             text: i18n.t('featureDiagram.commands.redo'),
             iconProps: {iconName: 'Redo'},
-            onClick: () => Actions.server.redo().then(onClick)
+            onClick: () => Actions.server.redo()
         }),
-        setLayout: (featureDiagramLayout, dispatch) => ({
+        setLayout: (featureDiagramLayout, onSetFeatureDiagramLayout) => ({
             key: 'setLayout',
             text: i18n.t('featureDiagram.commands.setLayout'),
             subMenuProps: {
@@ -38,47 +38,46 @@ const CommandBarItems = {
                     text: i18n.t('featureDiagram.commands.verticalTree'),
                     canCheck: true,
                     isChecked: featureDiagramLayout === 'verticalTree',
-                    onClick: () => dispatch(Actions.ui.setFeatureDiagramLayout('verticalTree'))
+                    onClick: () => onSetFeatureDiagramLayout('verticalTree')
                 }, {
                     key: 'horizontalTree',
                     text: i18n.t('featureDiagram.commands.horizontalTree'),
                     canCheck: true,
                     isChecked: featureDiagramLayout === 'horizontalTree',
-                    onClick: () => dispatch(Actions.ui.setFeatureDiagramLayout('horizontalTree'))
+                    onClick: () => onSetFeatureDiagramLayout('horizontalTree')
                 }]
             }
         }),
-        new: (feature, onClick) => ({
-            key: 'new',
-            text: i18n.t('featureDiagram.commands.new'),
-            iconProps: {iconName: 'Add'},
-            subMenuProps: {
-                items: [{
-                    key: 'featureBelow',
-                    text: i18n.t('featureDiagram.commands.featureBelow'),
-                    onClick: () => Actions.server.featureAdd(feature.name).then(onClick)
-                }, {
-                    key: 'featureAbove',
-                    text: i18n.t('featureDiagram.commands.featureAbove')
-                }]
-            }
-        }),
-        remove: (feature, onClick) => ({
-            key: 'remove',
-            text: i18n.t('featureDiagram.commands.remove'),
-            iconProps: {iconName: 'Remove'},
-            onClick: () => Actions.server.featureDelete(feature.name).then(onClick)
-        }),
-        rename: feature => ({
-            key: 'rename',
-            text: i18n.t('featureDiagram.commands.rename'),
-            iconProps: {iconName: 'Rename'}
-        }),
-        changeDescription: feature => ({
-            key: 'changeDescription',
-            text: i18n.t('featureDiagram.commands.changeDescription'),
-            iconProps: {iconName: 'Edit'}
-        })
+        feature: {
+            new: (featureName, onClick) => ({
+                key: 'new',
+                text: i18n.t('featureDiagram.commands.feature.new'),
+                iconProps: {iconName: 'Add'},
+                subMenuProps: {
+                    items: [{
+                        key: 'featureBelow',
+                        text: i18n.t('featureDiagram.commands.feature.featureBelow'),
+                        onClick: () => Actions.server.featureAdd(featureName).then(onClick)
+                    }, {
+                        key: 'featureAbove',
+                        text: i18n.t('featureDiagram.commands.feature.featureAbove')
+                    }]
+                }
+            }),
+            remove: (featureName, onClick) => ({
+                key: 'remove',
+                text: i18n.t('featureDiagram.commands.feature.remove'),
+                iconProps: {iconName: 'Remove'},
+                onClick: () => Actions.server.featureDelete(featureName).then(onClick)
+            }),
+            details: (featureName, onShowPanel) => ({
+                key: 'details',
+                text: i18n.t('featureDiagram.commands.feature.details'),
+                iconProps: {iconName: 'More'},
+                iconOnly: true,
+                onClick: () => onShowPanel('feature', {featureName})
+            })
+        }
     }
 };
 

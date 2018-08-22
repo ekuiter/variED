@@ -42,4 +42,13 @@ export default class FeatureModel {
     get hierarchy() {
         return this._hierarchy || (this._hierarchy = d3Hierarchy(this.structure));
     }
+
+    getNode(featureName) {
+        return this.hierarchy.descendants().find(node => node.feature().name === featureName);
+    }
+
+    getFeature(featureName) {
+        const node = this.getNode(featureName);
+        return node ? node.feature() : null;
+    }
 };

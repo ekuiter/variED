@@ -11,7 +11,7 @@ import throttle from '../../helpers/throttle';
 
 class AbstractTreeLayout extends React.Component {
     static defaultProps = {
-        featureModel: null, width: null, height: null, className: null, fitOnResize: false, settings: null
+        featureModel: null, width: null, height: null, className: null, fitOnResize: false, settings: null, onShowPanel: null
     };
     svgRef = React.createRef();
     state = {activeNode: null, activeNodeRef: null};
@@ -54,6 +54,7 @@ class AbstractTreeLayout extends React.Component {
                     direction={this.direction}
                     node={this.state.activeNode}
                     nodeRef={this.state.activeNodeRef}
+                    onShowPanel={this.props.onShowPanel}
                     onDismiss={() => this.setActiveNode(null, null)}/>
             </React.Fragment>
         );

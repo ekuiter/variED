@@ -3,21 +3,14 @@ import {openWebSocket} from './server/webSocket';
 import FeatureDiagramContainer from './featureDiagram/FeatureDiagramContainer';
 import {connect} from 'react-redux';
 import {Fabric} from 'office-ui-fabric-react/lib/Fabric';
-import SettingsPanel from './SettingsPanel';
 import {CommandBar} from 'office-ui-fabric-react/lib/CommandBar';
-import AboutPanel from './AboutPanel';
 import CommandBarItems from './CommandBarItems';
+import Actions from './Actions';
+import PanelContainer from './PanelContainer';
 
 class AppContainer extends React.Component {
-    state = {
-        isPanelOpen: null
-    };
-
-    onPanelOpen = panel => () => this.setState({isPanelOpen: panel});
-    onPanelDismiss = () => this.setState({isPanelOpen: null});
-
     componentDidMount() {
-        openWebSocket(this.props.dispatch);
+        openWebSocket(this.props.handleMessage);
     }
 
     render() {
@@ -29,29 +22,29 @@ class AppContainer extends React.Component {
                             CommandBarItems.featureDiagram.undo(),
                             CommandBarItems.featureDiagram.redo(),
                             CommandBarItems.featureDiagram.setLayout(
-                                this.props.featureDiagramLayout, this.props.dispatch),
+                                this.props.featureDiagramLayout,
+                                this.props.onSetFeatureDiagramLayout),
                         ]}
                         farItems={[
-                            CommandBarItems.settings(this.onPanelOpen('settings')),
-                            CommandBarItems.about(this.onPanelOpen('about'))
+                            CommandBarItems.settings(this.props.onShowPanel),
+                            CommandBarItems.about(this.props.onShowPanel)
                         ]}/>
                 </div>
                 <FeatureDiagramContainer className="content"/>
-                <SettingsPanel
-                    settings={this.props.settings}
-                    dispatch={this.props.dispatch}
-                    isOpen={this.state.isPanelOpen === 'settings'}
-                    featureDiagramLayout={this.props.featureDiagramLayout}
-                    onDismiss={this.onPanelDismiss}/>
-                <AboutPanel
-                    isOpen={this.state.isPanelOpen === 'about'}
-                    onDismiss={this.onPanelDismiss}/>
+                <PanelContainer
+                    featureDiagramLayout={this.props.featureDiagramLayout}/>
             </Fabric>
         );
     }
 }
 
 export default connect(
-    state => ({settings: state.settings, featureDiagramLayout: state.ui.featureDiagramLayout}),
-    dispatch => ({dispatch})
+    state => ({
+        featureDiagramLayout: state.ui.featureDiagramLayout
+    }),
+    dispatch => ({
+        handleMessage: dispatch,
+        onSetFeatureDiagramLayout: layout => dispatch(Actions.ui.setFeatureDiagramLayout(layout)),
+        onShowPanel: (panel, panelProps) => dispatch(Actions.ui.showPanel(panel, panelProps))
+    })
 )(AppContainer);

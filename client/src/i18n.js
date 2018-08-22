@@ -76,12 +76,13 @@ export const strings = {
             setLayout: 'Layout',
             verticalTree: 'Vertical tree',
             horizontalTree: 'Horizontal tree',
-            new: 'New',
-            featureBelow: 'New feature below',
-            featureAbove: 'New feature above',
-            rename: 'Rename',
-            remove: 'Remove',
-            changeDescription: 'Change description'
+            feature: {
+                new: 'New',
+                featureBelow: 'New feature below',
+                featureAbove: 'New feature above',
+                remove: 'Remove',
+                details: 'Details'
+            }
         }
     }
 };
