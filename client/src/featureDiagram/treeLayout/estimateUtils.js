@@ -21,10 +21,15 @@ export function estimateXOffset(settings, sgn, estimatedTextWidth, layout) {
         nodeSettings.paddingX + nodeSettings.strokeWidth + nodeSettings.bboxPadding);
 }
 
+// estimated distance of the font's baseline and descent in px
+function baselineHeight(settings) {
+    return getSetting(settings, 'featureDiagram.font.size') * 0.3;
+}
+
 // estimates the y coordinate of a node's rectangle top or bottom side
 export function estimateYOffset(settings, sgn, layout) {
     const nodeSettings = getSetting(settings, 'featureDiagram.treeLayout.node');
     return sgn === 1
-        ? nodeSettings.baselineHeight + nodeSettings.paddingY + nodeSettings.strokeWidth + nodeSettings.bboxPadding
+        ? baselineHeight(settings) + nodeSettings.paddingY + nodeSettings.strokeWidth + nodeSettings.bboxPadding
         : (-1) * (getSetting(settings, 'featureDiagram.font.size') + nodeSettings.paddingY + nodeSettings.strokeWidth + nodeSettings.bboxPadding);
 }

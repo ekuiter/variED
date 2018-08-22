@@ -21,7 +21,6 @@ export const defaultSettings = {
                     paddingX: 12, // x padding for rectangles in px (rectangle width is roughly measured width + 2 * paddingX)
                     paddingY: 8, // y padding for rectangles in px (rectangle height is roughly font.size + 2 * paddingY)
                     strokeWidth: 1, // rectangle stroke width in px
-                    baselineHeight: 5, // estimated distance of the font's baseline and descent in px (depends on font.size) TODO: calculate
                     bboxPadding: 20, // general padding for the estimated bounding box in px (avoid "touching" the window)
                     // colors for different feature types (fill = rectangle area, stroke = rectangle border)
                     abstractFill: '#f2f2ff',
