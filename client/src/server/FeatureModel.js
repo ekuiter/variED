@@ -24,10 +24,6 @@ d3Hierarchy.prototype.feature = function() {
     });
 };
 
-export function getFeatureModel(state) {
-    return state.server.featureModel ? new FeatureModel(state.server.featureModel) : null;
-}
-
 export default class FeatureModel {
     // 'data' as supplied by FEATURE_MODEL messages from the server
     constructor(featureModel) {

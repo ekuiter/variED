@@ -1,8 +1,8 @@
 import React from 'react';
 import FeatureDiagram from './FeatureDiagram';
 import {connect} from 'react-redux';
-import {getFeatureModel} from '../server/FeatureModel';
 import {Spinner, SpinnerSize} from 'office-ui-fabric-react/lib/Spinner';
+import {getFeatureModel} from '../selectors';
 
 export default connect(
     state => ({
