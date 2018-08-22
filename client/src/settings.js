@@ -5,7 +5,6 @@ const SETTINGS_SET = 'SETTINGS_SET', SETTINGS_RESET = 'SETTINGS_RESET';
 
 export const defaultSettings = {
         featureDiagram: {
-            layout: 'horizontalTree', // layout for displaying a feature diagram
             font: {
                 family: 'Arial', // font family for feature diagrams
                 size: 16 // main font size for feature names

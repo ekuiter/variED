@@ -2,7 +2,7 @@ const Constants = {
     githubUri: 'https://github.com/ekuiter/variED',
     licenseUri: 'https://github.com/ekuiter/variED/blob/master/LICENSE.txt',
     initialUi: {
-        featureDiagramLayout: 'horizontalTree'
+        featureDiagramLayout: 'verticalTree'
     },
     server: {
         webSocket: process.env.REACT_APP_WEBSOCKET || `ws://${window.location.host}/websocket`, // WebSocket URI to connect to

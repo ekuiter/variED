@@ -2,6 +2,7 @@ import React from 'react';
 import {Callout, DirectionalHint} from 'office-ui-fabric-react/lib/Callout';
 import {CommandBar} from 'office-ui-fabric-react/lib/CommandBar';
 import {getSetting} from '../../settings';
+import CommandBarItems from '../../CommandBarItems';
 
 export default class extends React.Component {
     static defaultProps = {
@@ -9,13 +10,14 @@ export default class extends React.Component {
     };
 
     render() {
-        const {gapSpace, width} = getSetting(this.props.settings, 'featureDiagram.treeLayout.featureCallout'),
+        const onDismiss = this.props.onDismiss,
+            {gapSpace, width} = getSetting(this.props.settings, 'featureDiagram.treeLayout.featureCallout'),
             feature = this.props.node && this.props.node.feature();
         if (!feature)
             return null;
         return (
             <Callout target={this.props.nodeRef}
-                     onDismiss={this.props.onDismiss}
+                     onDismiss={onDismiss}
                      hidden={!this.props.node}
                      gapSpace={gapSpace}
                      calloutWidth={width}
@@ -33,7 +35,14 @@ export default class extends React.Component {
                         </div>
                         : <div className="inner empty"/>}
                     <CommandBar
-                        items={[]}/>
+                        items={[
+                            CommandBarItems.featureDiagram.new(feature, onDismiss),
+                            CommandBarItems.featureDiagram.remove(feature, onDismiss)
+                        ]}
+                        overflowItems={[
+                            CommandBarItems.featureDiagram.rename(feature),
+                            CommandBarItems.featureDiagram.changeDescription(feature)
+                        ]}/>
                 </div>
             </Callout>
         );

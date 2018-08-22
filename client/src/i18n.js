@@ -68,6 +68,21 @@ export const strings = {
         errors: {
             fontNotInstalled: 'This font is not installed on your system.'
         }
+    },
+    featureDiagram: {
+        commands: {
+            undo: 'Undo',
+            redo: 'Redo',
+            setLayout: 'Layout',
+            verticalTree: 'Vertical tree',
+            horizontalTree: 'Horizontal tree',
+            new: 'New',
+            featureBelow: 'New feature below',
+            featureAbove: 'New feature above',
+            rename: 'Rename',
+            remove: 'Remove',
+            changeDescription: 'Change description'
+        }
     }
 };
 

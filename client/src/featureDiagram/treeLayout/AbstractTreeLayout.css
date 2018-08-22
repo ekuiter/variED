@@ -8,7 +8,7 @@
 }
 
 .callout .header {
-    padding: 18px 24px 12px;
+    padding: 14px 24px 8px;
 }
 
 .callout .header p {
@@ -17,11 +17,11 @@
 }
 
 .callout .inner {
-    padding: 0 24px 20px;
+    padding: 0 24px 16px;
 }
 
 .callout .inner.empty {
-    padding: 0 24px 8px;
+    padding: 0 24px 4px;
 }
 
 .callout .inner p {
