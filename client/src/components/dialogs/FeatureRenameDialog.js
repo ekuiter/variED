@@ -13,9 +13,10 @@ export default class extends React.Component {
     onLayerDidMount = defer(() => this.textFieldRef.current.focus());
 
     onRename = () => {
-        if (this.state.newFeatureName && this.props.featureName !== this.state.newFeatureName)
+        if (this.state.newFeatureName && this.props.featureName !== this.state.newFeatureName) {
             actions.server.featureNameChanged(this.props.featureName, this.state.newFeatureName);
-        else
+            this.setState({newFeatureName: null});
+        } else
             ;//TODO: show error
         this.props.onDismiss();
     };

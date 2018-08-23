@@ -12,7 +12,8 @@ export default connect(
         featureModel: getFeatureModel(state)
     }),
     dispatch => ({
-        onShowPanel: (panel, panelProps) => dispatch(actions.ui.showPanel(panel, panelProps))
+        onShowPanel: (panel, panelProps) => dispatch(actions.ui.showPanel(panel, panelProps)),
+        onShowDialog: (dialog, dialogProps) => dispatch(actions.ui.showDialog(dialog, dialogProps))
     })
 )(props =>
     props.featureModel

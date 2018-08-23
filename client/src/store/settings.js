@@ -42,10 +42,10 @@ export const defaultSettings = {
                     marginY: 12, // collapsing y margin for rectangles in px (see vertical.marginX)
                     layerMargin: 80 // additional margin between layers in px (layer height is roughly widest text on layer + layerMargin)
                 },
-                featureCallout: {
-                    throttleUpdate: 50, // how often to reposition the feature callout on zoom or pan in ms
-                    width: 300, // width of feature callout in px
-                    gapSpace: 5 // space between node and feature callout in px
+                overlay: {
+                    throttleUpdate: 50, // how often to reposition the overlay on zoom or pan in ms
+                    gapSpace: 5, // space between node and overlay in px
+                    width: 300 // width of feature callout in px
                 }
             }
         }

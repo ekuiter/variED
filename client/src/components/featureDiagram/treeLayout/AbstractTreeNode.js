@@ -1,4 +1,5 @@
 import 'd3-selection-multi';
+import {event as d3Event} from 'd3-selection';
 import {getSetting} from '../../../store/settings';
 import measureTextWidth from '../../../helpers/measureTextWidth';
 import {addStyle, appendCross, translateTransform} from '../../../helpers/svg';
@@ -69,7 +70,11 @@ class AbstractTreeNode {
             rectAndText = nodeEnter.append('g')
                 .attr('class', 'rectAndText')
                 .on('click', function(d) {
-                    self.setActiveNode(d, this);
+                    self.setActiveNode('callout', d, this);
+                })
+                .on('contextmenu', function(d) {
+                    d3Event.preventDefault();
+                    self.setActiveNode('contextualMenu', d, this);
                 })
                 .on('dblclick', d => this.onShowPanel('feature', {featureName: d.feature().name})),
             bboxes = makeText(this.settings, rectAndText, false, this.getTextStyle());

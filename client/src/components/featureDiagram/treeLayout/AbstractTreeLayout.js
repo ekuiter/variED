@@ -8,6 +8,7 @@ import {updateRect} from '../../../helpers/svg';
 import '../../../stylesheets/treeLayout.css';
 import FeatureCallout from './FeatureCallout';
 import throttle from '../../../helpers/throttle';
+import FeatureContextualMenu from './FeatureContextualMenu';
 
 class AbstractTreeLayout extends React.Component {
     static defaultProps = {
@@ -20,7 +21,7 @@ class AbstractTreeLayout extends React.Component {
         onShowPanel: null
     };
     svgRef = React.createRef();
-    state = {activeNode: null, activeNodeRef: null};
+    state = {overlay: null, activeNode: null, activeNodeRef: null};
     currentCoordinates = {};
     previousCoordinates = {};
 
@@ -28,8 +29,12 @@ class AbstractTreeLayout extends React.Component {
         super(props);
         this.direction = direction;
         this.onShowPanel = (...args) => {
-            this.onHideCallout();
+            this.onHideOverlay();
             this.props.onShowPanel(...args);
+        };
+        this.onShowDialog = (...args) => {
+            this.onHideOverlay();
+            this.props.onShowDialog(...args);
         };
         this.treeNode = new TreeNode(
             props.settings,
@@ -63,22 +68,29 @@ class AbstractTreeLayout extends React.Component {
                 <FeatureCallout
                     settings={this.props.settings}
                     direction={this.direction}
-                    node={this.state.activeNode}
-                    nodeRef={this.state.activeNodeRef}
+                    node={this.state.overlay === 'callout' ? this.state.activeNode : null}
+                    nodeRef={this.state.overlay === 'callout' ? this.state.activeNodeRef : null}
                     onShowPanel={this.onShowPanel}
-                    onDismiss={this.onHideCallout}/>
+                    onDismiss={this.onHideOverlay}/>
+                <FeatureContextualMenu
+                    settings={this.props.settings}
+                    direction={this.direction}
+                    node={this.state.overlay === 'contextualMenu' ? this.state.activeNode : null}
+                    nodeRef={this.state.overlay === 'contextualMenu' ? this.state.activeNodeRef : null}
+                    onShowDialog={this.onShowDialog}
+                    onDismiss={this.onHideOverlay}/>
             </React.Fragment>
         );
     }
 
-    onHideCallout = () => this.setActiveNode(null, null);
+    onHideOverlay = () => this.setActiveNode(null, null, null);
 
-    updateCallout = throttle(
+    updateOverlay = throttle(
         () => {
-            if (this.state.activeNode)
-                return this.setState({}); // triggers a rerender for the feature callout to catch up
+            if (this.state.overlay)
+                return this.setState({}); // triggers a rerender for the overlay to catch up
         },
-        getSetting(this.props.settings, 'featureDiagram.treeLayout.featureCallout.throttleUpdate'));
+        getSetting(this.props.settings, 'featureDiagram.treeLayout.overlay.throttleUpdate'));
 
     canExport() {
         return !!this.svgRef.current;
@@ -111,8 +123,8 @@ class AbstractTreeLayout extends React.Component {
         return d => `${kind}_${d.feature().name}`;
     }
 
-    setActiveNode(activeNode, activeNodeRef) {
-        this.setState({activeNode, activeNodeRef});
+    setActiveNode(overlay, activeNode, activeNodeRef) {
+        this.setState({overlay, activeNode, activeNodeRef});
     }
 
     updateCoordinates(key, nodes) {
@@ -203,12 +215,14 @@ class AbstractTreeLayout extends React.Component {
             .translateExtent(estimatedBbox)
             .scaleExtent(getSetting(settings, 'featureDiagram.treeLayout.scaleExtent'))
             .on('zoom', () => {
-                this.updateCallout();
+                this.updateOverlay();
                 return g.attr('transform', d3Event.transform);
             }))
             .call(svgRoot => {
                 const dblclicked = svgRoot.on('dblclick.zoom');
-                svgRoot.on('dblclick.zoom', function() {
+                svgRoot.on('contextmenu', function() {
+                    d3Event.preventDefault();
+                }).on('dblclick.zoom', function() {
                     if (d3Event.target.tagName === 'svg')
                         dblclicked.call(this);
                 });
@@ -246,7 +260,7 @@ class AbstractTreeLayout extends React.Component {
         return {node, linkInBack, linkInFront, nodes};
     }
 
-    transition(selection, onEnd = this.updateCallout, duration = getSetting(this.props.settings, 'featureDiagram.treeLayout.duration')) {
+    transition(selection, onEnd = this.updateOverlay, duration = getSetting(this.props.settings, 'featureDiagram.treeLayout.duration')) {
         if (getSetting(this.props.settings, 'featureDiagram.treeLayout.useTransitions')) {
             let transition = selection.transition().duration(duration);
             if (onEnd)
@@ -284,10 +298,10 @@ class AbstractTreeLayout extends React.Component {
         this.treeLink.exit(this.transition(linkInBack.exit()), 'inBack');
         this.treeLink.exit(this.transition(linkInFront.exit()), 'inFront');
 
-        if (this.state.activeNode)
+        if (this.state.overlay)
             node.exit().each(function() {
                 if (this.contains(self.state.activeNodeRef))
-                    self.setActiveNode(null, null); // hide feature callout if active node exits
+                    self.setActiveNode(null, null, null); // hide overlay if active node exits
             });
 
         this.updateCoordinates('previousCoordinates', nodes);
