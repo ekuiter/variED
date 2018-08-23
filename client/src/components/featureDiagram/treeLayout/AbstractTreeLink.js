@@ -4,7 +4,7 @@ import {
     arcSlicePath,
     cartesianToAngle,
     drawCircle
-} from '../../../helpers/svgUtils';
+} from '../../../helpers/svg';
 import constants from '../../../constants';
 import styles from './styles';
 

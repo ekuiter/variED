@@ -4,7 +4,7 @@ import {event as d3Event, select as d3Select} from 'd3-selection';
 import {zoom as d3Zoom} from 'd3-zoom';
 import 'd3-transition';
 import {getSetting} from '../../../store/settings';
-import {updateRect} from '../../../helpers/svgUtils';
+import {updateRect} from '../../../helpers/svg';
 import '../../../stylesheets/treeLayout.css';
 import FeatureCallout from './FeatureCallout';
 import throttle from '../../../helpers/throttle';

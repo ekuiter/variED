@@ -1,5 +1,5 @@
 import AbstractTreeLink from './AbstractTreeLink';
-import {drawLine} from '../../../helpers/svgUtils';
+import {drawLine} from '../../../helpers/svg';
 import {getSetting} from '../../../store/settings';
 
 function topSide(y, rectInfo) {

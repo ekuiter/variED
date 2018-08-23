@@ -6,31 +6,27 @@ import FeaturePanel from '../../components/panels/FeaturePanel';
 import actions from '../../store/actions';
 import {getFeatureModel} from '../../store/selectors';
 
-class PanelContainer extends React.Component {
-    render() {
-        return (
-            <React.Fragment>
-                <SettingsPanel
-                    isOpen={this.props.panel === 'settings'}
-                    onDismiss={this.props.onHidePanel}
-                    settings={this.props.settings}
-                    onSetSetting={this.props.onSetSetting}
-                    onResetSettings={this.props.onResetSettings}
-                    featureDiagramLayout={this.props.featureDiagramLayout}
-                    {...this.props.panelProps}/>
-                <AboutPanel
-                    isOpen={this.props.panel === 'about'}
-                    onDismiss={this.props.onHidePanel}
-                    {...this.props.panelProps}/>
-                <FeaturePanel
-                    isOpen={this.props.panel === 'feature'}
-                    onDismiss={this.props.onHidePanel}
-                    featureModel={this.props.featureModel}
-                    {...this.props.panelProps}/>
-            </React.Fragment>
-        );
-    }
-}
+const PanelContainer = props => (
+    <React.Fragment>
+        <SettingsPanel
+            isOpen={props.panel === 'settings'}
+            onDismiss={props.onHidePanel}
+            settings={props.settings}
+            onSetSetting={props.onSetSetting}
+            onResetSettings={props.onResetSettings}
+            featureDiagramLayout={props.featureDiagramLayout}
+            {...props.panelProps}/>
+        <AboutPanel
+            isOpen={props.panel === 'about'}
+            onDismiss={props.onHidePanel}
+            {...props.panelProps}/>
+        <FeaturePanel
+            isOpen={props.panel === 'feature'}
+            onDismiss={props.onHidePanel}
+            featureModel={props.featureModel}
+            {...props.panelProps}/>
+    </React.Fragment>
+);
 
 export default connect(
     state => ({

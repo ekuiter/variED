@@ -1,7 +1,7 @@
 import 'd3-selection-multi';
 import {getSetting} from '../../../store/settings';
 import measureTextWidth from '../../../helpers/measureTextWidth';
-import {addStyle, appendCross, translateTransform} from '../../../helpers/svgUtils';
+import {addStyle, appendCross, translateTransform} from '../../../helpers/svg';
 import styles from './styles';
 
 function widenBbox({x, y, width, height}, paddingX, paddingY) {
