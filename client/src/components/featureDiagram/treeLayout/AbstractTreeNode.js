@@ -38,9 +38,10 @@ function makeText(settings, selection, isGettingRectInfo, textStyle) {
 }
 
 class AbstractTreeNode {
-    constructor(settings, setActiveNode) {
+    constructor(settings, setActiveNode, onShowPanel) {
         this.settings = settings;
         this.setActiveNode = setActiveNode;
+        this.onShowPanel = onShowPanel;
     }
 
     x(node) {
@@ -69,7 +70,8 @@ class AbstractTreeNode {
                 .attr('class', 'rectAndText')
                 .on('click', function(d) {
                     self.setActiveNode(d, this);
-                }),
+                })
+                .on('dblclick', d => this.onShowPanel('feature', {featureName: d.feature().name})),
             bboxes = makeText(this.settings, rectAndText, false, this.getTextStyle());
 
         let i = 0;

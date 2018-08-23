@@ -23,6 +23,8 @@ function uiReducer(state = constants.store.initialUi, action) {
         return {...state, featureDiagramLayout: action.featureDiagramLayout};
     if (action.type === actionTypes.UI_SHOW_PANEL)
         return {...state, panel: action.panel, panelProps: action.panelProps};
+    if (action.type === actionTypes.UI_SHOW_DIALOG)
+        return {...state, dialog: action.dialog, dialogProps: action.dialogProps};
     return state;
 }
 

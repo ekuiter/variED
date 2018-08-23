@@ -7,6 +7,7 @@ import {CommandBar} from 'office-ui-fabric-react/lib/CommandBar';
 import contextualMenuItems from '../components/contextualMenuItems';
 import actions from '../store/actions';
 import PanelContainer from './panels/PanelContainer';
+import DialogContainer from './dialogs/DialogContainer';
 
 class AppContainer extends React.Component {
     componentDidMount() {
@@ -33,6 +34,7 @@ class AppContainer extends React.Component {
                 <FeatureDiagramContainer className="content"/>
                 <PanelContainer
                     featureDiagramLayout={this.props.featureDiagramLayout}/>
+                <DialogContainer/>
             </Fabric>
         );
     }

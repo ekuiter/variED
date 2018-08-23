@@ -116,7 +116,7 @@ const Setting = {
 
 export default class extends React.Component {
     static defaultProps = {
-        isOpen: false, onDismiss: null, featureDiagramLayout: null,
+        isOpen: false, onDismissed: null, featureDiagramLayout: null,
         settings: null, onSetSetting: null, onResetSettings: null
     };
     state = {canReset: false};
@@ -139,7 +139,7 @@ export default class extends React.Component {
                 className="settingsPanel"
                 isOpen={this.props.isOpen}
                 type={PanelType.smallFixedFar}
-                onDismiss={this.props.onDismiss}
+                onDismissed={this.props.onDismissed}
                 isLightDismiss={true}
                 headerText={i18n.t('panels.settingsPanel.title')}>
 

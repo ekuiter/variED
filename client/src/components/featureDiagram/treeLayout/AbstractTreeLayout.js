@@ -11,7 +11,13 @@ import throttle from '../../../helpers/throttle';
 
 class AbstractTreeLayout extends React.Component {
     static defaultProps = {
-        featureModel: null, width: null, height: null, className: null, fitOnResize: false, settings: null, onShowPanel: null
+        featureModel: null,
+        width: null,
+        height: null,
+        className: null,
+        fitOnResize: false,
+        settings: null,
+        onShowPanel: null
     };
     svgRef = React.createRef();
     state = {activeNode: null, activeNodeRef: null};
@@ -21,9 +27,14 @@ class AbstractTreeLayout extends React.Component {
     constructor(props, direction, TreeNode, TreeLink) {
         super(props);
         this.direction = direction;
+        this.onShowPanel = (...args) => {
+            this.onHideCallout();
+            this.props.onShowPanel(...args);
+        };
         this.treeNode = new TreeNode(
             props.settings,
-            this.setActiveNode.bind(this));
+            this.setActiveNode.bind(this),
+            this.onShowPanel);
         this.treeLink = new TreeLink(
             props.settings,
             this.getParentCoordinateFn('currentCoordinates'),
@@ -54,11 +65,13 @@ class AbstractTreeLayout extends React.Component {
                     direction={this.direction}
                     node={this.state.activeNode}
                     nodeRef={this.state.activeNodeRef}
-                    onShowPanel={this.props.onShowPanel}
-                    onDismiss={() => this.setActiveNode(null, null)}/>
+                    onShowPanel={this.onShowPanel}
+                    onDismiss={this.onHideCallout}/>
             </React.Fragment>
         );
     }
+
+    onHideCallout = () => this.setActiveNode(null, null);
 
     updateCallout = throttle(
         () => {
@@ -192,7 +205,14 @@ class AbstractTreeLayout extends React.Component {
             .on('zoom', () => {
                 this.updateCallout();
                 return g.attr('transform', d3Event.transform);
-            }));
+            }))
+            .call(svgRoot => {
+                const dblclicked = svgRoot.on('dblclick.zoom');
+                svgRoot.on('dblclick.zoom', function() {
+                    if (d3Event.target.tagName === 'svg')
+                        dblclicked.call(this);
+                });
+            });
 
         if (isCreating || (fitOnResize && isResize)) {
             const svgBbox = this.svgRef.current.getBoundingClientRect();

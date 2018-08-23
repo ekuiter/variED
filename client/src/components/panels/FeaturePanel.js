@@ -8,12 +8,19 @@ const buttonStyles = {root: {backgroundColor: 'transparent'}},
     transparentItems = items => items;
 
 export default class extends React.Component {
+    static defaultProps = {
+        isOpen: false, onDismissed: null, featureName: null, onShowDialog: null, featureModel: null
+    };
+
     onRenderFooterContent = () => (
         <CommandBar
             items={transparentItems([
-                contextualMenuItems.featureDiagram.feature.new(this.props.featureName, this.props.onDismiss),
-                contextualMenuItems.featureDiagram.feature.remove(this.props.featureName, this.props.onDismiss)
+                contextualMenuItems.featureDiagram.feature.new(this.props.featureName, this.props.onDismissed),
+                contextualMenuItems.featureDiagram.feature.remove(this.props.featureName, this.props.onDismissed)
             ])}
+            overflowItems={[
+                contextualMenuItems.featureDiagram.feature.rename(this.props.featureName, this.props.onShowDialog)
+            ]}
             overflowButtonProps={{styles: buttonStyles}}
             styles={{root: {margin: '0 -40px', padding: '0 35px'}}}/>
     );
@@ -22,15 +29,17 @@ export default class extends React.Component {
         const feature = this.props.featureModel && this.props.featureName
             ? this.props.featureModel.getFeature(this.props.featureName)
             : null;
+        if (this.props.isOpen && !feature)
+            this.props.onDismissed();
         return (
             <Panel
                 isOpen={this.props.isOpen}
                 type={PanelType.smallFixedFar}
-                onDismiss={this.props.onDismiss}
+                onDismissed={this.props.onDismissed}
                 isLightDismiss={true}
                 headerText={
                     <span>
-                        {i18n.t('panels.featurePanel.feature')}: <b>{this.props.featureName}</b>
+                        {i18n.t('panels.featurePanel.title')}: <strong>{this.props.featureName}</strong>
                     </span>}
                 onRenderFooterContent={this.onRenderFooterContent}>
                 {feature &&

@@ -71,9 +71,15 @@ export const strings = {
             }
         },
         featurePanel: {
+            title: 'Feature',
             edit: 'Edit',
-            feature: 'Feature',
             noDescriptionSet: 'No description set.'
+        }
+    },
+    dialogs: {
+        featureRenameDialog: {
+            title: 'Rename feature',
+            rename: 'Rename'
         }
     },
     featureDiagram: {
@@ -88,7 +94,8 @@ export const strings = {
                 featureBelow: 'New feature below',
                 featureAbove: 'New feature above',
                 remove: 'Remove',
-                details: 'Details'
+                details: 'Details',
+                rename: 'Rename'
             }
         }
     }

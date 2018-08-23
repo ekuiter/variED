@@ -76,6 +76,12 @@ const contextualMenuItems = {
                 iconProps: {iconName: 'More'},
                 iconOnly: true,
                 onClick: () => onShowPanel('feature', {featureName})
+            }),
+            rename: (featureName, onShowDialog) => ({
+                key: 'rename',
+                text: i18n.t('featureDiagram.commands.feature.rename'),
+                iconProps: {iconName: 'Rename'},
+                onClick: () => onShowDialog('featureRename', {featureName})
             })
         }
     }

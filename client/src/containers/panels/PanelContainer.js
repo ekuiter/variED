@@ -10,7 +10,7 @@ const PanelContainer = props => (
     <React.Fragment>
         <SettingsPanel
             isOpen={props.panel === 'settings'}
-            onDismiss={props.onHidePanel}
+            onDismissed={props.onHidePanel}
             settings={props.settings}
             onSetSetting={props.onSetSetting}
             onResetSettings={props.onResetSettings}
@@ -18,11 +18,12 @@ const PanelContainer = props => (
             {...props.panelProps}/>
         <AboutPanel
             isOpen={props.panel === 'about'}
-            onDismiss={props.onHidePanel}
+            onDismissed={props.onHidePanel}
             {...props.panelProps}/>
         <FeaturePanel
             isOpen={props.panel === 'feature'}
-            onDismiss={props.onHidePanel}
+            onDismissed={props.onHidePanel}
+            onShowDialog={props.onShowDialog}
             featureModel={props.featureModel}
             {...props.panelProps}/>
     </React.Fragment>
@@ -32,11 +33,16 @@ export default connect(
     state => ({
         panel: state.ui.panel,
         panelProps: state.ui.panelProps,
+        dialog: state.ui.dialog, // needed to reopen a parent panel after a dialog is closed,
         settings: state.settings,
         featureModel: getFeatureModel(state)
     }),
     dispatch => ({
         onHidePanel: () => dispatch(actions.ui.hidePanel()),
+        onShowDialog: (dialog, dialogProps) => {
+            dispatch(actions.ui.hidePanel());
+            dispatch(actions.ui.showDialog(dialog, dialogProps));
+        },
         onSetSetting: (path, value) => dispatch(actions.settings.set(path, value)),
         onResetSettings: () => dispatch(actions.settings.reset())
     })

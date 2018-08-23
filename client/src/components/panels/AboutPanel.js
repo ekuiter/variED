@@ -6,7 +6,7 @@ export default props => (
     <Panel
         isOpen={props.isOpen}
         type={PanelType.smallFixedFar}
-        onDismiss={props.onDismiss}
+        onDismissed={props.onDismissed}
         isLightDismiss={true}
         headerText={i18n.t('panels.aboutPanel.title')}>
         {i18n.t('panels.aboutPanel.content')}
