@@ -77,6 +77,7 @@ class AbstractTreeLayout extends React.Component {
                     direction={this.direction}
                     node={this.state.overlay === 'contextualMenu' ? this.state.activeNode : null}
                     nodeRef={this.state.overlay === 'contextualMenu' ? this.state.activeNodeRef : null}
+                    onShowPanel={this.onShowPanel}
                     onShowDialog={this.onShowDialog}
                     onDismiss={this.onHideOverlay}/>
             </React.Fragment>

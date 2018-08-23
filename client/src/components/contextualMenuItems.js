@@ -17,17 +17,19 @@ const contextualMenuItems = {
         onClick: () => onShowPanel('about')
     }),
     featureDiagram: {
-        undo: () => ({
+        undo: checked => ({
             key: 'undo',
             text: i18n.t('featureDiagram.commands.undo'),
             iconProps: {iconName: 'Undo'},
-            onClick: () => actions.server.undo()
+            onClick: () => actions.server.undo(),
+            checked
         }),
-        redo: () => ({
+        redo: checked => ({
             key: 'redo',
             text: i18n.t('featureDiagram.commands.redo'),
             iconProps: {iconName: 'Redo'},
-            onClick: () => actions.server.redo()
+            onClick: () => actions.server.redo(),
+            checked
         }),
         setLayout: (featureDiagramLayout, onSetFeatureDiagramLayout) => ({
             key: 'setLayout',
@@ -73,7 +75,7 @@ const contextualMenuItems = {
             details: (featureName, onShowPanel) => ({
                 key: 'details',
                 text: i18n.t('featureDiagram.commands.feature.details'),
-                iconProps: {iconName: 'More'},
+                iconProps: {iconName: 'Info'},
                 iconOnly: true,
                 onClick: () => onShowPanel('feature', {featureName})
             }),
