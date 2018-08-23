@@ -4,6 +4,7 @@ import AppContainer from './containers/AppContainer';
 import 'normalize.css';
 import './stylesheets/index.css';
 import 'promise-polyfill/src/polyfill';
+import 'element-closest';
 import {createStore} from 'redux';
 import {Provider} from 'react-redux';
 import reducers from './store/reducers';

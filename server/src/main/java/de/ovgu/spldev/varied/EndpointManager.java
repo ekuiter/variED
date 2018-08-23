@@ -16,6 +16,13 @@ public class EndpointManager {
         return instance == null ? instance = new EndpointManager() : instance;
     }
 
+    public boolean isLabelAvailable(String label) {
+        for (Endpoint endpoint : endpoints)
+            if (label.equals(endpoint.getLabel()))
+                return false;
+            return true;
+    }
+
     public void register(Endpoint newEndpoint) {
         String label = newEndpoint.getLabel();
         if (!StringUtils.isPresent(label))

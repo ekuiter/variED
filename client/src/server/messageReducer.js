@@ -7,12 +7,10 @@ const messageTypes = constants.server.messageTypes,
             return state;
         },
         [messageTypes.ENDPOINT_SUBSCRIBE](state, action) {
-            console.log(`${action.endpoint} subscribed`);
-            return state;
+            return {...state, endpoints: [...state.endpoints, action.endpoint]};
         },
         [messageTypes.ENDPOINT_UNSUBSCRIBE](state, action) {
-            console.log(`${action.endpoint} unsubscribed`);
-            return state;
+            return {...state, endpoints: state.endpoints.filter(endpoint => endpoint !== action.endpoint)};
         },
         [messageTypes.FEATURE_MODEL](state, action) {
             return {...state, featureModel: action.featureModel};

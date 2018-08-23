@@ -1,11 +1,12 @@
 package de.ovgu.spldev.varied;
 
+import me.atrox.haikunator.Haikunator;
+import me.atrox.haikunator.HaikunatorBuilder;
+
 import javax.websocket.*;
-import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.EOFException;
 import java.io.IOException;
-import java.util.UUID;
 
 /**
  * An endpoint is a client that has a bidirectional connection (session) with the server.
@@ -18,12 +19,23 @@ public class Endpoint {
     protected String label;
     protected Session session;
 
+    private static Haikunator haikunator = new HaikunatorBuilder().setDelimiter(" ").setTokenLength(0).build();
+
+    public static String generateLabel() {
+        return haikunator.haikunate() + " (anonymous)";
+    }
+
     @OnOpen
     public void onOpen(Session session) {
+        EndpointManager endpointManager = EndpointManager.getInstance();
+
         this.session = session;
-        this.label = UUID.randomUUID().toString();
+        this.label = generateLabel();
+        while (!endpointManager.isLabelAvailable(this.label))
+            this.label = generateLabel();
+
         try {
-            EndpointManager.getInstance().register(this);
+            endpointManager.register(this);
             CollaborationSession.getInstance().subscribe(this);
         } catch (Throwable t) {
             send(new Message.Error(t));

@@ -4,7 +4,7 @@ import constants from '../constants';
 import {defaultSettings, getNewSettings, isSettingsResetAction, isSettingsSetAction} from './settings';
 import {actionTypes} from './actions';
 
-function serverReducer(state = {}, action) {
+function serverReducer(state = constants.store.initialServer, action) {
     if (constants.server.isMessageType(action.type))
         return messageReducer(state, action);
     return state;

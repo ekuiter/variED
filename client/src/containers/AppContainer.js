@@ -10,6 +10,7 @@ import PanelContainer from './panels/PanelContainer';
 import DialogContainer from './dialogs/DialogContainer';
 import withKeys from '../helpers/withKeys';
 import defer from '../helpers/defer';
+import EndpointFacepile from '../components/EndpointFacepile';
 
 class AppContainer extends React.Component {
     componentDidMount() {
@@ -29,6 +30,13 @@ class AppContainer extends React.Component {
                                 this.props.onSetFeatureDiagramLayout),
                         ]}
                         farItems={[
+                            {
+                                key: 'endpointFacepile',
+                                onRender: () =>
+                                    <EndpointFacepile
+                                        endpoints={this.props.endpoints}
+                                        settings={this.props.settings}/>
+                            },
                             contextualMenuItems.settings(this.props.onShowPanel),
                             contextualMenuItems.about(this.props.onShowPanel)
                         ]}/>
@@ -44,7 +52,9 @@ class AppContainer extends React.Component {
 
 export default connect(
     state => ({
-        featureDiagramLayout: state.ui.featureDiagramLayout
+        featureDiagramLayout: state.ui.featureDiagramLayout,
+        endpoints: state.server.endpoints,
+        settings: state.settings
     }),
     dispatch => ({
         handleMessage: dispatch,

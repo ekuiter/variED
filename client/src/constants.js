@@ -6,6 +6,9 @@ const constants = {
         }
     },
     store: {
+        initialServer: {
+            endpoints: []
+        },
         initialUi: {
             featureDiagramLayout: 'verticalTree',
             panel: null,
