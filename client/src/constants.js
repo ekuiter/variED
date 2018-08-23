@@ -1,10 +1,16 @@
 const constants = {
-    githubUri: 'https://github.com/ekuiter/variED',
-    licenseUri: 'https://github.com/ekuiter/variED/blob/master/LICENSE.txt',
-    initialUi: {
-        featureDiagramLayout: 'verticalTree',
-        panel: null,
-        panelProps: null
+    panels: {
+        aboutPanel: {
+            githubUri: 'https://github.com/ekuiter/variED',
+            licenseUri: 'https://github.com/ekuiter/variED/blob/master/LICENSE.txt'
+        }
+    },
+    store: {
+        initialUi: {
+            featureDiagramLayout: 'verticalTree',
+            panel: null,
+            panelProps: null
+        }
     },
     server: {
         webSocket: process.env.REACT_APP_WEBSOCKET || `ws://${window.location.host}/websocket`, // WebSocket URI to connect to

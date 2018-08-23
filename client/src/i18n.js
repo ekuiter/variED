@@ -4,69 +4,76 @@ import constants from './constants';
 import {Link} from 'office-ui-fabric-react/lib/Link';
 
 export const strings = {
-    aboutPanel: {
-        title: 'About',
-        content: (
-            <div>
-                <h3>variED: The variability editor</h3>
-                <p>View, edit and analyze feature models in the browser - with support for real-time collaboration.</p>
-                <p>This project is released under the <Link href={constants.licenseUri} target="_blank">LGPL v3 license</Link>.</p>
-                <p><Link href={constants.githubUri} target="_blank">View source code on GitHub</Link></p>
-            </div>
-        )
-    },
-    settingsPanel: {
-        title: 'Settings',
-        toggleOn: 'On',
-        toggleOff: 'Off',
-        apply: 'Apply',
-        customizeColors: 'Customize colors',
-        resetToDefaults: 'Reset to defaults',
-        headings: {
-            featureDiagram: 'Feature diagram',
-            features: 'Features',
-            edges: 'Edges',
-            verticalTree: 'Vertical tree',
-            horizontalTree: 'Horizontal tree'
+    panels: {
+        aboutPanel: {
+            title: 'About',
+            content: (
+                <div>
+                    <h3>variED: The variability editor</h3>
+                    <p>View, edit and analyze feature models in the browser - with support for real-time collaboration.</p>
+                    <p>This project is released under the <Link href={constants.panels.aboutPanel.licenseUri} target="_blank">LGPL v3 license</Link>.</p>
+                    <p><Link href={constants.panels.aboutPanel.githubUri} target="_blank">View source code on GitHub</Link></p>
+                </div>
+            )
         },
-        labels: {
-            featureDiagram: {
-                font: {
-                    family: 'Font family',
-                    size: 'Font size'
-                },
-                treeLayout: {
-                    debug: 'Show developer information',
-                    useTransitions: 'Animate feature model changes',
-                    node: {
-                        paddingX: 'Horizontal padding',
-                        paddingY: 'Vertical padding',
-                        strokeWidth: 'Border thickness',
-                        abstractFill: 'Abstract feature (fill)',
-                        abstractStroke: 'Abstract feature (border)',
-                        concreteFill: 'Concrete feature (fill)',
-                        concreteStroke: 'Concrete feature (border)',
-                        hiddenFill: 'Hidden feature (text)'
+        settingsPanel: {
+            title: 'Settings',
+            toggleOn: 'On',
+            toggleOff: 'Off',
+            apply: 'Apply',
+            customizeColors: 'Customize colors',
+            resetToDefaults: 'Reset to defaults',
+            headings: {
+                featureDiagram: 'Feature diagram',
+                features: 'Features',
+                edges: 'Edges',
+                verticalTree: 'Vertical tree',
+                horizontalTree: 'Horizontal tree'
+            },
+            labels: {
+                featureDiagram: {
+                    font: {
+                        family: 'Font family',
+                        size: 'Font size'
                     },
-                    link: {
-                        circleRadius: 'Circle radius',
-                        stroke: 'Edge',
-                        strokeWidth: 'Thickness'
-                    },
-                    vertical: {
-                        marginX: 'Horizontal gap',
-                        layerHeight: 'Vertical gap',
-                        groupRadius: 'Group radius'
-                    },
-                    horizontal: {
-                        marginY: 'Vertical gap',
-                        layerMargin: 'Horizontal gap'
-                    },
+                    treeLayout: {
+                        debug: 'Show developer information',
+                        useTransitions: 'Animate feature model changes',
+                        node: {
+                            paddingX: 'Horizontal padding',
+                            paddingY: 'Vertical padding',
+                            strokeWidth: 'Border thickness',
+                            abstractFill: 'Abstract feature (fill)',
+                            abstractStroke: 'Abstract feature (border)',
+                            concreteFill: 'Concrete feature (fill)',
+                            concreteStroke: 'Concrete feature (border)',
+                            hiddenFill: 'Hidden feature (text)'
+                        },
+                        link: {
+                            circleRadius: 'Circle radius',
+                            stroke: 'Edge',
+                            strokeWidth: 'Thickness'
+                        },
+                        vertical: {
+                            marginX: 'Horizontal gap',
+                            layerHeight: 'Vertical gap',
+                            groupRadius: 'Group radius'
+                        },
+                        horizontal: {
+                            marginY: 'Vertical gap',
+                            layerMargin: 'Horizontal gap'
+                        },
+                    }
                 }
+            },
+            errors: {
+                fontNotInstalled: 'This font is not installed on your system.'
             }
         },
-        errors: {
-            fontNotInstalled: 'This font is not installed on your system.'
+        featurePanel: {
+            edit: 'Edit',
+            feature: 'Feature',
+            noDescriptionSet: 'No description set.'
         }
     },
     featureDiagram: {

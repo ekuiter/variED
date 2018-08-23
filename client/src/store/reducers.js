@@ -18,7 +18,7 @@ function settingsReducer(state = defaultSettings, action) {
     return state;
 }
 
-function uiReducer(state = constants.initialUi, action) {
+function uiReducer(state = constants.store.initialUi, action) {
     if (action.type === actionTypes.UI_SET_FEATURE_DIAGRAM_LAYOUT)
         return {...state, featureDiagramLayout: action.featureDiagramLayout};
     if (action.type === actionTypes.UI_SHOW_PANEL)

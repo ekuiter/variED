@@ -9,7 +9,7 @@ import {ColorPicker} from 'office-ui-fabric-react/lib/ColorPicker';
 import {DialogContextualMenu} from '../../helpers/Dialog';
 import {DefaultButton} from 'office-ui-fabric-react/lib/Button';
 
-const getLabel = path => i18n.t('settingsPanel.labels', path);
+const getLabel = path => i18n.t('panels.settingsPanel.labels', path);
 
 const Setting = {
     Toggle: ({settings, onSetSetting, path}) => (
@@ -17,8 +17,8 @@ const Setting = {
             className="setting"
             label={getLabel(path)}
             checked={getSetting(settings, path)}
-            onText={i18n.t('settingsPanel.toggleOn')}
-            offText={i18n.t('settingsPanel.toggleOn')}
+            onText={i18n.t('panels.settingsPanel.toggleOn')}
+            offText={i18n.t('panels.settingsPanel.toggleOn')}
             onClick={() => onSetSetting(path, bool => !bool)}/>
     ),
 
@@ -100,7 +100,7 @@ const Setting = {
         render() {
             return (
                 <DialogContextualMenu
-                    label={i18n.t('settingsPanel.customizeColors')}
+                    label={i18n.t('panels.settingsPanel.customizeColors')}
                     options={this.props.paths.map(path => ({key: path, text: getLabel(path)}))}
                     onApply={this.onApply}
                     onRender={this.onRender}
@@ -141,14 +141,14 @@ export default class extends React.Component {
                 type={PanelType.smallFixedFar}
                 onDismiss={this.props.onDismiss}
                 isLightDismiss={true}
-                headerText={i18n.t('settingsPanel.title')}>
+                headerText={i18n.t('panels.settingsPanel.title')}>
 
                 <DefaultButton
                     onClick={this.onReset}
                     disabled={!this.state.canReset}
-                    text={i18n.t('settingsPanel.resetToDefaults')}/>
+                    text={i18n.t('panels.settingsPanel.resetToDefaults')}/>
 
-                <h4>{i18n.t('settingsPanel.headings.featureDiagram')}</h4>
+                <h4>{i18n.t('panels.settingsPanel.headings.featureDiagram')}</h4>
                 <Setting.FontComboBox
                     {...props}
                     path="featureDiagram.font.family"/>
@@ -166,7 +166,7 @@ export default class extends React.Component {
                         {...props}
                         path="featureDiagram.treeLayout.debug"/>
 
-                    <h4>{i18n.t('settingsPanel.headings.features')}</h4>
+                    <h4>{i18n.t('panels.settingsPanel.headings.features')}</h4>
                     <Setting.SpinButton
                         {...props}
                         path="featureDiagram.treeLayout.node.paddingX"
@@ -199,7 +199,7 @@ export default class extends React.Component {
                             'featureDiagram.treeLayout.node.concreteStroke',
                             'featureDiagram.treeLayout.node.hiddenFill']}/>
 
-                    <h4>{i18n.t('settingsPanel.headings.edges')}</h4>
+                    <h4>{i18n.t('panels.settingsPanel.headings.edges')}</h4>
                     <Setting.SpinButton
                         {...props}
                         path="featureDiagram.treeLayout.link.strokeWidth"
@@ -211,7 +211,7 @@ export default class extends React.Component {
 
                     {featureDiagramLayout === 'verticalTree'
                         ? <React.Fragment>
-                            <h4>{i18n.t('settingsPanel.headings.verticalTree')}</h4>
+                            <h4>{i18n.t('panels.settingsPanel.headings.verticalTree')}</h4>
                             <Setting.SpinButton
                                 {...props}
                                 path="featureDiagram.treeLayout.vertical.marginX"
@@ -234,7 +234,7 @@ export default class extends React.Component {
 
                         : featureDiagramLayout === 'horizontalTree'
                             ? <React.Fragment>
-                                <h4>{i18n.t('settingsPanel.headings.horizontalTree')}</h4>
+                                <h4>{i18n.t('panels.settingsPanel.headings.horizontalTree')}</h4>
                                 <Setting.SpinButton
                                     {...props}
                                     path="featureDiagram.treeLayout.horizontal.layerMargin"

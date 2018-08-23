@@ -4,14 +4,14 @@ import actions from '../store/actions';
 const contextualMenuItems = {
     settings: onShowPanel => ({
         key: 'settings',
-        text: i18n.t('settingsPanel.title'),
+        text: i18n.t('panels.settingsPanel.title'),
         iconOnly: true,
         iconProps: {iconName: 'Settings'},
         onClick: () => onShowPanel('settings')
     }),
     about: onShowPanel => ({
         key: 'about',
-        text: i18n.t('aboutPanel.title'),
+        text: i18n.t('panels.aboutPanel.title'),
         iconOnly: true,
         iconProps: {iconName: 'Info'},
         onClick: () => onShowPanel('about')

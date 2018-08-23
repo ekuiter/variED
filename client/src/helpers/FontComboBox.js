@@ -21,7 +21,7 @@ export default class extends React.Component {
         if (isFontInstalled(font))
             this.props.onChanged(font);
         else
-            this.setState({errorMessage: i18n.t('settingsPanel.errors.fontNotInstalled')});
+            this.setState({errorMessage: i18n.t('panels.settingsPanel.errors.fontNotInstalled')});
     };
 
     render() {

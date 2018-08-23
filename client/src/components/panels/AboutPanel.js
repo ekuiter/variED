@@ -8,7 +8,7 @@ export default props => (
         type={PanelType.smallFixedFar}
         onDismiss={props.onDismiss}
         isLightDismiss={true}
-        headerText={i18n.t('aboutPanel.title')}>
-        {i18n.t('aboutPanel.content')}
+        headerText={i18n.t('panels.aboutPanel.title')}>
+        {i18n.t('panels.aboutPanel.content')}
     </Panel>
 );
