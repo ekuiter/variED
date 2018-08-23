@@ -1,5 +1,5 @@
 import 'd3-selection-multi';
-import {event as d3Event} from 'd3-selection';
+import {event as d3Event, select as d3Select} from 'd3-selection';
 import {getSetting} from '../../../store/settings';
 import measureTextWidth from '../../../helpers/measureTextWidth';
 import {addStyle, appendCross, translateTransform} from '../../../helpers/svg';
@@ -69,6 +69,14 @@ class AbstractTreeNode {
                 .attr('opacity', 0),
             rectAndText = nodeEnter.append('g')
                 .attr('class', 'rectAndText')
+                .on('mouseover', function() {
+                    d3Select(this).select('rect')
+                        .call(addStyle, styles.node.active(self.settings));
+                })
+                .on('mouseout', function() {
+                    d3Select(this).select('rect')
+                        .call(addStyle, styles.node.abstract(self.settings));
+                })
                 .on('click', function(d) {
                     self.setActiveNode('callout', d, this);
                 })

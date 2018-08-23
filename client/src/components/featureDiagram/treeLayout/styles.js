@@ -12,13 +12,19 @@ const styles = {
             yes: {
                 fill: getSetting(settings, 'featureDiagram.treeLayout.node.abstractFill'),
                 stroke: getSetting(settings, 'featureDiagram.treeLayout.node.abstractStroke'),
-                'stroke-width': getSetting(settings, 'featureDiagram.treeLayout.node.strokeWidth')
+                'stroke-width': getSetting(settings, 'featureDiagram.treeLayout.node.strokeWidth'),
+                opacity: 1
             },
             no: {
                 fill: getSetting(settings, 'featureDiagram.treeLayout.node.concreteFill'),
                 stroke: getSetting(settings, 'featureDiagram.treeLayout.node.concreteStroke'),
-                'stroke-width': getSetting(settings, 'featureDiagram.treeLayout.node.strokeWidth')
+                'stroke-width': getSetting(settings, 'featureDiagram.treeLayout.node.strokeWidth'),
+                opacity: 1
             }
+        }),
+        active: settings => ({
+            stroke: getSetting(settings, 'featureDiagram.treeLayout.link.stroke'),
+            'stroke-width': getSetting(settings, 'featureDiagram.treeLayout.link.strokeWidth')
         }),
         hidden: settings => ({ // style applied to a node's text to distinguish hidden and visible features
             property: 'isHidden',
