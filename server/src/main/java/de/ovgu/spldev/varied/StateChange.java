@@ -77,6 +77,7 @@ public abstract class StateChange {
         }
 
         public Message apply() {
+            // TODO: redoing a "add feature above" at the root feature does weird things
             final IFeatureStructure parent = child.getStructure().getParent();
             if (parent != null) {
                 parentOr = parent.isOr();

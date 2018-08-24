@@ -1,8 +1,6 @@
 import objectPath from 'object-path';
 import objectPathImmutable from 'object-path-immutable';
 
-const SETTINGS_SET = 'SETTINGS_SET', SETTINGS_RESET = 'SETTINGS_RESET';
-
 export const defaultSettings = {
         featureDiagram: {
             font: {
@@ -62,22 +60,6 @@ export function getSetting(settings, ...paths) {
     if (!objectPath.has(settings, path))
         throw new Error(`setting ${path} does not exist`);
     return objectPath.get(settings, path);
-}
-
-export function isSettingsSetAction(action) {
-    return action.type === SETTINGS_SET;
-}
-
-export function isSettingsResetAction(action) {
-    return action.type === SETTINGS_RESET;
-}
-
-export function setSetting(path, value) {
-    return {type: SETTINGS_SET, path, value};
-}
-
-export function resetSettings() {
-    return {type: SETTINGS_RESET};
 }
 
 export function getNewSettings(settings, path, value) {

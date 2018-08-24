@@ -1,5 +1,5 @@
 import 'd3-selection-multi';
-import {event as d3Event, select as d3Select} from 'd3-selection';
+import {event as d3Event} from 'd3-selection';
 import {getSetting} from '../../../store/settings';
 import measureTextWidth from '../../../helpers/measureTextWidth';
 import {addStyle, appendCross, translateTransform} from '../../../helpers/svg';

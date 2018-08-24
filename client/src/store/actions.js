@@ -1,39 +1,27 @@
 import messageActions from '../server/messageActions';
-import {resetSettings, setSetting} from './settings';
+import {createActions} from 'redux-actions';
 
-export const actionTypes = {
-    UI_SET_FEATURE_DIAGRAM_LAYOUT: 'UI_SET_FEATURE_DIAGRAM_LAYOUT',
-    UI_SET_SELECT_MULTIPLE_FEATURES: 'UI_SET_SELECT_MULTIPLE_FEATURES',
-    UI_SELECT_FEATURE: 'UI_SELECT_FEATURE',
-    UI_SELECT_ONE_FEATURE: 'UI_SELECT_ONE_FEATURE',
-    UI_DESELECT_FEATURE: 'UI_DESELECT_FEATURE',
-    UI_SELECT_ALL_FEATURES: 'UI_SELECT_ALL_FEATURES',
-    UI_DESELECT_ALL_FEATURES: 'UI_DESELECT_ALL_FEATURES',
-    UI_SHOW_PANEL: 'UI_SHOW_PANEL',
-    UI_SHOW_DIALOG: 'UI_SHOW_DIALOG'
-};
-
-const actions = {
-    server: messageActions,
-    settings: {
-        set: setSetting,
-        reset: resetSettings
+const actions = createActions({
+    SETTINGS: {
+        SET: (path, value) => ({path, value}),
+        RESET: () => {}
     },
-    ui: {
-        setFeatureDiagramLayout: featureDiagramLayout =>
-            ({type: actionTypes.UI_SET_FEATURE_DIAGRAM_LAYOUT, featureDiagramLayout}),
-        setSelectMultipleFeatures: isSelectMultipleFeatures =>
-            ({type: actionTypes.UI_SET_SELECT_MULTIPLE_FEATURES, isSelectMultipleFeatures}),
-        selectFeature: featureName => ({type: actionTypes.UI_SELECT_FEATURE, featureName}),
-        selectOneFeature: featureName => ({type: actionTypes.UI_SELECT_ONE_FEATURE, featureName}),
-        deselectFeature: featureName => ({type: actionTypes.UI_DESELECT_FEATURE, featureName}),
-        selectAllFeatures: () => ({type: actionTypes.UI_SELECT_ALL_FEATURES}),
-        deselectAllFeatures: () => ({type: actionTypes.UI_DESELECT_ALL_FEATURES}),
-        showPanel: (panel, panelProps) => ({type: actionTypes.UI_SHOW_PANEL, panel, panelProps}),
-        hidePanel: () => ({type: actionTypes.UI_SHOW_PANEL, panel: null, panelProps: null}),
-        showDialog: (dialog, dialogProps) => ({type: actionTypes.UI_SHOW_DIALOG, dialog, dialogProps}),
-        hideDialog: () => ({type: actionTypes.UI_SHOW_DIALOG, dialog: null, dialogProps: null}),
+    UI: {
+        SET_FEATURE_DIAGRAM_LAYOUT: featureDiagramLayout =>
+            ({featureDiagramLayout}),
+        SET_SELECT_MULTIPLE_FEATURES: isSelectMultipleFeatures =>
+            ({isSelectMultipleFeatures}),
+        SELECT_FEATURE: featureName => ({featureName}),
+        SELECT_ONE_FEATURE: featureName => ({featureName}),
+        DESELECT_FEATURE: featureName => ({featureName}),
+        SELECT_ALL_FEATURES: () => {},
+        DESELECT_ALL_FEATURES: () => {},
+        SHOW_PANEL: (panel, panelProps) => ({panel, panelProps}),
+        HIDE_PANEL: () => ({panel: null, panelProps: null}),
+        SHOW_DIALOG: (dialog, dialogProps) => ({dialog, dialogProps}),
+        HIDE_DIALOG: () => ({dialog: null, dialogProps: null}),
     }
-};
+});
+actions.server = messageActions;
 
 export default actions;

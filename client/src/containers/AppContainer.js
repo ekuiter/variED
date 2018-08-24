@@ -24,7 +24,9 @@ class AppContainer extends React.Component {
                     <CommandBar
                         items={[
                             contextualMenuItems.featureDiagram.undo(this.props.undoChecked),
-                            contextualMenuItems.featureDiagram.redo(this.props.redoChecked),
+                            contextualMenuItems.featureDiagram.redo(this.props.redoChecked)
+                        ]}
+                        overflowItems={[
                             contextualMenuItems.featureDiagram.setLayout(
                                 this.props.featureDiagramLayout,
                                 this.props.onSetFeatureDiagramLayout),

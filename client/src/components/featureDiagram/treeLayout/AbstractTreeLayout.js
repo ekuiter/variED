@@ -238,7 +238,11 @@ class AbstractTreeLayout extends React.Component {
 
     getSvgRoot({width, height, fitOnResize, settings}, estimatedBbox, isCreating, isResize, isSelectionChange) {
         const svgRoot = d3Select(this.svgRef.current)
-                .call(svgRoot => width && height && svgRoot.attr('style', `width: ${width}; height: ${height};`)),
+                .call(svgRoot => width && height && svgRoot.attr('style', `width: ${width}; height: ${height};`))
+                .on('click', () => {
+                    if (this.props.isSelectMultipleFeatures && d3Event.target.tagName === 'svg')
+                        this.props.onDeselectAllFeatures();
+                }),
             defs = isCreating ? svgRoot.append('defs') : svgRoot.select('defs'),
             style = isCreating ? defs.append('style') : defs.select('style'),
             g = isCreating ? svgRoot.append('g') : svgRoot.select('g');
