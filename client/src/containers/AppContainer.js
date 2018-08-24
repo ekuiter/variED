@@ -32,6 +32,7 @@ class AppContainer extends React.Component {
                                 this.props.isSelectMultipleFeatures,
                                 this.props.onSetSelectMultipleFeatures,
                                 this.props.selectedFeatures,
+                                this.props.onSelectAllFeatures,
                                 this.props.onDeselectAllFeatures)
                         ]}
                         farItems={[
@@ -67,6 +68,7 @@ export default connect(
         handleMessage: dispatch,
         onSetFeatureDiagramLayout: layout => dispatch(actions.ui.setFeatureDiagramLayout(layout)),
         onSetSelectMultipleFeatures: isSelectMultipleFeatures => dispatch(actions.ui.setSelectMultipleFeatures(isSelectMultipleFeatures)),
+        onSelectAllFeatures: () => dispatch(actions.ui.selectAllFeatures()),
         onDeselectAllFeatures: () => dispatch(actions.ui.deselectAllFeatures()),
         onShowPanel: (panel, panelProps) => dispatch(actions.ui.showPanel(panel, panelProps))
     })

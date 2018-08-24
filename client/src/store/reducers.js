@@ -1,16 +1,17 @@
 import messageReducer from '../server/messageReducer';
-import {combineReducers} from 'redux';
+import reduceReducers from 'reduce-reducers';
 import constants from '../constants';
 import {defaultSettings, getNewSettings, isSettingsResetAction, isSettingsSetAction} from './settings';
 import {actionTypes} from './actions';
+import FeatureModel from '../server/FeatureModel';
 
-function serverReducer(state = constants.store.initialServer, action) {
+function serverReducer(state, action) {
     if (constants.server.isMessageType(action.type))
-        return messageReducer(state, action);
+        return {...state, server: messageReducer(state.server, action)};
     return state;
 }
 
-function settingsReducer(state = defaultSettings, action) {
+function settingsReducer(state, action) {
     if (isSettingsSetAction(action))
         return getNewSettings(state, action.path, action.value);
     if (isSettingsResetAction(action))
@@ -18,7 +19,7 @@ function settingsReducer(state = defaultSettings, action) {
     return state;
 }
 
-function uiReducer(state = constants.store.initialUi, action) {
+function uiReducer(state, action, featureModel) {
     if (action.type === actionTypes.UI_SET_FEATURE_DIAGRAM_LAYOUT)
         return {...state, featureDiagramLayout: action.featureDiagramLayout};
 
@@ -34,6 +35,12 @@ function uiReducer(state = constants.store.initialUi, action) {
             ? {...state, selectedFeatures}
             : {...state, selectedFeatures, isSelectMultipleFeatures: false};
     }
+    if (action.type === actionTypes.UI_SELECT_ALL_FEATURES)
+        return {
+            ...state,
+            selectedFeatures: new FeatureModel(featureModel).getFeatureNames(),
+            isSelectMultipleFeatures: true
+        };
     if (action.type === actionTypes.UI_DESELECT_ALL_FEATURES)
         return {...state, selectedFeatures: [], isSelectMultipleFeatures: false};
 
@@ -45,4 +52,8 @@ function uiReducer(state = constants.store.initialUi, action) {
     return state;
 }
 
-export default combineReducers({server: serverReducer, settings: settingsReducer, ui: uiReducer});
+export default reduceReducers(
+    (state, action) => ({...state, ui: uiReducer(state.ui, action, state.server.featureModel)}),
+    (state, action) => ({...state, settings: settingsReducer(state.settings, action)}),
+    serverReducer,
+    constants.store.initialState);

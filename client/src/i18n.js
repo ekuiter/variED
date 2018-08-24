@@ -99,13 +99,14 @@ export const strings = {
             feature: {
                 new: 'New',
                 newFeatureBelow: 'New feature below',
-                newFeatureAbove: 'New feature above',
                 remove: 'Remove',
                 details: 'Details',
                 rename: 'Rename'
             },
             features: {
-                deselectAll: 'Deselect all'
+                selectAll: 'Select all',
+                deselectAll: 'Deselect all',
+                newFeatureAbove: 'New feature above'
             }
         }
     }

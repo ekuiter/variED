@@ -71,12 +71,6 @@ class AbstractTreeNode {
                 .attr('opacity', 0),
             rectAndText = nodeEnter.append('g')
                 .attr('class', 'rectAndText')
-                .on('mouseover', function() {
-                    d3Select(this).attr('class', 'rectAndText active');
-                })
-                .on('mouseout', function() {
-                    d3Select(this).attr('class', 'rectAndText');
-                })
                 .on('click', function(d) {
                     self.setActiveNode(isCommand(d3Event) ? 'select' : 'callout', d, this);
                 })

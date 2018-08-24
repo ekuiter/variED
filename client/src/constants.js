@@ -1,3 +1,5 @@
+import {defaultSettings} from './store/settings';
+
 const constants = {
     panels: {
         aboutPanel: {
@@ -6,17 +8,20 @@ const constants = {
         }
     },
     store: {
-        initialServer: {
-            endpoints: []
-        },
-        initialUi: {
-            featureDiagramLayout: 'verticalTree',
-            isSelectMultipleFeatures: false,
-            selectedFeatures: [],
-            panel: null,
-            panelProps: null,
-            dialog: null,
-            dialogProps: null
+        initialState: {
+            server: {
+                endpoints: []
+            },
+            settings: defaultSettings,
+            ui: {
+                featureDiagramLayout: 'verticalTree',
+                isSelectMultipleFeatures: false,
+                selectedFeatures: [],
+                panel: null,
+                panelProps: null,
+                dialog: null,
+                dialogProps: null
+            }
         }
     },
     server: {

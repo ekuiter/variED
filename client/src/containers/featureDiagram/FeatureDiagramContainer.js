@@ -20,6 +20,7 @@ export default connect(
         onSelectFeature: featureName => dispatch(actions.ui.selectFeature(featureName)),
         onSelectOneFeature: featureName => dispatch(actions.ui.selectOneFeature(featureName)),
         onDeselectFeature: featureName => dispatch(actions.ui.deselectFeature(featureName)),
+        onSelectAllFeatures: () => dispatch(actions.ui.selectAllFeatures()),
         onDeselectAllFeatures: () => dispatch(actions.ui.deselectAllFeatures())
     })
 )(props =>

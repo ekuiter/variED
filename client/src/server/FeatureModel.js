@@ -51,4 +51,8 @@ export default class FeatureModel {
         const node = this.getNode(featureName);
         return node ? node.feature() : null;
     }
+
+    getFeatureNames() {
+        return this.hierarchy.descendants().map(node => node.feature().name);
+    }
 };
