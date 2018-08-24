@@ -87,7 +87,8 @@ export const strings = {
             undo: 'Undo',
             redo: 'Redo',
             setLayout: 'Layout',
-            setSelectMultiple: 'Select multiple',
+            selection: isSelectMultiple =>
+                isSelectMultiple ? 'Selection' : 'Select multiple',
             verticalTree: 'Vertical tree',
             horizontalTree: 'Horizontal tree',
             feature: {

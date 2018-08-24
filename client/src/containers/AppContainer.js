@@ -30,7 +30,7 @@ class AppContainer extends React.Component {
                             contextualMenuItems.featureDiagram.setLayout(
                                 this.props.featureDiagramLayout,
                                 this.props.onSetFeatureDiagramLayout),
-                            contextualMenuItems.featureDiagram.setSelectMultiple(
+                            contextualMenuItems.featureDiagram.selection(
                                 this.props.isSelectMultiple,
                                 this.props.onSetSelectMultiple)
                         ]}

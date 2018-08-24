@@ -50,12 +50,15 @@ const contextualMenuItems = {
                 }]
             }
         }),
-        setSelectMultiple: (isSelectMultiple, onSetSelectMultiple) => ({
-            key: 'setSelectMultiple',
-            text: i18n.t('featureDiagram.commands.setSelectMultiple'),
-            canCheck: true,
-            isChecked: isSelectMultiple,
-            onClick: () => onSetSelectMultiple(!isSelectMultiple)
+        selection: (isSelectMultiple, onSetSelectMultiple) => ({
+            key: 'selection',
+            text: i18n.t('featureDiagram.commands.selection')(isSelectMultiple),
+            onClick: () => onSetSelectMultiple(!isSelectMultiple),
+            subMenuProps: isSelectMultiple
+                ? {
+                    items: []
+                }
+                : null
         }),
         feature: {
             new(featureName, onClick) {

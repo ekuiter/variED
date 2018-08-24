@@ -11,8 +11,12 @@ const constants = {
         },
         initialUi: {
             featureDiagramLayout: 'verticalTree',
+            isSelectMultiple: false,
+            selectedFeatures: [],
             panel: null,
-            panelProps: null
+            panelProps: null,
+            dialog: null,
+            dialogProps: null
         }
     },
     server: {

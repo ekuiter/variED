@@ -174,14 +174,15 @@ class AbstractTreeLayout extends React.Component {
 
     addSelectedNode(node, nodeRef) {
         this.setState(prevState => ({selectedNodes: [...prevState.selectedNodes, {node, nodeRef}]}));
+        this.props.onSelectFeature(node.feature().name);
     }
 
     setSelectedNode(node, nodeRef) {
         this.setState({selectedNodes: [{node, nodeRef}]});
+        this.props.onSelectOneFeature(node.feature().name);
     }
 
-    removeSelectedNode(_nodeRef) {
-        console.log('removing', _nodeRef);
+    removeSelectedNode(node, _nodeRef) {
         if (this.state.overlay && _nodeRef === this.state.activeNodeRef)
             this.onHideOverlay();
         this.setState(
@@ -189,19 +190,20 @@ class AbstractTreeLayout extends React.Component {
             () => {
                 if (this.state.selectedNodes.length === 0)
                     this.props.onSetSelectMultiple(false);
-                console.log(this.state.selectedNodes);
+                this.props.onDeselectFeature(node.feature().name);
             });
     }
 
     removeSelectedNodes(clearSelectMultiple = true) {
-        if (clearSelectMultiple)
+        if (clearSelectMultiple && this.props.isSelectMultiple)
             this.props.onSetSelectMultiple(false);
         this.setState({selectedNodes: []});
+        this.props.onDeselectAllFeatures();
     }
 
     toggleSelectedNode(node, _nodeRef) {
         if (this.isSelectedNode(_nodeRef))
-            this.removeSelectedNode(_nodeRef);
+            this.removeSelectedNode(node, _nodeRef);
         else
             this.addSelectedNode(node, _nodeRef);
     }
@@ -391,9 +393,9 @@ class AbstractTreeLayout extends React.Component {
                     self.onHideOverlay(); // hide overlay if active node exits
             });
 
-        node.exit().each(function() {
+        node.exit().each(function(d) {
             if (self.state.selectedNodes.find(self.selectedNodeFilter(this, true)))
-                self.removeSelectedNode(this); // deselect exiting nodes, TODO: warn user that selection changed
+                self.removeSelectedNode(d, this); // deselect exiting nodes, TODO: warn user that selection changed
         });
 
         this.updateCoordinates('previousCoordinates', nodes);
