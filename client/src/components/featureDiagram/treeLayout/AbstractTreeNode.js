@@ -76,11 +76,11 @@ class AbstractTreeNode {
                     d3Select(this).attr('class', 'rectAndText');
                 })
                 .on('click', function(d) {
-                    self.setActiveNode('callout', d, this, 'click');
+                    self.setActiveNode('callout', d, this);
                 })
                 .on('contextmenu', function(d) {
                     d3Event.preventDefault();
-                    self.setActiveNode('contextualMenu', d, this, 'contextmenu');
+                    self.setActiveNode('contextualMenu', d, this);
                 })
                 .on('dblclick', d => this.onShowPanel('feature', {featureName: d.feature().name})),
             bboxes = makeText(this.settings, rectAndText, false, this.getTextStyle());

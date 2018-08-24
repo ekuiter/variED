@@ -14,7 +14,8 @@ export default connect(
     }),
     dispatch => ({
         onShowPanel: (panel, panelProps) => dispatch(actions.ui.showPanel(panel, panelProps)),
-        onShowDialog: (dialog, dialogProps) => dispatch(actions.ui.showDialog(dialog, dialogProps))
+        onShowDialog: (dialog, dialogProps) => dispatch(actions.ui.showDialog(dialog, dialogProps)),
+        onSetSelectMultiple: isSelectMultiple => dispatch(actions.ui.setSelectMultiple(isSelectMultiple))
     })
 )(props =>
     props.featureModel

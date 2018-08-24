@@ -117,6 +117,7 @@ public abstract class StateChange {
         }
 
         public Message undo() {
+            // TODO: does not restore original position/order of features (relevant selectedFeatures.size() > 1)
             final IFeatureStructure parent = newCompound.getStructure().getParent();
             if (parent != null) {
                 newCompound.getStructure().setChildren(Collections.<IFeatureStructure> emptyList());

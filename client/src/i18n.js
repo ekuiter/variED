@@ -92,11 +92,14 @@ export const strings = {
             horizontalTree: 'Horizontal tree',
             feature: {
                 new: 'New',
-                featureBelow: 'New feature below',
-                featureAbove: 'New feature above',
+                newFeatureBelow: 'New feature below',
+                newFeatureAbove: 'New feature above',
                 remove: 'Remove',
                 details: 'Details',
                 rename: 'Rename'
+            },
+            features: {
+                deselectAll: 'Deselect all'
             }
         }
     }

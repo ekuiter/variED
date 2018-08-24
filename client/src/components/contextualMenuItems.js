@@ -58,21 +58,30 @@ const contextualMenuItems = {
             onClick: () => onSetSelectMultiple(!isSelectMultiple)
         }),
         feature: {
-            new: (featureName, onClick) => ({
-                key: 'new',
-                text: i18n.t('featureDiagram.commands.feature.new'),
+            new(featureName, onClick) {
+                return ({
+                    key: 'new',
+                    text: i18n.t('featureDiagram.commands.feature.new'),
+                    iconProps: {iconName: 'Add'},
+                    subMenuProps: {
+                        items: [
+                            this.newFeatureBelow(featureName, onClick),
+                            this.newFeatureAbove([featureName], onClick)
+                        ]
+                    }
+                });
+            },
+            newFeatureBelow: (featureName, onClick) => ({
+                key: 'newFeatureBelow',
+                text: i18n.t('featureDiagram.commands.feature.newFeatureBelow'),
                 iconProps: {iconName: 'Add'},
-                subMenuProps: {
-                    items: [{
-                        key: 'featureBelow',
-                        text: i18n.t('featureDiagram.commands.feature.featureBelow'),
-                        onClick: () => actions.server.featureAdd(featureName).then(onClick)
-                    }, {
-                        key: 'featureAbove',
-                        text: i18n.t('featureDiagram.commands.feature.featureAbove'),
-                        onClick: () => actions.server.featureAddAbove([featureName]).then(onClick)
-                    }]
-                }
+                onClick: () => actions.server.featureAdd(featureName).then(onClick)
+            }),
+            newFeatureAbove: (featureNames, onClick) => ({
+                key: 'featureAbove',
+                text: i18n.t('featureDiagram.commands.feature.newFeatureAbove'),
+                iconProps: {iconName: 'Add'},
+                onClick: () => actions.server.featureAddAbove(featureNames).then(onClick)
             }),
             remove: (featureName, onClick) => ({
                 key: 'remove',
@@ -92,6 +101,13 @@ const contextualMenuItems = {
                 text: i18n.t('featureDiagram.commands.feature.rename'),
                 iconProps: {iconName: 'Rename'},
                 onClick: () => onShowDialog('featureRename', {featureName})
+            })
+        },
+        features: {
+            deselectAll: (selectedFeatures, onDeselectAll) => ({
+                key: 'deselectAll',
+                text: `${i18n.t('featureDiagram.commands.features.deselectAll')} (${selectedFeatures.length})`,
+                onClick: onDeselectAll
             })
         }
     }

@@ -19,6 +19,7 @@ class AbstractTreeLayout extends React.Component {
         fitOnResize: false,
         settings: null,
         onShowPanel: null,
+        onSetSelectMultiple: null,
         isSelectMultiple: false
     };
     svgRef = React.createRef();
@@ -29,14 +30,6 @@ class AbstractTreeLayout extends React.Component {
     constructor(props, direction, TreeNode, TreeLink) {
         super(props);
         this.direction = direction;
-        this.onShowPanel = (...args) => {
-            this.onHideOverlay();
-            this.props.onShowPanel(...args);
-        };
-        this.onShowDialog = (...args) => {
-            this.onHideOverlay();
-            this.props.onShowDialog(...args);
-        };
         this.treeNode = new TreeNode(
             props.settings,
             this.setActiveNode.bind(this),
@@ -84,16 +77,29 @@ class AbstractTreeLayout extends React.Component {
                 <FeatureContextualMenu
                     settings={this.props.settings}
                     direction={this.direction}
+                    isSelectMultiple={this.props.isSelectMultiple}
                     node={this.state.overlay === 'contextualMenu' ? this.state.activeNode : null}
                     nodeRef={this.state.overlay === 'contextualMenu' ? this.state.activeNodeRef : null}
+                    selectedNodes={this.state.selectedNodes}
                     onShowPanel={this.onShowPanel}
                     onShowDialog={this.onShowDialog}
-                    onDismiss={this.onHideOverlay}/>
+                    onDismiss={this.onHideOverlay}
+                    onDeselectAll={this.onDeselectAll}/>
             </React.Fragment>
         );
     }
 
-    onHideOverlay = () => this.setActiveNode(null, null, null, null);
+    onShowPanel = (...args) => {
+        this.onHideOverlay();
+        this.props.onShowPanel(...args);
+    };
+
+    onShowDialog = (...args) => {
+        this.onHideOverlay();
+        this.props.onShowDialog(...args);
+    };
+
+    onHideOverlay = () => this.setActiveNode(null, null, null);
 
     updateOverlay = throttle(
         () => {
@@ -101,6 +107,11 @@ class AbstractTreeLayout extends React.Component {
                 return this.setState({}); // triggers a rerender for the overlay to catch up
         },
         getSetting(this.props.settings, 'featureDiagram.treeLayout.overlay.throttleUpdate'));
+
+    onDeselectAll = () => {
+        this.props.onSetSelectMultiple(false);
+        this.removeSelectedNodes();
+    };
 
     canExport() {
         return !!this.svgRef.current;
@@ -133,10 +144,14 @@ class AbstractTreeLayout extends React.Component {
         return d => `${kind}_${d.feature().name}`;
     }
 
-    setActiveNode(overlay, activeNode, activeNodeRef, eventType) {
+    setActiveNode(overlay, activeNode, activeNodeRef) {
         if (this.props.isSelectMultiple) {
-            if (overlay !== null && eventType === 'click')
+            if (overlay === 'callout')
                 this.toggleSelectedNode(activeNode, activeNodeRef);
+            if (overlay === 'contextualMenu' && this.isSelectedNode(activeNodeRef))
+                this.setState({overlay, activeNode, activeNodeRef});
+            if (overlay === null)
+                this.setState({overlay, activeNode, activeNodeRef});
         } else {
             if (overlay !== null)
                 this.setSelectedNode(activeNode, activeNodeRef);
@@ -144,6 +159,10 @@ class AbstractTreeLayout extends React.Component {
                 this.removeSelectedNodes();
             this.setState({overlay, activeNode, activeNodeRef});
         }
+    }
+
+    isSelectedNode(_nodeRef) {
+        return this.state.selectedNodes.find(({nodeRef}) => nodeRef === _nodeRef);
     }
 
     addSelectedNode(node, nodeRef) {
@@ -155,6 +174,8 @@ class AbstractTreeLayout extends React.Component {
     }
 
     removeSelectedNode(_nodeRef) {
+        if (this.state.overlay && _nodeRef === this.state.activeNodeRef)
+            this.onHideOverlay();
         this.setState(prevState => ({selectedNodes: prevState.selectedNodes.filter(({nodeRef}) => nodeRef !== _nodeRef)}));
     }
 
@@ -163,7 +184,7 @@ class AbstractTreeLayout extends React.Component {
     }
 
     toggleSelectedNode(node, _nodeRef) {
-        if (this.state.selectedNodes.find(({nodeRef}) => nodeRef === _nodeRef))
+        if (this.isSelectedNode(_nodeRef))
             this.removeSelectedNode(_nodeRef);
         else
             this.addSelectedNode(node, _nodeRef);
@@ -351,7 +372,7 @@ class AbstractTreeLayout extends React.Component {
         if (this.state.overlay)
             node.exit().each(function() {
                 if (this.contains(self.state.activeNodeRef))
-                    self.setActiveNode(null, null, null, null); // hide overlay if active node exits
+                    self.onHideOverlay(); // hide overlay if active node exits
             });
 
         node.exit().each(function() {
