@@ -5,6 +5,7 @@ import de.ovgu.featureide.fm.core.base.IFeature;
 import de.ovgu.featureide.fm.core.base.IFeatureModel;
 import de.ovgu.featureide.fm.core.base.event.FeatureIDEEvent;
 
+import java.util.LinkedList;
 import java.util.stream.Stream;
 
 /**
@@ -218,6 +219,29 @@ abstract public class Message {
             IFeatureModel featureModel = stateContext.getFeatureModel();
             IFeature _belowFeature = featureModel.getFeature(belowFeature);
             return new StateChange.FeatureAdd(_belowFeature, featureModel);
+        }
+    }
+
+    public static class FeatureAddAbove extends Message implements IUndoable {
+        private String[] aboveFeatures;
+
+        public FeatureAddAbove(String[] aboveFeatures) {
+            super(FeatureIDEEvent.EventType.FEATURE_ADD_ABOVE);
+            this.aboveFeatures = aboveFeatures;
+        }
+
+        public boolean isValid(StateContext stateContext) {
+            for (String aboveFeature : aboveFeatures)
+                FeatureUtils.requireFeature(stateContext.getFeatureModel(), aboveFeature);
+            return true;
+        }
+
+        public StateChange getStateChange(StateContext stateContext) {
+            IFeatureModel featureModel = stateContext.getFeatureModel();
+            LinkedList<IFeature> _aboveFeatures = new LinkedList<>();
+            for (String aboveFeature : aboveFeatures)
+                _aboveFeatures.add(featureModel.getFeature(aboveFeature));
+            return new StateChange.FeatureAddAbove(featureModel, _aboveFeatures);
         }
     }
 

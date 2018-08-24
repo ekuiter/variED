@@ -8,6 +8,8 @@ export default {
     redo: () => sendMessage({type: messageTypes.REDO}),
     featureAdd: belowFeatureName =>
         sendMessage({type: messageTypes.FEATURE_ADD, belowFeature: belowFeatureName}),
+    featureAddAbove: aboveFeaturesNames =>
+        sendMessage({type: messageTypes.FEATURE_ADD_ABOVE, aboveFeatures: aboveFeaturesNames}),
     featureDelete: featureName =>
         sendMessage({type: messageTypes.FEATURE_DELETE, feature: featureName}),
     featureNameChanged: (oldFeatureName, newFeatureName) =>

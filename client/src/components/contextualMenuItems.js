@@ -62,7 +62,8 @@ const contextualMenuItems = {
                         onClick: () => actions.server.featureAdd(featureName).then(onClick)
                     }, {
                         key: 'featureAbove',
-                        text: i18n.t('featureDiagram.commands.feature.featureAbove')
+                        text: i18n.t('featureDiagram.commands.feature.featureAbove'),
+                        onClick: () => actions.server.featureAddAbove([featureName]).then(onClick)
                     }]
                 }
             }),

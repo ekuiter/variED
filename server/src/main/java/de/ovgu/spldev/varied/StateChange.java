@@ -1,12 +1,12 @@
 package de.ovgu.spldev.varied;
 
 import de.ovgu.featureide.fm.core.base.FeatureUtils;
-import de.ovgu.featureide.fm.core.base.IConstraint;
-import de.ovgu.featureide.fm.core.base.IFeature;
-import de.ovgu.featureide.fm.core.base.IFeatureModel;
+import de.ovgu.featureide.fm.core.base.*;
 import de.ovgu.featureide.fm.core.base.impl.FMFactoryManager;
 import de.ovgu.featureide.fm.core.functional.Functional;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 import static de.ovgu.featureide.fm.core.localization.StringTable.DEFAULT_FEATURE_LAYER_CAPTION;
@@ -51,6 +51,91 @@ public abstract class StateChange {
         public Message undo() {
             newFeature = featureModel.getFeature(newFeature.getName());
             featureModel.deleteFeature(newFeature);
+            return new Message.FeatureModel(featureModel);
+        }
+    }
+
+    // adapted from CreateFeatureAboveOperation
+    public static class FeatureAddAbove extends FeatureModelStateChange {
+        private IFeature newCompound;
+        private IFeature child;
+        private LinkedList<IFeature> selectedFeatures;
+        private HashMap<IFeature, Integer> children = new HashMap<>();
+        private boolean parentOr = false;
+        private boolean parentAlternative = false;
+
+        public FeatureAddAbove(IFeatureModel featureModel, LinkedList<IFeature> selectedFeatures) {
+            super(featureModel);
+            this.selectedFeatures = selectedFeatures;
+            if (selectedFeatures.size() == 0)
+                throw new RuntimeException("no features given");
+            child = selectedFeatures.get(0);
+            int number = 0;
+            while (FeatureUtils.getFeatureNames(featureModel).contains(DEFAULT_FEATURE_LAYER_CAPTION + ++number)) {}
+
+            newCompound = FMFactoryManager.getFactory(featureModel).createFeature(featureModel, DEFAULT_FEATURE_LAYER_CAPTION + number);
+        }
+
+        public Message apply() {
+            final IFeatureStructure parent = child.getStructure().getParent();
+            if (parent != null) {
+                parentOr = parent.isOr();
+                parentAlternative = parent.isAlternative();
+
+                newCompound.getStructure().setMultiple(parent.isMultiple());
+                final int index = parent.getChildIndex(child.getStructure());
+                for (final IFeature iFeature : selectedFeatures) {
+                    int iFeatureIndex = parent.getChildIndex(iFeature.getStructure());
+                    if (iFeatureIndex == -1)
+                        throw new RuntimeException("the given features must be adjacent");
+                    children.put(iFeature, iFeatureIndex);
+                }
+                for (final IFeature iFeature : selectedFeatures) {
+                    parent.removeChild(iFeature.getStructure());
+                }
+                parent.addChildAtPosition(index, newCompound.getStructure());
+                for (final IFeature iFeature : selectedFeatures) {
+                    newCompound.getStructure().addChild(iFeature.getStructure());
+                }
+
+                if (parentOr) {
+                    newCompound.getStructure().changeToOr();
+                } else if (parentAlternative) {
+                    newCompound.getStructure().changeToAlternative();
+                } else {
+                    newCompound.getStructure().changeToAnd();
+                }
+                parent.changeToAnd();
+                featureModel.addFeature(newCompound);
+            } else {
+                newCompound.getStructure().addChild(child.getStructure());
+                featureModel.addFeature(newCompound);
+                featureModel.getStructure().setRoot(newCompound.getStructure());
+            }
+
+            return new Message.FeatureModel(featureModel);
+        }
+
+        public Message undo() {
+            final IFeatureStructure parent = newCompound.getStructure().getParent();
+            if (parent != null) {
+                newCompound.getStructure().setChildren(Collections.<IFeatureStructure> emptyList());
+                featureModel.deleteFeature(newCompound);
+                for (final IFeature iFeature : children.keySet()) {
+                    parent.addChildAtPosition(children.get(iFeature), iFeature.getStructure());
+                }
+
+                if (parentOr) {
+                    parent.changeToOr();
+                } else if (parentAlternative) {
+                    parent.changeToAlternative();
+                } else {
+                    parent.changeToAnd();
+                }
+            } else {
+                featureModel.getStructure().replaceRoot(child.getStructure());
+            }
+
             return new Message.FeatureModel(featureModel);
         }
     }
