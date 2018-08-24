@@ -7,6 +7,12 @@
     cursor: pointer;
 }
 
+.treeLayout .node.selected .rectAndText rect, .treeLayout .node .rectAndText.active rect {
+    stroke: #666;
+    stroke-width: 2px;
+    fill-opacity: 0.5;
+}
+
 .callout .header {
     padding: 14px 24px 8px;
 }

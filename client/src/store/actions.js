@@ -3,6 +3,7 @@ import {resetSettings, setSetting} from './settings';
 
 export const actionTypes = {
     UI_SET_FEATURE_DIAGRAM_LAYOUT: 'UI_SET_FEATURE_DIAGRAM_LAYOUT',
+    UI_SET_SELECT_MULTIPLE: 'UI_SET_SELECT_MULTIPLE',
     UI_SHOW_PANEL: 'UI_SHOW_PANEL',
     UI_SHOW_DIALOG: 'UI_SHOW_DIALOG'
 };
@@ -16,6 +17,8 @@ const actions = {
     ui: {
         setFeatureDiagramLayout: featureDiagramLayout =>
             ({type: actionTypes.UI_SET_FEATURE_DIAGRAM_LAYOUT, featureDiagramLayout}),
+        setSelectMultiple: isSelectMultiple =>
+            ({type: actionTypes.UI_SET_SELECT_MULTIPLE, isSelectMultiple}),
         showPanel: (panel, panelProps) => ({type: actionTypes.UI_SHOW_PANEL, panel, panelProps}),
         hidePanel: () => ({type: actionTypes.UI_SHOW_PANEL, panel: null, panelProps: null}),
         showDialog: (dialog, dialogProps) => ({type: actionTypes.UI_SHOW_DIALOG, dialog, dialogProps}),

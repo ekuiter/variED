@@ -9,6 +9,7 @@ export default connect(
     state => ({
         settings: state.settings,
         layout: state.ui.featureDiagramLayout,
+        isSelectMultiple: state.ui.isSelectMultiple,
         featureModel: getFeatureModel(state)
     }),
     dispatch => ({

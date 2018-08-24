@@ -70,19 +70,17 @@ class AbstractTreeNode {
             rectAndText = nodeEnter.append('g')
                 .attr('class', 'rectAndText')
                 .on('mouseover', function() {
-                    d3Select(this).select('rect')
-                        .call(addStyle, styles.node.active(self.settings));
+                    d3Select(this).attr('class', 'rectAndText active');
                 })
                 .on('mouseout', function() {
-                    d3Select(this).select('rect')
-                        .call(addStyle, styles.node.abstract(self.settings));
+                    d3Select(this).attr('class', 'rectAndText');
                 })
                 .on('click', function(d) {
-                    self.setActiveNode('callout', d, this);
+                    self.setActiveNode('callout', d, this, 'click');
                 })
                 .on('contextmenu', function(d) {
                     d3Event.preventDefault();
-                    self.setActiveNode('contextualMenu', d, this);
+                    self.setActiveNode('contextualMenu', d, this, 'contextmenu');
                 })
                 .on('dblclick', d => this.onShowPanel('feature', {featureName: d.feature().name})),
             bboxes = makeText(this.settings, rectAndText, false, this.getTextStyle());

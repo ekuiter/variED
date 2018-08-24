@@ -24,10 +24,15 @@ class AppContainer extends React.Component {
                     <CommandBar
                         items={[
                             contextualMenuItems.featureDiagram.undo(this.props.undoChecked),
-                            contextualMenuItems.featureDiagram.redo(this.props.redoChecked),
+                            contextualMenuItems.featureDiagram.redo(this.props.redoChecked)
+                        ]}
+                        overflowItems={[
                             contextualMenuItems.featureDiagram.setLayout(
                                 this.props.featureDiagramLayout,
                                 this.props.onSetFeatureDiagramLayout),
+                            contextualMenuItems.featureDiagram.setSelectMultiple(
+                                this.props.isSelectMultiple,
+                                this.props.onSetSelectMultiple)
                         ]}
                         farItems={[
                             {
@@ -53,12 +58,14 @@ class AppContainer extends React.Component {
 export default connect(
     state => ({
         featureDiagramLayout: state.ui.featureDiagramLayout,
+        isSelectMultiple: state.ui.isSelectMultiple,
         endpoints: state.server.endpoints,
         settings: state.settings
     }),
     dispatch => ({
         handleMessage: dispatch,
         onSetFeatureDiagramLayout: layout => dispatch(actions.ui.setFeatureDiagramLayout(layout)),
+        onSetSelectMultiple: isSelectMultiple => dispatch(actions.ui.setSelectMultiple(isSelectMultiple)),
         onShowPanel: (panel, panelProps) => dispatch(actions.ui.showPanel(panel, panelProps))
     })
 )(withKeys({

@@ -21,6 +21,8 @@ function settingsReducer(state = defaultSettings, action) {
 function uiReducer(state = constants.store.initialUi, action) {
     if (action.type === actionTypes.UI_SET_FEATURE_DIAGRAM_LAYOUT)
         return {...state, featureDiagramLayout: action.featureDiagramLayout};
+    if (action.type === actionTypes.UI_SET_SELECT_MULTIPLE)
+        return {...state, isSelectMultiple: action.isSelectMultiple};
     if (action.type === actionTypes.UI_SHOW_PANEL)
         return {...state, panel: action.panel, panelProps: action.panelProps};
     if (action.type === actionTypes.UI_SHOW_DIALOG)

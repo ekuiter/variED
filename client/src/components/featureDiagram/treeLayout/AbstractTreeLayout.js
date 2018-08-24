@@ -18,10 +18,11 @@ class AbstractTreeLayout extends React.Component {
         className: null,
         fitOnResize: false,
         settings: null,
-        onShowPanel: null
+        onShowPanel: null,
+        isSelectMultiple: false
     };
     svgRef = React.createRef();
-    state = {overlay: null, activeNode: null, activeNodeRef: null};
+    state = {overlay: null, activeNode: null, activeNodeRef: null, selectedNodes: []};
     currentCoordinates = {};
     previousCoordinates = {};
 
@@ -50,14 +51,22 @@ class AbstractTreeLayout extends React.Component {
 
     componentDidMount() {
         this.renderD3();
-    };
+    }
 
-    componentDidUpdate(prevProps) {
+    componentDidUpdate(prevProps, prevState) {
+        const updateOnPropChange = ['featureModel', 'width', 'height', 'fitOnResize', 'settings'];
         this.treeNode.settings = this.treeLink.settings = this.props.settings;
-        if (this.props !== prevProps)
+
+        if (updateOnPropChange.find(prop => this.props[prop] !== prevProps[prop]))
             this.updateD3(
                 this.props.width !== prevProps.width ||
                 this.props.height !== prevProps.height);
+
+        if (prevProps.isSelectMultiple !== this.props.isSelectMultiple)
+            this.removeSelectedNodes();
+
+        if (this.state.selectedNodes !== prevState.selectedNodes)
+            this.updateSelection();
     }
 
     render() {
@@ -84,7 +93,7 @@ class AbstractTreeLayout extends React.Component {
         );
     }
 
-    onHideOverlay = () => this.setActiveNode(null, null, null);
+    onHideOverlay = () => this.setActiveNode(null, null, null, null);
 
     updateOverlay = throttle(
         () => {
@@ -124,8 +133,40 @@ class AbstractTreeLayout extends React.Component {
         return d => `${kind}_${d.feature().name}`;
     }
 
-    setActiveNode(overlay, activeNode, activeNodeRef) {
-        this.setState({overlay, activeNode, activeNodeRef});
+    setActiveNode(overlay, activeNode, activeNodeRef, eventType) {
+        if (this.props.isSelectMultiple) {
+            if (overlay !== null && eventType === 'click')
+                this.toggleSelectedNode(activeNode, activeNodeRef);
+        } else {
+            if (overlay !== null)
+                this.setSelectedNode(activeNode, activeNodeRef);
+            else
+                this.removeSelectedNodes();
+            this.setState({overlay, activeNode, activeNodeRef});
+        }
+    }
+
+    addSelectedNode(node, nodeRef) {
+        this.setState(prevState => ({selectedNodes: [...prevState.selectedNodes, {node, nodeRef}]}));
+    }
+
+    setSelectedNode(node, nodeRef) {
+        this.setState({selectedNodes: [{node, nodeRef}]});
+    }
+
+    removeSelectedNode(_nodeRef) {
+        this.setState(prevState => ({selectedNodes: prevState.selectedNodes.filter(({nodeRef}) => nodeRef !== _nodeRef)}));
+    }
+
+    removeSelectedNodes() {
+        this.setState({selectedNodes: []});
+    }
+
+    toggleSelectedNode(node, _nodeRef) {
+        if (this.state.selectedNodes.find(({nodeRef}) => nodeRef === _nodeRef))
+            this.removeSelectedNode(_nodeRef);
+        else
+            this.addSelectedNode(node, _nodeRef);
     }
 
     updateCoordinates(key, nodes) {
@@ -158,13 +199,17 @@ class AbstractTreeLayout extends React.Component {
     createLayoutHook(nodes) {
     }
 
-    createLayout({featureModel, settings}) {
+    createLayout({featureModel, settings}, isSelectionChange) {
         const estimateTextWidth = this.treeNode.estimateTextWidth.bind(this.treeNode),
             hierarchy = featureModel.hierarchy,
             tree = d3Tree()
                 .nodeSize(getSetting(settings, 'featureDiagram.treeLayout.node.size'))
                 .separation(this.getSeparationFn(estimateTextWidth)),
             nodes = hierarchy.descendants();
+
+        if (isSelectionChange)
+            return {nodes};
+
         tree(hierarchy);
         this.createLayoutHook(nodes);
 
@@ -182,13 +227,17 @@ class AbstractTreeLayout extends React.Component {
         return {nodes, estimatedBbox};
     }
 
-    getSvgRoot({width, height, fitOnResize, settings}, estimatedBbox, isCreating, isResize) {
+    getSvgRoot({width, height, fitOnResize, settings}, estimatedBbox, isCreating, isResize, isSelectionChange) {
         const svgRoot = d3Select(this.svgRef.current)
                 .call(svgRoot => width && height && svgRoot.attr('style', `width: ${width}; height: ${height};`)),
             defs = isCreating ? svgRoot.append('defs') : svgRoot.select('defs'),
             style = isCreating ? defs.append('style') : defs.select('style'),
-            g = isCreating ? svgRoot.append('g') : svgRoot.select('g'),
-            rect = isCreating ? g.append('rect') : g.select('rect'),
+            g = isCreating ? svgRoot.append('g') : svgRoot.select('g');
+
+        if (isSelectionChange)
+            return g;
+
+        const rect = isCreating ? g.append('rect') : g.select('rect'),
             zoom = d3Zoom(),
             estimatedBboxWidth = estimatedBbox[1][0] - estimatedBbox[0][0],
             estimatedBboxHeight = estimatedBbox[1][1] - estimatedBbox[0][1];
@@ -249,9 +298,9 @@ class AbstractTreeLayout extends React.Component {
         return svgRoot.selectAll('.link').data(nodes.slice(1), this.getKeyFn('link'));
     }
 
-    joinData(isCreating, isResize = false) {
-        const {nodes, estimatedBbox} = this.createLayout(this.props);
-        const svgRoot = this.getSvgRoot(this.props, estimatedBbox, isCreating, isResize);
+    joinData(isCreating, isResize, isSelectionChange) {
+        const {nodes, estimatedBbox} = this.createLayout(this.props, isSelectionChange);
+        const svgRoot = this.getSvgRoot(this.props, estimatedBbox, isCreating, isResize, isSelectionChange);
         const linkInBack = this.joinLinks(nodes,
             isCreating ? svgRoot.append('g').attr('class', 'linksInBack') : svgRoot.select('g.linksInBack'));
         const node = this.joinNodes(nodes,
@@ -302,10 +351,28 @@ class AbstractTreeLayout extends React.Component {
         if (this.state.overlay)
             node.exit().each(function() {
                 if (this.contains(self.state.activeNodeRef))
-                    self.setActiveNode(null, null, null); // hide overlay if active node exits
+                    self.setActiveNode(null, null, null, null); // hide overlay if active node exits
             });
 
+        node.exit().each(function() {
+            if (self.state.selectedNodes.find(({nodeRef}) => this.contains(nodeRef)))
+                self.removeSelectedNode(this); // deselect exiting nodes, TODO: warn user that selection changed
+        });
+
         this.updateCoordinates('previousCoordinates', nodes);
+    }
+
+    updateSelection() {
+        const self = this,
+            {node} = this.joinData(false, false, true);
+
+        node.filter(function() {
+            return self.state.selectedNodes.find(({nodeRef}) => this.contains(nodeRef));
+        }).attr('class', 'node selected');
+
+        node.filter(function() {
+            return !self.state.selectedNodes.find(({nodeRef}) => this.contains(nodeRef));
+        }).attr('class', 'node');
     }
 }
 
