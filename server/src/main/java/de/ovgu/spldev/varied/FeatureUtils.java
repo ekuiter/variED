@@ -5,12 +5,28 @@ import de.ovgu.featureide.fm.core.base.impl.FMFormatManager;
 import de.ovgu.featureide.fm.core.io.IPersistentFormat;
 import de.ovgu.featureide.fm.core.io.manager.FeatureModelManager;
 
+import java.util.stream.Stream;
+
 public class FeatureUtils {
     public static boolean requireFeature(IFeatureModel featureModel, String feature) {
         if (!StringUtils.isPresent(feature))
             throw new RuntimeException("no feature given");
         if (featureModel.getFeature(feature) == null)
             throw new RuntimeException("invalid feature \"" + feature + "\"");
+        return true;
+    }
+
+    public static boolean requireFeatures(IFeatureModel featureModel, String[] features) {
+        for (String feature : features)
+            FeatureUtils.requireFeature(featureModel, feature);
+        return true;
+    }
+
+    public static boolean requireSiblings(IFeatureModel featureModel, String[] features) {
+        if (Stream.of(features)
+                .map(feature -> featureModel.getFeature(feature).getStructure().getParent())
+                .distinct().count() > 1)
+            throw new RuntimeException("the given features are not adjacent");
         return true;
     }
 

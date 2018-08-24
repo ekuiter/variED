@@ -231,8 +231,11 @@ abstract public class Message {
         }
 
         public boolean isValid(StateContext stateContext) {
-            for (String aboveFeature : aboveFeatures)
-                FeatureUtils.requireFeature(stateContext.getFeatureModel(), aboveFeature);
+            if (aboveFeatures.length == 0)
+                throw new RuntimeException("no features given");
+            IFeatureModel featureModel = stateContext.getFeatureModel();
+            FeatureUtils.requireFeatures(featureModel, aboveFeatures);
+            FeatureUtils.requireSiblings(featureModel, aboveFeatures);
             return true;
         }
 

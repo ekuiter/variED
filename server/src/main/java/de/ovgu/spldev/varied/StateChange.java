@@ -67,8 +67,6 @@ public abstract class StateChange {
         public FeatureAddAbove(IFeatureModel featureModel, LinkedList<IFeature> selectedFeatures) {
             super(featureModel);
             this.selectedFeatures = selectedFeatures;
-            if (selectedFeatures.size() == 0)
-                throw new RuntimeException("no features given");
             child = selectedFeatures.get(0);
             int number = 0;
             while (FeatureUtils.getFeatureNames(featureModel).contains(DEFAULT_FEATURE_LAYER_CAPTION + ++number)) {}
@@ -77,7 +75,6 @@ public abstract class StateChange {
         }
 
         public Message apply() {
-            // TODO: redoing a "add feature above" at the root feature does weird things
             final IFeatureStructure parent = child.getStructure().getParent();
             if (parent != null) {
                 parentOr = parent.isOr();
@@ -86,10 +83,7 @@ public abstract class StateChange {
                 newCompound.getStructure().setMultiple(parent.isMultiple());
                 final int index = parent.getChildIndex(child.getStructure());
                 for (final IFeature iFeature : selectedFeatures) {
-                    int iFeatureIndex = parent.getChildIndex(iFeature.getStructure());
-                    if (iFeatureIndex == -1)
-                        throw new RuntimeException("the given features must be adjacent");
-                    children.put(iFeature, iFeatureIndex);
+                    children.put(iFeature, parent.getChildIndex(iFeature.getStructure()));
                 }
                 for (final IFeature iFeature : selectedFeatures) {
                     parent.removeChild(iFeature.getStructure());
@@ -121,7 +115,7 @@ public abstract class StateChange {
             // TODO: does not restore original position/order of features (relevant selectedFeatures.size() > 1)
             final IFeatureStructure parent = newCompound.getStructure().getParent();
             if (parent != null) {
-                newCompound.getStructure().setChildren(Collections.<IFeatureStructure> emptyList());
+                newCompound.getStructure().setChildren(Collections.emptyList());
                 featureModel.deleteFeature(newCompound);
                 for (final IFeature iFeature : children.keySet()) {
                     parent.addChildAtPosition(children.get(iFeature), iFeature.getStructure());
@@ -136,6 +130,7 @@ public abstract class StateChange {
                 }
             } else {
                 featureModel.getStructure().replaceRoot(child.getStructure());
+                newCompound.getStructure().removeChild(child.getStructure());
             }
 
             return new Message.FeatureModel(featureModel);
