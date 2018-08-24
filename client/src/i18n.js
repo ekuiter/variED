@@ -10,9 +10,12 @@ export const strings = {
             content: (
                 <div>
                     <h3>variED: The variability editor</h3>
-                    <p>View, edit and analyze feature models in the browser - with support for real-time collaboration.</p>
-                    <p>This project is released under the <Link href={constants.panels.aboutPanel.licenseUri} target="_blank">LGPL v3 license</Link>.</p>
-                    <p><Link href={constants.panels.aboutPanel.githubUri} target="_blank">View source code on GitHub</Link></p>
+                    <p>View, edit and analyze feature models in the browser - with support for real-time
+                        collaboration.</p>
+                    <p>This project is released under the <Link href={constants.panels.aboutPanel.licenseUri}
+                                                                target="_blank">LGPL v3 license</Link>.</p>
+                    <p><Link href={constants.panels.aboutPanel.githubUri} target="_blank">View source code on
+                        GitHub</Link></p>
                 </div>
             )
         },
@@ -87,8 +90,10 @@ export const strings = {
             undo: 'Undo',
             redo: 'Redo',
             setLayout: 'Layout',
-            selection: isSelectMultiple =>
-                isSelectMultiple ? 'Selection' : 'Select multiple',
+            selection: (isSelectMultipleFeatures, selectedFeatures) =>
+                isSelectMultipleFeatures
+                    ? `Feature selection (${selectedFeatures.length})`
+                    : 'Select multiple features',
             verticalTree: 'Vertical tree',
             horizontalTree: 'Horizontal tree',
             feature: {

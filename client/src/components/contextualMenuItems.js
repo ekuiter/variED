@@ -1,5 +1,6 @@
 import i18n from '../i18n';
 import actions from '../store/actions';
+import {selectMultipleFeaturesContextualMenuItems} from './featureDiagram/treeLayout/FeatureContextualMenu';
 
 const contextualMenuItems = {
     settings: onShowPanel => ({
@@ -50,14 +51,12 @@ const contextualMenuItems = {
                 }]
             }
         }),
-        selection: (isSelectMultiple, onSetSelectMultiple) => ({
+        selection: (isSelectMultipleFeatures, onSetSelectMultipleFeatures, selectedFeatures, onDeselectAllFeatures) => ({
             key: 'selection',
-            text: i18n.t('featureDiagram.commands.selection')(isSelectMultiple),
-            onClick: () => onSetSelectMultiple(!isSelectMultiple),
-            subMenuProps: isSelectMultiple
-                ? {
-                    items: []
-                }
+            text: i18n.t('featureDiagram.commands.selection')(isSelectMultipleFeatures, selectedFeatures),
+            onClick: () => onSetSelectMultipleFeatures(!isSelectMultipleFeatures),
+            subMenuProps: isSelectMultipleFeatures
+                ? {items: selectMultipleFeaturesContextualMenuItems(selectedFeatures, onDeselectAllFeatures)}
                 : null
         }),
         feature: {
@@ -107,9 +106,9 @@ const contextualMenuItems = {
             })
         },
         features: {
-            deselectAll: (selectedFeatures, onDeselectAll) => ({
+            deselectAll: onDeselectAll => ({
                 key: 'deselectAll',
-                text: `${i18n.t('featureDiagram.commands.features.deselectAll')} (${selectedFeatures.length})`,
+                text: i18n.t('featureDiagram.commands.features.deselectAll'),
                 onClick: onDeselectAll
             })
         }

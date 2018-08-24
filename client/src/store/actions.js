@@ -3,7 +3,7 @@ import {resetSettings, setSetting} from './settings';
 
 export const actionTypes = {
     UI_SET_FEATURE_DIAGRAM_LAYOUT: 'UI_SET_FEATURE_DIAGRAM_LAYOUT',
-    UI_SET_SELECT_MULTIPLE: 'UI_SET_SELECT_MULTIPLE',
+    UI_SET_SELECT_MULTIPLE_FEATURES: 'UI_SET_SELECT_MULTIPLE_FEATURES',
     UI_SELECT_FEATURE: 'UI_SELECT_FEATURE',
     UI_SELECT_ONE_FEATURE: 'UI_SELECT_ONE_FEATURE',
     UI_DESELECT_FEATURE: 'UI_DESELECT_FEATURE',
@@ -21,8 +21,8 @@ const actions = {
     ui: {
         setFeatureDiagramLayout: featureDiagramLayout =>
             ({type: actionTypes.UI_SET_FEATURE_DIAGRAM_LAYOUT, featureDiagramLayout}),
-        setSelectMultiple: isSelectMultiple =>
-            ({type: actionTypes.UI_SET_SELECT_MULTIPLE, isSelectMultiple}),
+        setSelectMultipleFeatures: isSelectMultipleFeatures =>
+            ({type: actionTypes.UI_SET_SELECT_MULTIPLE_FEATURES, isSelectMultipleFeatures}),
         selectFeature: featureName => ({type: actionTypes.UI_SELECT_FEATURE, featureName}),
         selectOneFeature: featureName => ({type: actionTypes.UI_SELECT_ONE_FEATURE, featureName}),
         deselectFeature: featureName => ({type: actionTypes.UI_DESELECT_FEATURE, featureName}),

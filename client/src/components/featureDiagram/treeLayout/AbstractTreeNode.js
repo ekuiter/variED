@@ -40,8 +40,9 @@ function makeText(settings, selection, isGettingRectInfo, textStyle) {
 }
 
 class AbstractTreeNode {
-    constructor(settings, setActiveNode, onShowPanel) {
+    constructor(settings, isSelectMultipleFeatures, setActiveNode, onShowPanel) {
         this.settings = settings;
+        this.isSelectMultipleFeatures = isSelectMultipleFeatures;
         this.setActiveNode = setActiveNode;
         this.onShowPanel = onShowPanel;
     }
@@ -83,7 +84,10 @@ class AbstractTreeNode {
                     d3Event.preventDefault();
                     self.setActiveNode(isCommand(d3Event) ? 'select' : 'contextualMenu', d, this);
                 })
-                .on('dblclick', d => this.onShowPanel('feature', {featureName: d.feature().name})),
+                .on('dblclick', d => {
+                    if (!this.isSelectMultipleFeatures)
+                        this.onShowPanel('feature', {featureName: d.feature().name});
+                }),
             bboxes = makeText(this.settings, rectAndText, false, this.getTextStyle());
 
         let i = 0;

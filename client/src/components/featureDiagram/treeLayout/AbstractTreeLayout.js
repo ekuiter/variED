@@ -19,11 +19,16 @@ class AbstractTreeLayout extends React.Component {
         fitOnResize: false,
         settings: null,
         onShowPanel: null,
-        onSetSelectMultiple: null,
-        isSelectMultiple: false
+        onSetSelectMultipleFeatures: null,
+        onSelectFeature: null,
+        onSelectOneFeature: null,
+        onDeselectFeature: null,
+        onDeselectAllFeatures: null,
+        isSelectMultipleFeatures: false,
+        selectedFeatures: null
     };
     svgRef = React.createRef();
-    state = {overlay: null, activeNode: null, activeNodeRef: null, selectedNodes: []};
+    state = {overlay: null, activeNode: null, activeNodeRef: null};
     currentCoordinates = {};
     previousCoordinates = {};
 
@@ -32,6 +37,7 @@ class AbstractTreeLayout extends React.Component {
         this.direction = direction;
         this.treeNode = new TreeNode(
             props.settings,
+            props.isSelectMultipleFeatures,
             this.setActiveNode.bind(this),
             this.onShowPanel);
         this.treeLink = new TreeLink(
@@ -46,19 +52,17 @@ class AbstractTreeLayout extends React.Component {
         this.renderD3();
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        const updateOnPropChange = ['featureModel', 'width', 'height', 'fitOnResize', 'settings'];
+    componentDidUpdate(prevProps) {
+        const updateD3OnPropChange = ['featureModel', 'width', 'height', 'fitOnResize', 'settings'];
         this.treeNode.settings = this.treeLink.settings = this.props.settings;
+        this.treeNode.isSelectMultipleFeatures = this.props.isSelectMultipleFeatures;
 
-        if (updateOnPropChange.find(prop => this.props[prop] !== prevProps[prop]))
+        if (updateD3OnPropChange.find(prop => this.props[prop] !== prevProps[prop]))
             this.updateD3(
                 this.props.width !== prevProps.width ||
                 this.props.height !== prevProps.height);
 
-        if (prevProps.isSelectMultiple !== this.props.isSelectMultiple)
-            this.removeSelectedNodes(false);
-
-        if (this.state.selectedNodes !== prevState.selectedNodes)
+        if (this.props.selectedFeatures !== prevProps.selectedFeatures)
             this.updateSelection();
     }
 
@@ -77,14 +81,14 @@ class AbstractTreeLayout extends React.Component {
                 <FeatureContextualMenu
                     settings={this.props.settings}
                     direction={this.direction}
-                    isSelectMultiple={this.props.isSelectMultiple}
+                    isSelectMultipleFeatures={this.props.isSelectMultipleFeatures}
                     node={this.state.overlay === 'contextualMenu' ? this.state.activeNode : null}
                     nodeRef={this.state.overlay === 'contextualMenu' ? this.state.activeNodeRef : null}
-                    selectedNodes={this.state.selectedNodes}
+                    selectedFeatures={this.props.selectedFeatures}
                     onShowPanel={this.onShowPanel}
                     onShowDialog={this.onShowDialog}
                     onDismiss={this.onHideOverlay}
-                    onDeselectAll={this.onDeselectAll}/>
+                    onDeselectAllFeatures={this.props.onDeselectAllFeatures}/>
             </React.Fragment>
         );
     }
@@ -107,10 +111,6 @@ class AbstractTreeLayout extends React.Component {
                 return this.setState({}); // triggers a rerender for the overlay to catch up
         },
         getSetting(this.props.settings, 'featureDiagram.treeLayout.overlay.throttleUpdate'));
-
-    onDeselectAll = () => {
-        this.removeSelectedNodes();
-    };
 
     canExport() {
         return !!this.svgRef.current;
@@ -143,69 +143,38 @@ class AbstractTreeLayout extends React.Component {
         return d => `${kind}_${d.feature().name}`;
     }
 
-    setActiveNode(overlay, activeNode, activeNodeRef) {
-        if (this.props.isSelectMultiple) {
-            if (overlay === 'callout' || overlay === 'select')
-                this.toggleSelectedNode(activeNode, activeNodeRef);
-            else if (overlay === null || (overlay === 'contextualMenu' && this.isSelectedNode(activeNodeRef)))
-                this.setState({overlay, activeNode, activeNodeRef});
-        } else {
-            if (overlay === 'callout' || overlay === 'contextualMenu') {
-                this.setSelectedNode(activeNode, activeNodeRef);
-                this.setState({overlay, activeNode, activeNodeRef});
-            } else if (overlay === 'select') {
-                this.props.onSetSelectMultiple(true);
-                this.setSelectedNode(activeNode, activeNodeRef);
-            } else {
-                this.removeSelectedNodes();
-                this.setState({overlay, activeNode, activeNodeRef});
-            }
-        }
-    }
-
-    selectedNodeFilter = (_nodeRef, truthy) => ({nodeRef}) => {
-        const contains = _nodeRef.contains(nodeRef);
-        return truthy ? contains : !contains;
-    };
-
-    isSelectedNode(_nodeRef) {
-        return this.state.selectedNodes.find(this.selectedNodeFilter(_nodeRef, true));
-    }
-
-    addSelectedNode(node, nodeRef) {
-        this.setState(prevState => ({selectedNodes: [...prevState.selectedNodes, {node, nodeRef}]}));
-        this.props.onSelectFeature(node.feature().name);
-    }
-
-    setSelectedNode(node, nodeRef) {
-        this.setState({selectedNodes: [{node, nodeRef}]});
-        this.props.onSelectOneFeature(node.feature().name);
-    }
-
     removeSelectedNode(node, _nodeRef) {
         if (this.state.overlay && _nodeRef === this.state.activeNodeRef)
             this.onHideOverlay();
-        this.setState(
-            prevState => ({selectedNodes: prevState.selectedNodes.filter(this.selectedNodeFilter(_nodeRef, false))}),
-            () => {
-                if (this.state.selectedNodes.length === 0)
-                    this.props.onSetSelectMultiple(false);
-                this.props.onDeselectFeature(node.feature().name);
-            });
-    }
-
-    removeSelectedNodes(clearSelectMultiple = true) {
-        if (clearSelectMultiple && this.props.isSelectMultiple)
-            this.props.onSetSelectMultiple(false);
-        this.setState({selectedNodes: []});
-        this.props.onDeselectAllFeatures();
+        this.props.onDeselectFeature(node.feature().name);
     }
 
     toggleSelectedNode(node, _nodeRef) {
-        if (this.isSelectedNode(_nodeRef))
+        if (this.props.selectedFeatures.includes(node.feature().name))
             this.removeSelectedNode(node, _nodeRef);
         else
-            this.addSelectedNode(node, _nodeRef);
+            this.props.onSelectFeature(node.feature().name);
+    }
+
+    setActiveNode(overlay, activeNode, activeNodeRef) {
+        if (this.props.isSelectMultipleFeatures) {
+            if (overlay === 'callout' || overlay === 'select')
+                this.toggleSelectedNode(activeNode, activeNodeRef);
+            else if (overlay === null || (overlay === 'contextualMenu' &&
+                this.props.selectedFeatures.includes(activeNode.feature().name)))
+                this.setState({overlay, activeNode, activeNodeRef});
+        } else {
+            if (overlay === 'callout' || overlay === 'contextualMenu') {
+                this.props.onSelectOneFeature(activeNode.feature().name);
+                this.setState({overlay, activeNode, activeNodeRef});
+            } else if (overlay === 'select') {
+                this.props.onSetSelectMultipleFeatures(true);
+                this.props.onSelectOneFeature(activeNode.feature().name);
+            } else {
+                this.props.onDeselectAllFeatures();
+                this.setState({overlay, activeNode, activeNodeRef});
+            }
+        }
     }
 
     updateCoordinates(key, nodes) {
@@ -394,7 +363,7 @@ class AbstractTreeLayout extends React.Component {
             });
 
         node.exit().each(function(d) {
-            if (self.state.selectedNodes.find(self.selectedNodeFilter(this, true)))
+            if (self.props.selectedFeatures.includes(d.feature().name))
                 self.removeSelectedNode(d, this); // deselect exiting nodes, TODO: warn user that selection changed
         });
 
@@ -402,16 +371,9 @@ class AbstractTreeLayout extends React.Component {
     }
 
     updateSelection() {
-        const self = this,
-            {node} = this.joinData(false, false, true);
-
-        node.filter(function() {
-            return self.state.selectedNodes.find(self.selectedNodeFilter(this, true));
-        }).attr('class', 'node selected');
-
-        node.filter(function() {
-            return !self.state.selectedNodes.find(self.selectedNodeFilter(this, true));
-        }).attr('class', 'node');
+        const {node} = this.joinData(false, false, true);
+        node.filter(d => this.props.selectedFeatures.includes(d.feature().name)).attr('class', 'node selected');
+        node.filter(d => !this.props.selectedFeatures.includes(d.feature().name)).attr('class', 'node');
     }
 }
 

@@ -9,13 +9,14 @@ export default connect(
     state => ({
         settings: state.settings,
         layout: state.ui.featureDiagramLayout,
-        isSelectMultiple: state.ui.isSelectMultiple,
+        isSelectMultipleFeatures: state.ui.isSelectMultipleFeatures,
+        selectedFeatures: state.ui.selectedFeatures,
         featureModel: getFeatureModel(state)
     }),
     dispatch => ({
         onShowPanel: (panel, panelProps) => dispatch(actions.ui.showPanel(panel, panelProps)),
         onShowDialog: (dialog, dialogProps) => dispatch(actions.ui.showDialog(dialog, dialogProps)),
-        onSetSelectMultiple: isSelectMultiple => dispatch(actions.ui.setSelectMultiple(isSelectMultiple)),
+        onSetSelectMultipleFeatures: isSelectMultipleFeatures => dispatch(actions.ui.setSelectMultipleFeatures(isSelectMultipleFeatures)),
         onSelectFeature: featureName => dispatch(actions.ui.selectFeature(featureName)),
         onSelectOneFeature: featureName => dispatch(actions.ui.selectOneFeature(featureName)),
         onDeselectFeature: featureName => dispatch(actions.ui.deselectFeature(featureName)),

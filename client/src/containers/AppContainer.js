@@ -24,15 +24,15 @@ class AppContainer extends React.Component {
                     <CommandBar
                         items={[
                             contextualMenuItems.featureDiagram.undo(this.props.undoChecked),
-                            contextualMenuItems.featureDiagram.redo(this.props.redoChecked)
-                        ]}
-                        overflowItems={[
+                            contextualMenuItems.featureDiagram.redo(this.props.redoChecked),
                             contextualMenuItems.featureDiagram.setLayout(
                                 this.props.featureDiagramLayout,
                                 this.props.onSetFeatureDiagramLayout),
                             contextualMenuItems.featureDiagram.selection(
-                                this.props.isSelectMultiple,
-                                this.props.onSetSelectMultiple)
+                                this.props.isSelectMultipleFeatures,
+                                this.props.onSetSelectMultipleFeatures,
+                                this.props.selectedFeatures,
+                                this.props.onDeselectAllFeatures)
                         ]}
                         farItems={[
                             {
@@ -58,14 +58,16 @@ class AppContainer extends React.Component {
 export default connect(
     state => ({
         featureDiagramLayout: state.ui.featureDiagramLayout,
-        isSelectMultiple: state.ui.isSelectMultiple,
+        isSelectMultipleFeatures: state.ui.isSelectMultipleFeatures,
+        selectedFeatures: state.ui.selectedFeatures,
         endpoints: state.server.endpoints,
         settings: state.settings
     }),
     dispatch => ({
         handleMessage: dispatch,
         onSetFeatureDiagramLayout: layout => dispatch(actions.ui.setFeatureDiagramLayout(layout)),
-        onSetSelectMultiple: isSelectMultiple => dispatch(actions.ui.setSelectMultiple(isSelectMultiple)),
+        onSetSelectMultipleFeatures: isSelectMultipleFeatures => dispatch(actions.ui.setSelectMultipleFeatures(isSelectMultipleFeatures)),
+        onDeselectAllFeatures: () => dispatch(actions.ui.deselectAllFeatures()),
         onShowPanel: (panel, panelProps) => dispatch(actions.ui.showPanel(panel, panelProps))
     })
 )(withKeys({

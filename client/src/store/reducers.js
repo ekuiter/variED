@@ -22,22 +22,26 @@ function uiReducer(state = constants.store.initialUi, action) {
     if (action.type === actionTypes.UI_SET_FEATURE_DIAGRAM_LAYOUT)
         return {...state, featureDiagramLayout: action.featureDiagramLayout};
 
-    if (action.type === actionTypes.UI_SET_SELECT_MULTIPLE)
-        return {...state, isSelectMultiple: action.isSelectMultiple};
+    if (action.type === actionTypes.UI_SET_SELECT_MULTIPLE_FEATURES)
+        return {...state, isSelectMultipleFeatures: action.isSelectMultipleFeatures, selectedFeatures: []};
     if (action.type === actionTypes.UI_SELECT_FEATURE)
         return {...state, selectedFeatures: [...state.selectedFeatures, action.featureName]};
     if (action.type === actionTypes.UI_SELECT_ONE_FEATURE)
         return {...state, selectedFeatures: [action.featureName]};
-    if (action.type === actionTypes.UI_DESELECT_FEATURE)
-        return {...state, selectedFeatures: state.selectedFeatures.filter(featureName => featureName !== action.featureName)};
+    if (action.type === actionTypes.UI_DESELECT_FEATURE) {
+        const selectedFeatures = state.selectedFeatures.filter(featureName => featureName !== action.featureName);
+        return selectedFeatures.length > 0
+            ? {...state, selectedFeatures}
+            : {...state, selectedFeatures, isSelectMultipleFeatures: false};
+    }
     if (action.type === actionTypes.UI_DESELECT_ALL_FEATURES)
-        return {...state, selectedFeatures: []};
+        return {...state, selectedFeatures: [], isSelectMultipleFeatures: false};
 
     if (action.type === actionTypes.UI_SHOW_PANEL)
         return {...state, panel: action.panel, panelProps: action.panelProps};
     if (action.type === actionTypes.UI_SHOW_DIALOG)
         return {...state, dialog: action.dialog, dialogProps: action.dialogProps};
-    
+
     return state;
 }
 
