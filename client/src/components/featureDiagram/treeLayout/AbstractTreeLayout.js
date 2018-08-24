@@ -56,7 +56,7 @@ class AbstractTreeLayout extends React.Component {
                 this.props.height !== prevProps.height);
 
         if (prevProps.isSelectMultiple !== this.props.isSelectMultiple)
-            this.removeSelectedNodes();
+            this.removeSelectedNodes(false);
 
         if (this.state.selectedNodes !== prevState.selectedNodes)
             this.updateSelection();
@@ -109,7 +109,6 @@ class AbstractTreeLayout extends React.Component {
         getSetting(this.props.settings, 'featureDiagram.treeLayout.overlay.throttleUpdate'));
 
     onDeselectAll = () => {
-        this.props.onSetSelectMultiple(false);
         this.removeSelectedNodes();
     };
 
@@ -146,23 +145,31 @@ class AbstractTreeLayout extends React.Component {
 
     setActiveNode(overlay, activeNode, activeNodeRef) {
         if (this.props.isSelectMultiple) {
-            if (overlay === 'callout')
+            if (overlay === 'callout' || overlay === 'select')
                 this.toggleSelectedNode(activeNode, activeNodeRef);
-            if (overlay === 'contextualMenu' && this.isSelectedNode(activeNodeRef))
-                this.setState({overlay, activeNode, activeNodeRef});
-            if (overlay === null)
+            else if (overlay === null || (overlay === 'contextualMenu' && this.isSelectedNode(activeNodeRef)))
                 this.setState({overlay, activeNode, activeNodeRef});
         } else {
-            if (overlay !== null)
+            if (overlay === 'callout' || overlay === 'contextualMenu') {
                 this.setSelectedNode(activeNode, activeNodeRef);
-            else
+                this.setState({overlay, activeNode, activeNodeRef});
+            } else if (overlay === 'select') {
+                this.props.onSetSelectMultiple(true);
+                this.setSelectedNode(activeNode, activeNodeRef);
+            } else {
                 this.removeSelectedNodes();
-            this.setState({overlay, activeNode, activeNodeRef});
+                this.setState({overlay, activeNode, activeNodeRef});
+            }
         }
     }
 
+    selectedNodeFilter = (_nodeRef, truthy) => ({nodeRef}) => {
+        const contains = _nodeRef.contains(nodeRef);
+        return truthy ? contains : !contains;
+    };
+
     isSelectedNode(_nodeRef) {
-        return this.state.selectedNodes.find(({nodeRef}) => nodeRef === _nodeRef);
+        return this.state.selectedNodes.find(this.selectedNodeFilter(_nodeRef, true));
     }
 
     addSelectedNode(node, nodeRef) {
@@ -174,12 +181,21 @@ class AbstractTreeLayout extends React.Component {
     }
 
     removeSelectedNode(_nodeRef) {
+        console.log('removing', _nodeRef);
         if (this.state.overlay && _nodeRef === this.state.activeNodeRef)
             this.onHideOverlay();
-        this.setState(prevState => ({selectedNodes: prevState.selectedNodes.filter(({nodeRef}) => nodeRef !== _nodeRef)}));
+        this.setState(
+            prevState => ({selectedNodes: prevState.selectedNodes.filter(this.selectedNodeFilter(_nodeRef, false))}),
+            () => {
+                if (this.state.selectedNodes.length === 0)
+                    this.props.onSetSelectMultiple(false);
+                console.log(this.state.selectedNodes);
+            });
     }
 
-    removeSelectedNodes() {
+    removeSelectedNodes(clearSelectMultiple = true) {
+        if (clearSelectMultiple)
+            this.props.onSetSelectMultiple(false);
         this.setState({selectedNodes: []});
     }
 
@@ -376,7 +392,7 @@ class AbstractTreeLayout extends React.Component {
             });
 
         node.exit().each(function() {
-            if (self.state.selectedNodes.find(({nodeRef}) => this.contains(nodeRef)))
+            if (self.state.selectedNodes.find(self.selectedNodeFilter(this, true)))
                 self.removeSelectedNode(this); // deselect exiting nodes, TODO: warn user that selection changed
         });
 
@@ -388,11 +404,11 @@ class AbstractTreeLayout extends React.Component {
             {node} = this.joinData(false, false, true);
 
         node.filter(function() {
-            return self.state.selectedNodes.find(({nodeRef}) => this.contains(nodeRef));
+            return self.state.selectedNodes.find(self.selectedNodeFilter(this, true));
         }).attr('class', 'node selected');
 
         node.filter(function() {
-            return !self.state.selectedNodes.find(({nodeRef}) => this.contains(nodeRef));
+            return !self.state.selectedNodes.find(self.selectedNodeFilter(this, true));
         }).attr('class', 'node');
     }
 }

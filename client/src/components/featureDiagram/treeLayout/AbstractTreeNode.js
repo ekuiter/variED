@@ -4,6 +4,7 @@ import {getSetting} from '../../../store/settings';
 import measureTextWidth from '../../../helpers/measureTextWidth';
 import {addStyle, appendCross, translateTransform} from '../../../helpers/svg';
 import styles from './styles';
+import {isCommand} from '../../../helpers/withKeys';
 
 function widenBbox({x, y, width, height}, paddingX, paddingY) {
     return {x: x - paddingX, y: y - paddingY, width: width + 2 * paddingX, height: height + 2 * paddingY};
@@ -76,11 +77,11 @@ class AbstractTreeNode {
                     d3Select(this).attr('class', 'rectAndText');
                 })
                 .on('click', function(d) {
-                    self.setActiveNode('callout', d, this);
+                    self.setActiveNode(isCommand(d3Event) ? 'select' : 'callout', d, this);
                 })
                 .on('contextmenu', function(d) {
                     d3Event.preventDefault();
-                    self.setActiveNode('contextualMenu', d, this);
+                    self.setActiveNode(isCommand(d3Event) ? 'select' : 'contextualMenu', d, this);
                 })
                 .on('dblclick', d => this.onShowPanel('feature', {featureName: d.feature().name})),
             bboxes = makeText(this.settings, rectAndText, false, this.getTextStyle());

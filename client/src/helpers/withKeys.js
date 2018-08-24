@@ -1,5 +1,8 @@
 import React from 'react';
 
+export const isCommand = event => (event.ctrlKey || event.metaKey) && !event.shiftKey,
+    isShiftCommand = event => (event.ctrlKey || event.metaKey) && event.shiftKey;
+
 export default (...keyBindings) =>
     WrappedComponent =>
         class extends React.Component {
@@ -18,10 +21,8 @@ export default (...keyBindings) =>
 
             handleKey = event => {
                 const refs = this._refs, props = this.props;
-                event.isCommand = key =>
-                    (event.ctrlKey || event.metaKey) && !event.shiftKey && event.key === key;
-                event.isShiftCommand = key =>
-                    (event.ctrlKey || event.metaKey) && event.shiftKey && event.key === key;
+                event.isCommand = key => isCommand(event) && (key ? event.key === key : true);
+                event.isShiftCommand = key => isShiftCommand(event) && (key ? event.key === key : true);
 
                 for (let i = 0; i < keyBindings.length; i++) {
                     const {key, action, injectProp} = keyBindings[i];
