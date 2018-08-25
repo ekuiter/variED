@@ -17,6 +17,7 @@ cache:
 
 deploy:
   - provider: releases
+    file_glob: true
     file: build/**/*
     skip_cleanup: true
     on:

@@ -68,6 +68,8 @@ const contextualMenuItems = {
                 key: 'new',
                 text: i18n.t('featureDiagram.commands.feature.new'),
                 iconProps: {iconName: 'Add'},
+                split: true,
+                onClick: () => actions.server.featureAdd(featureName).then(onClick),
                 subMenuProps: {
                     items: [
                         contextualMenuItems.featureDiagram.feature.newFeatureBelow(featureName, onClick),
