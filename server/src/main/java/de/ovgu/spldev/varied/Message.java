@@ -3,9 +3,9 @@ package de.ovgu.spldev.varied;
 import com.google.gson.typeadapters.RuntimeTypeAdapterFactory;
 import de.ovgu.featureide.fm.core.base.IFeature;
 import de.ovgu.featureide.fm.core.base.IFeatureModel;
-import de.ovgu.featureide.fm.core.base.event.FeatureIDEEvent;
 
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
@@ -59,7 +59,11 @@ abstract public class Message {
         /**
          * rename a feature
          */
-        FEATURE_RENAME
+        FEATURE_RENAME,
+        /**
+         * set a feature description
+         */
+        FEATURE_SET_DESCRIPTION
     }
 
     public static class Type {
@@ -212,7 +216,7 @@ abstract public class Message {
         public StateChange getStateChange(StateContext stateContext) {
             IFeatureModel featureModel = stateContext.getFeatureModel();
             IFeature _belowFeature = featureModel.getFeature(belowFeature);
-            return new StateChange.FeatureAdd(_belowFeature, featureModel);
+            return new StateChange.FeatureAddBelow(_belowFeature, featureModel);
         }
     }
 
@@ -257,7 +261,7 @@ abstract public class Message {
         public StateChange getStateChange(StateContext stateContext) {
             IFeatureModel featureModel = stateContext.getFeatureModel();
             IFeature _feature = featureModel.getFeature(feature);
-            return new StateChange.FeatureDelete(featureModel, _feature);
+            return new StateChange.FeatureRemove(featureModel, _feature);
         }
     }
 
@@ -275,7 +279,28 @@ abstract public class Message {
         }
 
         public StateChange getStateChange(StateContext stateContext) {
-            return new StateChange.FeatureNameChanged(stateContext.getFeatureModel(), oldFeature, newFeature);
+            return new StateChange.FeatureRename(stateContext.getFeatureModel(), oldFeature, newFeature);
+        }
+    }
+
+    public static class FeatureSetDescription extends Message implements IUndoable {
+        private String feature, description;
+
+        public FeatureSetDescription(String feature, String description) {
+            super(TypeEnum.FEATURE_SET_DESCRIPTION);
+            this.feature = feature;
+            this.description = description;
+        }
+
+        public boolean isValid(StateContext stateContext) {
+            return FeatureUtils.requireFeature(stateContext.getFeatureModel(), feature) &&
+                    (StringUtils.isPresent(description) || Objects.equals(description, ""));
+        }
+
+        public StateChange getStateChange(StateContext stateContext) {
+            IFeatureModel featureModel = stateContext.getFeatureModel();
+            IFeature _feature = featureModel.getFeature(feature);
+            return new StateChange.FeatureSetDescription(featureModel, _feature, description);
         }
     }
 }

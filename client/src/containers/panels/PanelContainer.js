@@ -33,7 +33,7 @@ export default connect(
     state => ({
         panel: state.ui.panel,
         panelProps: state.ui.panelProps,
-        dialog: state.ui.dialog, // needed to reopen a parent panel after a dialog is closed,
+        dialog: state.ui.dialog, // needed to reopen a parent panel after a dialog is closed
         settings: state.settings,
         featureModel: getFeatureModel(state)
     }),

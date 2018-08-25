@@ -24,11 +24,11 @@ public abstract class StateChange {
     }
 
     // adapted from CreateFeatureBelowOperation
-    public static class FeatureAdd extends FeatureModelStateChange {
+    public static class FeatureAddBelow extends FeatureModelStateChange {
         private IFeature feature;
         private IFeature newFeature;
 
-        public FeatureAdd(IFeature feature, IFeatureModel featureModel) {
+        public FeatureAddBelow(IFeature feature, IFeatureModel featureModel) {
             super(featureModel);
             this.feature = feature;
         }
@@ -138,7 +138,7 @@ public abstract class StateChange {
     }
 
     // adapted from DeleteFeatureOperation
-    public static class FeatureDelete extends FeatureModelStateChange {
+    public static class FeatureRemove extends FeatureModelStateChange {
         private IFeature feature;
         private IFeature oldParent;
         private int oldIndex;
@@ -148,13 +148,13 @@ public abstract class StateChange {
         private boolean alternative = false;
         private final IFeature replacement;
 
-        public FeatureDelete(IFeatureModel featureModel, IFeature feature) {
+        public FeatureRemove(IFeatureModel featureModel, IFeature feature) {
             super(featureModel);
             this.feature = feature;
             replacement = null;
         }
 
-        public FeatureDelete(IFeatureModel featureModel, IFeature feature, IFeature replacement) {
+        public FeatureRemove(IFeatureModel featureModel, IFeature feature, IFeature replacement) {
             super(featureModel);
             this.feature = feature;
             this.replacement = replacement;
@@ -266,11 +266,11 @@ public abstract class StateChange {
     }
 
     // adapted from RenameFeatureOperation
-    public static class FeatureNameChanged extends FeatureModelStateChange {
+    public static class FeatureRename extends FeatureModelStateChange {
         private final String oldName;
         private final String newName;
 
-        public FeatureNameChanged(IFeatureModel featureModel, String oldName, String newName) {
+        public FeatureRename(IFeatureModel featureModel, String oldName, String newName) {
             super(featureModel);
             this.oldName = oldName;
             this.newName = newName;
@@ -285,6 +285,28 @@ public abstract class StateChange {
         public Message.IEncodable undo() {
             if (!featureModel.getRenamingsManager().renameFeature(newName, oldName))
                 throw new RuntimeException("invalid renaming operation");
+            return new Message.FeatureModel(featureModel);
+        }
+    }
+
+    public static class FeatureSetDescription extends FeatureModelStateChange {
+        private IFeature feature;
+        private String oldDescription, description;
+
+        public FeatureSetDescription(IFeatureModel featureModel, IFeature feature, String description) {
+            super(featureModel);
+            this.feature = feature;
+            this.oldDescription = feature.getProperty().getDescription();
+            this.description = description;
+        }
+
+        public Message.IEncodable apply() {
+            feature.getProperty().setDescription(description);
+            return new Message.FeatureModel(featureModel);
+        }
+
+        public Message.IEncodable undo() {
+            feature.getProperty().setDescription(oldDescription);
             return new Message.FeatureModel(featureModel);
         }
     }

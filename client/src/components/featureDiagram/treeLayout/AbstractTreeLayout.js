@@ -75,15 +75,16 @@ class AbstractTreeLayout extends React.Component {
                 <FeatureCallout
                     settings={this.props.settings}
                     direction={this.direction}
-                    node={this.state.overlay === 'callout' ? this.state.activeNode : null}
+                    featureName={this.state.overlay === 'callout' ? this.state.activeNode.feature().name : null}
                     nodeRef={this.state.overlay === 'callout' ? this.state.activeNodeRef : null}
                     onShowPanel={this.onShowPanel}
-                    onDismiss={this.onHideOverlay}/>
+                    onDismiss={this.onHideOverlay}
+                    featureModel={this.props.featureModel}/>
                 <FeatureContextualMenu
                     settings={this.props.settings}
                     direction={this.direction}
                     isSelectMultipleFeatures={this.props.isSelectMultipleFeatures}
-                    node={this.state.overlay === 'contextualMenu' ? this.state.activeNode : null}
+                    featureName={this.state.overlay === 'contextualMenu' ? this.state.activeNode.feature().name : null}
                     nodeRef={this.state.overlay === 'contextualMenu' ? this.state.activeNodeRef : null}
                     selectedFeatures={this.props.selectedFeatures}
                     onShowPanel={this.onShowPanel}

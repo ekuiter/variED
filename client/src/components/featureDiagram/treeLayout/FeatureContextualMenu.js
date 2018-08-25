@@ -12,16 +12,19 @@ export const selectMultipleFeaturesContextualMenuItems = (selectedFeatures, onSe
 ];
 
 export default props => {
-    const {onDismiss, onSelectAllFeatures, onDeselectAllFeatures, isSelectMultipleFeatures, selectedFeatures, featureModel} = props,
-        {gapSpace} = getSetting(props.settings, 'featureDiagram.treeLayout.overlay'),
-        feature = props.node && props.node.feature();
+    const {
+            onDismiss, onSelectAllFeatures, onDeselectAllFeatures,
+            isSelectMultipleFeatures, selectedFeatures, featureModel, featureName
+        } = props,
+        {gapSpace} = getSetting(props.settings, 'featureDiagram.treeLayout.overlay');
+    const feature = featureModel && featureName ? featureModel.getFeature(featureName) : null;
     if (!feature)
         return null;
     return (
         <ContextualMenu
             target={props.nodeRef}
             onDismiss={onDismiss}
-            hidden={!props.node}
+            hidden={!props.featureName}
             isBeakVisible={!isSelectMultipleFeatures}
             gapSpace={isSelectMultipleFeatures ? 2 * gapSpace : gapSpace}
             directionalHint={
