@@ -35,20 +35,20 @@ public class CollaborationSession {
             broadcast(new Message.EndpointUnsubscribe(oldEndpoint));
     }
 
-    public void unicast(Endpoint targetEndpoint, Function<Endpoint, Message> messageFunction, Predicate<Endpoint> predicate) {
+    public void unicast(Endpoint targetEndpoint, Function<Endpoint, Message.IEncodable> messageFunction, Predicate<Endpoint> predicate) {
         for (Endpoint endpoint : endpoints)
             if (predicate.test(endpoint))
                 targetEndpoint.send(messageFunction.apply(endpoint));
     }
 
-    public void broadcast(Message message, Predicate<Endpoint> predicate) {
+    public void broadcast(Message.IEncodable message, Predicate<Endpoint> predicate) {
         Objects.requireNonNull(message, "no message given");
         for (Endpoint endpoint : endpoints)
             if (predicate.test(endpoint))
                 endpoint.send(message);
     }
 
-    public void broadcast(Message message) {
+    public void broadcast(Message.IEncodable message) {
         Objects.requireNonNull(message, "no message given");
         broadcast(message, endpoint -> true);
     }
@@ -58,7 +58,7 @@ public class CollaborationSession {
         Message.IDecodable decodableMessage = (Message.IDecodable) message;
         if (!decodableMessage.isValid(stateContext))
             throw new RuntimeException("invalid message " + message);
-        Message stateChangeMessage;
+        Message.IEncodable stateChangeMessage;
         if (message instanceof Message.IApplicable) {
             Message.IApplicable applicableMessage = (Message.IApplicable) message;
             stateChangeMessage = applicableMessage.apply(stateContext);

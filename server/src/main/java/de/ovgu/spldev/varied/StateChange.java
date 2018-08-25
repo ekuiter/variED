@@ -12,8 +12,8 @@ import java.util.LinkedList;
 import static de.ovgu.featureide.fm.core.localization.StringTable.DEFAULT_FEATURE_LAYER_CAPTION;
 
 public abstract class StateChange {
-    public abstract Message apply();
-    public abstract Message undo();
+    public abstract Message.IEncodable apply();
+    public abstract Message.IEncodable undo();
 
     public static abstract class FeatureModelStateChange extends StateChange {
         protected IFeatureModel featureModel;
@@ -33,7 +33,7 @@ public abstract class StateChange {
             this.feature = feature;
         }
 
-        public Message apply() {
+        public Message.IEncodable apply() {
             int number = 1;
 
             while (FeatureUtils.getFeatureNames(featureModel).contains(DEFAULT_FEATURE_LAYER_CAPTION + number)) {
@@ -48,7 +48,7 @@ public abstract class StateChange {
             return new Message.FeatureModel(featureModel);
         }
 
-        public Message undo() {
+        public Message.IEncodable undo() {
             newFeature = featureModel.getFeature(newFeature.getName());
             featureModel.deleteFeature(newFeature);
             return new Message.FeatureModel(featureModel);
@@ -74,7 +74,7 @@ public abstract class StateChange {
             newCompound = FMFactoryManager.getFactory(featureModel).createFeature(featureModel, DEFAULT_FEATURE_LAYER_CAPTION + number);
         }
 
-        public Message apply() {
+        public Message.IEncodable apply() {
             final IFeatureStructure parent = child.getStructure().getParent();
             if (parent != null) {
                 parentOr = parent.isOr();
@@ -111,7 +111,7 @@ public abstract class StateChange {
             return new Message.FeatureModel(featureModel);
         }
 
-        public Message undo() {
+        public Message.IEncodable undo() {
             // TODO: does not restore original position/order of features (relevant selectedFeatures.size() > 1)
             final IFeatureStructure parent = newCompound.getStructure().getParent();
             if (parent != null) {
@@ -160,7 +160,7 @@ public abstract class StateChange {
             this.replacement = replacement;
         }
 
-        public Message apply() {
+        public Message.IEncodable apply() {
             feature = featureModel.getFeature(feature.getName());
             oldParent = FeatureUtils.getParent(feature);
             if (oldParent != null) {
@@ -210,7 +210,7 @@ public abstract class StateChange {
             return new Message.FeatureModel(featureModel);
         }
 
-        public Message undo() {
+        public Message.IEncodable undo() {
             try {
                 if (!deleted) {
                     return null;
@@ -276,13 +276,13 @@ public abstract class StateChange {
             this.newName = newName;
         }
 
-        public Message apply() {
+        public Message.IEncodable apply() {
             if (!featureModel.getRenamingsManager().renameFeature(oldName, newName))
                 throw new RuntimeException("invalid renaming operation");
             return new Message.FeatureModel(featureModel);
         }
 
-        public Message undo() {
+        public Message.IEncodable undo() {
             if (!featureModel.getRenamingsManager().renameFeature(newName, oldName))
                 throw new RuntimeException("invalid renaming operation");
             return new Message.FeatureModel(featureModel);

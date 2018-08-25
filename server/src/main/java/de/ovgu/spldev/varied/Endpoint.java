@@ -79,7 +79,7 @@ public class Endpoint {
         }
     }
 
-    public void send(Message message) {
+    public void send(Message.IEncodable message) {
         try {
             session.getBasicRemote().sendObject(message);
         } catch (IOException | EncodeException e) {

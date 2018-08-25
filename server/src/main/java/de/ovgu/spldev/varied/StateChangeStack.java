@@ -5,8 +5,8 @@ import edu.washington.cs.courses.cse143.UndoRedoStack;
 public class StateChangeStack {
     private UndoRedoStack<StateChange> stateChangeUndoRedoStack = new UndoRedoStack<>();
 
-    public Message apply(StateChange stateChange) {
-        Message stateChangeMessage = stateChange.apply();
+    public Message.IEncodable apply(StateChange stateChange) {
+        Message.IEncodable stateChangeMessage = stateChange.apply();
         stateChangeUndoRedoStack.push(stateChange);
         return stateChangeMessage;
     }
@@ -19,20 +19,20 @@ public class StateChangeStack {
         return stateChangeUndoRedoStack.canRedo();
     }
 
-    public Message undo() {
+    public Message.IEncodable undo() {
         if (!stateChangeUndoRedoStack.canUndo())
             throw new RuntimeException("can not undo");
         StateChange stateChange = stateChangeUndoRedoStack.peekUndoneValue();
-        Message stateChangeMessage = stateChange.undo();
+        Message.IEncodable stateChangeMessage = stateChange.undo();
         stateChangeUndoRedoStack.undo();
         return stateChangeMessage;
     }
 
-    public Message redo() {
+    public Message.IEncodable redo() {
         if (!stateChangeUndoRedoStack.canRedo())
             throw new RuntimeException("can not redo");
         StateChange stateChange = stateChangeUndoRedoStack.peekRedoneValue();
-        Message stateChangeMessage = stateChange.apply();
+        Message.IEncodable stateChangeMessage = stateChange.apply();
         stateChangeUndoRedoStack.redo();
         return stateChangeMessage;
     }

@@ -114,19 +114,21 @@ abstract public class Message {
         return new MessageSerializer.MessageEncoder().encode(this);
     }
 
+    public interface IEncodable { }
+
     public interface IDecodable {
         boolean isValid(StateContext stateContext);
     }
 
     public interface IApplicable extends IDecodable {
-        Message apply(StateContext stateContext);
+        Message.IEncodable apply(StateContext stateContext);
     }
 
     public interface IUndoable extends IDecodable {
         StateChange getStateChange(StateContext stateContext);
     }
 
-    public static class Error extends Message {
+    public static class Error extends Message implements IEncodable {
         String error;
 
         public Error(Throwable throwable) {
@@ -136,7 +138,7 @@ abstract public class Message {
         }
     }
 
-    public static class EndpointSubscribe extends Message {
+    public static class EndpointSubscribe extends Message implements IEncodable {
         private String endpoint;
 
         public EndpointSubscribe(Endpoint endpoint) {
@@ -145,7 +147,7 @@ abstract public class Message {
         }
     }
 
-    public static class EndpointUnsubscribe extends Message {
+    public static class EndpointUnsubscribe extends Message implements IEncodable {
         private String endpoint;
 
         public EndpointUnsubscribe(Endpoint endpoint) {
@@ -154,7 +156,7 @@ abstract public class Message {
         }
     }
 
-    public static class FeatureModel extends Message {
+    public static class FeatureModel extends Message implements IEncodable {
         private IFeatureModel featureModel;
 
         public FeatureModel(IFeatureModel featureModel) {
@@ -174,7 +176,7 @@ abstract public class Message {
             return true;
         }
 
-        public Message apply(StateContext stateContext) {
+        public Message.IEncodable apply(StateContext stateContext) {
             return stateContext.getStateChangeStack().undo();
         }
     }
@@ -190,7 +192,7 @@ abstract public class Message {
             return true;
         }
 
-        public Message apply(StateContext stateContext) {
+        public Message.IEncodable apply(StateContext stateContext) {
             return stateContext.getStateChangeStack().redo();
         }
     }
