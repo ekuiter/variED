@@ -31,5 +31,7 @@ deploy:
     app: varied
     on:
       repo: ekuiter/variED
+      tags: true
+      all_branches: true
     api_key:
       secure: JSze8Ay+XXgoywWl0h1WoCBYhLRm+fC90jl39feorvVQIdFXUP8O5jF+kYD++8atlqvUnYVFVyfQCNqrCj0Fbzy4IUyroMB/vmf1rnrNsKeceVjbBmAGvg6KufAfw1gC1wbW2h8oEiG7QsMuAFNR7EX/z+Pi0udyoMlKZ7bcbUiV3aoT5uD9aMLivFFdzkv8VczbqkTnBjr3Ugz26INWC4q57ybULUamU7l4L8BixSAWVa9xh1VynSq805YzKE6/c9xNA3snRXjGTqOrTGfcQGCQ4myV0nPBGqNcscYYKeQeG1iYDXj9mMWH1WZLwnMufKs1Vawdk1A6YtK6ZWdsB4LDhqk1LJSjeJz1CS1ypBWVppFsTiNsQ6CIwuaGGNRTIH9BwJSX4N5hkoAosSNfemobNa1G/12mXRHCkCAar2wpj5DtllDoT4ODbS8l/seCUvKzrgwRlIUCvik//N91px6R+YWukPpB9bsFoPp3D8TRyu0Caoxh1su+vJvaeZtxnu/tCoEpYPd2sJsN7MWDYV25+ED70Z6B0RRj7EdDKibAofmzlkU684K66sElTN5R3kxHUEvQm+S1qZO9XnZLJGXCwb1RQU+PcB9+UeFN92WI7+4ItIYpljJgmtLxcbP8PnpyDJ9TEnUQ9DiuUwwsdNhTSMHHC6fV/H0/AE7+6T0=

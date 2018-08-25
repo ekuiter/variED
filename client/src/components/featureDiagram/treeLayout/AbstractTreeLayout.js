@@ -50,6 +50,7 @@ class AbstractTreeLayout extends React.Component {
 
     componentDidMount() {
         this.renderD3();
+        this.updateSelection();
     }
 
     componentDidUpdate(prevProps) {
