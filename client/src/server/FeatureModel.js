@@ -57,7 +57,10 @@ export default class FeatureModel {
     }
 
     isSiblingFeatures(featureNames) {
-        const parents = featureNames.map(this.getNode.bind(this)).map(node => node.parent);
+        const parents = featureNames
+            .map(this.getNode.bind(this))
+            .filter(node => node)
+            .map(node => node.parent);
         return parents.every(parent => parent === parents[0]);
     }
 };
