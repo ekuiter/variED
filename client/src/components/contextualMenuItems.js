@@ -52,14 +52,14 @@ const contextualMenuItems = {
             }
         }),
         selection: (isSelectMultipleFeatures, onSetSelectMultipleFeatures,
-                    selectedFeatures, onSelectAllFeatures, onDeselectAllFeatures) => ({
+                    selectedFeatures, onSelectAllFeatures, onDeselectAllFeatures, featureModel) => ({
             key: 'selection',
             text: i18n.t('featureDiagram.commands.selection')(isSelectMultipleFeatures, selectedFeatures),
             onClick: () => onSetSelectMultipleFeatures(!isSelectMultipleFeatures), // TODO: tell the user he can choose features now
             subMenuProps: isSelectMultipleFeatures
                 ? {
                     items: selectMultipleFeaturesContextualMenuItems(
-                        selectedFeatures, onSelectAllFeatures, onDeselectAllFeatures)
+                        selectedFeatures, onSelectAllFeatures, onDeselectAllFeatures, featureModel)
                 }
                 : null
         }),
@@ -112,12 +112,23 @@ const contextualMenuItems = {
                 text: i18n.t('featureDiagram.commands.features.deselectAll'),
                 onClick: onDeselectAll
             }),
-            newFeatureAbove: (featureNames, onClick) => ({
-                key: 'featureAbove',
-                text: i18n.t('featureDiagram.commands.features.newFeatureAbove'),
-                iconProps: {iconName: 'Add'},
-                onClick: () => actions.server.featureAddAbove(featureNames).then(onClick)
-            })
+            newFeatureAbove: (featureNames, onClick, featureModel) => {
+                let disabled = false;
+                if (featureNames.length === 0)
+                    disabled = true;
+                else if (featureNames.length > 1) {
+                    if (!featureModel)
+                        throw new Error('no feature model given');
+                    disabled = !featureModel.isSiblingFeatures(featureNames);
+                }
+                return ({
+                    key: 'featureAbove',
+                    text: i18n.t('featureDiagram.commands.features.newFeatureAbove'),
+                    iconProps: {iconName: 'Add'},
+                    disabled,
+                    onClick: () => actions.server.featureAddAbove(featureNames).then(onClick)
+                });
+            }
         }
     }
 };

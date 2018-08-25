@@ -55,4 +55,9 @@ export default class FeatureModel {
     getFeatureNames() {
         return this.hierarchy.descendants().map(node => node.feature().name);
     }
+
+    isSiblingFeatures(featureNames) {
+        const parents = featureNames.map(this.getNode.bind(this)).map(node => node.parent);
+        return parents.every(parent => parent === parents[0]);
+    }
 };

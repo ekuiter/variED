@@ -4,15 +4,15 @@ import {ContextualMenu, ContextualMenuItemType} from 'office-ui-fabric-react/lib
 import contextualMenuItems from '../../contextualMenuItems';
 import {getSetting} from '../../../store/settings';
 
-export const selectMultipleFeaturesContextualMenuItems = (selectedFeatures, onSelectAllFeatures, onDeselectAllFeatures) => [
+export const selectMultipleFeaturesContextualMenuItems = (selectedFeatures, onSelectAllFeatures, onDeselectAllFeatures, featureModel) => [
     contextualMenuItems.featureDiagram.features.selectAll(onSelectAllFeatures),
     contextualMenuItems.featureDiagram.features.deselectAll(onDeselectAllFeatures),
     {key: 'divider1', itemType: ContextualMenuItemType.Divider},
-    contextualMenuItems.featureDiagram.features.newFeatureAbove(selectedFeatures, onDeselectAllFeatures)
+    contextualMenuItems.featureDiagram.features.newFeatureAbove(selectedFeatures, onDeselectAllFeatures, featureModel)
 ];
 
 export default props => {
-    const {onDismiss, onSelectAllFeatures, onDeselectAllFeatures, isSelectMultipleFeatures, selectedFeatures} = props,
+    const {onDismiss, onSelectAllFeatures, onDeselectAllFeatures, isSelectMultipleFeatures, selectedFeatures, featureModel} = props,
         {gapSpace} = getSetting(props.settings, 'featureDiagram.treeLayout.overlay'),
         feature = props.node && props.node.feature();
     if (!feature)
@@ -30,7 +30,7 @@ export default props => {
                     : DirectionalHint.rightCenter}
             items={isSelectMultipleFeatures
                 ? selectMultipleFeaturesContextualMenuItems(
-                    selectedFeatures, onSelectAllFeatures, onDeselectAllFeatures)
+                    selectedFeatures, onSelectAllFeatures, onDeselectAllFeatures, featureModel)
                 : [
                     contextualMenuItems.featureDiagram.feature.new(feature.name, onDismiss),
                     contextualMenuItems.featureDiagram.feature.remove(feature.name, onDismiss),

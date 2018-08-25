@@ -89,7 +89,8 @@ class AbstractTreeLayout extends React.Component {
                     onShowDialog={this.onShowDialog}
                     onDismiss={this.onHideOverlay}
                     onSelectAllFeatures={this.props.onSelectAllFeatures}
-                    onDeselectAllFeatures={this.props.onDeselectAllFeatures}/>
+                    onDeselectAllFeatures={this.props.onDeselectAllFeatures}
+                    featureModel={this.props.featureModel}/>
             </React.Fragment>
         );
     }

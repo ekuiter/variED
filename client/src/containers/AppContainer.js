@@ -11,6 +11,7 @@ import DialogContainer from './dialogs/DialogContainer';
 import withKeys from '../helpers/withKeys';
 import defer from '../helpers/defer';
 import EndpointFacepile from '../components/EndpointFacepile';
+import {getFeatureModel} from '../store/selectors';
 
 class AppContainer extends React.Component {
     componentDidMount() {
@@ -35,7 +36,8 @@ class AppContainer extends React.Component {
                                 this.props.onSetSelectMultipleFeatures,
                                 this.props.selectedFeatures,
                                 this.props.onSelectAllFeatures,
-                                this.props.onDeselectAllFeatures)
+                                this.props.onDeselectAllFeatures,
+                                this.props.featureModel)
                         ]}
                         farItems={[
                             {
@@ -64,7 +66,8 @@ export default connect(
         isSelectMultipleFeatures: state.ui.isSelectMultipleFeatures,
         selectedFeatures: state.ui.selectedFeatures,
         endpoints: state.server.endpoints,
-        settings: state.settings
+        settings: state.settings,
+        featureModel: getFeatureModel(state)
     }),
     dispatch => ({
         handleMessage: dispatch,
