@@ -14,7 +14,7 @@ export default class extends React.Component {
 
     onRename = () => {
         if (this.state.newFeatureName && this.props.featureName !== this.state.newFeatureName) {
-            actions.server.featureNameChanged(this.props.featureName, this.state.newFeatureName);
+            actions.server.feature.rename(this.props.featureName, this.state.newFeatureName);
             this.setState({newFeatureName: null});
         } else
             ;//TODO: show error

@@ -6,12 +6,14 @@ const messageTypes = constants.server.messageTypes;
 export default {
     undo: () => sendMessage({type: messageTypes.UNDO}),
     redo: () => sendMessage({type: messageTypes.REDO}),
-    featureAdd: belowFeatureName =>
-        sendMessage({type: messageTypes.FEATURE_ADD, belowFeature: belowFeatureName}),
-    featureAddAbove: aboveFeaturesNames =>
-        sendMessage({type: messageTypes.FEATURE_ADD_ABOVE, aboveFeatures: aboveFeaturesNames}),
-    featureDelete: featureName =>
-        sendMessage({type: messageTypes.FEATURE_DELETE, feature: featureName}),
-    featureNameChanged: (oldFeatureName, newFeatureName) =>
-        sendMessage({type: messageTypes.FEATURE_NAME_CHANGED, oldFeature: oldFeatureName, newFeature: newFeatureName})
+    feature: {
+        addBelow: belowFeatureName =>
+            sendMessage({type: messageTypes.FEATURE_ADD_BELOW, belowFeature: belowFeatureName}),
+        addAbove: aboveFeaturesNames =>
+            sendMessage({type: messageTypes.FEATURE_ADD_ABOVE, aboveFeatures: aboveFeaturesNames}),
+        remove: featureName =>
+            sendMessage({type: messageTypes.FEATURE_REMOVE, feature: featureName}),
+        rename: (oldFeatureName, newFeatureName) =>
+            sendMessage({type: messageTypes.FEATURE_RENAME, oldFeature: oldFeatureName, newFeature: newFeatureName})
+    }
 };

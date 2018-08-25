@@ -69,7 +69,7 @@ const contextualMenuItems = {
                 text: i18n.t('featureDiagram.commands.feature.new'),
                 iconProps: {iconName: 'Add'},
                 split: true,
-                onClick: () => actions.server.featureAdd(featureName).then(onClick),
+                onClick: () => actions.server.feature.addBelow(featureName).then(onClick),
                 subMenuProps: {
                     items: [
                         contextualMenuItems.featureDiagram.feature.newFeatureBelow(featureName, onClick),
@@ -81,13 +81,13 @@ const contextualMenuItems = {
                 key: 'newFeatureBelow',
                 text: i18n.t('featureDiagram.commands.feature.newFeatureBelow'),
                 iconProps: {iconName: 'Add'},
-                onClick: () => actions.server.featureAdd(featureName).then(onClick)
+                onClick: () => actions.server.feature.addBelow(featureName).then(onClick)
             }),
             remove: (featureName, onClick) => ({
                 key: 'remove',
                 text: i18n.t('featureDiagram.commands.feature.remove'),
                 iconProps: {iconName: 'Remove'},
-                onClick: () => actions.server.featureDelete(featureName).then(onClick)
+                onClick: () => actions.server.feature.remove(featureName).then(onClick)
             }),
             details: (featureName, onShowPanel) => ({
                 key: 'details',
@@ -128,7 +128,7 @@ const contextualMenuItems = {
                     text: i18n.t('featureDiagram.commands.features.newFeatureAbove'),
                     iconProps: {iconName: 'Add'},
                     disabled,
-                    onClick: () => actions.server.featureAddAbove(featureNames).then(onClick)
+                    onClick: () => actions.server.feature.addAbove(featureNames).then(onClick)
                 });
             }
         }

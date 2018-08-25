@@ -12,81 +12,77 @@ import java.util.stream.Stream;
  * Messages that can be serialized to be broadcast to all endpoints subscribed to an editing session.
  */
 abstract public class Message {
-    public static class Type {
+    /**
+     * Types of messages. Decodable message types can also be decoded and are registered with Gson.
+     */
+    private enum TypeEnum {
         /**
-         * Types of messages. Decodable message types can also be decoded and are registered with Gson.
+         * generic exception wrapper
          */
-        private enum InternalType {
-            /**
-             * generic exception wrapper
-             */
-            ERROR,
-            /**
-             * an endpoint has subscribed an editing session
-             */
-            ENDPOINT_SUBSCRIBE,
-            /**
-             * an endpoint has unsubscribed an editing session
-             */
-            ENDPOINT_UNSUBSCRIBE,
-            /**
-             * a serialized feature model
-             */
-            FEATURE_MODEL,
-            /**
-             * a diff between the current and last known feature model (used for compression)
-             */
-            FEATURE_MODEL_PATCH,
-            /**
-             * undo the last state change
-             */
-            UNDO,
-            /**
-             * undo the last undone state change
-             */
-            REDO,
-            /**
-             * the feature model was changed according to a FeatureIDE event
-             */
-            FEATURE_IDE_EVENT
-        }
+        ERROR,
+        /**
+         * an endpoint has subscribed an editing session
+         */
+        ENDPOINT_SUBSCRIBE,
+        /**
+         * an endpoint has unsubscribed an editing session
+         */
+        ENDPOINT_UNSUBSCRIBE,
+        /**
+         * a serialized feature model
+         */
+        FEATURE_MODEL,
+        /**
+         * a diff between the current and last known feature model (used for compression)
+         */
+        FEATURE_MODEL_PATCH, // todo
+        /**
+         * undo the last state change
+         */
+        UNDO,
+        /**
+         * undo the last undone state change
+         */
+        REDO,
+        /**
+         * add a new feature below another feature
+         */
+        FEATURE_ADD_BELOW,
+        /**
+         * add a new feature above (adjacent) feature(s)
+         */
+        FEATURE_ADD_ABOVE,
+        /**
+         * remove a feature
+         */
+        FEATURE_REMOVE,
+        /**
+         * rename a feature
+         */
+        FEATURE_RENAME
+    }
 
-        private InternalType internalType;
-        private FeatureIDEEvent.EventType featureIDEEventType;
+    public static class Type {
+        private TypeEnum typeEnum;
 
-        private Type(InternalType internalType) {
-            this.internalType = internalType;
-        }
-
-        private Type(FeatureIDEEvent.EventType featureIDEEventType) {
-            this.internalType = InternalType.FEATURE_IDE_EVENT;
-            this.featureIDEEventType = featureIDEEventType;
+        private Type(TypeEnum typeEnum) {
+            this.typeEnum = typeEnum;
         }
 
         public Type(String s) {
             try {
-                this.internalType = InternalType.valueOf(s);
+                this.typeEnum = TypeEnum.valueOf(s);
             } catch (IllegalArgumentException e) {
-                try {
-                    this.internalType = InternalType.FEATURE_IDE_EVENT;
-                    this.featureIDEEventType = FeatureIDEEvent.EventType.valueOf(s);
-                } catch (IllegalArgumentException f) {
-                    throw new RuntimeException("invalid message type " + s);
-                }
+                throw new RuntimeException("invalid message type " + s);
             }
         }
 
         public String toString() {
-            return internalType == InternalType.FEATURE_IDE_EVENT ? featureIDEEventType.toString() : internalType.toString();
+            return typeEnum.toString();
         }
 
         private static String[] getTypes() {
-            return Stream.concat(
-                    Stream.of(InternalType.values())
-                            .filter(t -> t != InternalType.FEATURE_IDE_EVENT)
-                            .map(InternalType::toString),
-                    Stream.of(FeatureIDEEvent.EventType.values()).map(FeatureIDEEvent.EventType::toString)
-            ).toArray(String[]::new);
+            return Stream.of(TypeEnum.values()).map(TypeEnum::toString).toArray(String[]::new);
         }
 
         public static RuntimeTypeAdapterFactory<Message> registerSubtypes(RuntimeTypeAdapterFactory<Message> runtimeTypeAdapterFactory) {
@@ -110,12 +106,8 @@ abstract public class Message {
         this.type = type;
     }
 
-    Message(Type.InternalType internalType) {
-        this.type = new Type(internalType);
-    }
-
-    Message(FeatureIDEEvent.EventType featureIDEEventType) {
-        this.type = new Type(featureIDEEventType);
+    Message(TypeEnum typeEnum) {
+        this.type = new Type(typeEnum);
     }
 
     public String toString() {
@@ -138,7 +130,7 @@ abstract public class Message {
         String error;
 
         public Error(Throwable throwable) {
-            super(Type.InternalType.ERROR);
+            super(TypeEnum.ERROR);
             this.error = throwable.toString();
             throwable.printStackTrace();
         }
@@ -148,7 +140,7 @@ abstract public class Message {
         private String endpoint;
 
         public EndpointSubscribe(Endpoint endpoint) {
-            super(Type.InternalType.ENDPOINT_SUBSCRIBE);
+            super(TypeEnum.ENDPOINT_SUBSCRIBE);
             this.endpoint = endpoint.getLabel();
         }
     }
@@ -157,7 +149,7 @@ abstract public class Message {
         private String endpoint;
 
         public EndpointUnsubscribe(Endpoint endpoint) {
-            super(Type.InternalType.ENDPOINT_UNSUBSCRIBE);
+            super(TypeEnum.ENDPOINT_UNSUBSCRIBE);
             this.endpoint = endpoint.getLabel();
         }
     }
@@ -166,14 +158,14 @@ abstract public class Message {
         private IFeatureModel featureModel;
 
         public FeatureModel(IFeatureModel featureModel) {
-            super(Type.InternalType.FEATURE_MODEL);
+            super(TypeEnum.FEATURE_MODEL);
             this.featureModel = featureModel;
         }
     }
 
     public static class Undo extends Message implements IApplicable {
         Undo(Type type) {
-            super(Type.InternalType.UNDO);
+            super(TypeEnum.UNDO);
         }
 
         public boolean isValid(StateContext stateContext) {
@@ -189,7 +181,7 @@ abstract public class Message {
 
     public static class Redo extends Message implements IApplicable {
         Redo(Type type) {
-            super(Type.InternalType.REDO);
+            super(TypeEnum.REDO);
         }
 
         public boolean isValid(StateContext stateContext) {
@@ -203,11 +195,11 @@ abstract public class Message {
         }
     }
 
-    public static class FeatureAdd extends Message implements IUndoable {
+    public static class FeatureAddBelow extends Message implements IUndoable {
         private String belowFeature;
 
-        public FeatureAdd(String belowFeature) {
-            super(FeatureIDEEvent.EventType.FEATURE_ADD);
+        public FeatureAddBelow(String belowFeature) {
+            super(TypeEnum.FEATURE_ADD_BELOW);
             this.belowFeature = belowFeature;
         }
 
@@ -226,7 +218,7 @@ abstract public class Message {
         private String[] aboveFeatures;
 
         public FeatureAddAbove(String[] aboveFeatures) {
-            super(FeatureIDEEvent.EventType.FEATURE_ADD_ABOVE);
+            super(TypeEnum.FEATURE_ADD_ABOVE);
             this.aboveFeatures = aboveFeatures;
         }
 
@@ -248,11 +240,11 @@ abstract public class Message {
         }
     }
 
-    public static class FeatureDelete extends Message implements IUndoable {
+    public static class FeatureRemove extends Message implements IUndoable {
         private String feature;
 
-        public FeatureDelete(String feature) {
-            super(FeatureIDEEvent.EventType.FEATURE_DELETE);
+        public FeatureRemove(String feature) {
+            super(TypeEnum.FEATURE_REMOVE);
             this.feature = feature;
         }
 
@@ -267,11 +259,11 @@ abstract public class Message {
         }
     }
 
-    public static class FeatureNameChanged extends Message implements IUndoable {
+    public static class FeatureRename extends Message implements IUndoable {
         private String oldFeature, newFeature;
 
-        public FeatureNameChanged(String oldFeature, String newFeature) {
-            super(FeatureIDEEvent.EventType.FEATURE_DELETE);
+        public FeatureRename(String oldFeature, String newFeature) {
+            super(TypeEnum.FEATURE_RENAME);
             this.oldFeature = oldFeature;
             this.newFeature = newFeature;
         }
