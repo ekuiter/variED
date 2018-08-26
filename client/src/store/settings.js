@@ -24,6 +24,7 @@ export const defaultSettings = {
                 abstractStroke: '#b6b6bf',
                 concreteFill: '#ccccff',
                 concreteStroke: '#9999bf',
+                visibleFill: 'black',
                 hiddenFill: '#676767'
             },
             link: {

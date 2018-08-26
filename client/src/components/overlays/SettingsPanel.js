@@ -218,11 +218,13 @@ class SettingsPanel extends React.Component {
                     <Setting.ColorPickerContextualMenu
                         {...props}
                         paths={[
+                            'featureDiagram.treeLayout.node.visibleFill',
+                            'featureDiagram.treeLayout.node.hiddenFill',
                             'featureDiagram.treeLayout.node.abstractFill',
                             'featureDiagram.treeLayout.node.abstractStroke',
                             'featureDiagram.treeLayout.node.concreteFill',
-                            'featureDiagram.treeLayout.node.concreteStroke',
-                            'featureDiagram.treeLayout.node.hiddenFill']}/>
+                            'featureDiagram.treeLayout.node.concreteStroke'
+                        ]}/>
 
                     <h4>{i18n.t('panels.settingsPanel.headings.edges')}</h4>
                     <Setting.SpinButton

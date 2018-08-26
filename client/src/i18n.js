@@ -50,6 +50,7 @@ export const strings = {
                             abstractStroke: 'Abstract feature (border)',
                             concreteFill: 'Concrete feature (fill)',
                             concreteStroke: 'Concrete feature (border)',
+                            visibleFill: 'Visible feature (text)',
                             hiddenFill: 'Hidden feature (text)'
                         },
                         link: {
