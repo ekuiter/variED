@@ -105,7 +105,8 @@ export const strings = {
                 newFeatureBelow: 'New feature below',
                 remove: 'Remove',
                 details: 'Details',
-                rename: 'Rename'
+                rename: 'Rename',
+                setDescription: 'Set description'
             },
             features: {
                 selectAll: 'Select all',

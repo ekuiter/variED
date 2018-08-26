@@ -101,6 +101,12 @@ const contextualMenuItems = {
                 text: i18n.t('featureDiagram.commands.feature.rename'),
                 iconProps: {iconName: 'Rename'},
                 onClick: () => onShowDialog('featureRename', {featureName})
+            }),
+            setDescription: (featureName, onShowDialog) => ({
+                key: 'setDescription',
+                text: i18n.t('featureDiagram.commands.feature.setDescription'),
+                iconProps: {iconName: 'TextDocument'},
+                onClick: () => onShowDialog('featureSetDescription', {featureName})
             })
         },
         features: {

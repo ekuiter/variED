@@ -39,6 +39,7 @@ export default props => {
                     contextualMenuItems.featureDiagram.feature.remove(feature.name, onDismiss),
                     {key: 'divider1', itemType: ContextualMenuItemType.Divider},
                     contextualMenuItems.featureDiagram.feature.rename(feature.name, props.onShowDialog),
+                    contextualMenuItems.featureDiagram.feature.setDescription(feature.name, props.onShowDialog),
                     {key: 'divider2', itemType: ContextualMenuItemType.Divider},
                     contextualMenuItems.featureDiagram.feature.details(feature.name, props.onShowPanel)
                 ]

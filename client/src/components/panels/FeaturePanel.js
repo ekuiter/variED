@@ -19,7 +19,8 @@ export default class extends React.Component {
                 contextualMenuItems.featureDiagram.feature.remove(this.props.featureName, this.props.onDismissed)
             ])}
             overflowItems={[
-                contextualMenuItems.featureDiagram.feature.rename(this.props.featureName, this.props.onShowDialog)
+                contextualMenuItems.featureDiagram.feature.rename(this.props.featureName, this.props.onShowDialog),
+                contextualMenuItems.featureDiagram.feature.setDescription(this.props.featureName, this.props.onShowDialog)
             ]}
             overflowButtonProps={{styles: buttonStyles}}
             styles={{root: {margin: '0 -40px', padding: '0 35px'}}}/>

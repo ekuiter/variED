@@ -131,39 +131,45 @@ export class DialogContextualMenu extends React.Component {
 
 export class TextFieldDialog extends React.Component {
     static defaultProps = {
-        isOpen: null, onDismiss: null, onSubmit: null,
-        title: null, defaultValue: null, submitText: null
+        isOpen: null, onDismiss: null, onSubmit: null, title: null,
+        defaultValue: null, submitText: null, submitOnEnter: true, textFieldProps: {}
     };
     state = {value: null};
     textFieldRef = React.createRef();
     onChange = (e, value) => this.setState({value});
     onLayerDidMount = defer(() => this.textFieldRef.current.focus());
 
+    getValue = () => this.state.value === null ? this.props.defaultValue || '' : this.state.value;
+
     onSubmit = () => {
-        this.props.onSubmit(this.state.value);
+        this.props.onSubmit(this.getValue());
         this.setState({value: null});
         this.props.onDismiss();
     };
 
     onKeyPress = e => {
-        if (e.key === 'Enter')
+        if (e.key === 'Enter' && this.props.submitOnEnter)
             this.onSubmit();
     };
 
     render() {
+        const {isOpen, onDismiss, onSubmit, title, defaultValue,
+            submitText, submitOnEnter, textFieldProps, ...props} = this.props;
         return (
             <Dialog
-                hidden={!this.props.isOpen}
-                onDismiss={this.props.onDismiss}
+                hidden={!isOpen}
+                onDismiss={onDismiss}
                 modalProps={{onLayerDidMount: this.onLayerDidMount}}
-                dialogContentProps={{title: this.props.title}}>
+                dialogContentProps={{title}}
+                {...props}>
                 <TextField
                     componentRef={this.textFieldRef}
-                    value={this.state.value === null ? this.props.defaultValue : this.state.value}
+                    value={this.getValue()}
                     onChange={this.onChange}
-                    onKeyPress={this.onKeyPress}/>
+                    onKeyPress={this.onKeyPress}
+                    {...textFieldProps}/>
                 <DialogFooter>
-                    <PrimaryButton onClick={this.onSubmit} text={this.props.submitText}/>
+                    <PrimaryButton onClick={this.onSubmit} text={submitText}/>
                 </DialogFooter>
             </Dialog>
         );
