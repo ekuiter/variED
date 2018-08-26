@@ -6,27 +6,14 @@ import 'd3-transition';
 import {getSetting} from '../../../store/settings';
 import {updateRect} from '../../../helpers/svg';
 import '../../../stylesheets/treeLayout.css';
-import {overlayTypes} from '../../../containers/overlays/OverlayContainer';
+import {overlayTypes} from '../../../types';
+import PropTypes from 'prop-types';
+import exact from 'prop-types-exact';
+import {FeatureModelType, OverlayType} from '../../../types';
+import {SettingsType} from '../../../types';
 
 class AbstractTreeLayout extends React.Component {
-    static defaultProps = {
-        featureModel: null,
-        width: null,
-        height: null,
-        className: null,
-        fitOnResize: false,
-        settings: null,
-        overlay: null,
-        overlayProps: null,
-        onShowOverlay: null,
-        onHideOverlay: null,
-        onSetSelectMultipleFeatures: null,
-        onSelectFeature: null,
-        onDeselectFeature: null,
-        onDeselectAllFeatures: null,
-        isSelectMultipleFeatures: false,
-        selectedFeatureNames: null
-    };
+    static defaultProps = {fitOnResize: false};
     svgRef = React.createRef();
     currentCoordinates = {};
     previousCoordinates = {};
@@ -330,5 +317,24 @@ class AbstractTreeLayout extends React.Component {
         node.filter(d => !this.props.selectedFeatureNames.includes(d.feature().name)).attr('class', 'node');
     }
 }
+
+AbstractTreeLayout.propTypes = exact({
+    featureModel: FeatureModelType.isRequired,
+    width: PropTypes.number,
+    height: PropTypes.number,
+    className: PropTypes.string.isRequired,
+    fitOnResize: PropTypes.bool,
+    settings: SettingsType.isRequired,
+    overlay: OverlayType,
+    overlayProps: PropTypes.object,
+    onShowOverlay: PropTypes.func.isRequired,
+    onHideOverlayFn: PropTypes.func.isRequired,
+    onSetSelectMultipleFeatures: PropTypes.func.isRequired,
+    onSelectFeature: PropTypes.func.isRequired,
+    onDeselectFeature: PropTypes.func.isRequired,
+    onDeselectAllFeatures: PropTypes.func.isRequired,
+    isSelectMultipleFeatures: PropTypes.bool.isRequired,
+    selectedFeatureNames: PropTypes.arrayOf(PropTypes.string).isRequired
+});
 
 export default AbstractTreeLayout;

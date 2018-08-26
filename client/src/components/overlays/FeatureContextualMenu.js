@@ -3,6 +3,9 @@ import {DirectionalHint} from 'office-ui-fabric-react/lib/Callout';
 import {ContextualMenu, ContextualMenuItemType} from 'office-ui-fabric-react/lib/ContextualMenu';
 import contextualMenuItems from '../contextualMenuItems';
 import {getSetting} from '../../store/settings';
+import PropTypes from 'prop-types';
+import {FeatureModelType} from '../../types';
+import {LayoutType, SettingsType} from '../../types';
 
 export const selectMultipleFeaturesContextualMenuItems = (selectedFeatureNames, onSelectAllFeatures, onDeselectAllFeatures, featureModel) => [
     contextualMenuItems.featureDiagram.features.selectAll(onSelectAllFeatures),
@@ -11,7 +14,7 @@ export const selectMultipleFeaturesContextualMenuItems = (selectedFeatureNames, 
     contextualMenuItems.featureDiagram.features.newFeatureAbove(selectedFeatureNames, onDeselectAllFeatures, featureModel)
 ];
 
-export default class extends React.Component {
+class FeatureContextualMenu extends React.Component {
     componentDidMount() {
         this.interval = window.setInterval(
             this.forceUpdate.bind(this),
@@ -58,3 +61,19 @@ export default class extends React.Component {
         );
     }
 }
+
+FeatureContextualMenu.propTypes = {
+    onDismiss: PropTypes.func.isRequired,
+    onSelectAllFeatures: PropTypes.func.isRequired,
+    onDeselectAllFeatures: PropTypes.func.isRequired,
+    isSelectMultipleFeatures: PropTypes.bool.isRequired,
+    selectedFeatureNames: PropTypes.arrayOf(PropTypes.string).isRequired,
+    featureModel: FeatureModelType.isRequired,
+    featureName: PropTypes.string.isRequired,
+    isOpen: PropTypes.bool.isRequired,
+    featureDiagramLayout: LayoutType.isRequired,
+    onShowOverlay: PropTypes.func.isRequired,
+    settings: SettingsType.isRequired
+};
+
+export default FeatureContextualMenu;

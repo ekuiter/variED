@@ -3,15 +3,10 @@ import {ComboBox} from 'office-ui-fabric-react/lib/ComboBox';
 import React from 'react';
 import i18n from '../i18n';
 import constants from '../constants';
+import PropTypes from 'prop-types';
 
-export default class extends React.Component {
-    static defaultProps = {
-        selectedFont: null,
-        fonts: constants.helpers.fontComboBox.suggestedFonts,
-        fallbacks: null,
-        onChange: null
-    };
-
+class FontComboBox extends React.Component {
+    static defaultProps = {fonts: constants.helpers.fontComboBox.suggestedFonts};
     state = {errorMessage: null};
 
     onChanged = (option, index, value) => {
@@ -44,4 +39,13 @@ export default class extends React.Component {
                 onChanged={this.onChanged}/>
         );
     }
+}
+
+FontComboBox.propTypes = {
+    selectedFont: PropTypes.string.isRequired,
+    fonts: PropTypes.arrayOf(PropTypes.string).isRequired,
+    fallbacks: PropTypes.arrayOf(PropTypes.string),
+    onChanged: PropTypes.func.isRequired
 };
+
+export default FontComboBox;

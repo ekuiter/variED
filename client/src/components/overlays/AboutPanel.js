@@ -1,8 +1,9 @@
 import React from 'react';
 import i18n from '../../i18n';
 import {Panel, PanelType} from 'office-ui-fabric-react/lib/Panel';
+import PropTypes from 'prop-types';
 
-export default props => (
+const AboutPanel = props => (
     <Panel
         isOpen={props.isOpen}
         type={PanelType.smallFixedFar}
@@ -12,3 +13,10 @@ export default props => (
         {i18n.t('panels.aboutPanel.content')}
     </Panel>
 );
+
+AboutPanel.propTypes = {
+    isOpen: PropTypes.bool.isRequired,
+    onDismissed: PropTypes.func.isRequired
+};
+
+export default AboutPanel;

@@ -2,8 +2,10 @@ import React from 'react';
 import i18n from '../../i18n';
 import actions from '../../store/actions';
 import {TextFieldDialog} from '../../helpers/Dialog';
+import PropTypes from 'prop-types';
+import {FeatureModelType} from '../../types';
 
-export default ({featureName, featureModel, ...props}) => {
+const FeatureSetDescriptionDialog = ({featureName, featureModel, ...props}) => {
     const feature = featureModel && featureModel.getFeatureOrDismiss(featureName, props.isOpen, props.onDismiss);
     if (!feature)
         return null;
@@ -26,3 +28,12 @@ export default ({featureName, featureModel, ...props}) => {
             textFieldProps={{multiline: true, rows: 5}}/>
     );
 };
+
+FeatureSetDescriptionDialog.propTypes = {
+    onDismiss: PropTypes.func.isRequired,
+    featureModel: FeatureModelType.isRequired,
+    featureName: PropTypes.string.isRequired,
+    isOpen: PropTypes.bool.isRequired
+};
+
+export default FeatureSetDescriptionDialog;

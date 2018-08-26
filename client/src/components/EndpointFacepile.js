@@ -4,6 +4,9 @@ import {PersonaSize} from 'office-ui-fabric-react/lib/Persona';
 import {Tooltip} from 'office-ui-fabric-react/lib/Tooltip';
 import {getSetting} from '../store/settings';
 import withDimensions from '../helpers/withDimensions';
+import PropTypes from 'prop-types';
+import exact from 'prop-types-exact';
+import {SettingsType} from '../types';
 
 class EndpointFacepile extends React.Component {
     state = {tooltipTarget: null, persona: null};
@@ -59,5 +62,12 @@ class EndpointFacepile extends React.Component {
         );
     }
 }
+
+EndpointFacepile.propTypes = exact({
+    endpoints: PropTypes.arrayOf(PropTypes.string).isRequired,
+    settings: SettingsType.isRequired,
+    width: PropTypes.number.isRequired,
+    height: PropTypes.number.isRequired
+});
 
 export default withDimensions(EndpointFacepile);

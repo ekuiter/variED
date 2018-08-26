@@ -1,7 +1,7 @@
 import i18n from '../i18n';
 import actions from '../store/actions';
 import {selectMultipleFeaturesContextualMenuItems} from './overlays/FeatureContextualMenu';
-import {overlayTypes} from '../containers/overlays/OverlayContainer';
+import {overlayTypes} from '../types';
 
 const contextualMenuItems = {
     settings: onShowOverlay => ({

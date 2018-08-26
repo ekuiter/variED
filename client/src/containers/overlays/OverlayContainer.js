@@ -9,17 +9,7 @@ import FeatureRenameDialog from '../../components/overlays/FeatureRenameDialog';
 import FeatureSetDescriptionDialog from '../../components/overlays/FeatureSetDescriptionDialog';
 import FeatureCallout from '../../components/overlays/FeatureCallout';
 import FeatureContextualMenu from '../../components/overlays/FeatureContextualMenu';
-
-export const overlayTypes = {
-    settingsPanel: 'settingsPanel',
-    aboutPanel: 'aboutPanel',
-    featurePanel: 'featurePanel',
-    featureRenameDialog: 'featureRenameDialog',
-    featureSetDescriptionDialog: 'featureSetDescriptionDialog',
-    featureCallout: 'featureCallout',
-    featureContextualMenu: 'featureContextualMenu',
-    isShownAtSelectedFeature: type => type === 'featureCallout' || type === 'featureContextualMenu'
-};
+import {overlayTypes} from '../../types';
 
 const OverlayContainer = props => (
     <React.Fragment>

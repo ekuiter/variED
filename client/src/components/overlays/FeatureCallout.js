@@ -3,8 +3,11 @@ import {Callout, DirectionalHint} from 'office-ui-fabric-react/lib/Callout';
 import {getSetting} from '../../store/settings';
 import contextualMenuItems from '../contextualMenuItems';
 import {CommandBar} from 'office-ui-fabric-react/lib/CommandBar';
+import PropTypes from 'prop-types';
+import {FeatureModelType} from '../../types';
+import {LayoutType, SettingsType} from '../../types';
 
-export default class extends React.Component {
+class FeatureCallout extends React.Component {
     componentDidMount() {
         this.interval = window.setInterval(
             this.forceUpdate.bind(this),
@@ -53,3 +56,15 @@ export default class extends React.Component {
         );
     }
 }
+
+FeatureCallout.propTypes = {
+    onDismiss: PropTypes.func.isRequired,
+    featureModel: FeatureModelType.isRequired,
+    featureName: PropTypes.string.isRequired,
+    isOpen: PropTypes.bool.isRequired,
+    featureDiagramLayout: LayoutType.isRequired,
+    onShowOverlay: PropTypes.func.isRequired,
+    settings: SettingsType.isRequired
+};
+
+export default FeatureCallout;

@@ -8,6 +8,9 @@ import {SpinButton} from 'office-ui-fabric-react/lib/SpinButton';
 import {ColorPicker} from 'office-ui-fabric-react/lib/ColorPicker';
 import {DialogContextualMenu} from '../../helpers/Dialog';
 import {DefaultButton} from 'office-ui-fabric-react/lib/Button';
+import PropTypes from 'prop-types';
+import exact from 'prop-types-exact';
+import {LayoutType, SettingsType} from '../../types';
 
 const getLabel = path => i18n.t('panels.settingsPanel.labels', path);
 
@@ -31,9 +34,7 @@ const Setting = {
     ),
 
     SpinButton: class extends React.Component {
-        static defaultProps = {
-            settings: null, onSetSetting: null, path: null, min: null, max: null, step: 1, suffix: '', iconProps: null
-        };
+        static defaultProps = {step: 1, suffix: ''};
 
         removeSuffix = value =>
             this.props.suffix && String(value).endsWith(this.props.suffix)
@@ -91,7 +92,6 @@ const Setting = {
     },
 
     ColorPickerContextualMenu: class extends React.Component {
-        static defaultProps = {settings: null, onSetSetting: null, paths: null};
         state = {color: null};
         onColorChanged = color => this.setState({color});
         onApply = option => this.props.onSetSetting(option.key, this.state.color);
@@ -114,11 +114,36 @@ const Setting = {
     }
 };
 
-export default class extends React.Component {
-    static defaultProps = {
-        isOpen: false, onDismissed: null, featureDiagramLayout: null,
-        settings: null, onSetSetting: null, onResetSettings: null
-    };
+Setting.Toggle.propTypes = exact({
+    settings: SettingsType.isRequired,
+    onSetSetting: PropTypes.func.isRequired,
+    path: PropTypes.string.isRequired
+});
+
+Setting.FontComboBox.propTypes = exact({
+    settings: SettingsType.isRequired,
+    onSetSetting: PropTypes.func.isRequired,
+    path: PropTypes.string.isRequired
+});
+
+Setting.SpinButton.propTypes = exact({
+    settings: SettingsType.isRequired,
+    onSetSetting: PropTypes.func.isRequired,
+    path: PropTypes.string.isRequired,
+    min: PropTypes.number,
+    max: PropTypes.number,
+    step: PropTypes.number,
+    suffix: PropTypes.string,
+    iconProps: PropTypes.object
+});
+
+Setting.ColorPickerContextualMenu.propTypes = exact({
+    settings: SettingsType.isRequired,
+    onSetSetting: PropTypes.func.isRequired,
+    paths: PropTypes.arrayOf(PropTypes.string).isRequired
+});
+
+class SettingsPanel extends React.Component {
     state = {canReset: false};
 
     resettableSetSetting = (...args) => {
@@ -254,4 +279,15 @@ export default class extends React.Component {
             </Panel>
         );
     }
+}
+
+SettingsPanel.propTypes = {
+    onDismissed: PropTypes.func.isRequired,
+    isOpen: PropTypes.bool.isRequired,
+    settings: SettingsType.isRequired,
+    featureDiagramLayout: LayoutType.isRequired,
+    onSetSetting: PropTypes.func.isRequired,
+    onResetSettings: PropTypes.func.isRequired
 };
+
+export default SettingsPanel;

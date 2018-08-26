@@ -4,7 +4,7 @@ import {handleActions} from 'redux-actions';
 import constants from '../constants';
 import {defaultSettings, getNewSettings} from './settings';
 import FeatureModel from '../server/FeatureModel';
-import {overlayTypes} from '../containers/overlays/OverlayContainer';
+import {overlayTypes} from '../types';
 
 function serverReducer(state, action) {
     if (constants.server.isMessageType(action.type))

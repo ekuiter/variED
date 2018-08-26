@@ -2,15 +2,14 @@ import React from 'react';
 import VerticalTreeLayout from './treeLayout/VerticalTreeLayout';
 import HorizontalTreeLayout from './treeLayout/HorizontalTreeLayout';
 import stringify from 'json-stable-stringify';
+import {LayoutType, layoutTypes} from '../../types';
+
+const layoutMap = {
+    [layoutTypes.verticalTree]: VerticalTreeLayout,
+    [layoutTypes.horizontalTree]: HorizontalTreeLayout
+};
 
 class FeatureDiagram extends React.Component {
-    static defaultProps = {layout: null};
-
-    static layoutMap = {
-        verticalTree: VerticalTreeLayout,
-        horizontalTree: HorizontalTreeLayout
-    };
-
     layoutRef = React.createRef();
 
     getKey({settings}) {
@@ -21,7 +20,7 @@ class FeatureDiagram extends React.Component {
 
     render() {
         const {layout, ...props} = this.props,
-            LayoutComponent = FeatureDiagram.layoutMap[layout];
+            LayoutComponent = layoutMap[layout];
         return (
             <LayoutComponent key={this.getKey(props)} ref={this.layoutRef} {...props} />
         );
@@ -35,5 +34,9 @@ class FeatureDiagram extends React.Component {
             return Promise.reject('can not export feature diagram');
     }
 }
+
+FeatureDiagram.propTypes = {
+    layout: LayoutType.isRequired
+};
 
 export default FeatureDiagram;

@@ -3,15 +3,13 @@ import {Panel, PanelType} from 'office-ui-fabric-react/lib/Panel';
 import i18n from '../../i18n';
 import {CommandBar} from 'office-ui-fabric-react/lib/CommandBar';
 import contextualMenuItems from '../contextualMenuItems';
+import PropTypes from 'prop-types';
+import {FeatureModelType} from '../../types';
 
 const buttonStyles = {root: {backgroundColor: 'transparent'}},
     transparentItems = items => items;
 
-export default class extends React.Component {
-    static defaultProps = {
-        isOpen: false, onDismissed: null, featureName: null, onShowOverlay: null, featureModel: null
-    };
-
+class FeaturePanel extends React.Component {
     onRenderFooterContent = () => (
         <CommandBar
             items={transparentItems([
@@ -47,4 +45,14 @@ export default class extends React.Component {
             </Panel>
         );
     }
+}
+
+FeaturePanel.propTypes = {
+    onDismissed: PropTypes.func.isRequired,
+    featureModel: FeatureModelType.isRequired,
+    featureName: PropTypes.string.isRequired,
+    isOpen: PropTypes.bool.isRequired,
+    onShowOverlay: PropTypes.func.isRequired
 };
+
+export default FeaturePanel;

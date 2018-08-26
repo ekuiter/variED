@@ -24,7 +24,7 @@ d3Hierarchy.prototype.feature = function() {
     });
 };
 
-export default class FeatureModel {
+export default class {
     // 'data' as supplied by FEATURE_MODEL messages from the server
     constructor(featureModel) {
         if (!featureModel)

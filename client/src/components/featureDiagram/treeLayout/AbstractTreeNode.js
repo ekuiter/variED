@@ -5,7 +5,7 @@ import measureTextWidth from '../../../helpers/measureTextWidth';
 import {addStyle, appendCross, translateTransform} from '../../../helpers/svg';
 import styles from './styles';
 import {isCommand} from '../../../helpers/withKeys';
-import {overlayTypes} from '../../../containers/overlays/OverlayContainer';
+import {overlayTypes} from '../../../types';
 
 function widenBbox({x, y, width, height}, paddingX, paddingY) {
     return {x: x - paddingX, y: y - paddingY, width: width + 2 * paddingX, height: height + 2 * paddingY};
