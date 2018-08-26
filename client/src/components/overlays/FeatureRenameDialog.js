@@ -4,25 +4,25 @@ import actions from '../../store/actions';
 import {TextFieldDialog} from '../../helpers/Dialog';
 import PropTypes from 'prop-types';
 import {FeatureModelType} from '../../server/FeatureModel';
+import FeatureComponent from './FeatureComponent';
 
-const FeatureRenameDialog = ({featureName, featureModel, ...props}) => {
-    const feature = featureModel && featureModel.getFeatureOrDismiss(featureName, props.isOpen, props.onDismiss);
-    if (!feature)
-        return null;
-    return (
-        <TextFieldDialog
-            {...props}
-            title={i18n.t('dialogs.featureRenameDialog.title')}
-            submitText={i18n.t('dialogs.featureRenameDialog.rename')}
-            defaultValue={featureName}
-            onSubmit={newFeatureName => {
-                if (newFeatureName && featureName !== newFeatureName)
-                    actions.server.feature.rename(featureName, newFeatureName);
-                else
-                    ;//TODO: show error
-            }}/>
-    );
-};
+class FeatureRenameDialog extends FeatureComponent() {
+    renderIfFeature(feature) {
+        return (
+            <TextFieldDialog
+                {...this.props}
+                title={i18n.t('dialogs.featureRenameDialog.title')}
+                submitText={i18n.t('dialogs.featureRenameDialog.rename')}
+                defaultValue={feature.name}
+                onSubmit={newFeatureName => {
+                    if (newFeatureName && feature.name !== newFeatureName)
+                        actions.server.feature.rename(feature.name, newFeatureName);
+                    else
+                        ;//TODO: show error
+                }}/>
+        );
+    }
+}
 
 FeatureRenameDialog.propTypes = {
     onDismiss: PropTypes.func.isRequired,

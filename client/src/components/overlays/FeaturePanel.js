@@ -5,11 +5,12 @@ import {CommandBar} from 'office-ui-fabric-react/lib/CommandBar';
 import contextualMenuItems from '../contextualMenuItems';
 import PropTypes from 'prop-types';
 import {FeatureModelType} from '../../server/FeatureModel';
+import FeatureComponent from './FeatureComponent';
 
 const buttonStyles = {root: {backgroundColor: 'transparent'}},
     transparentItems = items => items;
 
-class FeaturePanel extends React.Component {
+class FeaturePanel extends FeatureComponent({onDismissProp: 'onDismissed'}) {
     onRenderFooterContent = () => (
         <CommandBar
             items={transparentItems([
@@ -24,11 +25,7 @@ class FeaturePanel extends React.Component {
             styles={{root: {margin: '0 -40px', padding: '0 35px'}}}/>
     );
 
-    render() {
-        const feature = this.props.featureModel && this.props.featureModel.getFeatureOrDismiss(
-            this.props.featureName, this.props.isOpen, this.props.onDismissed);
-        if (!feature)
-            return null;
+    renderIfFeature(feature) {
         return (
             <Panel
                 isOpen={this.props.isOpen}
@@ -37,11 +34,10 @@ class FeaturePanel extends React.Component {
                 isLightDismiss={true}
                 headerText={
                     <span>
-                        {i18n.t('panels.featurePanel.title')}: <strong>{this.props.featureName}</strong>
+                        {i18n.t('panels.featurePanel.title')}: <strong>{feature.name}</strong>
                     </span>}
                 onRenderFooterContent={this.onRenderFooterContent}>
-                {feature &&
-                <p>{feature.description || <em>{i18n.t('panels.featurePanel.noDescriptionSet')}</em>}</p>}
+                <p>{feature.description || <em>{i18n.t('panels.featurePanel.noDescriptionSet')}</em>}</p>
             </Panel>
         );
     }

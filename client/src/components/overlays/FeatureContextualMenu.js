@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 import {layoutTypes} from '../../types';
 import {LayoutType, SettingsType} from '../../types';
 import {FeatureModelType} from '../../server/FeatureModel';
+import FeatureComponent from './FeatureComponent';
 
 export const selectMultipleFeaturesContextualMenuItems = (selectedFeatureNames, onSelectAllFeatures, onDeselectAllFeatures, featureModel) => [
     contextualMenuItems.featureDiagram.features.selectAll(onSelectAllFeatures),
@@ -15,29 +16,16 @@ export const selectMultipleFeaturesContextualMenuItems = (selectedFeatureNames, 
     contextualMenuItems.featureDiagram.features.newFeatureAbove(selectedFeatureNames, onDeselectAllFeatures, featureModel)
 ];
 
-class FeatureContextualMenu extends React.Component {
-    componentDidMount() {
-        this.interval = window.setInterval(
-            this.forceUpdate.bind(this),
-            getSetting(this.props.settings, 'featureDiagram.overlay.throttleUpdate'));
-    }
-
-    componentWillUnmount() {
-        window.clearInterval(this.interval);
-    }
-
-    render() {
+class FeatureContextualMenu extends FeatureComponent({doUpdate: true}) {
+    renderIfFeature(feature) {
         const {
                 onDismiss, onSelectAllFeatures, onDeselectAllFeatures,
-                isSelectMultipleFeatures, selectedFeatureNames, featureModel, featureName
+                isSelectMultipleFeatures, selectedFeatureNames, featureModel
             } = this.props,
             {gapSpace} = getSetting(this.props.settings, 'featureDiagram.overlay');
-        const feature = featureModel && featureModel.getFeatureOrDismiss(featureName, this.props.isOpen, onDismiss);
-        if (!feature)
-            return null;
         return (
             <ContextualMenu
-                target={featureModel.getElement(featureName).querySelector('.rectAndText')}
+                target={featureModel.getElement(feature.name).querySelector('.rectAndText')}
                 onDismiss={onDismiss}
                 hidden={!this.props.isOpen}
                 isBeakVisible={!isSelectMultipleFeatures}

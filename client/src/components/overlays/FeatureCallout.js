@@ -7,26 +7,14 @@ import PropTypes from 'prop-types';
 import {layoutTypes} from '../../types';
 import {LayoutType, SettingsType} from '../../types';
 import {FeatureModelType} from '../../server/FeatureModel';
+import FeatureComponent from './FeatureComponent';
 
-class FeatureCallout extends React.Component {
-    componentDidMount() {
-        this.interval = window.setInterval(
-            this.forceUpdate.bind(this),
-            getSetting(this.props.settings, 'featureDiagram.overlay.throttleUpdate'));
-    }
-
-    componentWillUnmount() {
-        window.clearInterval(this.interval);
-    }
-
-    render() {
-        const {onDismiss, featureModel, featureName} = this.props,
+class FeatureCallout extends FeatureComponent({doUpdate: true}) {
+    renderIfFeature(feature) {
+        const {onDismiss, featureModel} = this.props,
             {gapSpace, width} = getSetting(this.props.settings, 'featureDiagram.overlay');
-        const feature = featureModel && featureModel.getFeatureOrDismiss(featureName, this.props.isOpen, onDismiss);
-        if (!feature)
-            return null;
         return (
-            <Callout target={featureModel.getElement(featureName).querySelector('.rectAndText')}
+            <Callout target={featureModel.getElement(feature.name).querySelector('.rectAndText')}
                      onDismiss={onDismiss}
                      hidden={!this.props.isOpen}
                      gapSpace={gapSpace}
