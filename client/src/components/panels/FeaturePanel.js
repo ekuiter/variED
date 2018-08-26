@@ -26,11 +26,10 @@ export default class extends React.Component {
     );
 
     render() {
-        const feature = this.props.featureModel && this.props.featureName
-            ? this.props.featureModel.getFeature(this.props.featureName)
-            : null;
-        if (this.props.isOpen && !feature)
-            this.props.onDismissed();
+        const feature = this.props.featureModel && this.props.featureModel.getFeatureOrDismiss(
+            this.props.featureName, this.props.isOpen, this.props.onDismissed);
+        if (!feature)
+            return null;
         return (
             <Panel
                 isOpen={this.props.isOpen}

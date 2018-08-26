@@ -10,6 +10,7 @@ const DialogContainer = props => (
         <FeatureRenameDialog
             isOpen={props.dialog === 'featureRename'}
             onDismiss={props.onHideDialog}
+            featureModel={props.featureModel}
             {...props.dialogProps}/>
         <FeatureSetDescriptionDialog
             isOpen={props.dialog === 'featureSetDescription'}

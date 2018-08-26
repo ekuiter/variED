@@ -52,6 +52,15 @@ export default class FeatureModel {
         return node ? node.feature() : null;
     }
 
+    getFeatureOrDismiss(featureName, isOpen, onDismiss) {
+        const feature = featureName ? this.getFeature(featureName) : null;
+        if (isOpen && !feature) {
+            onDismiss();
+            //todo: warn user that feature vanished
+        }
+        return feature;
+    }
+
     getFeatureNames() {
         return this.hierarchy.descendants().map(node => node.feature().name);
     }

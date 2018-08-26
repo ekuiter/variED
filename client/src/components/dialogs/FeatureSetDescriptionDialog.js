@@ -4,9 +4,7 @@ import actions from '../../store/actions';
 import {TextFieldDialog} from '../../helpers/Dialog';
 
 export default ({featureName, featureModel, ...props}) => {
-    const feature = featureModel && featureName ? featureModel.getFeature(featureName) : null;
-    if (props.isOpen && !feature)
-        props.onDismiss();
+    const feature = featureModel && featureModel.getFeatureOrDismiss(featureName, props.isOpen, props.onDismiss);
     if (!feature)
         return null;
     return (

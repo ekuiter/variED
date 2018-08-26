@@ -17,7 +17,7 @@ export default props => {
             isSelectMultipleFeatures, selectedFeatureNames, featureModel, featureName
         } = props,
         {gapSpace} = getSetting(props.settings, 'featureDiagram.treeLayout.overlay');
-    const feature = featureModel && featureName ? featureModel.getFeature(featureName) : null;
+    const feature = featureModel && featureModel.getFeatureOrDismiss(featureName, featureName, onDismiss);
     if (!feature)
         return null;
     return (

@@ -7,7 +7,7 @@ import {CommandBar} from 'office-ui-fabric-react/lib/CommandBar';
 export default props => {
     const {onDismiss, featureModel, featureName} = props,
         {gapSpace, width} = getSetting(props.settings, 'featureDiagram.treeLayout.overlay');
-    const feature = featureModel && featureName ? featureModel.getFeature(featureName) : null;
+    const feature = featureModel && featureModel.getFeatureOrDismiss(featureName, featureName, onDismiss);
     if (!feature)
         return null;
     return (
