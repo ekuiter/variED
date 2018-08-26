@@ -83,6 +83,10 @@ export const strings = {
         featureRenameDialog: {
             title: 'Rename feature',
             rename: 'Rename'
+        },
+        featureSetDescriptionDialog: {
+            title: 'Set feature description',
+            rename: 'Save'
         }
     },
     featureDiagram: {

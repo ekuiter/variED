@@ -14,6 +14,8 @@ export default {
         remove: featureName =>
             sendMessage({type: messageTypes.FEATURE_REMOVE, feature: featureName}),
         rename: (oldFeatureName, newFeatureName) =>
-            sendMessage({type: messageTypes.FEATURE_RENAME, oldFeature: oldFeatureName, newFeature: newFeatureName})
+            sendMessage({type: messageTypes.FEATURE_RENAME, oldFeature: oldFeatureName, newFeature: newFeatureName}),
+        setDescription: (featureName, description) =>
+            sendMessage({type: messageTypes.FEATURE_SET_DESCRIPTION, feature: featureName, description})
     }
 };

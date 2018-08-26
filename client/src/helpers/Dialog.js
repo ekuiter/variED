@@ -3,6 +3,8 @@ import {DefaultButton, PrimaryButton} from 'office-ui-fabric-react/lib/Button';
 import i18n from '../i18n';
 import React from 'react';
 import {Dropdown} from 'office-ui-fabric-react/lib/Dropdown';
+import defer from './defer';
+import {TextField} from '../../node_modules/office-ui-fabric-react/lib/TextField';
 
 const DialogWrapper = ({isOpen, onDismiss, onApply, children, label}) => (
     <Dialog
@@ -123,6 +125,47 @@ export class DialogContextualMenu extends React.Component {
                     {this.props.children}
                 </DialogWrapper>}
             </div>
+        );
+    }
+}
+
+export class TextFieldDialog extends React.Component {
+    static defaultProps = {
+        isOpen: null, onDismiss: null, onSubmit: null,
+        title: null, defaultValue: null, submitText: null
+    };
+    state = {value: null};
+    textFieldRef = React.createRef();
+    onChange = (e, value) => this.setState({value});
+    onLayerDidMount = defer(() => this.textFieldRef.current.focus());
+
+    onSubmit = () => {
+        this.props.onSubmit(this.state.value);
+        this.setState({value: null});
+        this.props.onDismiss();
+    };
+
+    onKeyPress = e => {
+        if (e.key === 'Enter')
+            this.onSubmit();
+    };
+
+    render() {
+        return (
+            <Dialog
+                hidden={!this.props.isOpen}
+                onDismiss={this.props.onDismiss}
+                modalProps={{onLayerDidMount: this.onLayerDidMount}}
+                dialogContentProps={{title: this.props.title}}>
+                <TextField
+                    componentRef={this.textFieldRef}
+                    value={this.state.value === null ? this.props.defaultValue : this.state.value}
+                    onChange={this.onChange}
+                    onKeyPress={this.onKeyPress}/>
+                <DialogFooter>
+                    <PrimaryButton onClick={this.onSubmit} text={this.props.submitText}/>
+                </DialogFooter>
+            </Dialog>
         );
     }
 }
