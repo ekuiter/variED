@@ -43,6 +43,17 @@ const constants = {
             FEATURE_SET_DESCRIPTION: 'FEATURE_SET_DESCRIPTION',
             FEATURE_SET_PROPERTY: 'FEATURE_SET_PROPERTY'
         },
+        propertyTypes: {
+            abstract: 'abstract',
+            hidden: 'hidden',
+            mandatory: 'mandatory',
+            group: 'group'
+        },
+        groupValueTypes: {
+            and: 'and',
+            or: 'or',
+            alternative: 'alternative'
+        },
         featureModel: {
             serialization: { // tags and attributes used in serialized feature models
                 STRUCT: 'struct',

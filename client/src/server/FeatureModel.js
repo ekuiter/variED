@@ -13,6 +13,9 @@ d3Hierarchy.prototype.feature = function() {
         isAbstract: this.data[serialization.ABSTRACT],
         isHidden: this.data[serialization.HIDDEN],
         isMandatory: this.data[serialization.MANDATORY],
+        isAnd: this.data[serialization.TYPE] === serialization.AND,
+        isOr: this.data[serialization.TYPE] === serialization.OR,
+        isAlternative: this.data[serialization.TYPE] === serialization.ALT,
         isGroup:
             this.data[serialization.TYPE] === serialization.OR ||
             this.data[serialization.TYPE] === serialization.ALT,

@@ -43,7 +43,8 @@ class FeatureContextualMenu extends FeatureComponent({doUpdate: true}) {
                         {key: 'divider1', itemType: ContextualMenuItemType.Divider},
                         contextualMenuItems.featureDiagram.feature.rename(feature.name, this.props.onShowOverlay),
                         contextualMenuItems.featureDiagram.feature.setDescription(feature.name, this.props.onShowOverlay),
-                        {key: 'divider2', itemType: ContextualMenuItemType.Divider},
+                        contextualMenuItems.featureDiagram.feature.properties(feature),
+                        {key: 'divider3', itemType: ContextualMenuItemType.Divider},
                         contextualMenuItems.featureDiagram.feature.details(feature.name, this.props.onShowOverlay)
                     ]
                 }/>

@@ -2,6 +2,7 @@ import i18n from '../i18n';
 import actions from '../store/actions';
 import {selectMultipleFeaturesContextualMenuItems} from './overlays/FeatureContextualMenu';
 import {layoutTypes, overlayTypes} from '../types';
+import {ContextualMenuItemType} from '../../node_modules/office-ui-fabric-react/lib/ContextualMenu';
 
 const contextualMenuItems = {
     settings: onShowOverlay => ({
@@ -108,7 +109,79 @@ const contextualMenuItems = {
                 text: i18n.t('featureDiagram.commands.feature.setDescription'),
                 iconProps: {iconName: 'TextDocument'},
                 onClick: () => onShowOverlay(overlayTypes.featureSetDescriptionDialog, {featureName})
-            })
+            }),
+            properties: feature => {
+                const toggleAbstract = () => actions.server.feature.properties.setAbstract(feature.name, !feature.isAbstract),
+                    toggleMandatory = () => actions.server.feature.properties.setMandatory(feature.name, !feature.isMandatory),
+                    mandatoryDisabled = feature.node.parent === null || feature.node.parent.feature().isGroup,
+                    groupDisabled = !feature.node.children || feature.node.children.length <= 1;
+                return ({
+                    key: 'properties',
+                    text: i18n.t('featureDiagram.commands.feature.properties'),
+                    subMenuProps: {
+                        items: [{
+                            key: 'abstract',
+                            text: i18n.t('featureDiagram.commands.feature.abstract'),
+                            canCheck: true,
+                            isChecked: feature.isAbstract,
+                            onClick: toggleAbstract
+                        }, {
+                            key: 'concrete',
+                            text: i18n.t('featureDiagram.commands.feature.concrete'),
+                            canCheck: true,
+                            isChecked: !feature.isAbstract,
+                            onClick: toggleAbstract
+                        }, {
+                            key: 'divider1', itemType: ContextualMenuItemType.Divider
+                        }, {
+                            key: 'hidden',
+                            text: i18n.t('featureDiagram.commands.feature.hidden'),
+                            canCheck: true,
+                            isChecked: feature.isHidden,
+                            onClick: () => actions.server.feature.properties.setHidden(feature.name, !feature.isHidden)
+                        }, {
+                            key: 'divider2', itemType: ContextualMenuItemType.Divider
+                        }, {
+                            key: 'mandatory',
+                            text: i18n.t('featureDiagram.commands.feature.mandatory'),
+                            disabled: mandatoryDisabled,
+                            canCheck: true,
+                            isChecked: feature.isMandatory,
+                            onClick: toggleMandatory
+                        }, {
+                            key: 'optional',
+                            text: i18n.t('featureDiagram.commands.feature.optional'),
+                            disabled: mandatoryDisabled,
+                            canCheck: true,
+                            isChecked: !feature.isMandatory,
+                            onClick: toggleMandatory
+                        }, {
+                            key: 'divider2', itemType: ContextualMenuItemType.Divider
+                        }, {
+                            key: 'and',
+                            text: i18n.t('featureDiagram.commands.feature.and'),
+                            disabled: groupDisabled,
+                            canCheck: true,
+                            isChecked: feature.isAnd,
+                            onClick: () => actions.server.feature.properties.setAnd(feature.name)
+                        }, {
+                            key: 'or',
+                            text: i18n.t('featureDiagram.commands.feature.or'),
+                            disabled: groupDisabled,
+                            canCheck: true,
+                            isChecked: feature.isOr,
+                            onClick: () => actions.server.feature.properties.setOr(feature.name)
+                        }, {
+                            key: 'alternative',
+                            text: i18n.t('featureDiagram.commands.feature.alternative'),
+                            disabled: groupDisabled,
+                            canCheck: true,
+                            isChecked: feature.isAlternative,
+                            onClick: () => actions.server.feature.properties.setAlternative(feature.name)
+                        }]
+                    }
+                });
+            }
         },
         features: {
             selectAll: onSelectAll => ({
@@ -135,7 +208,7 @@ const contextualMenuItems = {
                     text: i18n.t('featureDiagram.commands.features.newFeatureAbove'),
                     iconProps: {iconName: 'Add'},
                     disabled,
-                    onClick: () => actions.server.feature.addAbove(featureNames).then(onClick)
+                    onClick: () => actions.server.features.addAbove(featureNames).then(onClick)
                 });
             }
         }

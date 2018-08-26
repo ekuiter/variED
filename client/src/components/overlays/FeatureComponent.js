@@ -29,10 +29,10 @@ const FeatureComponent = ({isOpenProp = 'isOpen', onDismissProp = 'onDismiss', d
         }
 
         render() {
-            const feature = this.getFeature();
-            if (!feature)
+            this.feature = this.getFeature();
+            if (!this.feature)
                 return null;
-            return this.renderIfFeature(feature);
+            return this.renderIfFeature(this.feature);
         }
     };
 

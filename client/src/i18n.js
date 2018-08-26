@@ -106,7 +106,16 @@ export const strings = {
                 remove: 'Remove',
                 details: 'Details',
                 rename: 'Rename',
-                setDescription: 'Set description'
+                setDescription: 'Set description',
+                properties: 'Properties',
+                abstract: 'Abstract',
+                concrete: 'Concrete',
+                hidden: 'Hidden',
+                mandatory: 'Mandatory',
+                optional: 'Optional',
+                and: 'And',
+                or: 'Or',
+                alternative: 'Alternative'
             },
             features: {
                 selectAll: 'Select all',
