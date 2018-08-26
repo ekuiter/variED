@@ -47,9 +47,9 @@ export const defaultSettings = {
             width: 300 // width of feature callout in px
         }
     },
-    endpointFacepile: {
-        maxDisplayableEndpoints: 3, // number of endpoints to display before overflowing
-        overflowBreakpoint: 768, // viewport width under which all endpoints will be overflowed
+    userFacepile: {
+        maxDisplayableUsers: 3, // number of users to display before overflowing
+        overflowBreakpoint: 768, // viewport width under which all users will be overflowed
         gapSpace: 3 // space between facepile and overlay
     }
 };

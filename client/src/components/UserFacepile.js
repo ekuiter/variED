@@ -8,17 +8,17 @@ import PropTypes from 'prop-types';
 import exact from 'prop-types-exact';
 import {SettingsType} from '../types';
 
-class EndpointFacepile extends React.Component {
+class UserFacepile extends React.Component {
     state = {tooltipTarget: null, persona: null};
 
     componentDidUpdate(prevProps) {
-        if (prevProps.endpoints !== this.props.endpoints)
+        if (prevProps.users !== this.props.users)
             this.setState({tooltipTarget: null, persona: null});
     }
 
     render() {
-        const personas = this.props.endpoints.map(endpoint => ({
-                personaName: endpoint,
+        const personas = this.props.users.map(user => ({
+                personaName: user,
                 onMouseMove: (e, persona) => {
                     const tooltipTarget = e.target && e.target.closest('.ms-Facepile-member');
                     if (tooltipTarget && this.state.tooltipTarget !== tooltipTarget)
@@ -29,8 +29,8 @@ class EndpointFacepile extends React.Component {
                         this.setState({tooltipTarget: null, persona: null});
                 }
             })),
-            {maxDisplayableEndpoints, overflowBreakpoint, gapSpace} = getSetting(this.props.settings, 'endpointFacepile'),
-            maxDisplayablePersonas = this.props.width < overflowBreakpoint ? 1 : maxDisplayableEndpoints;
+            {maxDisplayableUsers, overflowBreakpoint, gapSpace} = getSetting(this.props.settings, 'userFacepile'),
+            maxDisplayablePersonas = this.props.width < overflowBreakpoint ? 1 : maxDisplayableUsers;
 
         return (
             <React.Fragment>
@@ -63,11 +63,11 @@ class EndpointFacepile extends React.Component {
     }
 }
 
-EndpointFacepile.propTypes = exact({
-    endpoints: PropTypes.arrayOf(PropTypes.string).isRequired,
+UserFacepile.propTypes = exact({
+    users: PropTypes.arrayOf(PropTypes.string).isRequired,
     settings: SettingsType.isRequired,
     width: PropTypes.number.isRequired,
     height: PropTypes.number.isRequired
 });
 
-export default withDimensions(EndpointFacepile);
+export default withDimensions(UserFacepile);

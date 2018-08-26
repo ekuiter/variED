@@ -11,7 +11,7 @@ const constants = {
     store: {
         initialState: {
             server: {
-                endpoints: []
+                users: []
             },
             settings: defaultSettings,
             ui: {
@@ -30,8 +30,8 @@ const constants = {
         },
         messageTypes: { // message type enumeration used by the server
             ERROR: 'ERROR',
-            ENDPOINT_SUBSCRIBE: 'ENDPOINT_SUBSCRIBE',
-            ENDPOINT_UNSUBSCRIBE: 'ENDPOINT_UNSUBSCRIBE',
+            USER_SUBSCRIBE: 'USER_SUBSCRIBE',
+            USER_UNSUBSCRIBE: 'USER_UNSUBSCRIBE',
             FEATURE_MODEL: 'FEATURE_MODEL',
             FEATURE_MODEL_PATCH: 'FEATURE_MODEL_PATCH',
             UNDO: 'UNDO',

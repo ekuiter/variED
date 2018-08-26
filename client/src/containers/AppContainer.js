@@ -9,7 +9,7 @@ import actions from '../store/actions';
 import OverlayContainer from './overlays/OverlayContainer';
 import withKeys from '../helpers/withKeys';
 import defer from '../helpers/defer';
-import EndpointFacepile from '../components/EndpointFacepile';
+import UserFacepile from '../components/UserFacepile';
 import {getFeatureModel} from '../store/selectors';
 
 class AppContainer extends React.Component {
@@ -40,10 +40,10 @@ class AppContainer extends React.Component {
                         ]}
                         farItems={[
                             {
-                                key: 'endpointFacepile',
+                                key: 'userFacepile',
                                 onRender: () =>
-                                    <EndpointFacepile
-                                        endpoints={this.props.endpoints}
+                                    <UserFacepile
+                                        users={this.props.users}
                                         settings={this.props.settings}/>
                             },
                             contextualMenuItems.settings(this.props.onShowOverlay),
@@ -62,7 +62,7 @@ export default connect(
         featureDiagramLayout: state.ui.featureDiagramLayout,
         isSelectMultipleFeatures: state.ui.isSelectMultipleFeatures,
         selectedFeatureNames: state.ui.selectedFeatureNames,
-        endpoints: state.server.endpoints,
+        users: state.server.users,
         settings: state.settings,
         featureModel: getFeatureModel(state)
     }),

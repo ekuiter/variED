@@ -25,14 +25,14 @@ public class CollaborationSession {
     public void subscribe(Endpoint newEndpoint) {
         if (!endpoints.add(newEndpoint))
             throw new RuntimeException("endpoint already subscribed");
-        unicast(newEndpoint, Message.EndpointSubscribe::new, endpoint -> endpoint != newEndpoint);
-        broadcast(new Message.EndpointSubscribe(newEndpoint), endpoint -> endpoint != newEndpoint);
+        unicast(newEndpoint, Message.UserSubscribe::new, endpoint -> endpoint != newEndpoint);
+        broadcast(new Message.UserSubscribe(newEndpoint), endpoint -> endpoint != newEndpoint);
         stateContext.sendInitialState(newEndpoint);
     }
 
     public void unsubscribe(Endpoint oldEndpoint) {
         if (endpoints.remove(oldEndpoint))
-            broadcast(new Message.EndpointUnsubscribe(oldEndpoint));
+            broadcast(new Message.UserUnsubscribe(oldEndpoint));
     }
 
     public void unicast(Endpoint targetEndpoint, Function<Endpoint, Message.IEncodable> messageFunction, Predicate<Endpoint> predicate) {

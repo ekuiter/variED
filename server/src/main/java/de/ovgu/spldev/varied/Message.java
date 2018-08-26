@@ -21,13 +21,13 @@ abstract public class Message {
          */
         ERROR,
         /**
-         * an endpoint has subscribed an editing session
+         * a user has subscribed an editing session
          */
-        ENDPOINT_SUBSCRIBE,
+        USER_SUBSCRIBE,
         /**
-         * an endpoint has unsubscribed an editing session
+         * a user has unsubscribed an editing session
          */
-        ENDPOINT_UNSUBSCRIBE,
+        USER_UNSUBSCRIBE,
         /**
          * a serialized feature model
          */
@@ -142,21 +142,21 @@ abstract public class Message {
         }
     }
 
-    public static class EndpointSubscribe extends Message implements IEncodable {
-        private String endpoint;
+    public static class UserSubscribe extends Message implements IEncodable {
+        private String user;
 
-        public EndpointSubscribe(Endpoint endpoint) {
-            super(TypeEnum.ENDPOINT_SUBSCRIBE);
-            this.endpoint = endpoint.getLabel();
+        public UserSubscribe(Endpoint endpoint) {
+            super(TypeEnum.USER_SUBSCRIBE);
+            this.user = endpoint.getLabel();
         }
     }
 
-    public static class EndpointUnsubscribe extends Message implements IEncodable {
-        private String endpoint;
+    public static class UserUnsubscribe extends Message implements IEncodable {
+        private String user;
 
-        public EndpointUnsubscribe(Endpoint endpoint) {
-            super(TypeEnum.ENDPOINT_UNSUBSCRIBE);
-            this.endpoint = endpoint.getLabel();
+        public UserUnsubscribe(Endpoint endpoint) {
+            super(TypeEnum.USER_UNSUBSCRIBE);
+            this.user = endpoint.getLabel();
         }
     }
 
