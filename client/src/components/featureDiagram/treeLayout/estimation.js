@@ -1,4 +1,5 @@
 import {getSetting} from '../../../store/settings';
+import {layoutTypes} from '../../../types';
 
 // estimates the width of a node's rectangle
 export function estimateRectWidth(settings, estimatedTextWidth) {
@@ -17,7 +18,7 @@ export function estimateRectHeight(settings) {
 // estimates the x coordinate of a node's rectangle left or right side
 export function estimateXOffset(settings, sgn, estimatedTextWidth, layout) {
     const nodeSettings = getSetting(settings, 'featureDiagram.treeLayout.node');
-    return sgn * (estimatedTextWidth * (layout === 'vertical' ? 0.5 : sgn === 1 ? 1 : 0) +
+    return sgn * (estimatedTextWidth * (layout === layoutTypes.verticalTree ? 0.5 : sgn === 1 ? 1 : 0) +
         nodeSettings.paddingX + nodeSettings.strokeWidth + nodeSettings.bboxPadding);
 }
 

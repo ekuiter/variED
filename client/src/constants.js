@@ -1,4 +1,5 @@
 import {defaultSettings} from './store/settings';
+import {layoutTypes} from './types';
 
 const constants = {
     panels: {
@@ -14,7 +15,7 @@ const constants = {
             },
             settings: defaultSettings,
             ui: {
-                featureDiagramLayout: 'verticalTree',
+                featureDiagramLayout: layoutTypes.verticalTree,
                 isSelectMultipleFeatures: false,
                 selectedFeatureNames: [],
                 overlay: null,

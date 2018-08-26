@@ -3,21 +3,22 @@ import HorizontalTreeLink from './HorizontalTreeLink';
 import HorizontalTreeNode from './HorizontalTreeNode';
 import {getSetting} from '../../../store/settings';
 import {estimateRectHeight, estimateXOffset, estimateYOffset} from './estimation';
+import {layoutTypes} from '../../../types';
 
 class HorizontalTreeLayout extends AbstractTreeLayout {
     widestTextOnLayer = {};
 
     constructor(props) {
-        super(props, 'horizontal', HorizontalTreeNode, HorizontalTreeLink);
+        super(props, HorizontalTreeNode, HorizontalTreeLink);
         this.treeNode.getWidestTextOnLayer = this.getWidestTextOnLayer.bind(this);
     }
 
     estimateXOffset(sgn, estimatedTextWidth) {
-        return estimateXOffset(this.props.settings, sgn, estimatedTextWidth, 'horizontal');
+        return estimateXOffset(this.props.settings, sgn, estimatedTextWidth, layoutTypes.horizontalTree);
     }
 
     estimateYOffset(sgn) {
-        return estimateYOffset(this.props.settings, sgn, 'horizontal');
+        return estimateYOffset(this.props.settings, sgn, layoutTypes.horizontalTree);
     }
 
     getSeparationFn(estimateTextWidth) {

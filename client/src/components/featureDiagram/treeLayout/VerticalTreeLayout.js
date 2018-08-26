@@ -3,18 +3,19 @@ import {getSetting} from '../../../store/settings';
 import VerticalTreeLink from './VerticalTreeLink';
 import VerticalTreeNode from './VerticalTreeNode';
 import {estimateXOffset, estimateYOffset} from './estimation';
+import {layoutTypes} from '../../../types';
 
 class VerticalTreeLayout extends AbstractTreeLayout {
     constructor(props) {
-        super(props, 'vertical', VerticalTreeNode, VerticalTreeLink);
+        super(props, VerticalTreeNode, VerticalTreeLink);
     }
 
     estimateXOffset(sgn, estimatedTextWidth) {
-        return estimateXOffset(this.props.settings, sgn, estimatedTextWidth, 'vertical');
+        return estimateXOffset(this.props.settings, sgn, estimatedTextWidth, layoutTypes.verticalTree);
     }
 
     estimateYOffset(sgn) {
-        return estimateYOffset(this.props.settings, sgn, 'vertical');
+        return estimateYOffset(this.props.settings, sgn, layoutTypes.verticalTree);
     }
 
     getSeparationFn(estimateTextWidth) {

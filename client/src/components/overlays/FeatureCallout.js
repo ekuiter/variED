@@ -4,7 +4,7 @@ import {getSetting} from '../../store/settings';
 import contextualMenuItems from '../contextualMenuItems';
 import {CommandBar} from 'office-ui-fabric-react/lib/CommandBar';
 import PropTypes from 'prop-types';
-import {FeatureModelType} from '../../types';
+import {FeatureModelType, layoutTypes} from '../../types';
 import {LayoutType, SettingsType} from '../../types';
 
 class FeatureCallout extends React.Component {
@@ -31,7 +31,7 @@ class FeatureCallout extends React.Component {
                      gapSpace={gapSpace}
                      calloutWidth={width}
                      directionalHint={
-                         this.props.featureDiagramLayout === 'verticalTree'
+                         this.props.featureDiagramLayout === layoutTypes.verticalTree
                              ? DirectionalHint.bottomCenter
                              : DirectionalHint.rightCenter}>
                 <div className="callout">

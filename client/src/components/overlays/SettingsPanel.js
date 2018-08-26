@@ -10,7 +10,7 @@ import {DialogContextualMenu} from '../../helpers/Dialog';
 import {DefaultButton} from 'office-ui-fabric-react/lib/Button';
 import PropTypes from 'prop-types';
 import exact from 'prop-types-exact';
-import {LayoutType, SettingsType} from '../../types';
+import {LayoutType, layoutTypes, SettingsType} from '../../types';
 
 const getLabel = path => i18n.t('panels.settingsPanel.labels', path);
 
@@ -182,7 +182,7 @@ class SettingsPanel extends React.Component {
                     path="featureDiagram.font.size"
                     min={5} max={50} suffix=" px"/>
 
-                {(featureDiagramLayout === 'verticalTree' || featureDiagramLayout === 'horizontalTree') &&
+                {(featureDiagramLayout === layoutTypes.verticalTree || featureDiagramLayout === layoutTypes.horizontalTree) &&
                 <React.Fragment>
                     <Setting.Toggle
                         {...props}
@@ -234,7 +234,7 @@ class SettingsPanel extends React.Component {
                         {...props}
                         paths={['featureDiagram.treeLayout.link.stroke']}/>
 
-                    {featureDiagramLayout === 'verticalTree'
+                    {featureDiagramLayout === layoutTypes.verticalTree
                         ? <React.Fragment>
                             <h4>{i18n.t('panels.settingsPanel.headings.verticalTree')}</h4>
                             <Setting.SpinButton
@@ -257,7 +257,7 @@ class SettingsPanel extends React.Component {
                                 min={0} max={50} step={0.5} suffix=" px"/>
                         </React.Fragment>
 
-                        : featureDiagramLayout === 'horizontalTree'
+                        : featureDiagramLayout === layoutTypes.horizontalTree
                             ? <React.Fragment>
                                 <h4>{i18n.t('panels.settingsPanel.headings.horizontalTree')}</h4>
                                 <Setting.SpinButton

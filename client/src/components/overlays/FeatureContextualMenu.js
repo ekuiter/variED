@@ -4,7 +4,7 @@ import {ContextualMenu, ContextualMenuItemType} from 'office-ui-fabric-react/lib
 import contextualMenuItems from '../contextualMenuItems';
 import {getSetting} from '../../store/settings';
 import PropTypes from 'prop-types';
-import {FeatureModelType} from '../../types';
+import {FeatureModelType, layoutTypes} from '../../types';
 import {LayoutType, SettingsType} from '../../types';
 
 export const selectMultipleFeaturesContextualMenuItems = (selectedFeatureNames, onSelectAllFeatures, onDeselectAllFeatures, featureModel) => [
@@ -42,7 +42,7 @@ class FeatureContextualMenu extends React.Component {
                 isBeakVisible={!isSelectMultipleFeatures}
                 gapSpace={isSelectMultipleFeatures ? 2 * gapSpace : gapSpace}
                 directionalHint={
-                    this.props.featureDiagramLayout === 'verticalTree'
+                    this.props.featureDiagramLayout === layoutTypes.verticalTree
                         ? DirectionalHint.bottomCenter
                         : DirectionalHint.rightCenter}
                 items={isSelectMultipleFeatures

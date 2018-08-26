@@ -1,7 +1,7 @@
 import i18n from '../i18n';
 import actions from '../store/actions';
 import {selectMultipleFeaturesContextualMenuItems} from './overlays/FeatureContextualMenu';
-import {overlayTypes} from '../types';
+import {layoutTypes, overlayTypes} from '../types';
 
 const contextualMenuItems = {
     settings: onShowOverlay => ({
@@ -41,14 +41,14 @@ const contextualMenuItems = {
                     key: 'verticalTree',
                     text: i18n.t('featureDiagram.commands.verticalTree'),
                     canCheck: true,
-                    isChecked: featureDiagramLayout === 'verticalTree',
-                    onClick: () => onSetFeatureDiagramLayout('verticalTree')
+                    isChecked: featureDiagramLayout === layoutTypes.verticalTree,
+                    onClick: () => onSetFeatureDiagramLayout(layoutTypes.verticalTree)
                 }, {
                     key: 'horizontalTree',
                     text: i18n.t('featureDiagram.commands.horizontalTree'),
                     canCheck: true,
-                    isChecked: featureDiagramLayout === 'horizontalTree',
-                    onClick: () => onSetFeatureDiagramLayout('horizontalTree')
+                    isChecked: featureDiagramLayout === layoutTypes.horizontalTree,
+                    onClick: () => onSetFeatureDiagramLayout(layoutTypes.horizontalTree)
                 }]
             }
         }),

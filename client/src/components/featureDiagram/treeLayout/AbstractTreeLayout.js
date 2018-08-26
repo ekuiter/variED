@@ -18,9 +18,8 @@ class AbstractTreeLayout extends React.Component {
     currentCoordinates = {};
     previousCoordinates = {};
 
-    constructor(props, direction, TreeNode, TreeLink) {
+    constructor(props, TreeNode, TreeLink) {
         super(props);
-        this.direction = direction;
         this.treeNode = new TreeNode(
             props.settings,
             props.isSelectMultipleFeatures,
