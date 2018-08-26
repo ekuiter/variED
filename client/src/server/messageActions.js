@@ -17,23 +17,48 @@ export default {
             sendMessage({type: messageTypes.FEATURE_SET_DESCRIPTION, feature: featureName, description}),
         properties: {
             setAbstract: (featureName, value) =>
-                sendMessage({type: messageTypes.FEATURE_SET_PROPERTY,
-                    feature: featureName, property: propertyTypes.abstract, value}),
+                sendMessage({
+                    type: messageTypes.FEATURE_SET_PROPERTY,
+                    feature: featureName, property: propertyTypes.abstract, value
+                }),
             setHidden: (featureName, value) =>
-                sendMessage({type: messageTypes.FEATURE_SET_PROPERTY,
-                    feature: featureName, property: propertyTypes.hidden, value}),
+                sendMessage({
+                    type: messageTypes.FEATURE_SET_PROPERTY,
+                    feature: featureName, property: propertyTypes.hidden, value
+                }),
             setMandatory: (featureName, value) =>
-                sendMessage({type: messageTypes.FEATURE_SET_PROPERTY,
-                    feature: featureName, property: propertyTypes.mandatory, value}),
+                sendMessage({
+                    type: messageTypes.FEATURE_SET_PROPERTY,
+                    feature: featureName, property: propertyTypes.mandatory, value
+                }),
+            toggleMandatory: feature =>
+                sendMessage({
+                    type: messageTypes.FEATURE_SET_PROPERTY,
+                    feature: feature.name, property: propertyTypes.mandatory, value: !feature.isMandatory
+                }),
             setAnd: featureName =>
-                sendMessage({type: messageTypes.FEATURE_SET_PROPERTY,
-                    feature: featureName, property: propertyTypes.group, value: groupValueTypes.and}),
+                sendMessage({
+                    type: messageTypes.FEATURE_SET_PROPERTY,
+                    feature: featureName, property: propertyTypes.group, value: groupValueTypes.and
+                }),
             setOr: featureName =>
-                sendMessage({type: messageTypes.FEATURE_SET_PROPERTY,
-                    feature: featureName, property: propertyTypes.group, value: groupValueTypes.or}),
+                sendMessage({
+                    type: messageTypes.FEATURE_SET_PROPERTY,
+                    feature: featureName, property: propertyTypes.group, value: groupValueTypes.or
+                }),
             setAlternative: featureName =>
-                sendMessage({type: messageTypes.FEATURE_SET_PROPERTY,
-                    feature: featureName, property: propertyTypes.group, value: groupValueTypes.alternative})
+                sendMessage({
+                    type: messageTypes.FEATURE_SET_PROPERTY,
+                    feature: featureName, property: propertyTypes.group, value: groupValueTypes.alternative
+                }),
+            toggleGroup: feature =>
+                sendMessage({
+                    type: messageTypes.FEATURE_SET_PROPERTY,
+                    feature: feature.name, property: propertyTypes.group,
+                    value: feature.isAnd
+                        ? groupValueTypes.or : feature.isOr
+                            ? groupValueTypes.alternative : groupValueTypes.and
+                })
         }
     },
     features: {

@@ -6,6 +6,7 @@ import {addStyle, appendCross, translateTransform} from '../../../helpers/svg';
 import styles from './styles';
 import {isCommand} from '../../../helpers/withKeys';
 import {overlayTypes} from '../../../types';
+import actions from '../../../store/actions';
 
 function widenBbox({x, y, width, height}, paddingX, paddingY) {
     return {x: x - paddingX, y: y - paddingY, width: width + 2 * paddingX, height: height + 2 * paddingY};
@@ -93,8 +94,12 @@ class AbstractTreeNode {
                 .call(addStyle, styles.node.arcSegment(this.settings)),
             arcSlice = nodeEnter.insert('path', 'g.rectAndText')
                 .attr('class', 'arcSlice')
-                .call(addStyle, styles.node.arcSlice(this.settings));
-        this.treeLink.drawGroup(arcSegment, arcSlice);
+                .call(addStyle, styles.node.arcSlice(this.settings)),
+            arcClick = nodeEnter.insert('path', 'g.rectAndText')
+                .attr('class', 'arcClick')
+                .call(addStyle, styles.node.arcClick(this.settings))
+                .on('dblclick', d => actions.server.feature.properties.toggleGroup(d.feature()));
+        this.treeLink.drawGroup(arcSegment, arcSlice, arcClick);
 
         if (getSetting(this.settings, 'featureDiagram.treeLayout.debug'))
             appendCross(nodeEnter);
@@ -107,7 +112,7 @@ class AbstractTreeNode {
             .attr('opacity', 1);
         node.select('g.rectAndText rect').call(addStyle, styles.node.abstract(this.settings));
         node.select('g.rectAndText text').call(addStyle, styles.node.hidden(this.settings));
-        this.treeLink.drawGroup(node.select('path.arcSegment'), node.select('path.arcSlice'));
+        this.treeLink.drawGroup(node.select('path.arcSegment'), node.select('path.arcSlice'), node.select('path.arcClick'));
     }
 
     exit(node) {

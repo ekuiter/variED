@@ -6,7 +6,6 @@ import contextualMenuItems from '../contextualMenuItems';
 import PropTypes from 'prop-types';
 import {FeatureModelType} from '../../server/FeatureModel';
 import FeatureComponent from './FeatureComponent';
-import {ContextualMenuItemType} from '../../../node_modules/office-ui-fabric-react/lib/ContextualMenu';
 
 const buttonStyles = {root: {backgroundColor: 'transparent'}},
     transparentItems = items => items;

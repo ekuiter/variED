@@ -7,6 +7,7 @@ import {
 } from '../../../helpers/svg';
 import constants from '../../../constants';
 import styles from './styles';
+import actions from '../../../store/actions';
 
 class AbstractTreeLink {
     constructor(settings, getCurrentParentCoordinate, getPreviousParentCoordinate, treeNode) {
@@ -64,7 +65,7 @@ class AbstractTreeLink {
         throw new Error('abstract method not implemented');
     }
 
-    drawGroup(arcSegment, arcSlice) {
+    drawGroup(arcSegment, arcSlice, arcClick) {
         const drawArc = (node, arcPathFn, checkType = () => true) =>
             node
                 .attr('opacity', d => d.feature().isGroup && d.feature().hasChildren && checkType(d) ? 1 : 0)
@@ -74,7 +75,7 @@ class AbstractTreeLink {
                             x: relativeGroupAnchor.x + this.nodeX(d),
                             y: relativeGroupAnchor.y + this.nodeY(d)
                         };
-                    if (!d.feature().isGroup || !d.feature().hasChildren || !checkType(d))
+                    if ((checkType(d) !== 'always' && !d.feature().isGroup) || !d.feature().hasChildren || !checkType(d))
                         return this.emptyArcPath(relativeGroupAnchor, arcPathFn);
                     const firstChild = d.children[0],
                         lastChild = d.children[d.children.length - 1],
@@ -85,6 +86,7 @@ class AbstractTreeLink {
                 });
         drawArc(arcSegment, arcSegmentPath);
         drawArc(arcSlice, arcSlicePath, d => d.feature().type === constants.server.featureModel.serialization.OR);
+        drawArc(arcClick, arcSlicePath, () => 'always');
     }
 
     enter(link, zIndex) {
@@ -102,7 +104,8 @@ class AbstractTreeLink {
             linkEnter.call(drawCircle, null, {
                 center: from,
                 radius: 0,
-                style: styles.link.mandatory(this.settings)
+                style: styles.link.mandatory(this.settings),
+                fn: circle => circle.on('dblclick', d => actions.server.feature.properties.toggleMandatory(d.feature()))
             });
 
         return linkEnter;

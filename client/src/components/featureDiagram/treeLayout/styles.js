@@ -32,6 +32,10 @@ const styles = {
         }),
         arcSlice: settings => ({ // style applied to a node's arc slice (for OR groups)
             fill: getSetting(settings, 'featureDiagram.treeLayout.link.stroke')
+        }),
+        arcClick: settings => ({ // style applied to a node's clickable arc
+            'fill-opacity': 0,
+            cursor: 'pointer'
         })
     },
     link: {
@@ -46,12 +50,14 @@ const styles = {
             yes: {
                 stroke: getSetting(settings, 'featureDiagram.treeLayout.link.stroke'),
                 'stroke-width': getLinkStrokeWidth(settings),
-                fill: getSetting(settings, 'featureDiagram.treeLayout.link.stroke')
+                fill: getSetting(settings, 'featureDiagram.treeLayout.link.stroke'),
+                cursor: 'pointer'
             },
             no: {
                 stroke: getSetting(settings, 'featureDiagram.treeLayout.link.stroke'),
                 'stroke-width': getLinkStrokeWidth(settings),
-                fill: 'white'
+                fill: 'white',
+                cursor: 'pointer'
             },
             none: { // children of OR and ALT groups do not have a circle
                 r: 0,
