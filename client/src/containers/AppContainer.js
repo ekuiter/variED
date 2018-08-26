@@ -34,7 +34,7 @@ class AppContainer extends React.Component {
                             contextualMenuItems.featureDiagram.selection(
                                 this.props.isSelectMultipleFeatures,
                                 this.props.onSetSelectMultipleFeatures,
-                                this.props.selectedFeatures,
+                                this.props.selectedFeatureNames,
                                 this.props.onSelectAllFeatures,
                                 this.props.onDeselectAllFeatures,
                                 this.props.featureModel)
@@ -64,7 +64,7 @@ export default connect(
     state => ({
         featureDiagramLayout: state.ui.featureDiagramLayout,
         isSelectMultipleFeatures: state.ui.isSelectMultipleFeatures,
-        selectedFeatures: state.ui.selectedFeatures,
+        selectedFeatureNames: state.ui.selectedFeatureNames,
         endpoints: state.server.endpoints,
         settings: state.settings,
         featureModel: getFeatureModel(state)

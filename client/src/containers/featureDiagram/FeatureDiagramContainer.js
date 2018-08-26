@@ -10,7 +10,7 @@ export default connect(
         settings: state.settings,
         layout: state.ui.featureDiagramLayout,
         isSelectMultipleFeatures: state.ui.isSelectMultipleFeatures,
-        selectedFeatures: state.ui.selectedFeatures,
+        selectedFeatureNames: state.ui.selectedFeatureNames,
         featureModel: getFeatureModel(state)
     }),
     dispatch => ({

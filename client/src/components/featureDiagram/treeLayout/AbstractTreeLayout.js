@@ -25,7 +25,7 @@ class AbstractTreeLayout extends React.Component {
         onDeselectFeature: null,
         onDeselectAllFeatures: null,
         isSelectMultipleFeatures: false,
-        selectedFeatures: null
+        selectedFeatureNames: null
     };
     svgRef = React.createRef();
     state = {overlay: null, activeNode: null, activeNodeRef: null};
@@ -63,7 +63,7 @@ class AbstractTreeLayout extends React.Component {
                 this.props.width !== prevProps.width ||
                 this.props.height !== prevProps.height);
 
-        if (this.props.selectedFeatures !== prevProps.selectedFeatures)
+        if (this.props.selectedFeatureNames !== prevProps.selectedFeatureNames)
             this.updateSelection();
     }
 
@@ -86,7 +86,7 @@ class AbstractTreeLayout extends React.Component {
                     isSelectMultipleFeatures={this.props.isSelectMultipleFeatures}
                     featureName={this.state.overlay === 'contextualMenu' ? this.state.activeNode.feature().name : null}
                     nodeRef={this.state.overlay === 'contextualMenu' ? this.state.activeNodeRef : null}
-                    selectedFeatures={this.props.selectedFeatures}
+                    selectedFeatureNames={this.props.selectedFeatureNames}
                     onShowPanel={this.onShowPanel}
                     onShowDialog={this.onShowDialog}
                     onDismiss={this.onHideOverlay}
@@ -154,7 +154,7 @@ class AbstractTreeLayout extends React.Component {
     }
 
     toggleSelectedNode(node, _nodeRef) {
-        if (this.props.selectedFeatures.includes(node.feature().name))
+        if (this.props.selectedFeatureNames.includes(node.feature().name))
             this.removeSelectedNode(node, _nodeRef);
         else
             this.props.onSelectFeature(node.feature().name);
@@ -165,7 +165,7 @@ class AbstractTreeLayout extends React.Component {
             if (overlay === 'callout' || overlay === 'select')
                 this.toggleSelectedNode(activeNode, activeNodeRef);
             else if (overlay === null || (overlay === 'contextualMenu' &&
-                this.props.selectedFeatures.includes(activeNode.feature().name)))
+                this.props.selectedFeatureNames.includes(activeNode.feature().name)))
                 this.setState({overlay, activeNode, activeNodeRef});
         } else {
             if (overlay === 'callout' || overlay === 'contextualMenu') {
@@ -371,7 +371,7 @@ class AbstractTreeLayout extends React.Component {
             });
 
         node.exit().each(function(d) {
-            if (self.props.selectedFeatures.includes(d.feature().name))
+            if (self.props.selectedFeatureNames.includes(d.feature().name))
                 self.removeSelectedNode(d, this); // deselect exiting nodes, TODO: warn user that selection changed
         });
 
@@ -380,8 +380,8 @@ class AbstractTreeLayout extends React.Component {
 
     updateSelection() {
         const {node} = this.joinData(false, false, true);
-        node.filter(d => this.props.selectedFeatures.includes(d.feature().name)).attr('class', 'node selected');
-        node.filter(d => !this.props.selectedFeatures.includes(d.feature().name)).attr('class', 'node');
+        node.filter(d => this.props.selectedFeatureNames.includes(d.feature().name)).attr('class', 'node selected');
+        node.filter(d => !this.props.selectedFeatureNames.includes(d.feature().name)).attr('class', 'node');
     }
 }
 

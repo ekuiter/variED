@@ -94,9 +94,9 @@ export const strings = {
             undo: 'Undo',
             redo: 'Redo',
             setLayout: 'Layout',
-            selection: (isSelectMultipleFeatures, selectedFeatures) =>
+            selection: (isSelectMultipleFeatures, selectedFeatureNames) =>
                 isSelectMultipleFeatures
-                    ? `Feature selection (${selectedFeatures.length})`
+                    ? `Feature selection (${selectedFeatureNames.length})`
                     : 'Select multiple features',
             verticalTree: 'Vertical tree',
             horizontalTree: 'Horizontal tree',

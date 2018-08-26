@@ -24,24 +24,24 @@ const uiReducer = featureModel => handleActions({
         SET_FEATURE_DIAGRAM_LAYOUT: (state, {payload: {featureDiagramLayout}}) =>
             ({...state, featureDiagramLayout}),
         SET_SELECT_MULTIPLE_FEATURES: (state, {payload: {isSelectMultipleFeatures}}) =>
-            ({...state, isSelectMultipleFeatures, selectedFeatures: []}),
+            ({...state, isSelectMultipleFeatures, selectedFeatureNames: []}),
         SELECT_FEATURE: (state, {payload: {featureName}}) =>
-            ({...state, selectedFeatures: [...state.selectedFeatures, featureName]}),
+            ({...state, selectedFeatureNames: [...state.selectedFeatureNames, featureName]}),
         SELECT_ONE_FEATURE: (state, {payload: {featureName}}) =>
-            ({...state, selectedFeatures: [featureName]}),
+            ({...state, selectedFeatureNames: [featureName]}),
         DESELECT_FEATURE: (state, {payload: {featureName}}) => {
-            const selectedFeatures = state.selectedFeatures.filter(_featureName => _featureName !== featureName);
-            return selectedFeatures.length > 0
-                ? {...state, selectedFeatures}
-                : {...state, selectedFeatures, isSelectMultipleFeatures: false};
+            const selectedFeatureNames = state.selectedFeatureNames.filter(_featureName => _featureName !== featureName);
+            return selectedFeatureNames.length > 0
+                ? {...state, selectedFeatureNames}
+                : {...state, selectedFeatureNames, isSelectMultipleFeatures: false};
         },
         SELECT_ALL_FEATURES: state => ({
             ...state,
-            selectedFeatures: new FeatureModel(featureModel).getFeatureNames(),
+            selectedFeatureNames: new FeatureModel(featureModel).getFeatureNames(),
             isSelectMultipleFeatures: true
         }),
         DESELECT_ALL_FEATURES: state =>
-            ({...state, selectedFeatures: [], isSelectMultipleFeatures: false})
+            ({...state, selectedFeatureNames: [], isSelectMultipleFeatures: false})
     },
     [combineActions(actions.ui.showPanel, actions.ui.hidePanel)]:
         (state, {payload: {panel, panelProps}}) => ({...state, panel, panelProps}),

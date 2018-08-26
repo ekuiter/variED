@@ -16,7 +16,7 @@ const constants = {
             ui: {
                 featureDiagramLayout: 'verticalTree',
                 isSelectMultipleFeatures: false,
-                selectedFeatures: [],
+                selectedFeatureNames: [],
                 panel: null,
                 panelProps: null,
                 dialog: null,
