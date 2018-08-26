@@ -39,12 +39,12 @@ export const defaultSettings = {
                 horizontal: {
                     marginY: 12, // collapsing y margin for rectangles in px (see vertical.marginX)
                     layerMargin: 80 // additional margin between layers in px (layer height is roughly widest text on layer + layerMargin)
-                },
-                overlay: {
-                    throttleUpdate: 50, // how often to reposition the overlay on zoom or pan in ms
-                    gapSpace: 5, // space between node and overlay in px
-                    width: 300 // width of feature callout in px
                 }
+            },
+            overlay: {
+                throttleUpdate: 200, // how often to reposition the overlay on zoom or pan in ms
+                gapSpace: 5, // space between node and overlay in px
+                width: 300 // width of feature callout in px
             }
         },
         endpointFacepile: {

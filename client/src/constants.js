@@ -17,10 +17,8 @@ const constants = {
                 featureDiagramLayout: 'verticalTree',
                 isSelectMultipleFeatures: false,
                 selectedFeatureNames: [],
-                panel: null,
-                panelProps: null,
-                dialog: null,
-                dialogProps: null
+                overlay: null,
+                overlayProps: null
             }
         }
     },

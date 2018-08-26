@@ -5,6 +5,7 @@ import constants from '../constants';
 import {defaultSettings, getNewSettings} from './settings';
 import FeatureModel from '../server/FeatureModel';
 import actions from './actions';
+import {overlayTypes} from '../containers/overlays/OverlayContainer';
 
 function serverReducer(state, action) {
     if (constants.server.isMessageType(action.type))
@@ -27,8 +28,6 @@ const uiReducer = featureModel => handleActions({
             ({...state, isSelectMultipleFeatures, selectedFeatureNames: []}),
         SELECT_FEATURE: (state, {payload: {featureName}}) =>
             ({...state, selectedFeatureNames: [...state.selectedFeatureNames, featureName]}),
-        SELECT_ONE_FEATURE: (state, {payload: {featureName}}) =>
-            ({...state, selectedFeatureNames: [featureName]}),
         DESELECT_FEATURE: (state, {payload: {featureName}}) => {
             const selectedFeatureNames = state.selectedFeatureNames.filter(_featureName => _featureName !== featureName);
             return selectedFeatureNames.length > 0
@@ -43,10 +42,19 @@ const uiReducer = featureModel => handleActions({
         DESELECT_ALL_FEATURES: state =>
             ({...state, selectedFeatureNames: [], isSelectMultipleFeatures: false})
     },
-    [combineActions(actions.ui.showPanel, actions.ui.hidePanel)]:
-        (state, {payload: {panel, panelProps}}) => ({...state, panel, panelProps}),
-    [combineActions(actions.ui.showDialog, actions.ui.hideDialog)]:
-        (state, {payload: {dialog, dialogProps}}) => ({...state, dialog, dialogProps})
+    [combineActions(actions.ui.showOverlay, actions.ui.hideOverlay)]:
+        (state, {payload: {overlay, overlayProps, selectFeature}}) => {
+            let newState;
+            if (!state.isSelectMultipleFeatures &&
+                overlayTypes.isShownAtSelectedFeature(state.overlay) &&
+                !overlayTypes.isShownAtSelectedFeature(overlay))
+                newState = {...state, overlay, overlayProps, selectedFeatureNames: []};
+            else
+                newState = {...state, overlay, overlayProps};
+            if (selectFeature)
+                newState.selectedFeatureNames = [...newState.selectedFeatureNames, selectFeature];
+            return newState;
+        },
 }, null);
 
 export default reduceReducers(

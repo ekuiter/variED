@@ -6,9 +6,7 @@ import 'd3-transition';
 import {getSetting} from '../../../store/settings';
 import {updateRect} from '../../../helpers/svg';
 import '../../../stylesheets/treeLayout.css';
-import FeatureCallout from './FeatureCallout';
-import throttle from '../../../helpers/throttle';
-import FeatureContextualMenu from './FeatureContextualMenu';
+import {overlayTypes} from '../../../containers/overlays/OverlayContainer';
 
 class AbstractTreeLayout extends React.Component {
     static defaultProps = {
@@ -18,17 +16,17 @@ class AbstractTreeLayout extends React.Component {
         className: null,
         fitOnResize: false,
         settings: null,
-        onShowPanel: null,
+        overlay: null,
+        overlayProps: null,
+        onShowOverlay: null,
         onSetSelectMultipleFeatures: null,
         onSelectFeature: null,
-        onSelectOneFeature: null,
         onDeselectFeature: null,
         onDeselectAllFeatures: null,
         isSelectMultipleFeatures: false,
         selectedFeatureNames: null
     };
     svgRef = React.createRef();
-    state = {overlay: null, activeNode: null, activeNodeRef: null};
     currentCoordinates = {};
     previousCoordinates = {};
 
@@ -39,7 +37,7 @@ class AbstractTreeLayout extends React.Component {
             props.settings,
             props.isSelectMultipleFeatures,
             this.setActiveNode.bind(this),
-            this.onShowPanel);
+            this.props.onShowOverlay);
         this.treeLink = new TreeLink(
             props.settings,
             this.getParentCoordinateFn('currentCoordinates'),
@@ -69,52 +67,16 @@ class AbstractTreeLayout extends React.Component {
 
     render() {
         return (
-            <React.Fragment>
-                <svg className={'treeLayout' + (this.props.className ? ` ${this.props.className}` : '')}
-                     ref={this.svgRef}/>
-                <FeatureCallout
-                    settings={this.props.settings}
-                    direction={this.direction}
-                    featureName={this.state.overlay === 'callout' ? this.state.activeNode.feature().name : null}
-                    nodeRef={this.state.overlay === 'callout' ? this.state.activeNodeRef : null}
-                    onShowPanel={this.onShowPanel}
-                    onDismiss={this.onHideOverlay}
-                    featureModel={this.props.featureModel}/>
-                <FeatureContextualMenu
-                    settings={this.props.settings}
-                    direction={this.direction}
-                    isSelectMultipleFeatures={this.props.isSelectMultipleFeatures}
-                    featureName={this.state.overlay === 'contextualMenu' ? this.state.activeNode.feature().name : null}
-                    nodeRef={this.state.overlay === 'contextualMenu' ? this.state.activeNodeRef : null}
-                    selectedFeatureNames={this.props.selectedFeatureNames}
-                    onShowPanel={this.onShowPanel}
-                    onShowDialog={this.onShowDialog}
-                    onDismiss={this.onHideOverlay}
-                    onSelectAllFeatures={this.props.onSelectAllFeatures}
-                    onDeselectAllFeatures={this.props.onDeselectAllFeatures}
-                    featureModel={this.props.featureModel}/>
-            </React.Fragment>
+            <svg className={'treeLayout' + (this.props.className ? ` ${this.props.className}` : '')}
+                 ref={this.svgRef}/>
         );
     }
 
-    onShowPanel = (...args) => {
-        this.onHideOverlay();
-        this.props.onShowPanel(...args);
+    onHideOverlayIfOpen = node => {
+        if (overlayTypes.isShownAtSelectedFeature(this.props.overlay) &&
+            this.props.overlayProps.featureName === node.feature().name)
+            this.props.onHideOverlay();
     };
-
-    onShowDialog = (...args) => {
-        this.onHideOverlay();
-        this.props.onShowDialog(...args);
-    };
-
-    onHideOverlay = () => this.setActiveNode(null, null, null);
-
-    updateOverlay = throttle(
-        () => {
-            if (this.state.overlay)
-                return this.setState({}); // triggers a rerender for the overlay to catch up
-        },
-        getSetting(this.props.settings, 'featureDiagram.treeLayout.overlay.throttleUpdate'));
 
     canExport() {
         return !!this.svgRef.current;
@@ -147,36 +109,32 @@ class AbstractTreeLayout extends React.Component {
         return d => `${kind}_${d.feature().name}`;
     }
 
-    removeSelectedNode(node, _nodeRef) {
-        if (this.state.overlay && _nodeRef === this.state.activeNodeRef)
-            this.onHideOverlay();
+    removeSelectedNode(node) {
+        this.onHideOverlayIfOpen(node);
         this.props.onDeselectFeature(node.feature().name);
     }
 
-    toggleSelectedNode(node, _nodeRef) {
+    toggleSelectedNode(node) {
         if (this.props.selectedFeatureNames.includes(node.feature().name))
-            this.removeSelectedNode(node, _nodeRef);
+            this.removeSelectedNode(node);
         else
             this.props.onSelectFeature(node.feature().name);
     }
 
-    setActiveNode(overlay, activeNode, activeNodeRef) {
+    setActiveNode(overlay, activeNode) {
+        const featureName = activeNode.feature().name;
         if (this.props.isSelectMultipleFeatures) {
-            if (overlay === 'callout' || overlay === 'select')
-                this.toggleSelectedNode(activeNode, activeNodeRef);
-            else if (overlay === null || (overlay === 'contextualMenu' &&
-                this.props.selectedFeatureNames.includes(activeNode.feature().name)))
-                this.setState({overlay, activeNode, activeNodeRef});
+            if (overlay === overlayTypes.featureCallout || overlay === 'select')
+                this.toggleSelectedNode(activeNode);
+            else if (overlay === overlayTypes.featureContextualMenu &&
+                this.props.selectedFeatureNames.includes(featureName))
+                this.props.onShowOverlay(overlay, {featureName});
         } else {
-            if (overlay === 'callout' || overlay === 'contextualMenu') {
-                this.props.onSelectOneFeature(activeNode.feature().name);
-                this.setState({overlay, activeNode, activeNodeRef});
-            } else if (overlay === 'select') {
+            if (overlayTypes.isShownAtSelectedFeature(overlay))
+                this.props.onShowOverlay(overlay, {featureName}, {selectFeature: featureName});
+            else if (overlay === 'select') {
                 this.props.onSetSelectMultipleFeatures(true);
-                this.props.onSelectOneFeature(activeNode.feature().name);
-            } else {
-                this.props.onDeselectAllFeatures();
-                this.setState({overlay, activeNode, activeNodeRef});
+                this.props.onSelectFeature(featureName);
             }
         }
     }
@@ -280,10 +238,7 @@ class AbstractTreeLayout extends React.Component {
         svgRoot.call(zoom
             .translateExtent(estimatedBbox)
             .scaleExtent(getSetting(settings, 'featureDiagram.treeLayout.scaleExtent'))
-            .on('zoom', () => {
-                this.updateOverlay();
-                return g.attr('transform', d3Event.transform);
-            }))
+            .on('zoom', () => g.attr('transform', d3Event.transform)))
             .call(svgRoot => {
                 const dblclicked = svgRoot.on('dblclick.zoom');
                 svgRoot.on('contextmenu', function() {
@@ -326,14 +281,10 @@ class AbstractTreeLayout extends React.Component {
         return {node, linkInBack, linkInFront, nodes};
     }
 
-    transition(selection, onEnd = this.updateOverlay, duration = getSetting(this.props.settings, 'featureDiagram.treeLayout.duration')) {
-        if (getSetting(this.props.settings, 'featureDiagram.treeLayout.useTransitions')) {
-            let transition = selection.transition().duration(duration);
-            if (onEnd)
-                transition = transition.on('end', onEnd);
-            return transition;
-        } else
-            return onEnd ? selection.call(onEnd) : selection;
+    transition(selection, duration = getSetting(this.props.settings, 'featureDiagram.treeLayout.duration')) {
+        return getSetting(this.props.settings, 'featureDiagram.treeLayout.useTransitions')
+            ? selection.transition().duration(duration)
+            : selection;
     }
 
     renderD3() {
@@ -352,8 +303,7 @@ class AbstractTreeLayout extends React.Component {
         // On following renders, enter new nodes/links at their beginning position.
         // Then merge with updating nodes/links and transition to the final position.
         // Exiting nodes/links are simply removed after a transition.
-        const self = this,
-            {node, linkInBack, linkInFront, nodes} = this.joinData(false, isResize);
+        const {node, linkInBack, linkInFront, nodes} = this.joinData(false, isResize);
         this.updateCoordinates('currentCoordinates', nodes);
 
         this.treeNode.update(this.transition(this.treeNode.enter(node.enter()).merge(node)));
@@ -364,15 +314,10 @@ class AbstractTreeLayout extends React.Component {
         this.treeLink.exit(this.transition(linkInBack.exit()), 'inBack');
         this.treeLink.exit(this.transition(linkInFront.exit()), 'inFront');
 
-        if (this.state.overlay)
-            node.exit().each(function() {
-                if (this.contains(self.state.activeNodeRef))
-                    self.onHideOverlay(); // hide overlay if active node exits
-            });
-
-        node.exit().each(function(d) {
-            if (self.props.selectedFeatureNames.includes(d.feature().name))
-                self.removeSelectedNode(d, this); // deselect exiting nodes, TODO: warn user that selection changed
+        node.exit().each(d => {
+            this.onHideOverlayIfOpen(d); // hide overlay if active node exits
+            if (this.props.selectedFeatureNames.includes(d.feature().name))
+                this.removeSelectedNode(d); // deselect exiting nodes, TODO: warn user that selection changed
         });
 
         this.updateCoordinates('previousCoordinates', nodes);

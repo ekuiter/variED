@@ -5,6 +5,7 @@ import measureTextWidth from '../../../helpers/measureTextWidth';
 import {addStyle, appendCross, translateTransform} from '../../../helpers/svg';
 import styles from './styles';
 import {isCommand} from '../../../helpers/withKeys';
+import {overlayTypes} from '../../../containers/overlays/OverlayContainer';
 
 function widenBbox({x, y, width, height}, paddingX, paddingY) {
     return {x: x - paddingX, y: y - paddingY, width: width + 2 * paddingX, height: height + 2 * paddingY};
@@ -40,11 +41,11 @@ function makeText(settings, selection, isGettingRectInfo, textStyle) {
 }
 
 class AbstractTreeNode {
-    constructor(settings, isSelectMultipleFeatures, setActiveNode, onShowPanel) {
+    constructor(settings, isSelectMultipleFeatures, setActiveNode, onShowOverlay) {
         this.settings = settings;
         this.isSelectMultipleFeatures = isSelectMultipleFeatures;
         this.setActiveNode = setActiveNode;
-        this.onShowPanel = onShowPanel;
+        this.onShowOverlay = onShowOverlay;
     }
 
     x(node) {
@@ -64,23 +65,21 @@ class AbstractTreeNode {
     }
 
     enter(node) {
-        const self = this,
-            nodeEnter = node.append('g')
+        const nodeEnter = node.append('g')
                 .attr('class', 'node')
+                .attr('data-feature', d => d.feature().name)
                 .call(translateTransform, d => this.x(d), d => this.y(d))
                 .attr('opacity', 0),
             rectAndText = nodeEnter.append('g')
                 .attr('class', 'rectAndText')
-                .on('click', function(d) {
-                    self.setActiveNode(isCommand(d3Event) ? 'select' : 'callout', d, this);
-                })
-                .on('contextmenu', function(d) {
+                .on('click', d => this.setActiveNode(isCommand(d3Event) ? 'select' : overlayTypes.featureCallout, d))
+                .on('contextmenu', d => {
                     d3Event.preventDefault();
-                    self.setActiveNode(isCommand(d3Event) ? 'select' : 'contextualMenu', d, this);
+                    this.setActiveNode(isCommand(d3Event) ? 'select' : overlayTypes.featureContextualMenu, d);
                 })
                 .on('dblclick', d => {
                     if (!this.isSelectMultipleFeatures)
-                        this.onShowPanel('feature', {featureName: d.feature().name});
+                        this.onShowOverlay(overlayTypes.featurePanel, {featureName: d.feature().name});
                 }),
             bboxes = makeText(this.settings, rectAndText, false, this.getTextStyle());
 

@@ -6,8 +6,7 @@ import {Fabric} from 'office-ui-fabric-react/lib/Fabric';
 import {CommandBar} from 'office-ui-fabric-react/lib/CommandBar';
 import contextualMenuItems from '../components/contextualMenuItems';
 import actions from '../store/actions';
-import PanelContainer from './panels/PanelContainer';
-import DialogContainer from './dialogs/DialogContainer';
+import OverlayContainer from './overlays/OverlayContainer';
 import withKeys from '../helpers/withKeys';
 import defer from '../helpers/defer';
 import EndpointFacepile from '../components/EndpointFacepile';
@@ -47,14 +46,12 @@ class AppContainer extends React.Component {
                                         endpoints={this.props.endpoints}
                                         settings={this.props.settings}/>
                             },
-                            contextualMenuItems.settings(this.props.onShowPanel),
-                            contextualMenuItems.about(this.props.onShowPanel)
+                            contextualMenuItems.settings(this.props.onShowOverlay),
+                            contextualMenuItems.about(this.props.onShowOverlay)
                         ]}/>
                 </div>
                 <FeatureDiagramContainer className="content"/>
-                <PanelContainer
-                    featureDiagramLayout={this.props.featureDiagramLayout}/>
-                <DialogContainer/>
+                <OverlayContainer/>
             </Fabric>
         );
     }
@@ -75,7 +72,7 @@ export default connect(
         onSetSelectMultipleFeatures: isSelectMultipleFeatures => dispatch(actions.ui.setSelectMultipleFeatures(isSelectMultipleFeatures)),
         onSelectAllFeatures: () => dispatch(actions.ui.selectAllFeatures()),
         onDeselectAllFeatures: () => dispatch(actions.ui.deselectAllFeatures()),
-        onShowPanel: (panel, panelProps) => dispatch(actions.ui.showPanel(panel, panelProps))
+        onShowOverlay: (...args) => dispatch(actions.ui.showOverlay(...args))
     })
 )(withKeys({
     key: ({event}) => event.isCommand('z'),

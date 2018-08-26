@@ -9,7 +9,7 @@ const buttonStyles = {root: {backgroundColor: 'transparent'}},
 
 export default class extends React.Component {
     static defaultProps = {
-        isOpen: false, onDismissed: null, featureName: null, onShowDialog: null, featureModel: null
+        isOpen: false, onDismissed: null, featureName: null, onShowOverlay: null, featureModel: null
     };
 
     onRenderFooterContent = () => (
@@ -19,8 +19,8 @@ export default class extends React.Component {
                 contextualMenuItems.featureDiagram.feature.remove(this.props.featureName, this.props.onDismissed)
             ])}
             overflowItems={[
-                contextualMenuItems.featureDiagram.feature.rename(this.props.featureName, this.props.onShowDialog),
-                contextualMenuItems.featureDiagram.feature.setDescription(this.props.featureName, this.props.onShowDialog)
+                contextualMenuItems.featureDiagram.feature.rename(this.props.featureName, this.props.onShowOverlay),
+                contextualMenuItems.featureDiagram.feature.setDescription(this.props.featureName, this.props.onShowOverlay)
             ]}
             overflowButtonProps={{styles: buttonStyles}}
             styles={{root: {margin: '0 -40px', padding: '0 35px'}}}/>

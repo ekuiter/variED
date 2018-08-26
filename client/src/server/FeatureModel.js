@@ -52,6 +52,17 @@ export default class FeatureModel {
         return node ? node.feature() : null;
     }
 
+    getElement(featureName) {
+        // Operate under the assumption that we only render ONE feature model, and that it is THIS feature model.
+        // This way we don't need to propagate a concrete feature diagram instance.
+        const elements = [...document.querySelectorAll(`[data-feature]`)]
+            .filter(node => node.dataset.feature === featureName);
+        if (elements.length > 1)
+            throw new Error(`multiple features "${featureName}" found - ` +
+            'getElement supports only one feature model on the page');
+        return elements.length === 1 ? elements[0] : null;
+    }
+
     getFeatureOrDismiss(featureName, isOpen, onDismiss) {
         const feature = featureName ? this.getFeature(featureName) : null;
         if (isOpen && !feature) {

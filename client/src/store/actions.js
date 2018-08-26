@@ -12,14 +12,11 @@ const actions = createActions({
         SET_SELECT_MULTIPLE_FEATURES: isSelectMultipleFeatures =>
             ({isSelectMultipleFeatures}),
         SELECT_FEATURE: featureName => ({featureName}),
-        SELECT_ONE_FEATURE: featureName => ({featureName}),
         DESELECT_FEATURE: featureName => ({featureName}),
         SELECT_ALL_FEATURES: () => {},
         DESELECT_ALL_FEATURES: () => {},
-        SHOW_PANEL: (panel, panelProps) => ({panel, panelProps}),
-        HIDE_PANEL: () => ({panel: null, panelProps: null}),
-        SHOW_DIALOG: (dialog, dialogProps) => ({dialog, dialogProps}),
-        HIDE_DIALOG: () => ({dialog: null, dialogProps: null}),
+        SHOW_OVERLAY: (overlay, overlayProps, {selectFeature} = {}) => ({overlay, overlayProps, selectFeature}),
+        HIDE_OVERLAY: () => ({overlay: null, overlayProps: null})
     }
 });
 actions.server = messageActions;

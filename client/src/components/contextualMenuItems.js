@@ -1,21 +1,22 @@
 import i18n from '../i18n';
 import actions from '../store/actions';
-import {selectMultipleFeaturesContextualMenuItems} from './featureDiagram/treeLayout/FeatureContextualMenu';
+import {selectMultipleFeaturesContextualMenuItems} from './overlays/FeatureContextualMenu';
+import {overlayTypes} from '../containers/overlays/OverlayContainer';
 
 const contextualMenuItems = {
-    settings: onShowPanel => ({
+    settings: onShowOverlay => ({
         key: 'settings',
         text: i18n.t('panels.settingsPanel.title'),
         iconOnly: true,
         iconProps: {iconName: 'Settings'},
-        onClick: () => onShowPanel('settings')
+        onClick: () => onShowOverlay(overlayTypes.settingsPanel)
     }),
-    about: onShowPanel => ({
+    about: onShowOverlay => ({
         key: 'about',
         text: i18n.t('panels.aboutPanel.title'),
         iconOnly: true,
         iconProps: {iconName: 'Info'},
-        onClick: () => onShowPanel('about')
+        onClick: () => onShowOverlay(overlayTypes.aboutPanel)
     }),
     featureDiagram: {
         undo: checked => ({
@@ -89,24 +90,24 @@ const contextualMenuItems = {
                 iconProps: {iconName: 'Remove'},
                 onClick: () => actions.server.feature.remove(featureName).then(onClick)
             }),
-            details: (featureName, onShowPanel) => ({
+            details: (featureName, onShowOverlay) => ({
                 key: 'details',
                 text: i18n.t('featureDiagram.commands.feature.details'),
                 iconProps: {iconName: 'Info'},
                 iconOnly: true,
-                onClick: () => onShowPanel('feature', {featureName})
+                onClick: () => onShowOverlay(overlayTypes.featurePanel, {featureName})
             }),
-            rename: (featureName, onShowDialog) => ({
+            rename: (featureName, onShowOverlay) => ({
                 key: 'rename',
                 text: i18n.t('featureDiagram.commands.feature.rename'),
                 iconProps: {iconName: 'Rename'},
-                onClick: () => onShowDialog('featureRename', {featureName})
+                onClick: () => onShowOverlay(overlayTypes.featureRenameDialog, {featureName})
             }),
-            setDescription: (featureName, onShowDialog) => ({
+            setDescription: (featureName, onShowOverlay) => ({
                 key: 'setDescription',
                 text: i18n.t('featureDiagram.commands.feature.setDescription'),
                 iconProps: {iconName: 'TextDocument'},
-                onClick: () => onShowDialog('featureSetDescription', {featureName})
+                onClick: () => onShowOverlay(overlayTypes.featureSetDescriptionDialog, {featureName})
             })
         },
         features: {
