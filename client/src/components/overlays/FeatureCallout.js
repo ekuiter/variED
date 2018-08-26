@@ -4,8 +4,9 @@ import {getSetting} from '../../store/settings';
 import contextualMenuItems from '../contextualMenuItems';
 import {CommandBar} from 'office-ui-fabric-react/lib/CommandBar';
 import PropTypes from 'prop-types';
-import {FeatureModelType, layoutTypes} from '../../types';
+import {layoutTypes} from '../../types';
 import {LayoutType, SettingsType} from '../../types';
+import {FeatureModelType} from '../../server/FeatureModel';
 
 class FeatureCallout extends React.Component {
     componentDidMount() {

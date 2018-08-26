@@ -3,7 +3,7 @@ import i18n from '../../i18n';
 import actions from '../../store/actions';
 import {TextFieldDialog} from '../../helpers/Dialog';
 import PropTypes from 'prop-types';
-import {FeatureModelType} from '../../types';
+import {FeatureModelType} from '../../server/FeatureModel';
 
 const FeatureRenameDialog = ({featureName, featureModel, ...props}) => {
     const feature = featureModel && featureModel.getFeatureOrDismiss(featureName, props.isOpen, props.onDismiss);

@@ -1,5 +1,6 @@
 import {hierarchy as d3Hierarchy} from 'd3-hierarchy';
 import constants from '../constants';
+import PropTypes from 'prop-types';
 
 const serialization = constants.server.featureModel.serialization;
 
@@ -24,7 +25,7 @@ d3Hierarchy.prototype.feature = function() {
     });
 };
 
-export default class {
+class FeatureModel {
     // 'data' as supplied by FEATURE_MODEL messages from the server
     constructor(featureModel) {
         if (!featureModel)
@@ -83,4 +84,8 @@ export default class {
             .map(node => node.parent);
         return parents.every(parent => parent === parents[0]);
     }
-};
+}
+
+export const FeatureModelType = PropTypes.instanceOf(FeatureModel);
+
+export default FeatureModel;

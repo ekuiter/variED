@@ -4,8 +4,9 @@ import {ContextualMenu, ContextualMenuItemType} from 'office-ui-fabric-react/lib
 import contextualMenuItems from '../contextualMenuItems';
 import {getSetting} from '../../store/settings';
 import PropTypes from 'prop-types';
-import {FeatureModelType, layoutTypes} from '../../types';
+import {layoutTypes} from '../../types';
 import {LayoutType, SettingsType} from '../../types';
+import {FeatureModelType} from '../../server/FeatureModel';
 
 export const selectMultipleFeaturesContextualMenuItems = (selectedFeatureNames, onSelectAllFeatures, onDeselectAllFeatures, featureModel) => [
     contextualMenuItems.featureDiagram.features.selectAll(onSelectAllFeatures),

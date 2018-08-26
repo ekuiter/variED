@@ -4,7 +4,7 @@ import i18n from '../../i18n';
 import {CommandBar} from 'office-ui-fabric-react/lib/CommandBar';
 import contextualMenuItems from '../contextualMenuItems';
 import PropTypes from 'prop-types';
-import {FeatureModelType} from '../../types';
+import {FeatureModelType} from '../../server/FeatureModel';
 
 const buttonStyles = {root: {backgroundColor: 'transparent'}},
     transparentItems = items => items;

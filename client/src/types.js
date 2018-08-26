@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types';
-import FeatureModel from './server/FeatureModel';
 
 export const
     layoutTypes = {
@@ -9,8 +8,6 @@ export const
     LayoutType = PropTypes.oneOf(Object.values(layoutTypes)),
 
     SettingsType = PropTypes.object,
-
-    FeatureModelType = PropTypes.instanceOf(FeatureModel),
 
     overlayTypes = {
         settingsPanel: 'settingsPanel',

@@ -9,8 +9,9 @@ import '../../../stylesheets/treeLayout.css';
 import {overlayTypes} from '../../../types';
 import PropTypes from 'prop-types';
 import exact from 'prop-types-exact';
-import {FeatureModelType, OverlayType} from '../../../types';
+import {OverlayType} from '../../../types';
 import {SettingsType} from '../../../types';
+import {FeatureModelType} from '../../../server/FeatureModel';
 
 class AbstractTreeLayout extends React.Component {
     static defaultProps = {fitOnResize: false};
