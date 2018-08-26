@@ -23,24 +23,22 @@ export const overlayTypes = {
 
 const OverlayContainer = props => (
     <React.Fragment>
-        {props.overlay === overlayTypes.settingsPanel &&
         <SettingsPanel
-            isOpen={true}
-            onDismissed={props.onHideOverlay}
+            isOpen={props.overlay === overlayTypes.settingsPanel}
+            onDismissed={props.onHideOverlayFn(overlayTypes.settingsPanel)}
             settings={props.settings}
             onSetSetting={props.onSetSetting}
             onResetSettings={props.onResetSettings}
             featureDiagramLayout={props.featureDiagramLayout}
-            {...props.overlayProps}/>}
-        {props.overlay === overlayTypes.aboutPanel &&
+            {...props.overlayProps}/>
         <AboutPanel
-            isOpen={true}
-            onDismissed={props.onHideOverlay}
-            {...props.overlayProps}/>}
+            isOpen={props.overlay === overlayTypes.aboutPanel}
+            onDismissed={props.onHideOverlayFn(overlayTypes.aboutPanel)}
+            {...props.overlayProps}/>
         {props.overlay === overlayTypes.featurePanel &&
         <FeaturePanel
             isOpen={true}
-            onDismissed={props.onHideOverlay}
+            onDismissed={props.onHideOverlayFn(overlayTypes.featurePanel)}
             onShowOverlay={props.onShowOverlay}
             featureModel={props.featureModel}
             {...props.overlayProps}/>}
@@ -48,20 +46,20 @@ const OverlayContainer = props => (
         {props.overlay === overlayTypes.featureRenameDialog &&
         <FeatureRenameDialog
             isOpen={true}
-            onDismiss={props.onHideOverlay}
+            onDismiss={props.onHideOverlayFn(overlayTypes.featureRenameDialog)}
             featureModel={props.featureModel}
             {...props.overlayProps}/>}
         {props.overlay === overlayTypes.featureSetDescriptionDialog &&
         <FeatureSetDescriptionDialog
             isOpen={true}
-            onDismiss={props.onHideOverlay}
+            onDismiss={props.onHideOverlayFn(overlayTypes.featureSetDescriptionDialog)}
             featureModel={props.featureModel}
             {...props.overlayProps}/>}
 
         {props.overlay === overlayTypes.featureCallout &&
         <FeatureCallout
             isOpen={true}
-            onDismiss={props.onHideOverlay}
+            onDismiss={props.onHideOverlayFn(overlayTypes.featureCallout)}
             featureDiagramLayout={props.featureDiagramLayout}
             settings={props.settings}
             onShowOverlay={props.onShowOverlay}
@@ -71,7 +69,7 @@ const OverlayContainer = props => (
         {props.overlay === overlayTypes.featureContextualMenu &&
         <FeatureContextualMenu
             isOpen={true}
-            onDismiss={props.onHideOverlay}
+            onDismiss={props.onHideOverlayFn(overlayTypes.featureContextualMenu)}
             featureDiagramLayout={props.featureDiagramLayout}
             settings={props.settings}
             onShowOverlay={props.onShowOverlay}
@@ -95,7 +93,7 @@ export default connect(
         featureModel: getFeatureModel(state)
     }),
     dispatch => ({
-        onHideOverlay: () => dispatch(actions.ui.hideOverlay()),
+        onHideOverlayFn: overlay => () => dispatch(actions.ui.hideOverlay(overlay)),
         onShowOverlay: (...args) => dispatch(actions.ui.showOverlay(...args)),
         onSelectAllFeatures: () => dispatch(actions.ui.selectAllFeatures()),
         onDeselectAllFeatures: () => dispatch(actions.ui.deselectAllFeatures()),

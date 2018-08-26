@@ -16,7 +16,7 @@ const actions = createActions({
         SELECT_ALL_FEATURES: () => {},
         DESELECT_ALL_FEATURES: () => {},
         SHOW_OVERLAY: (overlay, overlayProps, {selectFeature} = {}) => ({overlay, overlayProps, selectFeature}),
-        HIDE_OVERLAY: () => ({overlay: null, overlayProps: null})
+        HIDE_OVERLAY: (overlay) => ({overlay})
     }
 });
 actions.server = messageActions;

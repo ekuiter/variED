@@ -22,7 +22,7 @@ export default class extends React.Component {
         if (!feature)
             return null;
         return (
-            <Callout target={featureModel.getElement(featureName)}
+            <Callout target={featureModel.getElement(featureName).querySelector('.rectAndText')}
                      onDismiss={onDismiss}
                      hidden={!this.props.isOpen}
                      gapSpace={gapSpace}

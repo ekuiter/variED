@@ -33,7 +33,7 @@ export default class extends React.Component {
             return null;
         return (
             <ContextualMenu
-                target={featureModel.getElement(featureName)}
+                target={featureModel.getElement(featureName).querySelector('.rectAndText')}
                 onDismiss={onDismiss}
                 hidden={!this.props.isOpen}
                 isBeakVisible={!isSelectMultipleFeatures}

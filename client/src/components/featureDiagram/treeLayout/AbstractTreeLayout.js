@@ -19,6 +19,7 @@ class AbstractTreeLayout extends React.Component {
         overlay: null,
         overlayProps: null,
         onShowOverlay: null,
+        onHideOverlay: null,
         onSetSelectMultipleFeatures: null,
         onSelectFeature: null,
         onDeselectFeature: null,
@@ -75,7 +76,7 @@ class AbstractTreeLayout extends React.Component {
     onHideOverlayIfOpen = node => {
         if (overlayTypes.isShownAtSelectedFeature(this.props.overlay) &&
             this.props.overlayProps.featureName === node.feature().name)
-            this.props.onHideOverlay();
+            this.props.onHideOverlayFn(this.props.overlay)();
     };
 
     canExport() {

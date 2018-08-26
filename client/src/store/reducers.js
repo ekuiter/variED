@@ -1,10 +1,9 @@
 import messageReducer from '../server/messageReducer';
 import reduceReducers from 'reduce-reducers';
-import {combineActions, handleActions} from 'redux-actions';
+import {handleActions} from 'redux-actions';
 import constants from '../constants';
 import {defaultSettings, getNewSettings} from './settings';
 import FeatureModel from '../server/FeatureModel';
-import actions from './actions';
 import {overlayTypes} from '../containers/overlays/OverlayContainer';
 
 function serverReducer(state, action) {
@@ -19,6 +18,15 @@ const settingsReducer = handleActions({
         RESET: () => defaultSettings
     }
 }, null);
+
+function updateOverlay(state, overlay, overlayProps) {
+    if (!state.isSelectMultipleFeatures &&
+        overlayTypes.isShownAtSelectedFeature(state.overlay) &&
+        !overlayTypes.isShownAtSelectedFeature(overlay))
+        return {...state, overlay, overlayProps, selectedFeatureNames: []};
+    else
+        return {...state, overlay, overlayProps};
+}
 
 const uiReducer = featureModel => handleActions({
     UI: {
@@ -40,21 +48,17 @@ const uiReducer = featureModel => handleActions({
             isSelectMultipleFeatures: true
         }),
         DESELECT_ALL_FEATURES: state =>
-            ({...state, selectedFeatureNames: [], isSelectMultipleFeatures: false})
+            ({...state, selectedFeatureNames: [], isSelectMultipleFeatures: false}),
+        SHOW_OVERLAY:
+            (state, {payload: {overlay, overlayProps, selectFeature}}) => {
+                let newState = updateOverlay(state, overlay, overlayProps);
+                if (selectFeature)
+                    newState.selectedFeatureNames = [...newState.selectedFeatureNames, selectFeature];
+                return newState;
+            },
+        HIDE_OVERLAY: (state, {payload: {overlay}}) =>
+            state.overlay === overlay ? updateOverlay(state, null, null) : state
     },
-    [combineActions(actions.ui.showOverlay, actions.ui.hideOverlay)]:
-        (state, {payload: {overlay, overlayProps, selectFeature}}) => {
-            let newState;
-            if (!state.isSelectMultipleFeatures &&
-                overlayTypes.isShownAtSelectedFeature(state.overlay) &&
-                !overlayTypes.isShownAtSelectedFeature(overlay))
-                newState = {...state, overlay, overlayProps, selectedFeatureNames: []};
-            else
-                newState = {...state, overlay, overlayProps};
-            if (selectFeature)
-                newState.selectedFeatureNames = [...newState.selectedFeatureNames, selectFeature];
-            return newState;
-        },
 }, null);
 
 export default reduceReducers(
