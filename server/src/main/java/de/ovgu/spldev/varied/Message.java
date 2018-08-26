@@ -255,7 +255,12 @@ abstract public class Message {
         }
 
         public boolean isValid(StateContext stateContext) {
-            return FeatureUtils.requireFeature(stateContext.getFeatureModel(), feature);
+            IFeatureModel featureModel = stateContext.getFeatureModel();
+            FeatureUtils.requireFeature(featureModel, feature);
+            IFeature feature = featureModel.getFeature(this.feature);
+            if (feature.getStructure().isRoot() && feature.getStructure().getChildren().size() != 1)
+                throw new RuntimeException("can only delete root feature when it has exactly one child");
+            return true;
         }
 
         public StateChange getStateChange(StateContext stateContext) {
