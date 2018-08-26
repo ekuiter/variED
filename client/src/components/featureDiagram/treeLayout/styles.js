@@ -22,7 +22,8 @@ const styles = {
         }),
         hidden: settings => ({ // style applied to a node's text to distinguish hidden and visible features
             property: 'isHidden',
-            yes: {fill: getSetting(settings, 'featureDiagram.treeLayout.node.hiddenFill')}
+            yes: {fill: getSetting(settings, 'featureDiagram.treeLayout.node.hiddenFill')},
+            no: {fill: 'black'}
         }),
         arcSegment: settings => ({ // style applied to a node's arc segment (for ALT groups)
             fill: 'none',

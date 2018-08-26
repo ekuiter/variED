@@ -40,7 +40,8 @@ const constants = {
             FEATURE_ADD_ABOVE: 'FEATURE_ADD_ABOVE',
             FEATURE_REMOVE: 'FEATURE_REMOVE',
             FEATURE_RENAME: 'FEATURE_RENAME',
-            FEATURE_SET_DESCRIPTION: 'FEATURE_SET_DESCRIPTION'
+            FEATURE_SET_DESCRIPTION: 'FEATURE_SET_DESCRIPTION',
+            FEATURE_SET_PROPERTY: 'FEATURE_SET_PROPERTY'
         },
         featureModel: {
             serialization: { // tags and attributes used in serialized feature models

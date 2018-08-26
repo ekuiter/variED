@@ -105,6 +105,8 @@ class AbstractTreeNode {
     update(node) {
         node.call(translateTransform, d => this.x(d), d => this.y(d))
             .attr('opacity', 1);
+        node.select('g.rectAndText rect').call(addStyle, styles.node.abstract(this.settings));
+        node.select('g.rectAndText text').call(addStyle, styles.node.hidden(this.settings));
         this.treeLink.drawGroup(node.select('path.arcSegment'), node.select('path.arcSlice'));
     }
 

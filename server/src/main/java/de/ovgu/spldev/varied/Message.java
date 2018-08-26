@@ -63,7 +63,11 @@ abstract public class Message {
         /**
          * set a feature description
          */
-        FEATURE_SET_DESCRIPTION
+        FEATURE_SET_DESCRIPTION,
+        /**
+         * set one of a feature's properties (e.g., abstract, hidden, mandatory, or, alternative)
+         */
+        FEATURE_SET_PROPERTY
     }
 
     public static class Type {
@@ -118,7 +122,8 @@ abstract public class Message {
         return new MessageSerializer.MessageEncoder().encode(this);
     }
 
-    public interface IEncodable { }
+    public interface IEncodable {
+    }
 
     public interface IDecodable {
         boolean isValid(StateContext stateContext);
@@ -306,6 +311,38 @@ abstract public class Message {
             IFeatureModel featureModel = stateContext.getFeatureModel();
             IFeature _feature = featureModel.getFeature(feature);
             return new StateChange.FeatureSetDescription(featureModel, _feature, description);
+        }
+    }
+
+    public static class FeatureSetProperty extends Message implements IUndoable {
+        private String feature, property, value;
+
+        public FeatureSetProperty(String feature, String property, String value) {
+            super(TypeEnum.FEATURE_SET_PROPERTY);
+            this.feature = feature;
+            this.property = property;
+            this.value = value;
+        }
+
+        public boolean isValid(StateContext stateContext) {
+            IFeatureModel featureModel = stateContext.getFeatureModel();
+            FeatureUtils.requireFeature(featureModel, feature);
+            if (!StringUtils.isOneOf(property, new String[]{"abstract", "hidden", "mandatory", "group"}))
+                throw new RuntimeException("invalid property given");
+            if (property.equals("group")) {
+                if (!StringUtils.isOneOf(value, new String[]{"and", "or", "alternative"}))
+                    throw new RuntimeException("invalid value given");
+            } else if (!StringUtils.isOneOf(value, new String[]{"true", "false"}))
+                throw new RuntimeException("invalid value given");
+            return true;
+        }
+
+        public StateChange getStateChange(StateContext stateContext) {
+            System.out.println(property);
+            System.out.println(value);
+            IFeatureModel featureModel = stateContext.getFeatureModel();
+            IFeature _feature = featureModel.getFeature(feature);
+            return new StateChange.FeatureSetProperty(featureModel, _feature, property, value);
         }
     }
 }
