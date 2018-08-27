@@ -21,6 +21,13 @@ class HorizontalTreeLink extends AbstractTreeLink {
         return {x: rightSide(this.settings, 0, rectInfo, this.estimateTextWidth(node)), y: sideY(0, rectInfo)};
     }
 
+    collapseAnchor(node) {
+        return {
+            x: rightSide(this.settings, 0, this.getRectInfo(), this.estimateTextWidth(node)) +
+                getSetting(this.settings, 'featureDiagram.font.size') / 2
+        };
+    }
+
     groupRadius() {
         return Math.floor(this.getRectInfo().height / 2);
     }
@@ -43,7 +50,10 @@ class HorizontalTreeLink extends AbstractTreeLink {
                 .call(attrIfPresent, 'class', klass),
             _to = d => {
                 const {x, y} = to(d);
-                return {x: Math.max(x, from(d).x - getSetting(settings, 'featureDiagram.treeLayout.horizontal.layerMargin')), y}
+                return {
+                    x: Math.max(x, from(d).x - getSetting(settings, 'featureDiagram.treeLayout.horizontal.layerMargin')),
+                    y
+                }
             };
         drawLine(g, !selector ? null : 'path.innerLine', {
             klass: 'innerLine', from: _to, to, style,

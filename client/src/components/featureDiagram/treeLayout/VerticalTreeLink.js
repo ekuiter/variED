@@ -15,6 +15,10 @@ class VerticalTreeLink extends AbstractTreeLink {
         return {x: 0, y: bottomSide(0, this.getRectInfo())};
     }
 
+    collapseAnchor(node) {
+        return {y: bottomSide(0, this.getRectInfo()) + getSetting(this.settings, 'featureDiagram.font.size')};
+    }
+
     groupRadius() {
         return getSetting(this.settings, 'featureDiagram.treeLayout.vertical.groupRadius');
     }

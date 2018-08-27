@@ -6,11 +6,9 @@ import 'd3-transition';
 import {getSetting} from '../../../store/settings';
 import {updateRect} from '../../../helpers/svg';
 import '../../../stylesheets/treeLayout.css';
-import {overlayTypes} from '../../../types';
+import {OverlayType, overlayTypes, SettingsType} from '../../../types';
 import PropTypes from 'prop-types';
 import exact from 'prop-types-exact';
-import {OverlayType} from '../../../types';
-import {SettingsType} from '../../../types';
 import {FeatureModelType} from '../../../server/FeatureModel';
 
 class AbstractTreeLayout extends React.Component {
@@ -25,7 +23,8 @@ class AbstractTreeLayout extends React.Component {
             props.settings,
             props.isSelectMultipleFeatures,
             this.setActiveNode.bind(this),
-            this.props.onShowOverlay);
+            this.props.onShowOverlay,
+            this.props.onExpandFeature);
         this.treeLink = new TreeLink(
             props.settings,
             this.getParentCoordinateFn('currentCoordinates'),
@@ -333,6 +332,7 @@ AbstractTreeLayout.propTypes = exact({
     onSetSelectMultipleFeatures: PropTypes.func.isRequired,
     onSelectFeature: PropTypes.func.isRequired,
     onDeselectFeature: PropTypes.func.isRequired,
+    onExpandFeature: PropTypes.func.isRequired,
     onDeselectAllFeatures: PropTypes.func.isRequired,
     isSelectMultipleFeatures: PropTypes.bool.isRequired,
     selectedFeatureNames: PropTypes.arrayOf(PropTypes.string).isRequired

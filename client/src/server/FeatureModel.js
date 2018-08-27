@@ -35,6 +35,14 @@ d3Hierarchy.prototype.feature = function() {
             if (typeof key === 'function')
                 return key(this);
             return this._feature[key] ? 'yes' : 'no';
+        },
+        getNumberOfFeaturesBelow: () => {
+            if (!this.actualChildren)
+                return 0;
+            return this.actualChildren.length +
+                this.actualChildren
+                    .map(child => child.feature().getNumberOfFeaturesBelow())
+                    .reduce((acc, val) => acc + val);
         }
     });
 };
@@ -62,7 +70,7 @@ class FeatureModel {
             this._visibleNodes = [];
 
             const isVisible = memoize(node => {
-                if (node.parent === null)
+                if (!node.parent)
                     return true;
                 if (isCollapsed(node.parent))
                     return false;

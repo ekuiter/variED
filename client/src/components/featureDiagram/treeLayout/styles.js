@@ -36,6 +36,15 @@ const styles = {
         arcClick: settings => ({ // style applied to a node's clickable arc
             'fill-opacity': 0,
             cursor: 'pointer'
+        }),
+        collapseText: settings => ({
+            'font-size': getSetting(settings, 'featureDiagram.font.size') * 0.8
+        }),
+        collapseCircle: settings => ({
+            fill: 'white',
+            stroke: getSetting(settings, 'featureDiagram.treeLayout.link.stroke'),
+            'stroke-width': getLinkStrokeWidth(settings),
+            cursor: 'pointer'
         })
     },
     link: {

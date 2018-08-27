@@ -21,6 +21,7 @@ export default connect(
         onSetSelectMultipleFeatures: isSelectMultipleFeatures => dispatch(actions.ui.setSelectMultipleFeatures(isSelectMultipleFeatures)),
         onSelectFeature: featureName => dispatch(actions.ui.selectFeature(featureName)),
         onDeselectFeature: featureName => dispatch(actions.ui.deselectFeature(featureName)),
+        onExpandFeature: featureName => dispatch(actions.ui.expandFeature(featureName)),
         onDeselectAllFeatures: () => dispatch(actions.ui.deselectAllFeatures())
     })
 )(props =>

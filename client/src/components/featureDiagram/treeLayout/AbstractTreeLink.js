@@ -37,6 +37,10 @@ class AbstractTreeLink {
         throw new Error('abstract method not implemented');
     }
 
+    collapseAnchor(node) {
+        throw new Error('abstract method not implemented');
+    }
+
     groupRadius() {
         throw new Error('abstract method not implemented');
     }

@@ -83,7 +83,10 @@ export function drawCircle(selection, selector, {klass, center, radius, style, f
         .call(attrIfPresent, 'r', radius)
         .call(styleIfPresent, style)
         .call(fnIfPresent, fn)
-        .attr('transform', d => `translate(${toPath(center(d))})`);
+        .call(selection => {
+            if (center)
+                selection.attr('transform', d => `translate(${toPath(center(d))})`);
+        });
 }
 
 function polarToCartesian({x, y}, radius, degrees) {

@@ -120,11 +120,12 @@ const contextualMenuItems = {
             properties: feature => {
                 const toggleAbstract = () => actions.server.feature.properties.setAbstract(feature.name, !feature.isAbstract),
                     toggleMandatory = () => actions.server.feature.properties.setMandatory(feature.name, !feature.isMandatory),
-                    mandatoryDisabled = feature.node.parent === null || feature.node.parent.feature().isGroup,
+                    mandatoryDisabled = !feature.node.parent || feature.node.parent.feature().isGroup,
                     groupDisabled = !feature.node.children || feature.node.children.length <= 1;
                 return ({
                     key: 'properties',
                     text: i18n.t('featureDiagram.commands.feature.properties'),
+                    iconProps: {iconName: 'FieldNotChanged'},
                     subMenuProps: {
                         items: [{
                             key: 'abstract',

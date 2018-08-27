@@ -2,7 +2,7 @@ import 'd3-selection-multi';
 import {event as d3Event} from 'd3-selection';
 import {getSetting} from '../../../store/settings';
 import measureTextWidth from '../../../helpers/measureTextWidth';
-import {addStyle, appendCross, translateTransform} from '../../../helpers/svg';
+import {addStyle, appendCross, drawCircle, translateTransform} from '../../../helpers/svg';
 import styles from './styles';
 import {isCommand} from '../../../helpers/withKeys';
 import {overlayTypes} from '../../../types';
@@ -42,11 +42,12 @@ function makeText(settings, selection, isGettingRectInfo, textStyle) {
 }
 
 class AbstractTreeNode {
-    constructor(settings, isSelectMultipleFeatures, setActiveNode, onShowOverlay) {
+    constructor(settings, isSelectMultipleFeatures, setActiveNode, onShowOverlay, onExpandFeature) {
         this.settings = settings;
         this.isSelectMultipleFeatures = isSelectMultipleFeatures;
         this.setActiveNode = setActiveNode;
         this.onShowOverlay = onShowOverlay;
+        this.onExpandFeature = onExpandFeature;
     }
 
     x(node) {
@@ -81,8 +82,9 @@ class AbstractTreeNode {
                 .on('dblclick', d => {
                     if (!this.isSelectMultipleFeatures)
                         this.onShowOverlay(overlayTypes.featurePanel, {featureName: d.feature().name});
-                }),
-            bboxes = makeText(this.settings, rectAndText, false, this.getTextStyle());
+                });
+
+        let bboxes = makeText(this.settings, rectAndText, false, this.getTextStyle());
 
         let i = 0;
         rectAndText.insert('rect', 'text')
@@ -95,11 +97,37 @@ class AbstractTreeNode {
             arcSlice = nodeEnter.insert('path', 'g.rectAndText')
                 .attr('class', 'arcSlice')
                 .call(addStyle, styles.node.arcSlice(this.settings)),
-            arcClick = nodeEnter.insert('path', 'g.rectAndText')
+            arcClick = nodeEnter.append('path')
                 .attr('class', 'arcClick')
                 .call(addStyle, styles.node.arcClick(this.settings))
                 .on('dblclick', d => actions.server.feature.properties.toggleGroup(d.feature()));
         this.treeLink.drawGroup(arcSegment, arcSlice, arcClick);
+
+        const expandFeature = d => d.feature().isCollapsed && this.onExpandFeature(d.feature().name);
+        i = 0;
+        bboxes = [];
+        nodeEnter.insert('text', 'path.arcClick')
+            .attr('class', 'collapse')
+            .attr('text-anchor', 'middle')
+            .attrs(d => this.treeLink.collapseAnchor(d))
+            .call(addStyle, styles.node.collapseText(this.settings))
+            .text(d => d.feature().getNumberOfFeaturesBelow())
+            .attr('opacity', 0)
+            .each(function() {
+                bboxes.push(this.getBBox());
+            })
+            .on('dblclick', expandFeature);
+
+        nodeEnter.insert('circle', 'text.collapse');
+        nodeEnter.call(drawCircle, 'circle', {
+            center: () => {
+                const bbox = bboxes[i++];
+                return {x: bbox.x + bbox.width / 2, y: bbox.y + bbox.height / 2};
+            },
+            style: styles.node.collapseCircle(this.settings),
+            radius: 0,
+            fn: circle => circle.on('dblclick', expandFeature)
+        });
 
         if (getSetting(this.settings, 'featureDiagram.treeLayout.debug'))
             appendCross(nodeEnter);
@@ -112,6 +140,12 @@ class AbstractTreeNode {
             .attr('opacity', 1);
         node.select('g.rectAndText rect').call(addStyle, styles.node.abstract(this.settings));
         node.select('g.rectAndText text').call(addStyle, styles.node.hidden(this.settings));
+        node.select('text.collapse')
+            .text(d => d.feature().getNumberOfFeaturesBelow())
+            .attr('cursor', d => d.feature().isCollapsed ? 'pointer' : null)
+            .attr('opacity', d => d.feature().isCollapsed ? 1 : 0);
+        node.select('circle').attr('r', d =>
+            d.feature().isCollapsed ? getSetting(this.settings, 'featureDiagram.font.size') : 0);
         this.treeLink.drawGroup(node.select('path.arcSegment'), node.select('path.arcSlice'), node.select('path.arcClick'));
     }
 

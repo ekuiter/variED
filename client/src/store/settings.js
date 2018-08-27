@@ -39,7 +39,8 @@ export const defaultSettings = {
             },
             horizontal: {
                 marginY: 12, // collapsing y margin for rectangles in px (see vertical.marginX)
-                layerMargin: 80 // additional margin between layers in px (layer height is roughly widest text on layer + layerMargin)
+                layerMargin: 80, // additional margin between layers in px (layer height is roughly widest text on layer + layerMargin)
+                collapseGapSpace: 3 // additional margin for collapse text in px
             }
         },
         overlay: {
