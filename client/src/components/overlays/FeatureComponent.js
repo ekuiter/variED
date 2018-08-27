@@ -18,6 +18,7 @@ const FeatureComponent = ({isOpenProp = 'isOpen', onDismissProp = 'onDismiss', d
         getFeature = () => this.props.featureModel && this.props.featureModel.getFeature(this.props.featureName);
 
         componentDidUpdate() {
+            // todo: maybe move this to serverUiReducer?
             if (this.props[isOpenProp] && !this.getFeature()) {
                 this.props[onDismissProp]();
                 //todo: warn user that feature vanished

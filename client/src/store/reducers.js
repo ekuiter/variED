@@ -20,20 +20,35 @@ const settingsReducer = handleActions({
     }
 }, null);
 
-function featureModelUiReducer(state, action) {
+function stateWithNewUi(state, key, value) {
+    return {
+        ...state,
+        ui: {
+            ...state.ui,
+            [key]: value
+        }
+    };
+}
+
+function handleFeatureRename(state, action, key) {
+    if (state.ui[key].includes(action.oldFeature))
+        return stateWithNewUi(state, key, uniqueArrayAdd(state.ui[key], action.newFeature));
+    return state;
+}
+
+function serverUiReducer(state, action) {
     if (action.type === constants.server.messageTypes.FEATURE_MODEL) {
         const actualFeatureNames = getFeatureModel(state).getActualFeatureNames(),
             exitingFeatureNames = state.ui.collapsedFeatureNames
                 .filter(collapsedFeatureName => !actualFeatureNames.includes(collapsedFeatureName));
         if (exitingFeatureNames.length > 0)
-            return {
-                ...state,
-                ui: {
-                    ...state.ui,
-                    collapsedFeatureNames: state.ui.collapsedFeatureNames
-                        .filter(collapsedFeatureName => !exitingFeatureNames.includes(collapsedFeatureName))
-                }
-            };
+            return stateWithNewUi(state, 'collapsedFeatureNames',
+                state.ui.collapsedFeatureNames
+                    .filter(collapsedFeatureName => !exitingFeatureNames.includes(collapsedFeatureName)))
+    }
+    if (action.type === constants.server.messageTypes.FEATURE_RENAME) {
+        state = handleFeatureRename(state, action, 'collapsedFeatureNames');
+        state = handleFeatureRename(state, action, 'selectedFeatureNames');
     }
     return state;
 }
@@ -88,5 +103,5 @@ export default reduceReducers(
     serverReducer,
     (state, action) => ({...state, settings: settingsReducer(state.settings, action)}),
     (state, action) => ({...state, ui: uiReducer(state)(state.ui, action)}),
-    featureModelUiReducer,
+    serverUiReducer,
     constants.store.initialState);

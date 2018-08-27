@@ -130,7 +130,7 @@ abstract public class Message {
     }
 
     public interface IApplicable extends IDecodable {
-        Message.IEncodable apply(StateContext stateContext);
+        Message.IEncodable[] apply(StateContext stateContext);
     }
 
     public interface IUndoable extends IDecodable {
@@ -185,7 +185,7 @@ abstract public class Message {
             return true;
         }
 
-        public Message.IEncodable apply(StateContext stateContext) {
+        public Message.IEncodable[] apply(StateContext stateContext) {
             return stateContext.getStateChangeStack().undo();
         }
     }
@@ -201,7 +201,7 @@ abstract public class Message {
             return true;
         }
 
-        public Message.IEncodable apply(StateContext stateContext) {
+        public Message.IEncodable[] apply(StateContext stateContext) {
             return stateContext.getStateChangeStack().redo();
         }
     }
@@ -275,7 +275,7 @@ abstract public class Message {
         }
     }
 
-    public static class FeatureRename extends Message implements IUndoable {
+    public static class FeatureRename extends Message implements IEncodable, IUndoable {
         private String oldFeature, newFeature;
 
         public FeatureRename(String oldFeature, String newFeature) {

@@ -15,6 +15,9 @@ const messageTypes = constants.server.messageTypes,
         },
         [messageTypes.FEATURE_MODEL](state, action) {
             return {...state, featureModel: action.featureModel};
+        },
+        [messageTypes.FEATURE_RENAME](state, action) {
+            return state;
         }
     };
 

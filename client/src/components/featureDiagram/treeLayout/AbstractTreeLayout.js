@@ -303,7 +303,7 @@ class AbstractTreeLayout extends React.Component {
         this.treeLink.exit(this.transition(linkInFront.exit()), 'inFront');
 
         node.exit().each(d => {
-            // todo: maybe move this to featureModelUiReducer?
+            // todo: maybe move this to serverUiReducer?
             this.onHideOverlayIfOpen(d); // hide overlay if active node exits
             if (this.props.selectedFeatureNames.includes(d.feature().name))
                 this.removeSelectedNode(d); // deselect exiting nodes, TODO: warn user that selection changed

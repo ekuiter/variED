@@ -53,22 +53,28 @@ public class CollaborationSession {
         broadcast(message, endpoint -> true);
     }
 
+    public void broadcast(Message.IEncodable[] messages) {
+        Objects.requireNonNull(messages, "no messages given");
+        for (Message.IEncodable message : messages)
+            broadcast(message);
+    }
+
     public void onMessage(Endpoint endpoint, Message message) {
         Objects.requireNonNull(message, "no message given");
         Message.IDecodable decodableMessage = (Message.IDecodable) message;
         if (!decodableMessage.isValid(stateContext))
             throw new RuntimeException("invalid message " + message);
-        Message.IEncodable stateChangeMessage;
+        Message.IEncodable[] stateChangeMessages;
         if (message instanceof Message.IApplicable) {
             Message.IApplicable applicableMessage = (Message.IApplicable) message;
-            stateChangeMessage = applicableMessage.apply(stateContext);
+            stateChangeMessages = applicableMessage.apply(stateContext);
         } else if (message instanceof Message.IUndoable) {
             Message.IUndoable undoableMessage = (Message.IUndoable) message;
             StateChange stateChange = undoableMessage.getStateChange(stateContext);
-            stateChangeMessage = stateContext.getStateChangeStack().apply(stateChange);
+            stateChangeMessages = stateContext.getStateChangeStack().apply(stateChange);
         } else
             throw new RuntimeException("message can not be processed");
-        if (stateChangeMessage != null)
-            broadcast(stateChangeMessage);
+        if (stateChangeMessages != null)
+            broadcast(stateChangeMessages);
     }
 }

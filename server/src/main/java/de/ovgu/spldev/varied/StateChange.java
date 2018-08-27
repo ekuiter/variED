@@ -12,8 +12,9 @@ import java.util.LinkedList;
 import static de.ovgu.featureide.fm.core.localization.StringTable.DEFAULT_FEATURE_LAYER_CAPTION;
 
 public abstract class StateChange {
-    public abstract Message.IEncodable apply();
-    public abstract Message.IEncodable undo();
+    public abstract Message.IEncodable[] apply();
+
+    public abstract Message.IEncodable[] undo();
 
     public static abstract class FeatureModelStateChange extends StateChange {
         protected IFeatureModel featureModel;
@@ -33,7 +34,7 @@ public abstract class StateChange {
             this.feature = feature;
         }
 
-        public Message.IEncodable apply() {
+        public Message.IEncodable[] apply() {
             int number = 1;
 
             while (FeatureUtils.getFeatureNames(featureModel).contains(DEFAULT_FEATURE_LAYER_CAPTION + number)) {
@@ -45,13 +46,13 @@ public abstract class StateChange {
             feature = featureModel.getFeature(feature.getName());
             feature.getStructure().addChild(newFeature.getStructure());
 
-            return new Message.FeatureModel(featureModel);
+            return new Message.IEncodable[]{new Message.FeatureModel(featureModel)};
         }
 
-        public Message.IEncodable undo() {
+        public Message.IEncodable[] undo() {
             newFeature = featureModel.getFeature(newFeature.getName());
             featureModel.deleteFeature(newFeature);
-            return new Message.FeatureModel(featureModel);
+            return new Message.IEncodable[]{new Message.FeatureModel(featureModel)};
         }
     }
 
@@ -69,12 +70,13 @@ public abstract class StateChange {
             this.selectedFeatures = selectedFeatures;
             child = selectedFeatures.get(0);
             int number = 0;
-            while (FeatureUtils.getFeatureNames(featureModel).contains(DEFAULT_FEATURE_LAYER_CAPTION + ++number)) {}
+            while (FeatureUtils.getFeatureNames(featureModel).contains(DEFAULT_FEATURE_LAYER_CAPTION + ++number)) {
+            }
 
             newCompound = FMFactoryManager.getFactory(featureModel).createFeature(featureModel, DEFAULT_FEATURE_LAYER_CAPTION + number);
         }
 
-        public Message.IEncodable apply() {
+        public Message.IEncodable[] apply() {
             final IFeatureStructure parent = child.getStructure().getParent();
             if (parent != null) {
                 parentOr = parent.isOr();
@@ -108,10 +110,10 @@ public abstract class StateChange {
                 featureModel.getStructure().setRoot(newCompound.getStructure());
             }
 
-            return new Message.FeatureModel(featureModel);
+            return new Message.IEncodable[]{new Message.FeatureModel(featureModel)};
         }
 
-        public Message.IEncodable undo() {
+        public Message.IEncodable[] undo() {
             // TODO: does not restore original position/order of features (relevant selectedFeatures.size() > 1)
             final IFeatureStructure parent = newCompound.getStructure().getParent();
             if (parent != null) {
@@ -133,7 +135,7 @@ public abstract class StateChange {
                 newCompound.getStructure().removeChild(child.getStructure());
             }
 
-            return new Message.FeatureModel(featureModel);
+            return new Message.IEncodable[]{new Message.FeatureModel(featureModel)};
         }
     }
 
@@ -160,7 +162,7 @@ public abstract class StateChange {
             this.replacement = replacement;
         }
 
-        public Message.IEncodable apply() {
+        public Message.IEncodable[] apply() {
             feature = featureModel.getFeature(feature.getName());
             oldParent = FeatureUtils.getParent(feature);
             if (oldParent != null) {
@@ -207,10 +209,10 @@ public abstract class StateChange {
                 }
             }
 
-            return new Message.FeatureModel(featureModel);
+            return new Message.IEncodable[]{new Message.FeatureModel(featureModel)};
         }
 
-        public Message.IEncodable undo() {
+        public Message.IEncodable[] undo() {
             try {
                 if (!deleted) {
                     return null;
@@ -261,7 +263,7 @@ public abstract class StateChange {
                 e.printStackTrace();
             }
 
-            return new Message.FeatureModel(featureModel);
+            return new Message.IEncodable[]{new Message.FeatureModel(featureModel)};
         }
     }
 
@@ -276,16 +278,22 @@ public abstract class StateChange {
             this.newName = newName;
         }
 
-        public Message.IEncodable apply() {
+        public Message.IEncodable[] apply() {
             if (!featureModel.getRenamingsManager().renameFeature(oldName, newName))
                 throw new RuntimeException("invalid renaming operation");
-            return new Message.FeatureModel(featureModel);
+            return new Message.IEncodable[]{
+                    new Message.FeatureRename(oldName, newName),
+                    new Message.FeatureModel(featureModel)
+            };
         }
 
-        public Message.IEncodable undo() {
+        public Message.IEncodable[] undo() {
             if (!featureModel.getRenamingsManager().renameFeature(newName, oldName))
                 throw new RuntimeException("invalid renaming operation");
-            return new Message.FeatureModel(featureModel);
+            return new Message.IEncodable[]{
+                    new Message.FeatureRename(newName, oldName),
+                    new Message.FeatureModel(featureModel)
+            };
         }
     }
 
@@ -300,14 +308,14 @@ public abstract class StateChange {
             this.description = description;
         }
 
-        public Message.IEncodable apply() {
+        public Message.IEncodable[] apply() {
             feature.getProperty().setDescription(description);
-            return new Message.FeatureModel(featureModel);
+            return new Message.IEncodable[]{new Message.FeatureModel(featureModel)};
         }
 
-        public Message.IEncodable undo() {
+        public Message.IEncodable[] undo() {
             feature.getProperty().setDescription(oldDescription);
-            return new Message.FeatureModel(featureModel);
+            return new Message.IEncodable[]{new Message.FeatureModel(featureModel)};
         }
     }
 
@@ -336,7 +344,7 @@ public abstract class StateChange {
             oldMandatoryChildren.forEach(child -> child.setMandatory(true));
         }
 
-        public Message.IEncodable apply() {
+        public Message.IEncodable[] apply() {
             oldMandatoryChildren = new LinkedList<>();
             switch (property) {
                 case "abstract":
@@ -377,10 +385,10 @@ public abstract class StateChange {
                         feature.getStructure().changeToAnd();
                     break;
             }
-            return new Message.FeatureModel(featureModel);
+            return new Message.IEncodable[]{new Message.FeatureModel(featureModel)};
         }
 
-        public Message.IEncodable undo() {
+        public Message.IEncodable[] undo() {
             switch (property) {
                 case "abstract":
                     feature.getStructure().setAbstract(oldValue.equals("true"));
@@ -402,7 +410,7 @@ public abstract class StateChange {
                     }
                     break;
             }
-            return new Message.FeatureModel(featureModel);
+            return new Message.IEncodable[]{new Message.FeatureModel(featureModel)};
         }
     }
 }
