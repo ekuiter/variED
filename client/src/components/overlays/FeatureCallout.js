@@ -35,7 +35,9 @@ class FeatureCallout extends FeatureComponent({doUpdate: true}) {
                     <CommandBar
                         items={[
                             contextualMenuItems.featureDiagram.feature.new(feature.name, onDismiss),
-                            contextualMenuItems.featureDiagram.feature.remove(feature.name, onDismiss)
+                            contextualMenuItems.featureDiagram.feature.remove(feature.name, onDismiss),
+                            contextualMenuItems.featureDiagram.feature.collapseExpand(
+                                feature, this.props.onCollapseFeature, this.props.onExpandFeature, onDismiss),
                         ]}
                         farItems={[
                             contextualMenuItems.featureDiagram.feature.details(feature.name, this.props.onShowOverlay)
@@ -53,6 +55,8 @@ FeatureCallout.propTypes = {
     isOpen: PropTypes.bool.isRequired,
     featureDiagramLayout: LayoutType.isRequired,
     onShowOverlay: PropTypes.func.isRequired,
+    onCollapseFeature: PropTypes.func.isRequired,
+    onExpandFeature: PropTypes.func.isRequired,
     settings: SettingsType.isRequired
 };
 

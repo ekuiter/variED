@@ -55,6 +55,8 @@ const OverlayContainer = props => (
             featureDiagramLayout={props.featureDiagramLayout}
             settings={props.settings}
             onShowOverlay={props.onShowOverlay}
+            onCollapseFeature={props.onCollapseFeature}
+            onExpandFeature={props.onExpandFeature}
             featureModel={props.featureModel}
             {...props.overlayProps}/>}
 

@@ -6,7 +6,6 @@ import contextualMenuItems from '../contextualMenuItems';
 import PropTypes from 'prop-types';
 import {FeatureModelType} from '../../server/FeatureModel';
 import FeatureComponent from './FeatureComponent';
-import {ContextualMenuItemType} from '../../../node_modules/office-ui-fabric-react/lib/ContextualMenu';
 
 const buttonStyles = {root: {backgroundColor: 'transparent'}},
     transparentItems = items => items;
@@ -18,12 +17,13 @@ class FeaturePanel extends FeatureComponent({onDismissProp: 'onDismissed'}) {
                 contextualMenuItems.featureDiagram.feature.new(this.props.featureName, this.props.onDismissed),
                 contextualMenuItems.featureDiagram.feature.remove(this.props.featureName, this.props.onDismissed),
                 contextualMenuItems.featureDiagram.feature.collapseExpand(
-                    this.feature, this.props.onCollapseFeature, this.props.onExpandFeature),
-                {key: 'divider', itemType: ContextualMenuItemType.Divider},
+                    this.feature, this.props.onCollapseFeature, this.props.onExpandFeature, this.props.onDismissed)
+            ])}
+            overflowItems={[
                 contextualMenuItems.featureDiagram.feature.rename(this.props.featureName, this.props.onShowOverlay),
                 contextualMenuItems.featureDiagram.feature.setDescription(this.props.featureName, this.props.onShowOverlay),
-                contextualMenuItems.featureDiagram.feature.properties(this.feature)
-            ])}
+                contextualMenuItems.featureDiagram.feature.properties(this.feature, this.props.onDismissed)
+            ]}
             overflowButtonProps={{styles: buttonStyles}}
             styles={{root: {margin: '0 -40px', padding: '0 35px'}}}/>
     );

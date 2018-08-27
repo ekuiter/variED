@@ -89,6 +89,7 @@ const contextualMenuItems = {
                 key: 'remove',
                 text: i18n.t('featureDiagram.commands.feature.remove'),
                 iconProps: {iconName: 'Remove'},
+                iconOnly: true,
                 onClick: () => actions.server.feature.remove(featureName).then(onClick)
             }),
             details: (featureName, onShowOverlay) => ({
@@ -110,16 +111,23 @@ const contextualMenuItems = {
                 iconProps: {iconName: 'TextDocument'},
                 onClick: () => onShowOverlay(overlayTypes.featureSetDescriptionDialog, {featureName})
             }),
-            collapseExpand: (feature, onCollapseFeature, onExpandFeature) => ({
+            collapseExpand: (feature, onCollapseFeature, onExpandFeature, onClick) => ({
                 key: 'collapseExpand',
                 text: i18n.t('featureDiagram.commands.feature.collapseExpand')(feature.isCollapsed),
                 iconProps: {iconName: feature.isCollapsed ? 'ExploreContent' : 'CollapseContent'},
+                iconOnly: true,
                 disabled: !feature.hasActualChildren,
-                onClick: () => feature.isCollapsed ? onExpandFeature(feature.name) : onCollapseFeature(feature.name)
+                onClick: () => {
+                    if (feature.isCollapsed)
+                        onExpandFeature(feature.name);
+                    else
+                        onCollapseFeature(feature.name);
+                    onClick();
+                }
             }),
-            properties: feature => {
-                const toggleAbstract = () => actions.server.feature.properties.setAbstract(feature.name, !feature.isAbstract),
-                    toggleMandatory = () => actions.server.feature.properties.setMandatory(feature.name, !feature.isMandatory),
+            properties: (feature, onClick) => {
+                const toggleAbstract = () => actions.server.feature.properties.setAbstract(feature.name, !feature.isAbstract).then(onClick),
+                    toggleMandatory = () => actions.server.feature.properties.setMandatory(feature.name, !feature.isMandatory).then(onClick),
                     mandatoryDisabled = !feature.node.parent || feature.node.parent.feature().isGroup,
                     groupDisabled = !feature.node.children || feature.node.children.length <= 1;
                 return ({
@@ -146,7 +154,7 @@ const contextualMenuItems = {
                             text: i18n.t('featureDiagram.commands.feature.hidden'),
                             canCheck: true,
                             isChecked: feature.isHidden,
-                            onClick: () => actions.server.feature.properties.setHidden(feature.name, !feature.isHidden)
+                            onClick: () => actions.server.feature.properties.setHidden(feature.name, !feature.isHidden).then(onClick)
                         }, {
                             key: 'divider2', itemType: ContextualMenuItemType.Divider
                         }, {
@@ -171,21 +179,21 @@ const contextualMenuItems = {
                             disabled: groupDisabled,
                             canCheck: true,
                             isChecked: feature.isAnd,
-                            onClick: () => actions.server.feature.properties.setAnd(feature.name)
+                            onClick: () => actions.server.feature.properties.setAnd(feature.name).then(onClick)
                         }, {
                             key: 'or',
                             text: i18n.t('featureDiagram.commands.feature.or'),
                             disabled: groupDisabled,
                             canCheck: true,
                             isChecked: feature.isOr,
-                            onClick: () => actions.server.feature.properties.setOr(feature.name)
+                            onClick: () => actions.server.feature.properties.setOr(feature.name).then(onClick)
                         }, {
                             key: 'alternative',
                             text: i18n.t('featureDiagram.commands.feature.alternative'),
                             disabled: groupDisabled,
                             canCheck: true,
                             isChecked: feature.isAlternative,
-                            onClick: () => actions.server.feature.properties.setAlternative(feature.name)
+                            onClick: () => actions.server.feature.properties.setAlternative(feature.name).then(onClick)
                         }]
                     }
                 });
