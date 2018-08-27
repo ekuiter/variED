@@ -1,7 +1,7 @@
-export default function(fn) {
+export default function(fn, keyFn) {
     let cache = {};
     return (...args) => {
-        let stringifiedArgs = JSON.stringify(args);
-        return cache[stringifiedArgs] = cache[stringifiedArgs] || fn(...args);
+        let key = keyFn ? keyFn(...args) : JSON.stringify(args);
+        return cache[key] = cache[key] || fn(...args);
     };
 };

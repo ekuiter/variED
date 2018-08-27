@@ -3,5 +3,6 @@ import FeatureModel from '../server/FeatureModel';
 
 export const getFeatureModel = createSelector(
     state => state.server.featureModel,
-    featureModel => featureModel ? new FeatureModel(featureModel) : null
+    state => state.ui.collapsedFeatureNames,
+    (featureModel, collapsedFeatureNames) => featureModel ? new FeatureModel(featureModel, collapsedFeatureNames) : null
 );

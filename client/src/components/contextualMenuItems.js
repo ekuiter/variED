@@ -110,6 +110,13 @@ const contextualMenuItems = {
                 iconProps: {iconName: 'TextDocument'},
                 onClick: () => onShowOverlay(overlayTypes.featureSetDescriptionDialog, {featureName})
             }),
+            collapseExpand: (feature, onCollapseFeature, onExpandFeature) => ({
+                key: 'collapseExpand',
+                text: i18n.t('featureDiagram.commands.feature.collapseExpand')(feature.isCollapsed),
+                iconProps: {iconName: feature.isCollapsed ? 'ExploreContent' : 'CollapseContent'},
+                disabled: !feature.hasActualChildren,
+                onClick: () => feature.isCollapsed ? onExpandFeature(feature.name) : onCollapseFeature(feature.name)
+            }),
             properties: feature => {
                 const toggleAbstract = () => actions.server.feature.properties.setAbstract(feature.name, !feature.isAbstract),
                     toggleMandatory = () => actions.server.feature.properties.setMandatory(feature.name, !feature.isMandatory),

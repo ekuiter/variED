@@ -163,7 +163,7 @@ class AbstractTreeLayout extends React.Component {
             tree = d3Tree()
                 .nodeSize(getSetting(settings, 'featureDiagram.treeLayout.node.size'))
                 .separation(this.getSeparationFn(estimateTextWidth)),
-            nodes = hierarchy.descendants();
+            nodes = featureModel.visibleNodes;
 
         if (isSelectionChange)
             return {nodes};
@@ -303,6 +303,7 @@ class AbstractTreeLayout extends React.Component {
         this.treeLink.exit(this.transition(linkInFront.exit()), 'inFront');
 
         node.exit().each(d => {
+            // todo: maybe move this to featureModelUiReducer?
             this.onHideOverlayIfOpen(d); // hide overlay if active node exits
             if (this.props.selectedFeatureNames.includes(d.feature().name))
                 this.removeSelectedNode(d); // deselect exiting nodes, TODO: warn user that selection changed

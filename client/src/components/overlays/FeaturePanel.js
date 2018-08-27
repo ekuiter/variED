@@ -18,6 +18,8 @@ class FeaturePanel extends FeatureComponent({onDismissProp: 'onDismissed'}) {
                 contextualMenuItems.featureDiagram.feature.remove(this.props.featureName, this.props.onDismissed)
             ])}
             overflowItems={[
+                contextualMenuItems.featureDiagram.feature.collapseExpand(
+                    this.feature, this.props.onCollapseFeature, this.props.onExpandFeature),
                 contextualMenuItems.featureDiagram.feature.rename(this.props.featureName, this.props.onShowOverlay),
                 contextualMenuItems.featureDiagram.feature.setDescription(this.props.featureName, this.props.onShowOverlay),
                 contextualMenuItems.featureDiagram.feature.properties(this.feature)
@@ -49,7 +51,9 @@ FeaturePanel.propTypes = {
     featureModel: FeatureModelType.isRequired,
     featureName: PropTypes.string.isRequired,
     isOpen: PropTypes.bool.isRequired,
-    onShowOverlay: PropTypes.func.isRequired
+    onShowOverlay: PropTypes.func.isRequired,
+    onCollapseFeature: PropTypes.func.isRequired,
+    onExpandFeature: PropTypes.func.isRequired
 };
 
 export default FeaturePanel;

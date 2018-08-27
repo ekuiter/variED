@@ -40,6 +40,8 @@ class FeatureContextualMenu extends FeatureComponent({doUpdate: true}) {
                     : [
                         contextualMenuItems.featureDiagram.feature.new(feature.name, onDismiss),
                         contextualMenuItems.featureDiagram.feature.remove(feature.name, onDismiss),
+                        contextualMenuItems.featureDiagram.feature.collapseExpand(
+                            feature, this.props.onCollapseFeature, this.props.onExpandFeature),
                         {key: 'divider1', itemType: ContextualMenuItemType.Divider},
                         contextualMenuItems.featureDiagram.feature.rename(feature.name, this.props.onShowOverlay),
                         contextualMenuItems.featureDiagram.feature.setDescription(feature.name, this.props.onShowOverlay),
@@ -56,6 +58,8 @@ FeatureContextualMenu.propTypes = {
     onDismiss: PropTypes.func.isRequired,
     onSelectAllFeatures: PropTypes.func.isRequired,
     onDeselectAllFeatures: PropTypes.func.isRequired,
+    onCollapseFeature: PropTypes.func.isRequired,
+    onExpandFeature: PropTypes.func.isRequired,
     isSelectMultipleFeatures: PropTypes.bool.isRequired,
     selectedFeatureNames: PropTypes.arrayOf(PropTypes.string).isRequired,
     featureModel: FeatureModelType.isRequired,

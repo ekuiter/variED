@@ -1,13 +1,22 @@
 import {hierarchy as d3Hierarchy} from 'd3-hierarchy';
 import constants from '../constants';
 import PropTypes from 'prop-types';
+import memoize from '../helpers/memoize';
 
 const serialization = constants.server.featureModel.serialization;
+
+function getName(node) {
+    return node.data[serialization.NAME];
+}
+
+function isCollapsed(node) {
+    return !node.children && node.actualChildren;
+}
 
 d3Hierarchy.prototype.feature = function() {
     return this._feature || (this._feature = {
         node: this,
-        name: this.data[serialization.NAME],
+        name: getName(this),
         type: this.data[serialization.TYPE],
         description: this.data[serialization.DESCRIPTION],
         isAbstract: this.data[serialization.ABSTRACT],
@@ -19,7 +28,9 @@ d3Hierarchy.prototype.feature = function() {
         isGroup:
             this.data[serialization.TYPE] === serialization.OR ||
             this.data[serialization.TYPE] === serialization.ALT,
+        isCollapsed: isCollapsed(this),
         hasChildren: this.children && this.children.length > 0,
+        hasActualChildren: this.actualChildren && this.actualChildren.length > 0,
         getPropertyString: key => {
             if (typeof key === 'function')
                 return key(this);
@@ -30,10 +41,11 @@ d3Hierarchy.prototype.feature = function() {
 
 class FeatureModel {
     // 'data' as supplied by FEATURE_MODEL messages from the server
-    constructor(featureModel) {
+    constructor(featureModel, collapsedFeatureNames) {
         if (!featureModel)
             throw new Error('no feature model given');
         this._featureModel = featureModel;
+        this._collapsedFeatureNames = collapsedFeatureNames;
     }
 
     get structure() {
@@ -43,12 +55,50 @@ class FeatureModel {
         return this._featureModel[struct][0];
     }
 
+    prepare() {
+        if (!this._hierarchy || !this._actualNodes || !this._visibleNodes) {
+            this._hierarchy = d3Hierarchy(this.structure);
+            this._actualNodes = this._hierarchy.descendants();
+            this._visibleNodes = [];
+
+            const isVisible = memoize(node => {
+                if (node.parent === null)
+                    return true;
+                if (isCollapsed(node.parent))
+                    return false;
+                return isVisible(node.parent);
+            }, node => getName(node));
+
+            this._actualNodes.forEach(node => {
+                // store children nodes (because they are changed on collapse)
+                node.actualChildren = node.children;
+
+                if (this._collapsedFeatureNames.find(featureName => getName(node) === featureName))
+                    node.children = null;
+
+                if (isVisible(node))
+                    this._visibleNodes.push(node);
+            });
+        }
+    }
+
     get hierarchy() {
-        return this._hierarchy || (this._hierarchy = d3Hierarchy(this.structure));
+        this.prepare();
+        return this._hierarchy;
+    }
+
+    get visibleNodes() {
+        this.prepare();
+        return this._visibleNodes;
+    }
+
+    get actualNodes() {
+        this.prepare();
+        return this._actualNodes;
     }
 
     getNode(featureName) {
-        return this.hierarchy.descendants().find(node => node.feature().name === featureName);
+        return this.actualNodes.find(node => getName(node) === featureName);
     }
 
     getFeature(featureName) {
@@ -63,21 +113,16 @@ class FeatureModel {
             .filter(node => node.dataset.feature === featureName);
         if (elements.length > 1)
             throw new Error(`multiple features "${featureName}" found - ` +
-            'getElement supports only one feature model on the page');
+                'getElement supports only one feature model on the page');
         return elements.length === 1 ? elements[0] : null;
     }
 
-    getFeatureOrDismiss(featureName, isOpen, onDismiss) {
-        const feature = featureName ? this.getFeature(featureName) : null;
-        if (isOpen && !feature) {
-            onDismiss();
-            //todo: warn user that feature vanished
-        }
-        return feature;
+    getVisibleFeatureNames() {
+        return this.visibleNodes.map(node => getName(node));
     }
 
-    getFeatureNames() {
-        return this.hierarchy.descendants().map(node => node.feature().name);
+    getActualFeatureNames() {
+        return this.actualNodes.map(node => getName(node));
     }
 
     isSiblingFeatures(featureNames) {

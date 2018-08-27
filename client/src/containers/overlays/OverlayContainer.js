@@ -30,6 +30,8 @@ const OverlayContainer = props => (
             isOpen={true}
             onDismissed={props.onHideOverlayFn(overlayTypes.featurePanel)}
             onShowOverlay={props.onShowOverlay}
+            onCollapseFeature={props.onCollapseFeature}
+            onExpandFeature={props.onExpandFeature}
             featureModel={props.featureModel}
             {...props.overlayProps}/>}
 
@@ -65,6 +67,8 @@ const OverlayContainer = props => (
             onShowOverlay={props.onShowOverlay}
             onSelectAllFeatures={props.onSelectAllFeatures}
             onDeselectAllFeatures={props.onDeselectAllFeatures}
+            onCollapseFeature={props.onCollapseFeature}
+            onExpandFeature={props.onExpandFeature}
             featureModel={props.featureModel}
             isSelectMultipleFeatures={props.isSelectMultipleFeatures}
             selectedFeatureNames={props.selectedFeatureNames}
@@ -88,6 +92,8 @@ export default connect(
         onSelectAllFeatures: () => dispatch(actions.ui.selectAllFeatures()),
         onDeselectAllFeatures: () => dispatch(actions.ui.deselectAllFeatures()),
         onSetSetting: (path, value) => dispatch(actions.settings.set(path, value)),
-        onResetSettings: () => dispatch(actions.settings.reset())
+        onResetSettings: () => dispatch(actions.settings.reset()),
+        onCollapseFeature: featureName => dispatch(actions.ui.collapseFeature(featureName)),
+        onExpandFeature: featureName => dispatch(actions.ui.expandFeature(featureName))
     })
 )(OverlayContainer);

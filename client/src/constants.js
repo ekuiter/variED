@@ -18,6 +18,7 @@ const constants = {
                 featureDiagramLayout: layoutTypes.verticalTree,
                 isSelectMultipleFeatures: false,
                 selectedFeatureNames: [],
+                collapsedFeatureNames: [],
                 overlay: null,
                 overlayProps: null
             }

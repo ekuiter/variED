@@ -1,4 +1,5 @@
 import constants from '../constants';
+import {uniqueArrayAdd, uniqueArrayRemove} from '../helpers/reducers';
 
 const messageTypes = constants.server.messageTypes,
     messageReducers = {
@@ -7,10 +8,10 @@ const messageTypes = constants.server.messageTypes,
             return state;
         },
         [messageTypes.USER_SUBSCRIBE](state, action) {
-            return {...state, users: [...state.users, action.user]};
+            return {...state, users: uniqueArrayAdd(state.users, action.user)};
         },
         [messageTypes.USER_UNSUBSCRIBE](state, action) {
-            return {...state, users: state.users.filter(user => user !== action.user)};
+            return {...state, users: uniqueArrayRemove(state.users, action.user)};
         },
         [messageTypes.FEATURE_MODEL](state, action) {
             return {...state, featureModel: action.featureModel};

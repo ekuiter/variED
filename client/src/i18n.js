@@ -108,6 +108,7 @@ export const strings = {
                 details: 'Details',
                 rename: 'Rename',
                 setDescription: 'Set description',
+                collapseExpand: isCollapsed => isCollapsed ? 'Expand' : 'Collapse',
                 properties: 'Properties',
                 abstract: 'Abstract',
                 concrete: 'Concrete',
