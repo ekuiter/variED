@@ -302,7 +302,9 @@ class AbstractTreeLayout extends React.Component {
         this.treeLink.exit(this.transition(linkInFront.exit()), 'inFront');
 
         node.exit().each(d => {
-            // todo: maybe move this to serverUiReducer?
+            // We COULD move this code to the Redux reducer, but here it notices nodes
+            // exiting due to more reasons (e.g., collapse) - node.exit() definitely
+            // catches all exiting nodes in contrast to Redux.
             this.onHideOverlayIfOpen(d); // hide overlay if active node exits
             if (this.props.selectedFeatureNames.includes(d.feature().name))
                 this.removeSelectedNode(d); // deselect exiting nodes, TODO: warn user that selection changed

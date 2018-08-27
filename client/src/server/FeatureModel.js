@@ -13,6 +13,10 @@ function isCollapsed(node) {
     return !node.children && node.actualChildren;
 }
 
+function hasActualChildren(node) {
+    return node.actualChildren && node.actualChildren.length > 0;
+}
+
 d3Hierarchy.prototype.feature = function() {
     return this._feature || (this._feature = {
         node: this,
@@ -30,7 +34,7 @@ d3Hierarchy.prototype.feature = function() {
             this.data[serialization.TYPE] === serialization.ALT,
         isCollapsed: isCollapsed(this),
         hasChildren: this.children && this.children.length > 0,
-        hasActualChildren: this.actualChildren && this.actualChildren.length > 0,
+        hasActualChildren: hasActualChildren(this),
         getPropertyString: key => {
             if (typeof key === 'function')
                 return key(this);
@@ -126,11 +130,15 @@ class FeatureModel {
     }
 
     getVisibleFeatureNames() {
-        return this.visibleNodes.map(node => getName(node));
+        return this.visibleNodes.map(getName);
     }
 
     getActualFeatureNames() {
-        return this.actualNodes.map(node => getName(node));
+        return this.actualNodes.map(getName);
+    }
+
+    getFeatureNamesWithActualChildren() {
+        return this.actualNodes.filter(hasActualChildren).map(getName);
     }
 
     isSiblingFeatures(featureNames) {

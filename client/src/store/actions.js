@@ -13,10 +13,12 @@ const actions = createActions({
             ({isSelectMultipleFeatures}),
         SELECT_FEATURE: featureName => ({featureName}),
         DESELECT_FEATURE: featureName => ({featureName}),
-        COLLAPSE_FEATURE: featureName => ({featureName}),
-        EXPAND_FEATURE: featureName => ({featureName}),
         SELECT_ALL_FEATURES: () => {},
         DESELECT_ALL_FEATURES: () => {},
+        COLLAPSE_FEATURE: featureName => ({featureName}),
+        EXPAND_FEATURE: featureName => ({featureName}),
+        COLLAPSE_ALL_FEATURES: () => {},
+        EXPAND_ALL_FEATURES: () => {},
         SHOW_OVERLAY: (overlay, overlayProps, {selectFeature} = {}) => ({overlay, overlayProps, selectFeature}),
         HIDE_OVERLAY: (overlay) => ({overlay})
     }

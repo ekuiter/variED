@@ -218,7 +218,19 @@ const contextualMenuItems = {
                     disabled,
                     onClick: () => actions.server.features.addAbove(featureNames).then(onClick)
                 });
-            }
+            },
+            collapseAll:  onCollapseAllFeatures => ({
+                key: 'collapseAll',
+                text: i18n.t('featureDiagram.commands.feature.collapseAll'),
+                iconProps: {iconName: 'CollapseContent'},
+                onClick: onCollapseAllFeatures
+            }),
+            expandAll:  onExpandAllFeatures => ({
+                key: 'expandAll',
+                text: i18n.t('featureDiagram.commands.feature.expandAll'),
+                iconProps: {iconName: 'ExploreContent'},
+                onClick: onExpandAllFeatures
+            })
         }
     }
 };

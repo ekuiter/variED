@@ -7,6 +7,7 @@ import {getFeatureModel} from '../store/selectors';
 import actions from '../store/actions';
 import withKeys from '../helpers/withKeys';
 import defer from '../helpers/defer';
+import {ContextualMenuItemType} from '../../node_modules/office-ui-fabric-react/lib/ContextualMenu';
 
 const CommandBarContainer = props => (
     <CommandBar
@@ -29,7 +30,10 @@ const CommandBarContainer = props => (
                 props.selectedFeatureNames,
                 props.onSelectAllFeatures,
                 props.onDeselectAllFeatures,
-                props.featureModel)
+                props.featureModel),
+            {key: 'divider', itemType: ContextualMenuItemType.Divider},
+            contextualMenuItems.featureDiagram.features.collapseAll(props.onCollapseAllFeatures),
+            contextualMenuItems.featureDiagram.features.expandAll(props.onExpandAllFeatures)
         ]}
         farItems={[
             {
@@ -58,6 +62,8 @@ export default connect(
         onSetSelectMultipleFeatures: isSelectMultipleFeatures => dispatch(actions.ui.setSelectMultipleFeatures(isSelectMultipleFeatures)),
         onSelectAllFeatures: () => dispatch(actions.ui.selectAllFeatures()),
         onDeselectAllFeatures: () => dispatch(actions.ui.deselectAllFeatures()),
+        onCollapseAllFeatures: () => dispatch(actions.ui.collapseAllFeatures()),
+        onExpandAllFeatures: () => dispatch(actions.ui.expandAllFeatures()),
         onShowOverlay: (...args) => dispatch(actions.ui.showOverlay(...args))
     })
 )(withKeys({

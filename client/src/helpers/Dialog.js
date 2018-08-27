@@ -165,7 +165,10 @@ export class TextFieldDialog extends React.Component {
     state = {value: null};
     textFieldRef = React.createRef();
     onChange = (e, value) => this.setState({value});
-    onLayerDidMount = defer(() => this.textFieldRef.current.focus());
+    onLayerDidMount = defer(() => {
+        this.textFieldRef.current.focus();
+        this.textFieldRef.current.select();
+    });
 
     getValue = () => this.state.value === null ? this.props.defaultValue || '' : this.state.value;
 

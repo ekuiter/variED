@@ -109,6 +109,8 @@ export const strings = {
                 rename: 'Rename…',
                 setDescription: 'Set description…',
                 collapseExpand: isCollapsed => isCollapsed ? 'Expand' : 'Collapse',
+                collapseAll: 'Collapse all features',
+                expandAll: 'Expand all features',
                 properties: 'Properties',
                 abstract: 'Abstract',
                 concrete: 'Concrete',

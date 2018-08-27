@@ -87,6 +87,11 @@ const uiReducer = rootState => handleActions({
             ({...state, collapsedFeatureNames: uniqueArrayAdd(state.collapsedFeatureNames, featureName)}),
         EXPAND_FEATURE: (state, {payload: {featureName}}) =>
             ({...state, collapsedFeatureNames: uniqueArrayRemove(state.collapsedFeatureNames, featureName)}),
+        COLLAPSE_ALL_FEATURES: state => ({
+            ...state,
+            collapsedFeatureNames: getFeatureModel(rootState).getFeatureNamesWithActualChildren()
+        }),
+        EXPAND_ALL_FEATURES: state => ({...state, collapsedFeatureNames: []}),
         SHOW_OVERLAY:
             (state, {payload: {overlay, overlayProps, selectFeature}}) => {
                 let newState = updateOverlay(state, overlay, overlayProps);

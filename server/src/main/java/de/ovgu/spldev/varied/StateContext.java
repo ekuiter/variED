@@ -1,14 +1,7 @@
 package de.ovgu.spldev.varied;
 
-import de.ovgu.featureide.fm.core.base.IFeature;
 import de.ovgu.featureide.fm.core.base.IFeatureModel;
-import de.ovgu.featureide.fm.core.base.IFeatureModelFactory;
-import de.ovgu.featureide.fm.core.base.IFeatureStructure;
-import de.ovgu.featureide.fm.core.base.impl.DefaultFeatureModelFactory;
-import de.ovgu.featureide.fm.core.base.impl.FeatureStructure;
-import de.ovgu.featureide.fm.core.io.manager.FeatureModelManager;
 
-import java.nio.file.Paths;
 import java.util.Objects;
 
 public class StateContext {
