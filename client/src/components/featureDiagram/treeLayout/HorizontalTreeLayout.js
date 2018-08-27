@@ -31,6 +31,11 @@ class HorizontalTreeLayout extends AbstractTreeLayout {
     }
 
     getWidestTextOnLayer(node) {
+        // This fixes a bug when removing many nodes at once, and the tree no longer
+        // has a node of the specified depth. In that case, we just use the node's
+        // estimated width to achieve a smooth transition (this only occurs on node exits).
+        if (typeof this.widestTextOnLayer[node.depth] === 'undefined')
+            return this.treeNode.estimateTextWidth(node);
         return this.widestTextOnLayer[node.depth];
     }
 
