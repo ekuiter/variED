@@ -4,6 +4,7 @@ plugins {
 
 node {
     download = true
+    version = '8.11.4'
 }
 
 task build {
