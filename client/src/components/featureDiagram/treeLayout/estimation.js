@@ -28,7 +28,7 @@ function baselineHeight(settings) {
 }
 
 // estimates the y coordinate of a node's rectangle top or bottom side
-export function estimateYOffset(settings, sgn, layout) {
+export function estimateYOffset(settings, sgn, _layout) {
     const nodeSettings = getSetting(settings, 'featureDiagram.treeLayout.node');
     return sgn === 1
         ? baselineHeight(settings) + nodeSettings.paddingY + nodeSettings.strokeWidth + nodeSettings.bboxPadding

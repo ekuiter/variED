@@ -5,7 +5,7 @@ import VerticalTreeNode from './VerticalTreeNode';
 import {estimateXOffset, estimateYOffset} from './estimation';
 import {layoutTypes} from '../../../types';
 
-class VerticalTreeLayout extends AbstractTreeLayout {
+export default class extends AbstractTreeLayout {
     constructor(props) {
         super(props, VerticalTreeNode, VerticalTreeLink);
     }
@@ -25,5 +25,3 @@ class VerticalTreeLayout extends AbstractTreeLayout {
             getSetting(this.props.settings, 'featureDiagram.treeLayout.vertical.marginX');
     }
 }
-
-export default VerticalTreeLayout;

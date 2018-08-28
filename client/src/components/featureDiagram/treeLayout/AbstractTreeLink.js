@@ -9,7 +9,7 @@ import constants from '../../../constants';
 import styles from './styles';
 import actions from '../../../store/actions';
 
-class AbstractTreeLink {
+export default class {
     constructor(settings, getCurrentParentCoordinate, getPreviousParentCoordinate, treeNode) {
         this.settings = settings;
         this.getCurrentParentCoordinate = getCurrentParentCoordinate;
@@ -33,11 +33,11 @@ class AbstractTreeLink {
         return this.treeNode.rectInfo;
     }
 
-    groupAnchor(node) {
+    groupAnchor(_node) {
         throw new Error('abstract method not implemented');
     }
 
-    collapseAnchor(node) {
+    collapseAnchor(_node) {
         throw new Error('abstract method not implemented');
     }
 
@@ -49,23 +49,23 @@ class AbstractTreeLink {
         throw new Error('abstract method not implemented');
     }
 
-    emptyArcPath(relativeGroupAnchor, arcPathFn) {
+    emptyArcPath(_relativeGroupAnchor, _arcPathFn) {
         throw new Error('abstract method not implemented');
     }
 
-    arcPath(...args) {
+    arcPath(..._args) {
         throw new Error('abstract method not implemented');
     }
 
-    drawLink(...args) {
+    drawLink(..._args) {
         throw new Error('abstract method not implemented');
     }
 
-    from(node, phase) {
+    from(_node, _phase) {
         throw new Error('abstract method not implemented');
     }
 
-    to(node, phase) {
+    to(_node, _phase) {
         throw new Error('abstract method not implemented');
     }
 
@@ -140,5 +140,3 @@ class AbstractTreeLink {
             link.call(drawCircle, 'circle', {center: from, radius: 0});
     }
 }
-
-export default AbstractTreeLink;

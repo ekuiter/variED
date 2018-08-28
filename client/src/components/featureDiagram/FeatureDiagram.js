@@ -9,7 +9,11 @@ const layoutMap = {
     [layoutTypes.horizontalTree]: HorizontalTreeLayout
 };
 
-class FeatureDiagram extends React.Component {
+export default class extends React.Component {
+    propTypes = {
+        layout: LayoutType.isRequired
+    };
+
     layoutRef = React.createRef();
 
     getKey({settings}) {
@@ -34,9 +38,3 @@ class FeatureDiagram extends React.Component {
             return Promise.reject('can not export feature diagram');
     }
 }
-
-FeatureDiagram.propTypes = {
-    layout: LayoutType.isRequired
-};
-
-export default FeatureDiagram;

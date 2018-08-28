@@ -16,7 +16,23 @@ export const selectMultipleFeaturesContextualMenuItems = (selectedFeatureNames, 
     contextualMenuItems.featureDiagram.features.newFeatureAbove(selectedFeatureNames, onDeselectAllFeatures, featureModel)
 ];
 
-class FeatureContextualMenu extends FeatureComponent({doUpdate: true}) {
+export default class extends FeatureComponent({doUpdate: true}) {
+    propTypes = {
+        onDismiss: PropTypes.func.isRequired,
+        onSelectAllFeatures: PropTypes.func.isRequired,
+        onDeselectAllFeatures: PropTypes.func.isRequired,
+        onCollapseFeature: PropTypes.func.isRequired,
+        onExpandFeature: PropTypes.func.isRequired,
+        isSelectMultipleFeatures: PropTypes.bool.isRequired,
+        selectedFeatureNames: PropTypes.arrayOf(PropTypes.string).isRequired,
+        featureModel: FeatureModelType.isRequired,
+        featureName: PropTypes.string.isRequired,
+        isOpen: PropTypes.bool.isRequired,
+        featureDiagramLayout: LayoutType.isRequired,
+        onShowOverlay: PropTypes.func.isRequired,
+        settings: SettingsType.isRequired
+    };
+
     renderIfFeature(feature) {
         const {
                 onDismiss, onSelectAllFeatures, onDeselectAllFeatures,
@@ -53,21 +69,3 @@ class FeatureContextualMenu extends FeatureComponent({doUpdate: true}) {
         );
     }
 }
-
-FeatureContextualMenu.propTypes = {
-    onDismiss: PropTypes.func.isRequired,
-    onSelectAllFeatures: PropTypes.func.isRequired,
-    onDeselectAllFeatures: PropTypes.func.isRequired,
-    onCollapseFeature: PropTypes.func.isRequired,
-    onExpandFeature: PropTypes.func.isRequired,
-    isSelectMultipleFeatures: PropTypes.bool.isRequired,
-    selectedFeatureNames: PropTypes.arrayOf(PropTypes.string).isRequired,
-    featureModel: FeatureModelType.isRequired,
-    featureName: PropTypes.string.isRequired,
-    isOpen: PropTypes.bool.isRequired,
-    featureDiagramLayout: LayoutType.isRequired,
-    onShowOverlay: PropTypes.func.isRequired,
-    settings: SettingsType.isRequired
-};
-
-export default FeatureContextualMenu;

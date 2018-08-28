@@ -34,6 +34,17 @@ const Setting = {
     ),
 
     SpinButton: class extends React.Component {
+        propTypes = exact({
+            settings: SettingsType.isRequired,
+            onSetSetting: PropTypes.func.isRequired,
+            path: PropTypes.string.isRequired,
+            min: PropTypes.number,
+            max: PropTypes.number,
+            step: PropTypes.number,
+            suffix: PropTypes.string,
+            iconProps: PropTypes.object
+        });
+
         static defaultProps = {step: 1, suffix: ''};
 
         removeSuffix = value =>
@@ -92,6 +103,12 @@ const Setting = {
     },
 
     ColorPickerContextualMenu: class extends React.Component {
+        propTypes = exact({
+            settings: SettingsType.isRequired,
+            onSetSetting: PropTypes.func.isRequired,
+            paths: PropTypes.arrayOf(PropTypes.string).isRequired
+        });
+        
         state = {color: null};
         onColorChanged = color => this.setState({color});
         onApply = option => this.props.onSetSetting(option.key, this.state.color);
@@ -126,24 +143,16 @@ Setting.FontComboBox.propTypes = exact({
     path: PropTypes.string.isRequired
 });
 
-Setting.SpinButton.propTypes = exact({
-    settings: SettingsType.isRequired,
-    onSetSetting: PropTypes.func.isRequired,
-    path: PropTypes.string.isRequired,
-    min: PropTypes.number,
-    max: PropTypes.number,
-    step: PropTypes.number,
-    suffix: PropTypes.string,
-    iconProps: PropTypes.object
-});
+export default class extends React.Component {
+    propTypes = {
+        onDismissed: PropTypes.func.isRequired,
+        isOpen: PropTypes.bool.isRequired,
+        settings: SettingsType.isRequired,
+        featureDiagramLayout: LayoutType.isRequired,
+        onSetSetting: PropTypes.func.isRequired,
+        onResetSettings: PropTypes.func.isRequired
+    };
 
-Setting.ColorPickerContextualMenu.propTypes = exact({
-    settings: SettingsType.isRequired,
-    onSetSetting: PropTypes.func.isRequired,
-    paths: PropTypes.arrayOf(PropTypes.string).isRequired
-});
-
-class SettingsPanel extends React.Component {
     state = {canReset: false};
 
     resettableSetSetting = (...args) => {
@@ -282,14 +291,3 @@ class SettingsPanel extends React.Component {
         );
     }
 }
-
-SettingsPanel.propTypes = {
-    onDismissed: PropTypes.func.isRequired,
-    isOpen: PropTypes.bool.isRequired,
-    settings: SettingsType.isRequired,
-    featureDiagramLayout: LayoutType.isRequired,
-    onSetSetting: PropTypes.func.isRequired,
-    onResetSettings: PropTypes.func.isRequired
-};
-
-export default SettingsPanel;

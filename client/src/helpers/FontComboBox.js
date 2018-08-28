@@ -5,7 +5,14 @@ import i18n from '../i18n';
 import constants from '../constants';
 import PropTypes from 'prop-types';
 
-class FontComboBox extends React.Component {
+export default class extends React.Component {
+    propTypes = {
+        selectedFont: PropTypes.string.isRequired,
+        fonts: PropTypes.arrayOf(PropTypes.string).isRequired,
+        fallbacks: PropTypes.arrayOf(PropTypes.string),
+        onChanged: PropTypes.func.isRequired
+    };
+
     static defaultProps = {fonts: constants.helpers.fontComboBox.suggestedFonts};
     state = {errorMessage: null};
 
@@ -40,12 +47,3 @@ class FontComboBox extends React.Component {
         );
     }
 }
-
-FontComboBox.propTypes = {
-    selectedFont: PropTypes.string.isRequired,
-    fonts: PropTypes.arrayOf(PropTypes.string).isRequired,
-    fallbacks: PropTypes.arrayOf(PropTypes.string),
-    onChanged: PropTypes.func.isRequired
-};
-
-export default FontComboBox;

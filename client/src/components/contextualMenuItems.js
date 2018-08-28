@@ -54,7 +54,7 @@ const contextualMenuItems = {
             }
         }),
         selection: (isSelectMultipleFeatures, onSetSelectMultipleFeatures,
-                    selectedFeatureNames, onSelectAllFeatures, onDeselectAllFeatures, featureModel) => ({
+            selectedFeatureNames, onSelectAllFeatures, onDeselectAllFeatures, featureModel) => ({
             key: 'selection',
             text: i18n.t('featureDiagram.commands.selection')(isSelectMultipleFeatures, selectedFeatureNames),
             onClick: () => onSetSelectMultipleFeatures(!isSelectMultipleFeatures), // TODO: tell the user he can choose features now

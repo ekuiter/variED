@@ -12,8 +12,8 @@ const baseFonts = ['monospace', 'sans-serif', 'serif'],
     testSize = '72px',
     defaultWidth = {},
     defaultHeight = {},
-    body = document.getElementsByTagName("body")[0],
-    span = document.createElement("span");
+    body = document.getElementsByTagName('body')[0],
+    span = document.createElement('span');
 
 span.style.fontSize = testSize;
 span.innerHTML = testString;

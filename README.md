@@ -30,13 +30,15 @@ build process.
 
 ### IDE setup
 
-These are some notes if you want to set up development with WebStorm and
-IntelliJ.
+These are some notes if you want to set up development.
 
-**WebStorm**
+**WebStorm / VS Code**
 
 Open the `client` directory in WebStorm. Add a *npm* run configuration and
 specify the `start` script to run the client from within WebStorm.
+
+Configuration files for Visual Studio Code are included as well. Use of the
+yarn, ESLint and Debugger for Chrome plugins is recommended.
 
 **IntelliJ IDEA**
 

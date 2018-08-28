@@ -2,7 +2,6 @@ import {Dialog, DialogFooter} from 'office-ui-fabric-react/lib/Dialog';
 import {DefaultButton, PrimaryButton} from 'office-ui-fabric-react/lib/Button';
 import i18n from '../i18n';
 import React from 'react';
-import {Dropdown} from 'office-ui-fabric-react/lib/Dropdown';
 import defer from './defer';
 import {TextField} from '../../node_modules/office-ui-fabric-react/lib/TextField';
 import PropTypes from 'prop-types';
@@ -29,6 +28,12 @@ DialogWrapper.propTypes = exact({
 });
 
 export class DialogButton extends React.Component {
+    propTypes = exact({
+        onApply: PropTypes.func.isRequired,
+        children: PropTypes.node.isRequired,
+        label: PropTypes.string.isRequired
+    });
+
     state = {isDialogOpen: false};
     onDialogOpen = () => this.setState({isDialogOpen: true});
     onDialogDismiss = () => this.setState({isDialogOpen: false});
@@ -57,64 +62,16 @@ export class DialogButton extends React.Component {
     }
 }
 
-DialogButton.propTypes = exact({
-    onApply: PropTypes.func.isRequired,
-    children: PropTypes.node.isRequired,
-    label: PropTypes.string.isRequired
-});
-
-export class DialogDropdown extends React.Component {
-    state = {isDialogOpen: false, option: null};
-    onDialogDismiss = () => this.setState({isDialogOpen: false});
-    onChanged = option => this.setState({option});
-
-    onDialogOpen = () => {
-        if (this.state.option) {
-            this.props.onRender(this.state.option);
-            this.setState({isDialogOpen: true});
-        }
-    };
-
-    onApply = () => {
-        this.onDialogDismiss();
-        this.props.onApply(this.state.option);
-    };
-
-    render() {
-        return (
-            <div className="setting">
-                <Dropdown
-                    selectedKey={this.state.option ? this.state.option.key : null}
-                    options={this.props.options}
-                    onChanged={this.onChanged}/>
-                <DefaultButton
-                    className="setting"
-                    onClick={this.onDialogOpen}
-                    disabled={!this.state.option}
-                    text={this.props.label}/>
-                {this.state.option &&
-                <DialogWrapper
-                    label={this.state.option.text}
-                    isOpen={this.state.isDialogOpen}
-                    onDismiss={this.onDialogDismiss}
-                    onApply={this.onApply}>
-                    {this.props.children}
-                </DialogWrapper>}
-            </div>
-        );
-    }
-}
-
-DialogDropdown.propTypes = exact({
-    onDismiss: PropTypes.func.isRequired,
-    onApply: PropTypes.func.isRequired,
-    onRender: PropTypes.func.isRequired,
-    options: PropTypes.arrayOf(PropTypes.object).isRequired,
-    children: PropTypes.node.isRequired,
-    label: PropTypes.string.isRequired
-});
-
 export class DialogContextualMenu extends React.Component {
+    propTypes = exact({
+        onApply: PropTypes.func.isRequired,
+        onRender: PropTypes.func.isRequired,
+        options: PropTypes.arrayOf(PropTypes.object).isRequired,
+        children: PropTypes.node.isRequired,
+        label: PropTypes.string.isRequired,
+        iconProps: PropTypes.object
+    });
+
     state = {isDialogOpen: false, option: null};
     onDialogDismiss = () => this.setState({isDialogOpen: false});
 
@@ -151,16 +108,18 @@ export class DialogContextualMenu extends React.Component {
     }
 }
 
-DialogContextualMenu.propTypes = exact({
-    onApply: PropTypes.func.isRequired,
-    onRender: PropTypes.func.isRequired,
-    options: PropTypes.arrayOf(PropTypes.object).isRequired,
-    children: PropTypes.node.isRequired,
-    label: PropTypes.string.isRequired,
-    iconProps: PropTypes.object
-});
-
 export class TextFieldDialog extends React.Component {
+    propTypes = {
+        isOpen: PropTypes.bool.isRequired,
+        onDismiss: PropTypes.func.isRequired,
+        onSubmit: PropTypes.func.isRequired,
+        title: PropTypes.string.isRequired,
+        defaultValue: PropTypes.string,
+        submitText: PropTypes.string.isRequired,
+        submitOnEnter: PropTypes.bool.isRequired,
+        textFieldProps: PropTypes.object
+    };
+
     static defaultProps = {submitOnEnter: true};
     state = {value: null};
     textFieldRef = React.createRef();
@@ -184,8 +143,8 @@ export class TextFieldDialog extends React.Component {
     };
 
     render() {
-        const {isOpen, onDismiss, onSubmit, title, defaultValue,
-            submitText, submitOnEnter, textFieldProps, ...props} = this.props;
+        const {isOpen, onDismiss, onSubmit: _onSubmit, title, defaultValue: _defaultValue,
+            submitText, submitOnEnter: _submitOnEnter, textFieldProps, ...props} = this.props;
         return (
             <Dialog
                 hidden={!isOpen}
@@ -206,14 +165,3 @@ export class TextFieldDialog extends React.Component {
         );
     }
 }
-
-TextFieldDialog.propTypes = {
-    isOpen: PropTypes.bool.isRequired,
-    onDismiss: PropTypes.func.isRequired,
-    onSubmit: PropTypes.func.isRequired,
-    title: PropTypes.string.isRequired,
-    defaultValue: PropTypes.string,
-    submitText: PropTypes.string.isRequired,
-    submitOnEnter: PropTypes.bool.isRequired,
-    textFieldProps: PropTypes.object
-};

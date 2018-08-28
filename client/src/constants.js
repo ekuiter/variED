@@ -25,6 +25,7 @@ const constants = {
         }
     },
     server: {
+        // eslint-disable-next-line no-undef
         webSocket: process.env.REACT_APP_WEBSOCKET || `ws://${window.location.host}/websocket`, // WebSocket URI to connect to
         isMessageType(type) {
             return Object.values(this.messageTypes).includes(type);

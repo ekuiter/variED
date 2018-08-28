@@ -11,7 +11,27 @@ import PropTypes from 'prop-types';
 import exact from 'prop-types-exact';
 import {FeatureModelType} from '../../../server/FeatureModel';
 
-class AbstractTreeLayout extends React.Component {
+export default class extends React.Component {
+    propTypes = exact({
+        featureModel: FeatureModelType.isRequired,
+        width: PropTypes.number,
+        height: PropTypes.number,
+        className: PropTypes.string.isRequired,
+        fitOnResize: PropTypes.bool,
+        settings: SettingsType.isRequired,
+        overlay: OverlayType,
+        overlayProps: PropTypes.object,
+        onShowOverlay: PropTypes.func.isRequired,
+        onHideOverlayFn: PropTypes.func.isRequired,
+        onSetSelectMultipleFeatures: PropTypes.func.isRequired,
+        onSelectFeature: PropTypes.func.isRequired,
+        onDeselectFeature: PropTypes.func.isRequired,
+        onExpandFeature: PropTypes.func.isRequired,
+        onDeselectAllFeatures: PropTypes.func.isRequired,
+        isSelectMultipleFeatures: PropTypes.bool.isRequired,
+        selectedFeatureNames: PropTypes.arrayOf(PropTypes.string).isRequired
+    });
+
     static defaultProps = {fitOnResize: false};
     svgRef = React.createRef();
     currentCoordinates = {};
@@ -55,7 +75,7 @@ class AbstractTreeLayout extends React.Component {
     render() {
         return (
             <svg className={'treeLayout' + (this.props.className ? ` ${this.props.className}` : '')}
-                 ref={this.svgRef}/>
+                ref={this.svgRef}/>
         );
     }
 
@@ -141,19 +161,19 @@ class AbstractTreeLayout extends React.Component {
         };
     }
 
-    getSeparationFn(estimateTextWidth) {
+    getSeparationFn(_estimateTextWidth) {
         throw new Error('abstract method not implemented');
     }
 
-    estimateXOffset(sgn, estimatedTextWidth) {
+    estimateXOffset(_sgn, _estimatedTextWidth) {
         throw new Error('abstract method not implemented');
     }
 
-    estimateYOffset(sgn) {
+    estimateYOffset(_sgn) {
         throw new Error('abstract method not implemented');
     }
 
-    createLayoutHook(nodes) {
+    createLayoutHook(_nodes) {
     }
 
     createLayout({featureModel, settings}, isSelectionChange) {
@@ -319,25 +339,3 @@ class AbstractTreeLayout extends React.Component {
         node.filter(d => !this.props.selectedFeatureNames.includes(d.feature().name)).attr('class', 'node');
     }
 }
-
-AbstractTreeLayout.propTypes = exact({
-    featureModel: FeatureModelType.isRequired,
-    width: PropTypes.number,
-    height: PropTypes.number,
-    className: PropTypes.string.isRequired,
-    fitOnResize: PropTypes.bool,
-    settings: SettingsType.isRequired,
-    overlay: OverlayType,
-    overlayProps: PropTypes.object,
-    onShowOverlay: PropTypes.func.isRequired,
-    onHideOverlayFn: PropTypes.func.isRequired,
-    onSetSelectMultipleFeatures: PropTypes.func.isRequired,
-    onSelectFeature: PropTypes.func.isRequired,
-    onDeselectFeature: PropTypes.func.isRequired,
-    onExpandFeature: PropTypes.func.isRequired,
-    onDeselectAllFeatures: PropTypes.func.isRequired,
-    isSelectMultipleFeatures: PropTypes.bool.isRequired,
-    selectedFeatureNames: PropTypes.arrayOf(PropTypes.string).isRequired
-});
-
-export default AbstractTreeLayout;

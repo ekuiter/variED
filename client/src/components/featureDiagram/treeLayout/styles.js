@@ -5,7 +5,7 @@ function getLinkStrokeWidth(settings) {
     return `${getSetting(settings, 'featureDiagram.treeLayout.link.strokeWidth')}px`;
 }
 
-const styles = {
+export default {
     node: {
         abstract: settings => ({ // style applied to a node's rectangle to distinguish abstract and concrete features
             property: 'isAbstract',
@@ -33,7 +33,7 @@ const styles = {
         arcSlice: settings => ({ // style applied to a node's arc slice (for OR groups)
             fill: getSetting(settings, 'featureDiagram.treeLayout.link.stroke')
         }),
-        arcClick: settings => ({ // style applied to a node's clickable arc
+        arcClick: _settings => ({ // style applied to a node's clickable arc
             'fill-opacity': 0,
             cursor: 'pointer'
         }),
@@ -75,5 +75,3 @@ const styles = {
         })
     }
 };
-
-export default styles;

@@ -6,7 +6,14 @@ import PropTypes from 'prop-types';
 import {FeatureModelType} from '../../server/FeatureModel';
 import FeatureComponent from './FeatureComponent';
 
-class FeatureRenameDialog extends FeatureComponent() {
+export default class extends FeatureComponent() {
+    propTypes = {
+        onDismiss: PropTypes.func.isRequired,
+        featureModel: FeatureModelType.isRequired,
+        featureName: PropTypes.string.isRequired,
+        isOpen: PropTypes.bool.isRequired
+    };
+
     renderIfFeature(feature) {
         return (
             <TextFieldDialog
@@ -23,12 +30,3 @@ class FeatureRenameDialog extends FeatureComponent() {
         );
     }
 }
-
-FeatureRenameDialog.propTypes = {
-    onDismiss: PropTypes.func.isRequired,
-    featureModel: FeatureModelType.isRequired,
-    featureName: PropTypes.string.isRequired,
-    isOpen: PropTypes.bool.isRequired
-};
-
-export default FeatureRenameDialog;

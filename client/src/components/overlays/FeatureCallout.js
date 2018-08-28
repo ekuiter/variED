@@ -9,20 +9,32 @@ import {LayoutType, SettingsType} from '../../types';
 import {FeatureModelType} from '../../server/FeatureModel';
 import FeatureComponent from './FeatureComponent';
 
-class FeatureCallout extends FeatureComponent({doUpdate: true}) {
+export default class extends FeatureComponent({doUpdate: true}) {
+    propTypes = {
+        onDismiss: PropTypes.func.isRequired,
+        featureModel: FeatureModelType.isRequired,
+        featureName: PropTypes.string.isRequired,
+        isOpen: PropTypes.bool.isRequired,
+        featureDiagramLayout: LayoutType.isRequired,
+        onShowOverlay: PropTypes.func.isRequired,
+        onCollapseFeature: PropTypes.func.isRequired,
+        onExpandFeature: PropTypes.func.isRequired,
+        settings: SettingsType.isRequired
+    };
+
     renderIfFeature(feature) {
         const {onDismiss, featureModel} = this.props,
             {gapSpace, width} = getSetting(this.props.settings, 'featureDiagram.overlay');
         return (
             <Callout target={featureModel.getElement(feature.name).querySelector('.rectAndText')}
-                     onDismiss={onDismiss}
-                     hidden={!this.props.isOpen}
-                     gapSpace={gapSpace}
-                     calloutWidth={width}
-                     directionalHint={
-                         this.props.featureDiagramLayout === layoutTypes.verticalTree
-                             ? DirectionalHint.bottomCenter
-                             : DirectionalHint.rightCenter}>
+                onDismiss={onDismiss}
+                hidden={!this.props.isOpen}
+                gapSpace={gapSpace}
+                calloutWidth={width}
+                directionalHint={
+                    this.props.featureDiagramLayout === layoutTypes.verticalTree
+                        ? DirectionalHint.bottomCenter
+                        : DirectionalHint.rightCenter}>
                 <div className="callout">
                     <div className="header">
                         <p>{feature.name}</p>
@@ -47,17 +59,3 @@ class FeatureCallout extends FeatureComponent({doUpdate: true}) {
         );
     }
 }
-
-FeatureCallout.propTypes = {
-    onDismiss: PropTypes.func.isRequired,
-    featureModel: FeatureModelType.isRequired,
-    featureName: PropTypes.string.isRequired,
-    isOpen: PropTypes.bool.isRequired,
-    featureDiagramLayout: LayoutType.isRequired,
-    onShowOverlay: PropTypes.func.isRequired,
-    onCollapseFeature: PropTypes.func.isRequired,
-    onExpandFeature: PropTypes.func.isRequired,
-    settings: SettingsType.isRequired
-};
-
-export default FeatureCallout;

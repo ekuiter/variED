@@ -41,7 +41,7 @@ function makeText(settings, selection, isGettingRectInfo, textStyle) {
     }
 }
 
-class AbstractTreeNode {
+export default class {
     constructor(settings, isSelectMultipleFeatures, setActiveNode, onShowOverlay, onExpandFeature) {
         this.settings = settings;
         this.isSelectMultipleFeatures = isSelectMultipleFeatures;
@@ -50,11 +50,11 @@ class AbstractTreeNode {
         this.onExpandFeature = onExpandFeature;
     }
 
-    x(node) {
+    x(_node) {
         throw new Error('abstract method not implemented');
     }
 
-    y(node) {
+    y(_node) {
         throw new Error('abstract method not implemented');
     }
 
@@ -160,5 +160,3 @@ class AbstractTreeNode {
             node.feature().name);
     }
 }
-
-export default AbstractTreeNode;

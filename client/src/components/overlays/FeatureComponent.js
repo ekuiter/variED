@@ -1,8 +1,17 @@
 import React from 'react';
 import {getSetting} from '../../store/settings';
+import PropTypes from 'prop-types';
+import { FeatureModelType } from '../../server/FeatureModel';
+import {SettingsType} from '../../types';
 
-const FeatureComponent = ({isOpenProp = 'isOpen', onDismissProp = 'onDismiss', doUpdate = false} = {}) =>
+export default ({isOpenProp = 'isOpen', onDismissProp = 'onDismiss', doUpdate = false} = {}) =>
     class extends React.Component {
+        propTypes = {
+            featureModel: FeatureModelType.isRequired,
+            featureName: PropTypes.string.isRequired,
+            settings: SettingsType.isRequired
+        };
+
         componentDidMount() {
             if (doUpdate)
                 this.interval = window.setInterval(
@@ -36,5 +45,3 @@ const FeatureComponent = ({isOpenProp = 'isOpen', onDismissProp = 'onDismiss', d
             return this.renderIfFeature(this.feature);
         }
     };
-
-export default FeatureComponent;

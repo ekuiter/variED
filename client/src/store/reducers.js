@@ -44,7 +44,7 @@ function serverUiReducer(state, action) {
         if (exitingFeatureNames.length > 0)
             return stateWithNewUi(state, 'collapsedFeatureNames',
                 state.ui.collapsedFeatureNames
-                    .filter(collapsedFeatureName => !exitingFeatureNames.includes(collapsedFeatureName)))
+                    .filter(collapsedFeatureName => !exitingFeatureNames.includes(collapsedFeatureName)));
     }
     if (action.type === constants.server.messageTypes.FEATURE_RENAME) {
         state = handleFeatureRename(state, action, 'collapsedFeatureNames');

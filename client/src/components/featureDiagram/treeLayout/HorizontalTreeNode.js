@@ -2,7 +2,7 @@ import AbstractTreeNode from './AbstractTreeNode';
 import {estimateRectWidth} from './estimation';
 import {getSetting} from '../../../store/settings';
 
-class HorizontalTreeNode extends AbstractTreeNode {
+export default class extends AbstractTreeNode {
     x(node) {
         let x = 0, parent = node;
         while ((parent = parent.parent))
@@ -19,5 +19,3 @@ class HorizontalTreeNode extends AbstractTreeNode {
         return {'text-anchor': 'start'};
     }
 }
-
-export default HorizontalTreeNode;

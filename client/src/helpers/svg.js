@@ -118,7 +118,7 @@ export function addStyle(selection, ...styleDescriptors) {
         if (property)
             Object.keys(styles).forEach(key =>
                 selection.filter(node => node.feature().getPropertyString(property) === key).call(
-                typeof styles[key] === 'function' ? styles[key] : selection => selection.attrs(styles[key])));
+                    typeof styles[key] === 'function' ? styles[key] : selection => selection.attrs(styles[key])));
         else
             selection.attrs(styleDescriptor);
     });

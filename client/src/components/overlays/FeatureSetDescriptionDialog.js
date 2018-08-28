@@ -6,7 +6,14 @@ import PropTypes from 'prop-types';
 import {FeatureModelType} from '../../server/FeatureModel';
 import FeatureComponent from './FeatureComponent';
 
-class FeatureSetDescriptionDialog extends FeatureComponent() {
+export default class extends FeatureComponent() {
+    propTypes = {
+        onDismiss: PropTypes.func.isRequired,
+        featureModel: FeatureModelType.isRequired,
+        featureName: PropTypes.string.isRequired,
+        isOpen: PropTypes.bool.isRequired
+    };
+
     renderIfFeature(feature) {
         return (
             <TextFieldDialog
@@ -28,12 +35,3 @@ class FeatureSetDescriptionDialog extends FeatureComponent() {
         );
     }
 }
-
-FeatureSetDescriptionDialog.propTypes = {
-    onDismiss: PropTypes.func.isRequired,
-    featureModel: FeatureModelType.isRequired,
-    featureName: PropTypes.string.isRequired,
-    isOpen: PropTypes.bool.isRequired
-};
-
-export default FeatureSetDescriptionDialog;

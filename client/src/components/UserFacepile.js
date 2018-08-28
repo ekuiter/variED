@@ -9,6 +9,13 @@ import exact from 'prop-types-exact';
 import {SettingsType} from '../types';
 
 class UserFacepile extends React.Component {
+    propTypes = exact({
+        users: PropTypes.arrayOf(PropTypes.string).isRequired,
+        settings: SettingsType.isRequired,
+        width: PropTypes.number.isRequired,
+        height: PropTypes.number.isRequired
+    });
+    
     state = {tooltipTarget: null, persona: null};
 
     componentDidUpdate(prevProps) {
@@ -51,7 +58,7 @@ class UserFacepile extends React.Component {
                         onRenderMenuIcon: () => null
                     }}
                     personaSize={PersonaSize.size28}
-                    getPersonaProps={persona => ({hidePersonaDetails: true})}
+                    getPersonaProps={_persona => ({hidePersonaDetails: true})}
                     styles={{root: {margin: '6px 12px'}}}/>
                 {this.state.tooltipTarget &&
                 <Tooltip
@@ -62,12 +69,5 @@ class UserFacepile extends React.Component {
         );
     }
 }
-
-UserFacepile.propTypes = exact({
-    users: PropTypes.arrayOf(PropTypes.string).isRequired,
-    settings: SettingsType.isRequired,
-    width: PropTypes.number.isRequired,
-    height: PropTypes.number.isRequired
-});
 
 export default withDimensions(UserFacepile);

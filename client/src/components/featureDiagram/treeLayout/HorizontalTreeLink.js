@@ -15,7 +15,7 @@ function sideY(y, rectInfo) {
     return y + rectInfo.y + rectInfo.height / 2;
 }
 
-class HorizontalTreeLink extends AbstractTreeLink {
+export default class extends AbstractTreeLink {
     groupAnchor(node) {
         const rectInfo = this.getRectInfo();
         return {x: rightSide(this.settings, 0, rectInfo, this.estimateTextWidth(node)), y: sideY(0, rectInfo)};
@@ -40,7 +40,7 @@ class HorizontalTreeLink extends AbstractTreeLink {
         return arcPathFn(relativeGroupAnchor, 0, -90, 90, this.sweepFlag());
     }
 
-    arcPath(arcPathFn, center, radius, startAngle, endAngle, sweepFlag) {
+    arcPath(arcPathFn, center, radius, _startAngle, _endAngle, sweepFlag) {
         return arcPathFn(center, radius, -90, 90, sweepFlag);
     }
 
@@ -53,7 +53,7 @@ class HorizontalTreeLink extends AbstractTreeLink {
                 return {
                     x: Math.max(x, from(d).x - getSetting(settings, 'featureDiagram.treeLayout.horizontal.layerMargin')),
                     y
-                }
+                };
             };
         drawLine(g, !selector ? null : 'path.innerLine', {
             klass: 'innerLine', from: _to, to, style,
@@ -66,7 +66,7 @@ class HorizontalTreeLink extends AbstractTreeLink {
         return g;
     };
 
-    from(node, phase) {
+    from(node, _phase) {
         return {
             x: leftSideX(this.nodeX(node), this.getRectInfo()),
             y: sideY(this.nodeY(node), this.getRectInfo())
@@ -87,5 +87,3 @@ class HorizontalTreeLink extends AbstractTreeLink {
         };
     }
 }
-
-export default HorizontalTreeLink;

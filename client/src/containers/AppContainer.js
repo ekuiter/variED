@@ -6,6 +6,7 @@ import {Fabric} from 'office-ui-fabric-react/lib/Fabric';
 import OverlayContainer from './overlays/OverlayContainer';
 import CommandBarContainer from './CommandBarContainer';
 
+/* eslint-disable react/prop-types */
 class AppContainer extends React.Component {
     componentDidMount() {
         openWebSocket(this.props.handleMessage);

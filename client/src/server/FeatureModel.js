@@ -121,7 +121,7 @@ class FeatureModel {
     getElement(featureName) {
         // Operate under the assumption that we only render ONE feature model, and that it is THIS feature model.
         // This way we don't need to propagate a concrete feature diagram instance.
-        const elements = [...document.querySelectorAll(`[data-feature]`)]
+        const elements = [...document.querySelectorAll('[data-feature]')]
             .filter(node => node.dataset.feature === featureName);
         if (elements.length > 1)
             throw new Error(`multiple features "${featureName}" found - ` +

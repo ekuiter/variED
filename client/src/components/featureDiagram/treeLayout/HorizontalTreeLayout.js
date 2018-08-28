@@ -5,7 +5,7 @@ import {getSetting} from '../../../store/settings';
 import {estimateRectHeight, estimateXOffset, estimateYOffset} from './estimation';
 import {layoutTypes} from '../../../types';
 
-class HorizontalTreeLayout extends AbstractTreeLayout {
+export default class extends AbstractTreeLayout {
     widestTextOnLayer = {};
 
     constructor(props) {
@@ -21,7 +21,7 @@ class HorizontalTreeLayout extends AbstractTreeLayout {
         return estimateYOffset(this.props.settings, sgn, layoutTypes.horizontalTree);
     }
 
-    getSeparationFn(estimateTextWidth) {
+    getSeparationFn(_estimateTextWidth) {
         return () => estimateRectHeight(this.props.settings) +
             getSetting(this.props.settings, 'featureDiagram.treeLayout.horizontal.marginY');
     }
@@ -50,5 +50,3 @@ class HorizontalTreeLayout extends AbstractTreeLayout {
         });
     }
 }
-
-export default HorizontalTreeLayout;

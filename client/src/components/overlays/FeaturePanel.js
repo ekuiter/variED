@@ -10,7 +10,17 @@ import FeatureComponent from './FeatureComponent';
 const buttonStyles = {root: {backgroundColor: 'transparent'}},
     transparentItems = items => items;
 
-class FeaturePanel extends FeatureComponent({onDismissProp: 'onDismissed'}) {
+export default class extends FeatureComponent({onDismissProp: 'onDismissed'}) {
+    propTypes = {
+        onDismissed: PropTypes.func.isRequired,
+        featureModel: FeatureModelType.isRequired,
+        featureName: PropTypes.string.isRequired,
+        isOpen: PropTypes.bool.isRequired,
+        onShowOverlay: PropTypes.func.isRequired,
+        onCollapseFeature: PropTypes.func.isRequired,
+        onExpandFeature: PropTypes.func.isRequired
+    };
+
     onRenderFooterContent = () => (
         <CommandBar
             items={transparentItems([
@@ -45,15 +55,3 @@ class FeaturePanel extends FeatureComponent({onDismissProp: 'onDismissed'}) {
         );
     }
 }
-
-FeaturePanel.propTypes = {
-    onDismissed: PropTypes.func.isRequired,
-    featureModel: FeatureModelType.isRequired,
-    featureName: PropTypes.string.isRequired,
-    isOpen: PropTypes.bool.isRequired,
-    onShowOverlay: PropTypes.func.isRequired,
-    onCollapseFeature: PropTypes.func.isRequired,
-    onExpandFeature: PropTypes.func.isRequired
-};
-
-export default FeaturePanel;

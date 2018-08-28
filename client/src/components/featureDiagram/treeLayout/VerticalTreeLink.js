@@ -10,12 +10,12 @@ function bottomSide(y, rectInfo) {
     return y + rectInfo.y + rectInfo.height;
 }
 
-class VerticalTreeLink extends AbstractTreeLink {
-    groupAnchor(node) {
+export default class extends AbstractTreeLink {
+    groupAnchor(_node) {
         return {x: 0, y: bottomSide(0, this.getRectInfo())};
     }
 
-    collapseAnchor(node) {
+    collapseAnchor(_node) {
         return {y: bottomSide(0, this.getRectInfo()) + getSetting(this.settings, 'featureDiagram.font.size')};
     }
 
@@ -39,7 +39,7 @@ class VerticalTreeLink extends AbstractTreeLink {
         return drawLine(...args);
     }
 
-    from(node, phase) {
+    from(node, _phase) {
         return {
             x: this.nodeX(node),
             y: topSide(this.nodeY(node), this.getRectInfo())
@@ -60,5 +60,3 @@ class VerticalTreeLink extends AbstractTreeLink {
         };
     }
 }
-
-export default VerticalTreeLink;

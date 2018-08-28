@@ -9,6 +9,7 @@ import withKeys from '../helpers/withKeys';
 import defer from '../helpers/defer';
 import {ContextualMenuItemType} from '../../node_modules/office-ui-fabric-react/lib/ContextualMenu';
 
+/* eslint-disable react/prop-types */
 const CommandBarContainer = props => (
     <CommandBar
         items={[

@@ -1,7 +1,7 @@
 import AbstractTreeNode from './AbstractTreeNode';
 import {getSetting} from '../../../store/settings';
 
-class VerticalTreeNode extends AbstractTreeNode {
+export default class extends AbstractTreeNode {
     x(node) {
         return node.x;
     }
@@ -14,5 +14,3 @@ class VerticalTreeNode extends AbstractTreeNode {
         return {'text-anchor': 'middle'};
     }
 }
-
-export default VerticalTreeNode;
