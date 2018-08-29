@@ -29,6 +29,7 @@
   "devDependencies": {
     "babel-eslint": "^9.0.0",
     "eslint": "^5.4.0",
+    "eslint-plugin-jest": "^21.22.0",
     "eslint-plugin-react": "^7.11.1",
     "redux-devtools": "^3.4.1"
   },
