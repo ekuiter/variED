@@ -18,9 +18,9 @@ describe('FeatureComponent', () => {
                     onDismiss={mock}
                     settings={defaultSettings}
                     featureModel={featureModel}
-                    featureName="FeatureIDE" />
+                    featureName="FeatureIDE"/>
             );
-        expect(renderIfFeature).toHaveBeenCalled();
+        expect(renderIfFeature).toBeCalled();
         expect(wrapper.contains('FeatureIDE')).toBe(true);
     });
 
@@ -35,9 +35,9 @@ describe('FeatureComponent', () => {
                     onDismiss={mock}
                     settings={defaultSettings}
                     featureModel={featureModel}
-                    featureName="<invalid feature>" />
+                    featureName="<invalid feature>"/>
             );
-        expect(renderIfFeature).not.toHaveBeenCalled();
+        expect(renderIfFeature).not.toBeCalled();
         expect(wrapper.get(0)).toBe(null);
     });
 });

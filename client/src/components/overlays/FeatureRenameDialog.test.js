@@ -31,6 +31,6 @@ describe('FeatureRenameDialog', () => {
     it('triggers a rename if a new name is entered', () => {
         const wrapper = shallow(featureRenameDialog);
         wrapper.find(TextFieldDialog).simulate('submit', 'new feature name');
-        expect(actions.server.feature.rename).toHaveBeenCalledWith('FeatureIDE', 'new feature name');
+        expect(actions.server.feature.rename).lastCalledWith('FeatureIDE', 'new feature name');
     });
 });
