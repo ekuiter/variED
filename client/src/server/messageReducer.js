@@ -17,6 +17,8 @@ const messageTypes = constants.server.messageTypes,
             return {...state, featureModel: action.featureModel};
         },
         [messageTypes.FEATURE_RENAME](state, _action) {
+            // Feature renaming is handled by the serverUiReducer
+            // because it has access to the UI state.
             return state;
         }
     };

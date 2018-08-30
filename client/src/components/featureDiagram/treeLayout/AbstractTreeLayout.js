@@ -325,6 +325,7 @@ export default class extends React.Component {
             // We COULD move this code to the Redux reducer, but here it notices nodes
             // exiting due to more reasons (e.g., collapse) - node.exit() definitely
             // catches all exiting nodes in contrast to Redux.
+            // TODO: maybe move to Redux nonetheless - cleaner state management and testing?
             this.onHideOverlayIfOpen(d); // hide overlay if active node exits
             if (this.props.selectedFeatureNames.includes(d.feature().name))
                 this.removeSelectedNode(d); // deselect exiting nodes, TODO: warn user that selection changed

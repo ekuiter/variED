@@ -9,18 +9,25 @@ const actions = createActions({
     UI: {
         SET_FEATURE_DIAGRAM_LAYOUT: featureDiagramLayout =>
             ({featureDiagramLayout}),
-        SET_SELECT_MULTIPLE_FEATURES: isSelectMultipleFeatures =>
-            ({isSelectMultipleFeatures}),
-        SELECT_FEATURE: featureName => ({featureName}),
-        DESELECT_FEATURE: featureName => ({featureName}),
-        SELECT_ALL_FEATURES: () => {},
-        DESELECT_ALL_FEATURES: () => {},
-        COLLAPSE_FEATURE: featureName => ({featureName}),
-        EXPAND_FEATURE: featureName => ({featureName}),
-        COLLAPSE_ALL_FEATURES: () => {},
-        EXPAND_ALL_FEATURES: () => {},
-        SHOW_OVERLAY: (overlay, overlayProps, {selectFeature} = {}) => ({overlay, overlayProps, selectFeature}),
-        HIDE_OVERLAY: (overlay) => ({overlay})
+        FEATURE: {
+            SELECT: featureName => ({featureName}),
+            DESELECT: featureName => ({featureName}),
+            COLLAPSE: featureName => ({featureName}),
+            EXPAND: featureName => ({featureName}),
+        },
+        FEATURES: {
+            SET_SELECT_MULTIPLE: isSelectMultipleFeatures =>
+                ({isSelectMultipleFeatures}),
+            SELECT_ALL: () => {},
+            DESELECT_ALL: () => {},
+            COLLAPSE_ALL: () => {},
+            EXPAND_ALL: () => {},
+        },
+        OVERLAY: {
+            SHOW: (overlay, overlayProps, {selectFeature} = {}) =>
+                ({overlay, overlayProps, selectFeature}),
+            HIDE: (overlay) => ({overlay}),
+        }
     }
 });
 actions.server = messageActions;

@@ -16,13 +16,13 @@ export default connect(
         overlayProps: state.ui.overlayProps
     }),
     dispatch => ({
-        onShowOverlay: (...args) => dispatch(actions.ui.showOverlay(...args)),
-        onHideOverlayFn: overlay => () => dispatch(actions.ui.hideOverlay(overlay)),
-        onSetSelectMultipleFeatures: isSelectMultipleFeatures => dispatch(actions.ui.setSelectMultipleFeatures(isSelectMultipleFeatures)),
-        onSelectFeature: featureName => dispatch(actions.ui.selectFeature(featureName)),
-        onDeselectFeature: featureName => dispatch(actions.ui.deselectFeature(featureName)),
-        onExpandFeature: featureName => dispatch(actions.ui.expandFeature(featureName)),
-        onDeselectAllFeatures: () => dispatch(actions.ui.deselectAllFeatures())
+        onShowOverlay: (...args) => dispatch(actions.ui.overlay.show(...args)),
+        onHideOverlayFn: overlay => () => dispatch(actions.ui.overlay.hide(overlay)),
+        onSetSelectMultipleFeatures: isSelectMultipleFeatures => dispatch(actions.ui.features.setSelectMultiple(isSelectMultipleFeatures)),
+        onSelectFeature: featureName => dispatch(actions.ui.feature.select(featureName)),
+        onDeselectFeature: featureName => dispatch(actions.ui.feature.deselect(featureName)),
+        onExpandFeature: featureName => dispatch(actions.ui.feature.expand(featureName)),
+        onDeselectAllFeatures: () => dispatch(actions.ui.features.deselectAll())
     })
 )(props =>
     props.featureModel

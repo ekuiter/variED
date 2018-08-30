@@ -89,13 +89,13 @@ export default connect(
         featureModel: getFeatureModel(state)
     }),
     dispatch => ({
-        onHideOverlayFn: overlay => () => dispatch(actions.ui.hideOverlay(overlay)),
-        onShowOverlay: (...args) => dispatch(actions.ui.showOverlay(...args)),
-        onSelectAllFeatures: () => dispatch(actions.ui.selectAllFeatures()),
-        onDeselectAllFeatures: () => dispatch(actions.ui.deselectAllFeatures()),
+        onHideOverlayFn: overlay => () => dispatch(actions.ui.overlay.hide(overlay)),
+        onShowOverlay: (...args) => dispatch(actions.ui.overlay.show(...args)),
+        onSelectAllFeatures: () => dispatch(actions.ui.features.selectAll()),
+        onDeselectAllFeatures: () => dispatch(actions.ui.features.deselectAll()),
         onSetSetting: (path, value) => dispatch(actions.settings.set(path, value)),
         onResetSettings: () => dispatch(actions.settings.reset()),
-        onCollapseFeature: featureName => dispatch(actions.ui.collapseFeature(featureName)),
-        onExpandFeature: featureName => dispatch(actions.ui.expandFeature(featureName))
+        onCollapseFeature: featureName => dispatch(actions.ui.feature.collapse(featureName)),
+        onExpandFeature: featureName => dispatch(actions.ui.feature.expand(featureName))
     })
 )(OverlayContainer);

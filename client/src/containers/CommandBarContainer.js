@@ -60,12 +60,12 @@ export default connect(
     }),
     dispatch => ({
         onSetFeatureDiagramLayout: layout => dispatch(actions.ui.setFeatureDiagramLayout(layout)),
-        onSetSelectMultipleFeatures: isSelectMultipleFeatures => dispatch(actions.ui.setSelectMultipleFeatures(isSelectMultipleFeatures)),
-        onSelectAllFeatures: () => dispatch(actions.ui.selectAllFeatures()),
-        onDeselectAllFeatures: () => dispatch(actions.ui.deselectAllFeatures()),
-        onCollapseAllFeatures: () => dispatch(actions.ui.collapseAllFeatures()),
-        onExpandAllFeatures: () => dispatch(actions.ui.expandAllFeatures()),
-        onShowOverlay: (...args) => dispatch(actions.ui.showOverlay(...args))
+        onSetSelectMultipleFeatures: isSelectMultipleFeatures => dispatch(actions.ui.features.setSelectMultiple(isSelectMultipleFeatures)),
+        onSelectAllFeatures: () => dispatch(actions.ui.features.selectAll()),
+        onDeselectAllFeatures: () => dispatch(actions.ui.features.deselectAll()),
+        onCollapseAllFeatures: () => dispatch(actions.ui.features.collapseAll()),
+        onExpandAllFeatures: () => dispatch(actions.ui.features.expandAll()),
+        onShowOverlay: (...args) => dispatch(actions.ui.overlay.show(...args))
     })
 )(withKeys({
     key: ({event}) => event.isCommand('z'),

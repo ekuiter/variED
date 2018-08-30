@@ -14,7 +14,7 @@ import {LayoutType, layoutTypes, SettingsType} from '../../types';
 
 const getLabel = path => i18n.t('panels.settingsPanel.labels', path);
 
-const Setting = {
+export const Setting = {
     Toggle: ({settings, onSetSetting, path}) => (
         <Toggle
             className="setting"
