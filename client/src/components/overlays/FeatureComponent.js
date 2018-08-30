@@ -6,7 +6,7 @@ import {SettingsType} from '../../types';
 
 export default ({isOpenProp = 'isOpen', onDismissProp = 'onDismiss', doUpdate = false} = {}) =>
     class extends React.Component {
-        propTypes = {
+        static propTypes = {
             featureModel: FeatureModelType.isRequired,
             featureName: PropTypes.string.isRequired,
             settings: SettingsType.isRequired

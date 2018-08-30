@@ -6,7 +6,7 @@ import constants from '../constants';
 import PropTypes from 'prop-types';
 
 export default class extends React.Component {
-    propTypes = {
+    static propTypes = {
         selectedFont: PropTypes.string.isRequired,
         fonts: PropTypes.arrayOf(PropTypes.string).isRequired,
         fallbacks: PropTypes.arrayOf(PropTypes.string),

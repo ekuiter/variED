@@ -10,7 +10,7 @@ const layoutMap = {
 };
 
 export default class extends React.Component {
-    propTypes = {
+    static propTypes = {
         layout: LayoutType.isRequired
     };
 
@@ -26,7 +26,7 @@ export default class extends React.Component {
         const {layout, ...props} = this.props,
             LayoutComponent = layoutMap[layout];
         return (
-            <LayoutComponent key={this.getKey(props)} ref={this.layoutRef} {...props} />
+            <LayoutComponent key={this.getKey(props)} ref={this.layoutRef} {...props}/>
         );
     }
 

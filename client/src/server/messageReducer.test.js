@@ -6,23 +6,21 @@ const {messageTypes} = constants.server,
     initialState = constants.store.initialState.server;
 
 describe('messageReducer', () => {
-    let consoleWarn = global.console.warn;
-    beforeAll(() => global.console.warn = jest.fn());
-    afterAll(() => global.console.warn = consoleWarn);
+    let consoleWarn = console.warn;
+    beforeAll(() => console.warn = jest.fn());
+    afterAll(() => console.warn = consoleWarn);
 
     it('does not process messages with invalid type', () => {
-        /*global global*/
-        global.console.warn = jest.fn();
+        console.warn = jest.fn();
         expect(messageReducer(initialState, {type: 'invalid message type'})).toBe(initialState);
-        expect(global.console.warn).lastCalledWith(expect.stringMatching('no message reducer defined'));
+        expect(console.warn).lastCalledWith(expect.stringMatching('no message reducer defined'));
     });
 
     it('warns on errors', () => {
-        /*global global*/
-        global.console.warn = jest.fn();
+        console.warn = jest.fn();
         expect(messageReducer(initialState,
             {type: messageTypes.ERROR, error: 'some error'})).toBe(initialState);
-        expect(global.console.warn).lastCalledWith('some error');
+        expect(console.warn).lastCalledWith('some error');
     });
 
     it('subscribes users', () => {

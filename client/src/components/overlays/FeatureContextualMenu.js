@@ -17,7 +17,7 @@ export const selectMultipleFeaturesContextualMenuItems = (selectedFeatureNames, 
 ];
 
 export default class extends FeatureComponent({doUpdate: true}) {
-    propTypes = {
+    static propTypes = {
         onDismiss: PropTypes.func.isRequired,
         onSelectAllFeatures: PropTypes.func.isRequired,
         onDeselectAllFeatures: PropTypes.func.isRequired,

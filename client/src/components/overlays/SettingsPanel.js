@@ -34,7 +34,7 @@ export const Setting = {
     ),
 
     SpinButton: class extends React.Component {
-        propTypes = exact({
+        static propTypes = exact({
             settings: SettingsType.isRequired,
             onSetSetting: PropTypes.func.isRequired,
             path: PropTypes.string.isRequired,
@@ -103,7 +103,7 @@ export const Setting = {
     },
 
     ColorPickerContextualMenu: class extends React.Component {
-        propTypes = exact({
+        static propTypes = exact({
             settings: SettingsType.isRequired,
             onSetSetting: PropTypes.func.isRequired,
             paths: PropTypes.arrayOf(PropTypes.string).isRequired
@@ -144,7 +144,7 @@ Setting.FontComboBox.propTypes = exact({
 });
 
 export default class extends React.Component {
-    propTypes = {
+    static propTypes = {
         onDismissed: PropTypes.func.isRequired,
         isOpen: PropTypes.bool.isRequired,
         settings: SettingsType.isRequired,

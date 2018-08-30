@@ -10,7 +10,7 @@ import {FeatureModelType} from '../../server/FeatureModel';
 import FeatureComponent from './FeatureComponent';
 
 export default class extends FeatureComponent({doUpdate: true}) {
-    propTypes = {
+    static propTypes = {
         onDismiss: PropTypes.func.isRequired,
         featureModel: FeatureModelType.isRequired,
         featureName: PropTypes.string.isRequired,

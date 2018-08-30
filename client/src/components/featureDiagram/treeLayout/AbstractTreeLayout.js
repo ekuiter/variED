@@ -12,7 +12,7 @@ import exact from 'prop-types-exact';
 import {FeatureModelType} from '../../../server/FeatureModel';
 
 export default class extends React.Component {
-    propTypes = exact({
+    static propTypes = exact({
         featureModel: FeatureModelType.isRequired,
         width: PropTypes.number,
         height: PropTypes.number,

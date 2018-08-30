@@ -11,7 +11,7 @@ const buttonStyles = {root: {backgroundColor: 'transparent'}},
     transparentItems = items => items;
 
 export default class extends FeatureComponent({onDismissProp: 'onDismissed'}) {
-    propTypes = {
+    static propTypes = {
         onDismissed: PropTypes.func.isRequired,
         featureModel: FeatureModelType.isRequired,
         featureName: PropTypes.string.isRequired,

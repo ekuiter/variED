@@ -28,7 +28,7 @@ DialogWrapper.propTypes = exact({
 });
 
 export class DialogButton extends React.Component {
-    propTypes = exact({
+    static propTypes = exact({
         onApply: PropTypes.func.isRequired,
         children: PropTypes.node.isRequired,
         label: PropTypes.string.isRequired
@@ -63,7 +63,7 @@ export class DialogButton extends React.Component {
 }
 
 export class DialogContextualMenu extends React.Component {
-    propTypes = exact({
+    static propTypes = exact({
         onApply: PropTypes.func.isRequired,
         onRender: PropTypes.func.isRequired,
         options: PropTypes.arrayOf(PropTypes.object).isRequired,
@@ -109,7 +109,7 @@ export class DialogContextualMenu extends React.Component {
 }
 
 export class TextFieldDialog extends React.Component {
-    propTypes = {
+    static propTypes = {
         isOpen: PropTypes.bool.isRequired,
         onDismiss: PropTypes.func.isRequired,
         onSubmit: PropTypes.func.isRequired,

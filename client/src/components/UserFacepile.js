@@ -9,7 +9,7 @@ import exact from 'prop-types-exact';
 import {SettingsType} from '../types';
 
 class UserFacepile extends React.Component {
-    propTypes = exact({
+    static propTypes = exact({
         users: PropTypes.arrayOf(PropTypes.string).isRequired,
         settings: SettingsType.isRequired,
         width: PropTypes.number.isRequired,
