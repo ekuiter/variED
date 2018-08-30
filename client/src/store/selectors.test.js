@@ -11,10 +11,12 @@ describe('selectors', () => {
         });
 
         it('gets a feature model from a loaded store state', () => {
-            const state = {server: {}, ui: {}};
-            state.server.featureModel = validFeatureModel;
+            const state = {
+                server: {featureModel: validFeatureModel},
+                ui: {collapsedFeatureNames: []}
+            };
             expect(getFeatureModel(state)._featureModel)
-                .toEqual(new FeatureModel(validFeatureModel)._featureModel);
+                .toEqual(new FeatureModel(validFeatureModel, [])._featureModel);
         });
 
         it('recomputes when the store state changes', () => {

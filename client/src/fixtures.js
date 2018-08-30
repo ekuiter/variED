@@ -35,6 +35,7 @@ export const validFeatureModel = {
                         {'type': 'feature', 'name': 'FAMILIAR'},
                         {
                             'name': 'FeatureIDE',
+                            'description': 'A sample description',
                             'type': 'or',
                             'children': [
                                 {'type': 'feature', 'name': 'AHEAD'},

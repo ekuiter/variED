@@ -46,7 +46,17 @@
             }
         ],
         "no-console": "off",
-        "react/display-name": "off"
+        "react/display-name": "off",
+        "object-curly-spacing": [
+            "error",
+            "never"
+        ],
+        "react/jsx-tag-spacing": [
+            "error",
+            {
+                "beforeSelfClosing": "never"
+            }
+        ]
     },
     "settings": {
         "propWrapperFunctions": [

@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FeaturePanel renders information for a feature 1`] = `
+<StyledPanelBase
+  headerText={
+    <span>
+      Feature
+      : 
+      <strong>
+        FeatureIDE
+      </strong>
+    </span>
+  }
+  isLightDismiss={true}
+  isOpen={true}
+  onDismissed={[Function]}
+  onRenderFooterContent={[Function]}
+  type={1}
+>
+  <p>
+    A sample description
+  </p>
+</StyledPanelBase>
+`;

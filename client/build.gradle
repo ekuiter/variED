@@ -20,6 +20,7 @@ task build {
 }
 
 task run(dependsOn: 'yarn_start')
+task check(dependsOn: 'yarn_test')
 
 task clean {
     doLast {

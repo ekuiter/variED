@@ -1,0 +1,99 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FeatureCallout renders information for a feature 1`] = `
+<Callout
+  calloutWidth={300}
+  directionalHint={5}
+  gapSpace={5}
+  hidden={false}
+  onDismiss={[Function]}
+  target="<target element>"
+>
+  <div
+    className="callout"
+  >
+    <div
+      className="header"
+    >
+      <p>
+        FeatureIDE
+      </p>
+    </div>
+    <div
+      className="inner"
+    >
+      <p>
+        A sample description
+      </p>
+    </div>
+    <StyledCommandBarBase
+      farItems={
+        Array [
+          Object {
+            "iconOnly": true,
+            "iconProps": Object {
+              "iconName": "Info",
+            },
+            "key": "details",
+            "onClick": [Function],
+            "text": "Details",
+          },
+        ]
+      }
+      items={
+        Array [
+          Object {
+            "iconProps": Object {
+              "iconName": "Add",
+            },
+            "key": "new",
+            "onClick": [Function],
+            "split": true,
+            "subMenuProps": Object {
+              "items": Array [
+                Object {
+                  "iconProps": Object {
+                    "iconName": "Add",
+                  },
+                  "key": "newFeatureBelow",
+                  "onClick": [Function],
+                  "text": "New feature below",
+                },
+                Object {
+                  "disabled": false,
+                  "iconProps": Object {
+                    "iconName": "Add",
+                  },
+                  "key": "featureAbove",
+                  "onClick": [Function],
+                  "text": "New feature above",
+                },
+              ],
+            },
+            "text": "New",
+          },
+          Object {
+            "iconOnly": true,
+            "iconProps": Object {
+              "iconName": "Remove",
+            },
+            "key": "remove",
+            "onClick": [Function],
+            "text": "Remove",
+          },
+          Object {
+            "disabled": false,
+            "iconOnly": true,
+            "iconProps": Object {
+              "iconName": "CollapseContent",
+            },
+            "key": "collapseExpand",
+            "onClick": [Function],
+            "text": "Collapse",
+          },
+        ]
+      }
+    />
+  </div>
+</Callout>
+`;

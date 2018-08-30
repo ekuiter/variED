@@ -4,7 +4,7 @@ jdk: oraclejdk8
 
 install: true
 
-script: ./gradlew build
+script: ./gradlew build && CI=true ./gradlew check
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock

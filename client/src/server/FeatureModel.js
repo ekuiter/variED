@@ -56,6 +56,8 @@ class FeatureModel {
     constructor(featureModel, collapsedFeatureNames) {
         if (!featureModel)
             throw new Error('no feature model given');
+        if (!collapsedFeatureNames)
+            throw new Error('no collapsed feature names given');
         this._featureModel = featureModel;
         this._collapsedFeatureNames = collapsedFeatureNames;
     }
