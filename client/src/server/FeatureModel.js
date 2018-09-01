@@ -9,6 +9,10 @@ export function getName(node) {
     return node.data[serialization.NAME];
 }
 
+function isRoot(node) {
+    return !node.parent;
+}
+
 function isCollapsed(node) {
     return !!(!node.children && node.actualChildren);
 }
@@ -27,6 +31,7 @@ d3Hierarchy.prototype.feature = function() {
         name: getName(this),
         type: this.data[serialization.TYPE],
         description: this.data[serialization.DESCRIPTION],
+        isRoot: isRoot(this),
         isAbstract: !!this.data[serialization.ABSTRACT],
         isHidden: !!this.data[serialization.HIDDEN],
         isMandatory: !!this.data[serialization.MANDATORY],
@@ -80,7 +85,7 @@ class FeatureModel {
             this._visibleNodes = [];
 
             const isVisible = memoize(node => {
-                if (!node.parent)
+                if (isRoot(node))
                     return true;
                 if (isCollapsed(node.parent))
                     return false;

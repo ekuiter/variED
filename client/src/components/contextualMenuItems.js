@@ -85,12 +85,13 @@ const contextualMenuItems = {
                 iconProps: {iconName: 'Add'},
                 onClick: () => actions.server.feature.addBelow(featureName).then(onClick)
             }),
-            remove: (featureName, onClick) => ({
+            remove: (feature, onClick) => ({
                 key: 'remove',
                 text: i18n.t('featureDiagram.commands.feature.remove'),
                 iconProps: {iconName: 'Remove'},
                 iconOnly: true,
-                onClick: () => actions.server.feature.remove(featureName).then(onClick)
+                disabled: feature.isRoot && (!feature.hasChildren || feature.node.children.length > 1),
+                onClick: () => actions.server.feature.remove(feature.name).then(onClick)
             }),
             details: (featureName, onShowOverlay) => ({
                 key: 'details',
@@ -128,7 +129,7 @@ const contextualMenuItems = {
             properties: (feature, onClick) => {
                 const toggleAbstract = () => actions.server.feature.properties.setAbstract(feature.name, !feature.isAbstract).then(onClick),
                     toggleMandatory = () => actions.server.feature.properties.setMandatory(feature.name, !feature.isMandatory).then(onClick),
-                    mandatoryDisabled = !feature.node.parent || feature.node.parent.feature().isGroup,
+                    mandatoryDisabled = feature.isRoot || feature.node.parent.feature().isGroup,
                     groupDisabled = !feature.node.children || feature.node.children.length <= 1;
                 return ({
                     key: 'properties',

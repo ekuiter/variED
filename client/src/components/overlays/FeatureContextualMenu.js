@@ -55,7 +55,7 @@ export default class extends FeatureComponent({doUpdate: true}) {
                         selectedFeatureNames, onSelectAllFeatures, onDeselectAllFeatures, featureModel)
                     : [
                         contextualMenuItems.featureDiagram.feature.new(feature.name, onDismiss),
-                        contextualMenuItems.featureDiagram.feature.remove(feature.name, onDismiss),
+                        contextualMenuItems.featureDiagram.feature.remove(feature, onDismiss),
                         contextualMenuItems.featureDiagram.feature.collapseExpand(
                             feature, this.props.onCollapseFeature, this.props.onExpandFeature, onDismiss),
                         {key: 'divider1', itemType: ContextualMenuItemType.Divider},

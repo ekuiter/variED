@@ -153,7 +153,7 @@ export default class extends React.Component {
 
     getParentCoordinateFn(key) {
         return (node, axis) => {
-            if (node.parent) {
+            if (!node.feature().isRoot) {
                 const coords = this[key][node.parent.feature().name];
                 return coords ? coords[axis] : this.treeNode[axis](node.parent);
             } else
