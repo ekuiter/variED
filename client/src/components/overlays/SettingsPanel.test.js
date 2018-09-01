@@ -37,7 +37,7 @@ describe('Setting', () => {
                 path="featureDiagram.font.family"
             />);
             newSetting = null;
-            wrapper.simulate('changed', 'Times New Roman');
+            wrapper.simulate('change', 'Times New Roman');
             expect(newSetting).toBe('Times New Roman');
         });
     });

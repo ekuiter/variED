@@ -7,7 +7,7 @@ describe('selectors', () => {
     describe('getFeatureModel', () => {
         it('gets no feature model from the initial store state', () => {
             const state = constants.store.initialState;
-            expect(getFeatureModel(state)).toBe(null);
+            expect(getFeatureModel(state)).toBeNull();
         });
 
         it('gets a feature model from a loaded store state', () => {

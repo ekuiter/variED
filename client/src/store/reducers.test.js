@@ -196,7 +196,7 @@ describe('reducers', () => {
                 it('shows the about panel', () => {
                     const state = reducers(undefined, actions.ui.overlay.show(overlayTypes.aboutPanel));
                     expect(state.ui.overlay).toBe(overlayTypes.aboutPanel);
-                    expect(state.ui.overlayProps).toBe(undefined);
+                    expect(state.ui.overlayProps).toBeUndefined();
                 });
     
                 it('shows a feature callout', () => {
@@ -220,19 +220,19 @@ describe('reducers', () => {
                 it('hides an overlay after showing it', () => {
                     let state = reducers(undefined, actions.ui.overlay.show(overlayTypes.aboutPanel));
                     expect(state.ui.overlay).toBe(overlayTypes.aboutPanel);
-                    expect(state.ui.overlayProps).toBe(undefined);
+                    expect(state.ui.overlayProps).toBeUndefined();
                     state = reducers(state, actions.ui.overlay.hide(overlayTypes.aboutPanel));
-                    expect(state.ui.overlay).toBe(null);
-                    expect(state.ui.overlayProps).toBe(null);
+                    expect(state.ui.overlay).toBeNull();
+                    expect(state.ui.overlayProps).toBeNull();
                 });
 
                 it('does nothing if the currently shown overlay is of another type', () => {
                     let state = reducers(undefined, actions.ui.overlay.show(overlayTypes.aboutPanel));
                     expect(state.ui.overlay).toBe(overlayTypes.aboutPanel);
-                    expect(state.ui.overlayProps).toBe(undefined);
+                    expect(state.ui.overlayProps).toBeUndefined();
                     state = reducers(state, actions.ui.overlay.hide(overlayTypes.featurePanel));
                     expect(state.ui.overlay).toBe(overlayTypes.aboutPanel);
-                    expect(state.ui.overlayProps).toBe(undefined);
+                    expect(state.ui.overlayProps).toBeUndefined();
                 });
 
                 it('deselects a feature when switching from a feature callout or ' +

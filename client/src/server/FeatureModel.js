@@ -5,16 +5,20 @@ import memoize from '../helpers/memoize';
 
 const serialization = constants.server.featureModel.serialization;
 
-function getName(node) {
+export function getName(node) {
     return node.data[serialization.NAME];
 }
 
 function isCollapsed(node) {
-    return !node.children && node.actualChildren;
+    return !!(!node.children && node.actualChildren);
+}
+
+function hasChildren(node) {
+    return !!(node.children && node.children.length > 0);
 }
 
 function hasActualChildren(node) {
-    return node.actualChildren && node.actualChildren.length > 0;
+    return !!(node.actualChildren && node.actualChildren.length > 0);
 }
 
 d3Hierarchy.prototype.feature = function() {
@@ -23,9 +27,9 @@ d3Hierarchy.prototype.feature = function() {
         name: getName(this),
         type: this.data[serialization.TYPE],
         description: this.data[serialization.DESCRIPTION],
-        isAbstract: this.data[serialization.ABSTRACT],
-        isHidden: this.data[serialization.HIDDEN],
-        isMandatory: this.data[serialization.MANDATORY],
+        isAbstract: !!this.data[serialization.ABSTRACT],
+        isHidden: !!this.data[serialization.HIDDEN],
+        isMandatory: !!this.data[serialization.MANDATORY],
         isAnd: this.data[serialization.TYPE] === serialization.AND,
         isOr: this.data[serialization.TYPE] === serialization.OR,
         isAlternative: this.data[serialization.TYPE] === serialization.ALT,
@@ -33,7 +37,7 @@ d3Hierarchy.prototype.feature = function() {
             this.data[serialization.TYPE] === serialization.OR ||
             this.data[serialization.TYPE] === serialization.ALT,
         isCollapsed: isCollapsed(this),
-        hasChildren: this.children && this.children.length > 0,
+        hasChildren: hasChildren(this),
         hasActualChildren: hasActualChildren(this),
         getPropertyString: key => {
             if (typeof key === 'function')

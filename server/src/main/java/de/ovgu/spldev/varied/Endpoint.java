@@ -28,6 +28,7 @@ public class Endpoint {
     @OnOpen
     public void onOpen(Session session) {
         EndpointManager endpointManager = EndpointManager.getInstance();
+        session.setMaxIdleTimeout(0);
 
         this.session = session;
         this.label = generateLabel();

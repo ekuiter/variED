@@ -30,7 +30,7 @@ export const Setting = {
             className="setting"
             label={getLabel(path)}
             selectedFont={getSetting(settings, path)}
-            onChanged={font => onSetSetting(path, font)}/>
+            onChange={font => onSetSetting(path, font)}/>
     ),
 
     SpinButton: class extends React.Component {

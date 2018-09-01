@@ -8,30 +8,28 @@ import PropTypes from 'prop-types';
 export default class extends React.Component {
     static propTypes = {
         selectedFont: PropTypes.string.isRequired,
-        fonts: PropTypes.arrayOf(PropTypes.string).isRequired,
-        fallbacks: PropTypes.arrayOf(PropTypes.string),
-        onChanged: PropTypes.func.isRequired
+        fonts: PropTypes.arrayOf(PropTypes.string),
+        onChange: PropTypes.func.isRequired
     };
 
     static defaultProps = {fonts: constants.helpers.fontComboBox.suggestedFonts};
     state = {errorMessage: null};
 
-    onChanged = (option, index, value) => {
+    onChange = (option, index, value) => {
         const font = value || (option && option.key);
         if (!font)
             return;
         if (isFontInstalled(font))
-            this.props.onChanged(font);
+            this.props.onChange(font);
         else
             this.setState({errorMessage: i18n.t('panels.settingsPanel.errors.fontNotInstalled')});
     };
 
     render() {
-        let {selectedFont, fonts, fallbacks, ...props} = this.props;
-        fallbacks = fallbacks ? `,${fallbacks.map(fallback => `'${fallback}'`).join(',')}` : '';
+        let {selectedFont, fonts, ...props} = this.props;
         fonts = fonts
             .filter(isFontInstalled)
-            .map(font => ({key: font, text: font, fontFamily: `'${font}'${fallbacks}`}));
+            .map(font => ({key: font, text: font, fontFamily: `'${font}'`}));
 
         return (
             <ComboBox
@@ -43,7 +41,7 @@ export default class extends React.Component {
                     <span className="ms-ComboBox-optionText" style={{fontFamily}}>{text}</span>}
                 errorMessage={this.state.errorMessage}
                 {...props}
-                onChanged={this.onChanged}/>
+                onChange={this.onChange}/>
         );
     }
 }

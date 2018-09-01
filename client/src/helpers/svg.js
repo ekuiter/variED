@@ -15,12 +15,12 @@ export function attrIfPresent(selection, key, value) {
         selection.attr(key, value);
 }
 
-function styleIfPresent(selection, style) {
+export function styleIfPresent(selection, style) {
     if (typeof style !== 'undefined')
         selection.call(addStyle, style);
 }
 
-function fnIfPresent(selection, fn) {
+export function fnIfPresent(selection, fn) {
     if (typeof fn !== 'undefined')
         selection.call(fn);
 }
@@ -63,7 +63,7 @@ export function drawLine(selection, selector, {klass, from, to, style, fn}) {
         .attr('d', d => toD(MOVE, toPath(from(d)), LINE, toPath(to(d))));
 }
 
-export function drawCurve(selection, selector, {klass, from, to, inset = 0, style, fn}) {
+export function drawCurve(selection, selector, {klass, from, to, inset, style, fn}) {
     (!selector ? selection.append('path') : selection.select(selector))
         .call(attrIfPresent, 'class', klass)
         .call(styleIfPresent, style)
@@ -117,8 +117,9 @@ export function addStyle(selection, ...styleDescriptors) {
         property = typeof property === 'function' ? property() : property;
         if (property)
             Object.keys(styles).forEach(key =>
-                selection.filter(node => node.feature().getPropertyString(property) === key).call(
-                    typeof styles[key] === 'function' ? styles[key] : selection => selection.attrs(styles[key])));
+                selection
+                    .filter(node => node.feature().getPropertyString(property) === key)
+                    .call(selection => selection.attrs(styles[key])));
         else
             selection.attrs(styleDescriptor);
     });

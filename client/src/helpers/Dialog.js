@@ -7,7 +7,7 @@ import {TextField} from '../../node_modules/office-ui-fabric-react/lib/TextField
 import PropTypes from 'prop-types';
 import exact from 'prop-types-exact';
 
-const DialogWrapper = ({isOpen, onDismiss, onApply, children, label}) => (
+export const DialogWrapper = ({isOpen, onDismiss, onApply, children, label}) => (
     <Dialog
         hidden={!isOpen}
         onDismiss={onDismiss}
@@ -27,41 +27,6 @@ DialogWrapper.propTypes = exact({
     label: PropTypes.string.isRequired
 });
 
-export class DialogButton extends React.Component {
-    static propTypes = exact({
-        onApply: PropTypes.func.isRequired,
-        children: PropTypes.node.isRequired,
-        label: PropTypes.string.isRequired
-    });
-
-    state = {isDialogOpen: false};
-    onDialogOpen = () => this.setState({isDialogOpen: true});
-    onDialogDismiss = () => this.setState({isDialogOpen: false});
-
-    onApply = () => {
-        this.props.onApply();
-        this.onDialogDismiss();
-    };
-
-    render() {
-        return (
-            <React.Fragment>
-                <DefaultButton
-                    className="setting"
-                    onClick={this.onDialogOpen}
-                    text={this.props.label}/>
-                <DialogWrapper
-                    label={this.props.label}
-                    isOpen={this.state.isDialogOpen}
-                    onDismiss={this.onDialogDismiss}
-                    onApply={this.onApply}>
-                    {this.props.children}
-                </DialogWrapper>
-            </React.Fragment>
-        );
-    }
-}
-
 export class DialogContextualMenu extends React.Component {
     static propTypes = exact({
         onApply: PropTypes.func.isRequired,
@@ -72,17 +37,17 @@ export class DialogContextualMenu extends React.Component {
         iconProps: PropTypes.object
     });
 
-    state = {isDialogOpen: false, option: null};
-    onDialogDismiss = () => this.setState({isDialogOpen: false});
+    state = {option: null};
+    onDialogDismiss = () => this.setState({option: null});
 
     onDialogOpen = option => () => {
         this.props.onRender(option);
-        this.setState({option, isDialogOpen: true});
+        this.setState({option});
     };
 
     onApply = () => {
-        this.onDialogDismiss();
         this.props.onApply(this.state.option);
+        this.onDialogDismiss();
     };
 
     render() {
@@ -98,7 +63,7 @@ export class DialogContextualMenu extends React.Component {
                 {this.state.option &&
                 <DialogWrapper
                     label={this.state.option.text}
-                    isOpen={this.state.isDialogOpen}
+                    isOpen={!!this.state.option}
                     onDismiss={this.onDialogDismiss}
                     onApply={this.onApply}>
                     {this.props.children}
@@ -116,7 +81,7 @@ export class TextFieldDialog extends React.Component {
         title: PropTypes.string.isRequired,
         defaultValue: PropTypes.string,
         submitText: PropTypes.string.isRequired,
-        submitOnEnter: PropTypes.bool.isRequired,
+        submitOnEnter: PropTypes.bool,
         textFieldProps: PropTypes.object
     };
 
@@ -124,6 +89,8 @@ export class TextFieldDialog extends React.Component {
     state = {value: null};
     textFieldRef = React.createRef();
     onChange = (e, value) => this.setState({value});
+
+    // does not work without defer, god knows why
     onLayerDidMount = defer(() => {
         this.textFieldRef.current.focus();
         this.textFieldRef.current.select();

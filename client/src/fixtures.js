@@ -21,7 +21,7 @@ export const validFeatureModel = {
         {
             'name': 'Eclipse',
             'mandatory': true,
-            'description': 'his is a feature which has a description text',
+            'description': 'this is a feature which has a description text',
             'type': 'and',
             'children': [
                 {'type': 'feature', 'name': 'JDT'},
@@ -141,7 +141,7 @@ export const validFeatureModelWithRemovedFeatures = {
         {
             'name': 'Eclipse',
             'mandatory': true,
-            'description': 'his is a feature which has a description text',
+            'description': 'this is a feature which has a description text',
             'type': 'and',
             'children': [
                 {'type': 'feature', 'name': 'JDT'},

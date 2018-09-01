@@ -38,6 +38,6 @@ describe('FeatureComponent', () => {
                     featureName="<invalid feature>"/>
             );
         expect(renderIfFeature).not.toBeCalled();
-        expect(wrapper.get(0)).toBe(null);
+        expect(wrapper.get(0)).toBeNull();
     });
 });

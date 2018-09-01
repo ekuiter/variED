@@ -1,0 +1,180 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`svg drawLine adds styles 1`] = `
+<svg>
+  <g
+    width="100"
+    shouldbeyes="yes"
+    shouldbeno="no"
+    shouldalsobeyes="yes"
+  />
+</svg>
+`;
+
+exports[`svg drawLine appends a cross 1`] = `
+Selection {
+  "_groups": Array [
+    Array [
+      <svg>
+        <path
+                d="M -4 -4 L 4 4"
+                fill="none"
+                stroke="red"
+                stroke-width="1.5px"
+        />
+        <path
+                d="M -4 4 L 4 -4"
+                fill="none"
+                stroke="red"
+                stroke-width="1.5px"
+        />
+</svg>,
+    ],
+  ],
+  "_parents": Array [
+    null,
+  ],
+}
+`;
+
+exports[`svg drawLine draws a circle 1`] = `
+Selection {
+  "_groups": Array [
+    Array [
+      <svg>
+        <circle
+                r="5"
+        />
+</svg>,
+    ],
+  ],
+  "_parents": Array [
+    null,
+  ],
+}
+`;
+
+exports[`svg drawLine draws a circle with a center 1`] = `
+Selection {
+  "_groups": Array [
+    Array [
+      <svg>
+        <circle
+                r="5"
+                transform="translate(10,10)"
+        />
+</svg>,
+    ],
+  ],
+  "_parents": Array [
+    null,
+  ],
+}
+`;
+
+exports[`svg drawLine draws a curve 1`] = `
+Selection {
+  "_groups": Array [
+    Array [
+      <svg>
+        <path
+                d="M 0,0 C 5,0 5,10 10,10"
+        />
+</svg>,
+    ],
+  ],
+  "_parents": Array [
+    null,
+  ],
+}
+`;
+
+exports[`svg drawLine draws a line 1`] = `
+Selection {
+  "_groups": Array [
+    Array [
+      <svg>
+        <path
+                d="M 0,0 L 10,10"
+        />
+</svg>,
+    ],
+  ],
+  "_parents": Array [
+    null,
+  ],
+}
+`;
+
+exports[`svg drawLine updates a circle 1`] = `
+Selection {
+  "_groups": Array [
+    Array [
+      <svg>
+        <circle
+                r="5"
+                transform="translate(10,10)"
+        />
+</svg>,
+    ],
+  ],
+  "_parents": Array [
+    null,
+  ],
+}
+`;
+
+exports[`svg drawLine updates a curve 1`] = `
+Selection {
+  "_groups": Array [
+    Array [
+      <svg>
+        <path
+                d="M 0,0 C 5,0 5,10 10,10"
+        />
+</svg>,
+    ],
+  ],
+  "_parents": Array [
+    null,
+  ],
+}
+`;
+
+exports[`svg drawLine updates a line 1`] = `
+Selection {
+  "_groups": Array [
+    Array [
+      <svg>
+        <path
+                d="M 0,0 L 10,10"
+        />
+</svg>,
+    ],
+  ],
+  "_parents": Array [
+    null,
+  ],
+}
+`;
+
+exports[`svg drawLine updates a rectangle 1`] = `
+Selection {
+  "_groups": Array [
+    Array [
+      <svg
+        fill="none"
+        stroke="red"
+        stroke-dasharray="4,4"
+        width="100"
+        height="50"
+        x="10"
+        y="10"
+/>,
+    ],
+  ],
+  "_parents": Array [
+    null,
+  ],
+}
+`;

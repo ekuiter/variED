@@ -124,7 +124,7 @@ exports[`FeatureContextualMenu renders correctly for a single feature 1`] = `
           "items": Array [
             Object {
               "canCheck": true,
-              "isChecked": undefined,
+              "isChecked": false,
               "key": "abstract",
               "onClick": [Function],
               "text": "Abstract",
@@ -142,7 +142,7 @@ exports[`FeatureContextualMenu renders correctly for a single feature 1`] = `
             },
             Object {
               "canCheck": true,
-              "isChecked": undefined,
+              "isChecked": false,
               "key": "hidden",
               "onClick": [Function],
               "text": "Hidden",
@@ -154,7 +154,7 @@ exports[`FeatureContextualMenu renders correctly for a single feature 1`] = `
             Object {
               "canCheck": true,
               "disabled": false,
-              "isChecked": undefined,
+              "isChecked": false,
               "key": "mandatory",
               "onClick": [Function],
               "text": "Mandatory",
