@@ -73,6 +73,7 @@ exports[`FeatureCallout renders information for a feature with a description 1`]
             "text": "New",
           },
           Object {
+            "disabled": false,
             "iconOnly": true,
             "iconProps": Object {
               "iconName": "Remove",
@@ -167,6 +168,7 @@ exports[`FeatureCallout renders information for a feature without a description 
             "text": "New",
           },
           Object {
+            "disabled": false,
             "iconOnly": true,
             "iconProps": Object {
               "iconName": "Remove",

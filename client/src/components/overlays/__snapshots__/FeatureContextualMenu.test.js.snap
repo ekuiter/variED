@@ -77,6 +77,7 @@ exports[`FeatureContextualMenu renders correctly for a single feature 1`] = `
         "text": "New",
       },
       Object {
+        "disabled": false,
         "iconOnly": true,
         "iconProps": Object {
           "iconName": "Remove",
