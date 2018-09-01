@@ -21,13 +21,13 @@ export default WrappedComponent =>
             window.removeEventListener('resize', this.onResize);
         }
 
-        onResize = throttle(() =>
+        onResize = throttle(() =>   
             this.setState({
                 width: getViewportDimension('clientWidth'),
                 height: getViewportDimension('clientHeight')
             }), constants.helpers.withDimensions.throttleResize);
 
         render() {
-            return <WrappedComponent width={this.state.width} height={this.state.height} {...this.props} />;
+            return <WrappedComponent width={this.state.width} height={this.state.height} {...this.props}/>;
         }
     };

@@ -30,7 +30,15 @@ describe('FeatureRenameDialog', () => {
 
     it('triggers a rename if a new name is entered', () => {
         const wrapper = shallow(featureRenameDialog);
+        actions.server.feature.rename.mockClear();
         wrapper.find(TextFieldDialog).simulate('submit', 'new feature name');
         expect(actions.server.feature.rename).lastCalledWith('FeatureIDE', 'new feature name');
+    });
+
+    it('does nothing if the new name is the same as the old name', () => {
+        const wrapper = shallow(featureRenameDialog);
+        actions.server.feature.rename.mockClear();
+        wrapper.find(TextFieldDialog).simulate('submit', 'FeatureIDE');
+        expect(actions.server.feature.rename).not.toBeCalled();
     });
 });

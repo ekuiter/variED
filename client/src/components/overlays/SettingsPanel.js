@@ -267,25 +267,22 @@ export default class extends React.Component {
                                 iconProps={{iconName: 'QuarterCircle'}}
                                 min={0} max={50} step={0.5} suffix=" px"/>
                         </React.Fragment>
-
-                        : featureDiagramLayout === layoutTypes.horizontalTree
-                            ? <React.Fragment>
-                                <h4>{i18n.t('panels.settingsPanel.headings.horizontalTree')}</h4>
-                                <Setting.SpinButton
-                                    {...props}
-                                    path="featureDiagram.treeLayout.horizontal.layerMargin"
-                                    iconProps={{
-                                        iconName: 'Spacer',
-                                        styles: {root: {transform: 'rotate(90deg)', marginLeft: -2, marginRight: 2}}
-                                    }}
-                                    min={0} max={200} suffix=" px"/>
-                                <Setting.SpinButton
-                                    {...props}
-                                    path="featureDiagram.treeLayout.horizontal.marginY"
-                                    iconProps={{iconName: 'Spacer'}}
-                                    min={0} max={200} suffix=" px"/>
-                            </React.Fragment>
-                            : null}
+                        : <React.Fragment>
+                            <h4>{i18n.t('panels.settingsPanel.headings.horizontalTree')}</h4>
+                            <Setting.SpinButton
+                                {...props}
+                                path="featureDiagram.treeLayout.horizontal.layerMargin"
+                                iconProps={{
+                                    iconName: 'Spacer',
+                                    styles: {root: {transform: 'rotate(90deg)', marginLeft: -2, marginRight: 2}}
+                                }}
+                                min={0} max={200} suffix=" px"/>
+                            <Setting.SpinButton
+                                {...props}
+                                path="featureDiagram.treeLayout.horizontal.marginY"
+                                iconProps={{iconName: 'Spacer'}}
+                                min={0} max={200} suffix=" px"/>
+                        </React.Fragment>}
                 </React.Fragment>}
             </Panel>
         );

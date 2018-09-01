@@ -14,16 +14,15 @@ describe('Setting', () => {
     // TODO: wait for create-react-app update
     let newSetting;
     const onSetSetting = jest.fn((path, value) => newSetting = getSetting(getNewSettings(defaultSettings, path, value), path));
+    afterEach(() => newSetting = undefined);
 
     describe('Toggle', () => {
         it('toggles a setting', () => {
             const wrapper = shallow(<Setting.Toggle
                     settings={defaultSettings}
                     onSetSetting={onSetSetting}
-                    path="featureDiagram.treeLayout.debug"
-                />),
+                    path="featureDiagram.treeLayout.debug"/>),
                 oldValue = wrapper.prop('checked');
-            newSetting = null;
             wrapper.simulate('click');
             expect(newSetting).toBe(!oldValue);
         });
@@ -34,38 +33,46 @@ describe('Setting', () => {
             const wrapper = shallow(<Setting.FontComboBox
                 settings={defaultSettings}
                 onSetSetting={onSetSetting}
-                path="featureDiagram.font.family"
-            />);
-            newSetting = null;
+                path="featureDiagram.font.family"/>);
             wrapper.simulate('change', 'Times New Roman');
             expect(newSetting).toBe('Times New Roman');
         });
     });
 
     describe('SpinButton', () => {
-        const wrapper = () => shallow(<Setting.SpinButton
+        const wrapper = ({min, max} = {}) => shallow(<Setting.SpinButton
             settings={defaultSettings}
             onSetSetting={onSetSetting}
             path="featureDiagram.font.size"
             suffix=" px"
-        />);
+            min={min}
+            max={max}/>);
 
         it('sets a number', () => {
-            newSetting = null;
             wrapper().find(SpinButton).simulate('validate', '42 px');
             expect(newSetting).toBe(42);
         });
 
         it('increments a number', () => {
-            newSetting = null;
             wrapper().find(SpinButton).simulate('increment', '42 px');
             expect(newSetting).toBe(43);
         });
 
         it('decrements a number', () => {
-            newSetting = null;
             wrapper().find(SpinButton).simulate('decrement', '42 px');
             expect(newSetting).toBe(41);
+        });
+
+        it('clamps numbers', () => {
+            wrapper({min: 10}).find(SpinButton).simulate('validate', '5 px');
+            expect(newSetting).toBe(10);
+            wrapper({max: 20}).find(SpinButton).simulate('validate', '25 px');
+            expect(newSetting).toBe(20);
+        });
+
+        it('does nothing if the input is not a number', () => {
+            wrapper().find(SpinButton).simulate('validate', '<invalid input>');
+            expect(newSetting).toBeUndefined();
         });
     });
 
@@ -74,9 +81,8 @@ describe('Setting', () => {
             const wrapper = shallow(<Setting.ColorPickerContextualMenu
                 settings={defaultSettings}
                 onSetSetting={onSetSetting}
-                paths={['featureDiagram.treeLayout.node.visibleFill']}
-            />);
-            newSetting = null;
+                paths={['featureDiagram.treeLayout.node.visibleFill']}/>);
+            wrapper.simulate('render', {key: 'featureDiagram.treeLayout.node.visibleFill'});
             wrapper.find(ColorPicker).simulate('colorChanged', '#c0ffee');
             wrapper.simulate('apply', {key: 'featureDiagram.treeLayout.node.visibleFill'});
             expect(newSetting).toBe('#c0ffee');

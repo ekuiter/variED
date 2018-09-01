@@ -38,6 +38,6 @@ export default (...keyBindings) =>
 
             render() {
                 let keyRef = key => element => this._refs[key] = element;
-                return <WrappedComponent keyRef={keyRef} {...this.props} {...this.state} />;
+                return <WrappedComponent keyRef={keyRef} {...this.props} {...this.state}/>;
             }
         };

@@ -34,6 +34,7 @@
     "eslint": "^5.4.0",
     "eslint-plugin-jest": "^21.22.0",
     "eslint-plugin-react": "^7.11.1",
+    "mock-socket": "^8.0.2",
     "redux-devtools": "^3.4.1"
   },
   "scripts": {

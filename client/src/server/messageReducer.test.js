@@ -7,17 +7,15 @@ const {messageTypes} = constants.server,
 
 describe('messageReducer', () => {
     let consoleWarn = console.warn;
-    beforeAll(() => console.warn = jest.fn());
-    afterAll(() => console.warn = consoleWarn);
+    beforeEach(() => console.warn = jest.fn());
+    afterEach(() => console.warn = consoleWarn);
 
     it('does not process messages with invalid type', () => {
-        console.warn = jest.fn();
         expect(messageReducer(initialState, {type: 'invalid message type'})).toBe(initialState);
         expect(console.warn).lastCalledWith(expect.stringMatching('no message reducer defined'));
     });
 
     it('warns on errors', () => {
-        console.warn = jest.fn();
         expect(messageReducer(initialState,
             {type: messageTypes.ERROR, error: 'some error'})).toBe(initialState);
         expect(console.warn).lastCalledWith('some error');

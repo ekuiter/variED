@@ -7,47 +7,36 @@ const getWebSocket = (() => {
 
     function connect() {
         return new Promise((resolve, reject) => {
-            if (webSocket && webSocket.readyState !== webSocket.CLOSED)
-                throw new Error('can not connect while old WebSocket is still in use');
             webSocket = new WebSocket(constants.server.webSocket);
+            
             webSocket.onopen = () => {
-                onOpen();
+                console.log('opened WebSocket');
                 resolve(webSocket);
             };
-            webSocket.onclose = onClose;
+            
+            webSocket.onclose = e => {
+                console.warn('closed WebSocket with code', e.code, 'and reason', e.reason);
+                // TODO: notify user that WebSocket was closed (with button to reopen)
+            };
+            
             webSocket.onerror = e => {
-                onError(e);
+                console.warn('WebSocket error:', e);
+                // TODO: notify user of error (and IF WebSocket is closed now, a button to reopen it)
                 reject(e);
             };
-            webSocket.onmessage = onMessage;
+            
+            webSocket.onmessage = message => {
+                let data = JSON.parse(message.data);
+                console.log('received:', data);
+                handleMessage && handleMessage(data);
+            };
         });
     }
 
-    return () => webSocket && webSocket.readyState !== webSocket.CLOSED
+    return (mayConnect = true) => !mayConnect || (webSocket && webSocket.readyState !== webSocket.CLOSED)
         ? Promise.resolve(webSocket)
         : connect();
 })();
-
-function onOpen() {
-    console.log('opened WebSocket');
-}
-
-function onClose(e) {
-    console.warn('closed WebSocket with code', e.code, 'and reason', e.reason);
-    // TODO: notify user that WebSocket was closed (with button to reopen)
-}
-
-function onError(e) {
-    console.warn('WebSocket error:', e);
-    // TODO: notify user of error (and IF WebSocket is closed now, a button to reopen it)
-}
-
-function onMessage(message) {
-    let data = JSON.parse(message.data);
-    console.log('received:', data);
-    if (handleMessage)
-        handleMessage(data);
-}
 
 export function openWebSocket(_handleMessage) {
     if (typeof _handleMessage === 'function')

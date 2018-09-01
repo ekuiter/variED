@@ -1,7 +1,7 @@
 import React from 'react';
 import {getSetting} from '../../store/settings';
 import PropTypes from 'prop-types';
-import { FeatureModelType } from '../../server/FeatureModel';
+import {FeatureModelType} from '../../server/FeatureModel';
 import {SettingsType} from '../../types';
 
 export default ({isOpenProp = 'isOpen', onDismissProp = 'onDismiss', doUpdate = false} = {}) =>
@@ -15,7 +15,7 @@ export default ({isOpenProp = 'isOpen', onDismissProp = 'onDismiss', doUpdate = 
         componentDidMount() {
             if (doUpdate)
                 this.interval = window.setInterval(
-                    this.forceUpdate.bind(this),
+                    () => this.forceUpdate(),
                     getSetting(this.props.settings, 'featureDiagram.overlay.throttleUpdate'));
         }
 

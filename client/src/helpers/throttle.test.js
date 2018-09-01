@@ -9,7 +9,7 @@ describe('throttle', () => {
         expect(fn).not.toBeCalled();
         for (let i = 0; i < 10; i++) {
             throttled(i);
-            jest.runTimersToTime(50); // TODO: now advanceTimersByTime, wait for create-react-app update
+            jest.runTimersToTime(50);
         }
         expect(fn).toHaveBeenCalledTimes(5);
         for (let i = 0; i < 10; i += 2)
