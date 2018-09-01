@@ -24,8 +24,8 @@ const actions = createActions({
             EXPAND_ALL: () => {},
         },
         OVERLAY: {
-            SHOW: (overlay, overlayProps, {selectFeature} = {}) =>
-                ({overlay, overlayProps, selectFeature}),
+            SHOW: (overlay, overlayProps, {selectOneFeature} = {}) =>
+                ({overlay, overlayProps, selectOneFeature}),
             HIDE: (overlay) => ({overlay}),
         }
     }

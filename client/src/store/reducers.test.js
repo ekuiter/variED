@@ -209,7 +209,7 @@ describe('reducers', () => {
                     let state = reducers(undefined);
                     expect(state.ui.selectedFeatureNames).not.toContain('FeatureIDE');
                     state = reducers(state, actions.ui.overlay.show(
-                        overlayTypes.featureCallout, {featureName: 'FeatureIDE'}, {selectFeature: 'FeatureIDE'}));
+                        overlayTypes.featureCallout, {featureName: 'FeatureIDE'}, {selectOneFeature: 'FeatureIDE'}));
                     expect(state.ui.overlay).toBe(overlayTypes.featureCallout);
                     expect(state.ui.overlayProps).toEqual({featureName: 'FeatureIDE'});
                     expect(state.ui.selectedFeatureNames).toContain('FeatureIDE');

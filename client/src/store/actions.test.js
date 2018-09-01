@@ -90,12 +90,12 @@ describe('actions', () => {
             });
 
             it('shows the feature panel and selects a feature', () => {
-                expect(actions.ui.overlay.show(overlayTypes.featurePanel, {featureName: 'FeatureIDE'}, {selectFeature: 'FeatureIDE'}))
+                expect(actions.ui.overlay.show(overlayTypes.featurePanel, {featureName: 'FeatureIDE'}, {selectOneFeature: 'FeatureIDE'}))
                     .toEqual({
                         type: 'UI/OVERLAY/SHOW', payload: {
                             overlay: overlayTypes.featurePanel,
                             overlayProps: {featureName: 'FeatureIDE'},
-                            selectFeature: 'FeatureIDE'
+                            selectOneFeature: 'FeatureIDE'
                         }
                     });
             });

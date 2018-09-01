@@ -107,10 +107,10 @@ const uiReducer = rootState => handleActions({
             EXPAND_ALL: state => ({...state, collapsedFeatureNames: []})
         },
         OVERLAY: {
-            SHOW: (state, {payload: {overlay, overlayProps, selectFeature}}) => {
+            SHOW: (state, {payload: {overlay, overlayProps, selectOneFeature}}) => {
                 let newState = updateOverlay(state, overlay, overlayProps);
-                if (selectFeature)
-                    newState.selectedFeatureNames = [...newState.selectedFeatureNames, selectFeature];
+                if (selectOneFeature)
+                    newState.selectedFeatureNames = [selectOneFeature];
                 return newState;
             },
             HIDE: (state, {payload: {overlay}}) =>

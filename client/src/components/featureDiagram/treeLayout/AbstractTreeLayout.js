@@ -138,7 +138,7 @@ export default class extends React.Component {
                 this.props.onShowOverlay(overlay, {featureName});
         } else {
             if (overlayTypes.isShownAtSelectedFeature(overlay))
-                this.props.onShowOverlay(overlay, {featureName}, {selectFeature: featureName});
+                this.props.onShowOverlay(overlay, {featureName}, {selectOneFeature: featureName});
             else if (overlay === 'select') {
                 this.props.onSetSelectMultipleFeatures(true);
                 this.props.onSelectFeature(featureName);
