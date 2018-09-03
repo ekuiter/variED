@@ -15,7 +15,7 @@ export default class extends React.Component {
     static defaultProps = {fonts: constants.helpers.fontComboBox.suggestedFonts};
     state = {errorMessage: null};
 
-    onChange = (option, index, value) => {
+    onChange = (_event, option, _index, value) => {
         const font = value || (option && option.key);
         if (!font)
             return;
