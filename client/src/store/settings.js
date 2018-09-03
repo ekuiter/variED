@@ -3,6 +3,8 @@ import objectPathImmutable from 'object-path-immutable';
 
 export const defaultSettings = {
     featureDiagram: {
+        // settings paths that should NOT trigger a rerender of the feature diagram
+        doNotRerenderForPaths: ['treeLayout.useTransitions', 'treeLayout.transitionDuration'],
         font: {
             family: 'Arial', // font family for feature diagrams
             size: 16 // main font size for feature names
@@ -58,6 +60,8 @@ export const defaultSettings = {
 
 export function getSetting(settings, ...paths) {
     const path = paths.join('.');
+    if (!path)
+        return settings;
     if (!objectPath.has(settings, path))
         throw new Error(`setting ${path} does not exist`);
     return objectPath.get(settings, path);
@@ -70,4 +74,20 @@ export function getNewSettings(settings, path, value) {
         return objectPathImmutable.update(settings, path, value);
     else
         return objectPathImmutable.set(settings, path, value);
+}
+
+export function cloneSettings(settings) {
+    return JSON.parse(JSON.stringify(settings));
+}
+
+export function traverseSettings(settings, path, fn) {
+    if (path)
+        settings = getSetting(settings, path);
+    const traverse = (paths, parentObject) => ([key, value]) => {
+        if (typeof value === 'object' && !Array.isArray(value))
+            Object.entries(value).forEach(traverse([...paths, key], value));
+        else
+            fn.call(parentObject, [...paths, key].join('.'), key, value);
+    };
+    Object.entries(settings).forEach(traverse(path ? [path] : [], settings));
 }

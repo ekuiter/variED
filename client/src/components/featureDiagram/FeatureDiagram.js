@@ -3,6 +3,7 @@ import VerticalTreeLayout from './treeLayout/VerticalTreeLayout';
 import HorizontalTreeLayout from './treeLayout/HorizontalTreeLayout';
 import stringify from 'json-stable-stringify';
 import {LayoutType, layoutTypes} from '../../types';
+import {getSetting, cloneSettings, traverseSettings} from '../../store/settings';
 
 const layoutMap = {
     [layoutTypes.verticalTree]: VerticalTreeLayout,
@@ -19,7 +20,15 @@ export default class extends React.Component {
     getKey({settings}) {
         // The key uniquely identifies the layout component instance. If the key changes, the
         // instance is unmounted and a new one is mounted. This is useful for forcing rerenders.
-        return stringify(settings); // For now, just rerender whenever any setting changes.
+        const clonedFeatureDiagramSettings = cloneSettings(getSetting(settings, 'featureDiagram')),
+            doNotRerenderForPaths = getSetting(settings, 'featureDiagram.doNotRerenderForPaths');
+        traverseSettings(clonedFeatureDiagramSettings, null,
+            function(path, key, _value) {
+                // filter settings that should not trigger a rerender
+                if (doNotRerenderForPaths.includes(path))
+                    this[key] = undefined;
+            });
+        return stringify(clonedFeatureDiagramSettings);
     }
 
     render() {

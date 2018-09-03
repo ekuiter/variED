@@ -1,4 +1,4 @@
-import {defaultSettings, getSetting, getNewSettings} from './settings';
+import {defaultSettings, getSetting, getNewSettings, traverseSettings, cloneSettings} from './settings';
 
 describe('settings', () => {
     describe('getSetting', () => {
@@ -9,6 +9,10 @@ describe('settings', () => {
         it('retrieves a whole settings tree from the default settings', () => {
             expect(getSetting(defaultSettings, 'featureDiagram')).toEqual(defaultSettings.featureDiagram);
         });
+
+        it('retrieves the whole settings tree if no path is supplied', () => {
+            expect(getSetting(defaultSettings)).toBe(defaultSettings);
+        });
         
         it('errors on invalid settings', () => {
             expect(() => getSetting(defaultSettings, 'an.invalid.setting.path')).toThrow('does not exist');
@@ -17,7 +21,7 @@ describe('settings', () => {
     
     describe('getNewSettings', () => {
         it('sets new settings', () => {
-            const defaultSettingsClone = JSON.parse(JSON.stringify(defaultSettings));
+            const defaultSettingsClone = cloneSettings(defaultSettings);
             expect(getNewSettings(defaultSettings, 'featureDiagram.font.size', 42)).not.toEqual(defaultSettingsClone);
         
             defaultSettingsClone.featureDiagram.font.size = 42;
@@ -31,7 +35,7 @@ describe('settings', () => {
         });
         
         it('does not mutate the settings object', () => {
-            const defaultSettingsClone = JSON.parse(JSON.stringify(defaultSettings)),
+            const defaultSettingsClone = cloneSettings(defaultSettings),
                 newSettings = getNewSettings(defaultSettings, 'featureDiagram.font.size', 42);
             expect(newSettings).not.toBe(defaultSettings);
             expect(defaultSettings).toEqual(defaultSettingsClone);
@@ -39,6 +43,39 @@ describe('settings', () => {
 
         it('errors on invalid settings', () => {
             expect(() => getNewSettings(defaultSettings, 'an.invalid.setting.path', 42)).toThrow('does not exist');
+        });
+    });
+
+    describe('cloneSettings', () => {
+        it('clones a settings object', () => {
+            const defaultSettingsClone = cloneSettings(defaultSettings);
+            expect(defaultSettingsClone).not.toBe(defaultSettings);
+            expect(defaultSettingsClone).toEqual(defaultSettings);
+        });
+    });
+
+    describe('traverseSettings', () => {
+        const testWithPath = (mock, path) => {
+            traverseSettings(defaultSettings, path, mock);
+            expect(mock).toBeCalledWith('featureDiagram.font.size', 'size',
+                getSetting(defaultSettings, 'featureDiagram.font.size'));
+            expect(mock).toBeCalledWith('featureDiagram.treeLayout.node.size', 'size',
+                getSetting(defaultSettings, 'featureDiagram.treeLayout.node.size'));
+            expect(mock).not.toBeCalledWith('featureDiagram');
+        };
+
+        it('traverses a settings object recursively', () => {
+            const mock = jest.fn();
+            testWithPath(mock, null);
+            expect(mock).toBeCalledWith('userFacepile.maxDisplayableUsers', 'maxDisplayableUsers',
+                getSetting(defaultSettings, 'userFacepile.maxDisplayableUsers'));
+        });
+
+        it('traverses a settings object recursively for a given path', () => {
+            const mock = jest.fn();
+            testWithPath(mock, 'featureDiagram');
+            expect(mock).not.toBeCalledWith('userFacepile.maxDisplayableUsers', 'maxDisplayableUsers',
+                getSetting(defaultSettings, 'userFacepile.maxDisplayableUsers'));
         });
     });
 });
