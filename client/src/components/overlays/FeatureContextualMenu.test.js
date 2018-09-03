@@ -22,7 +22,6 @@ describe('FeatureContextualMenu', () => {
                 featureDiagramLayout={layoutTypes.verticalTree}
                 settings={defaultSettings}
                 onShowOverlay={mock}
-                onSelectAllFeatures={mock}
                 onDeselectAllFeatures={mock}
                 onCollapseFeature={mock}
                 onExpandFeature={mock}

@@ -20,19 +20,19 @@ const contextualMenuItems = {
         onClick: () => onShowOverlay(overlayTypes.aboutPanel)
     }),
     featureDiagram: {
-        undo: checked => ({
+        undo: () => ({
             key: 'undo',
             text: i18n.t('featureDiagram.commands.undo'),
             iconProps: {iconName: 'Undo'},
-            onClick: () => actions.server.undo(),
-            checked
+            secondaryText: i18n.t('shortcuts.undo'),
+            onClick: () => actions.server.undo()
         }),
-        redo: checked => ({
+        redo: () => ({
             key: 'redo',
             text: i18n.t('featureDiagram.commands.redo'),
             iconProps: {iconName: 'Redo'},
-            onClick: () => actions.server.redo(),
-            checked
+            secondaryText: i18n.t('shortcuts.redo'),
+            onClick: () => actions.server.redo()
         }),
         setLayout: (featureDiagramLayout, onSetFeatureDiagramLayout) => ({
             key: 'setLayout',
@@ -54,15 +54,12 @@ const contextualMenuItems = {
             }
         }),
         selection: (isSelectMultipleFeatures, onSetSelectMultipleFeatures,
-            selectedFeatureNames, onSelectAllFeatures, onDeselectAllFeatures, featureModel) => ({
+            selectedFeatureNames, onDeselectAllFeatures, featureModel) => ({
             key: 'selection',
             text: i18n.t('featureDiagram.commands.selection')(isSelectMultipleFeatures, selectedFeatureNames),
             onClick: () => onSetSelectMultipleFeatures(!isSelectMultipleFeatures), // TODO: tell the user he can choose features now
             subMenuProps: isSelectMultipleFeatures
-                ? {
-                    items: selectMultipleFeaturesContextualMenuItems(
-                        selectedFeatureNames, onSelectAllFeatures, onDeselectAllFeatures, featureModel)
-                }
+                ? {items: selectMultipleFeaturesContextualMenuItems(selectedFeatureNames, onDeselectAllFeatures, featureModel)}
                 : null
         }),
         feature: {

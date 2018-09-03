@@ -4,6 +4,14 @@ import constants from './constants';
 import {Link} from 'office-ui-fabric-react/lib/Link';
 
 export const strings = {
+    commands: {
+        edit: 'Edit',
+        view: 'View'
+    },
+    shortcuts: {
+        undo: 'Ctrl-Z',
+        redo: 'Ctrl-Y'
+    },
     panels: {
         aboutPanel: {
             title: 'About',
@@ -99,7 +107,7 @@ export const strings = {
             selection: (isSelectMultipleFeatures, selectedFeatureNames) =>
                 isSelectMultipleFeatures
                     ? `Feature selection (${selectedFeatureNames.length})`
-                    : 'Select multiple features',
+                    : 'Begin feature selection',
             verticalTree: 'Vertical tree',
             horizontalTree: 'Horizontal tree',
             feature: {
@@ -123,8 +131,8 @@ export const strings = {
                 alternative: 'Alternative'
             },
             features: {
-                selectAll: 'Select all',
-                deselectAll: 'Deselect all',
+                selectAll: 'Select all features',
+                deselectAll: 'Deselect all features',
                 newFeatureAbove: 'New feature above'
             }
         }

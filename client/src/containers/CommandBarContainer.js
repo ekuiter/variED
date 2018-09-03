@@ -6,36 +6,49 @@ import connect from 'react-redux/es/connect/connect';
 import {getFeatureModel} from '../store/selectors';
 import actions from '../store/actions';
 import withKeys from '../helpers/withKeys';
-import defer from '../helpers/defer';
 import {ContextualMenuItemType} from '../../node_modules/office-ui-fabric-react/lib/ContextualMenu';
+import i18n from '../i18n';
 
 /* eslint-disable react/prop-types */
 const CommandBarContainer = props => (
     <CommandBar
-        items={[
-            contextualMenuItems.featureDiagram.undo(props.undoChecked),
-            contextualMenuItems.featureDiagram.redo(props.redoChecked)
-        ]}
-        overflowItems={[
-            // Clicking on submenu items of the overflow menu throws
-            // "Warning: Can't call setState (or forceUpdate) on an unmounted component".
-            // This is a known issue in Office UI Fabric:
-            // https://github.com/OfficeDev/office-ui-fabric-react/issues/5433
-            // TODO: wait for fix ...
-            contextualMenuItems.featureDiagram.setLayout(
-                props.featureDiagramLayout,
-                props.onSetFeatureDiagramLayout),
-            contextualMenuItems.featureDiagram.selection(
-                props.isSelectMultipleFeatures,
-                props.onSetSelectMultipleFeatures,
-                props.selectedFeatureNames,
-                props.onSelectAllFeatures,
-                props.onDeselectAllFeatures,
-                props.featureModel),
-            {key: 'divider', itemType: ContextualMenuItemType.Divider},
-            contextualMenuItems.featureDiagram.features.collapseAll(props.onCollapseAllFeatures),
-            contextualMenuItems.featureDiagram.features.expandAll(props.onExpandAllFeatures)
-        ]}
+        items={[{
+            key: 'Edit',
+            text: i18n.t('commands.edit'),
+            subMenuProps: {
+                items: [
+                    contextualMenuItems.featureDiagram.undo(),
+                    contextualMenuItems.featureDiagram.redo(),
+                    {key: 'divider', itemType: ContextualMenuItemType.Divider},
+                    contextualMenuItems.featureDiagram.features.selectAll(props.onSelectAllFeatures),
+                    contextualMenuItems.featureDiagram.features.deselectAll(props.onDeselectAllFeatures),
+                    contextualMenuItems.featureDiagram.selection(
+                        props.isSelectMultipleFeatures,
+                        props.onSetSelectMultipleFeatures,
+                        props.selectedFeatureNames,
+                        props.onDeselectAllFeatures,
+                        props.featureModel)
+                ]
+            }
+        }, {
+            key: 'View',
+            text: i18n.t('commands.view'),
+            subMenuProps: {
+                items: [
+                    // Clicking on submenu items throws
+                    // "Warning: Can't call setState (or forceUpdate) on an unmounted component".
+                    // This is a known issue in Office UI Fabric:
+                    // https://github.com/OfficeDev/office-ui-fabric-react/issues/5433
+                    // TODO: wait for fix ...
+                    contextualMenuItems.featureDiagram.setLayout(
+                        props.featureDiagramLayout,
+                        props.onSetFeatureDiagramLayout),
+                    {key: 'divider', itemType: ContextualMenuItemType.Divider},
+                    contextualMenuItems.featureDiagram.features.collapseAll(props.onCollapseAllFeatures),
+                    contextualMenuItems.featureDiagram.features.expandAll(props.onExpandAllFeatures)
+                ]
+            }
+        }]}
         farItems={[
             {
                 key: 'userFacepile',
@@ -69,10 +82,8 @@ export default connect(
     })
 )(withKeys({
     key: ({event}) => event.isCommand('z'),
-    injectProp: {prop: 'undoChecked', value: true},
-    action: ({injectProp}) => actions.server.undo().then(defer(() => injectProp('undoChecked', false)))
+    action: actions.server.undo
 }, {
     key: ({event}) => event.isCommand('y') || event.isShiftCommand('z'),
-    injectProp: {prop: 'redoChecked', value: true},
-    action: ({injectProp}) => actions.server.redo().then(defer(() => injectProp('redoChecked', false)))
+    action: actions.server.redo
 })(CommandBarContainer));
