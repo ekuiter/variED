@@ -33,7 +33,7 @@ describe('FontComboBox', () => {
         isFontInstalled.mockReturnValue(true);
         const onChange = jest.fn(),
             wrapper = fontComboBox(onChange);
-        wrapper.find(ComboBox).simulate('change', {key: 'Verdana'});
+        wrapper.find(ComboBox).simulate('change', null, {key: 'Verdana'});
         expect(onChange).toBeCalledWith('Verdana');
     });
 
@@ -42,7 +42,7 @@ describe('FontComboBox', () => {
         const onChange = jest.fn(),
             wrapper = fontComboBox(onChange);
         expect(wrapper.find(ComboBox).prop('errorMessage')).toBeFalsy();
-        wrapper.find(ComboBox).simulate('change', {key: 'Verdana'});
+        wrapper.find(ComboBox).simulate('change', null, {key: 'Verdana'});
         expect(onChange).not.toBeCalledWith('Verdana');
         expect(wrapper.find(ComboBox).prop('errorMessage')).toBeTruthy();
     });

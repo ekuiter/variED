@@ -56,7 +56,7 @@ export default class extends FeatureComponent({doUpdate: true}) {
                         contextualMenuItems.featureDiagram.feature.rename(feature.name, this.props.onShowOverlay),
                         contextualMenuItems.featureDiagram.feature.setDescription(feature.name, this.props.onShowOverlay),
                         contextualMenuItems.featureDiagram.feature.properties(feature, onDismiss),
-                        {key: 'divider3', itemType: ContextualMenuItemType.Divider},
+                        {key: 'divider2', itemType: ContextualMenuItemType.Divider},
                         contextualMenuItems.featureDiagram.feature.details(feature.name, this.props.onShowOverlay)
                     ]
                 }/>

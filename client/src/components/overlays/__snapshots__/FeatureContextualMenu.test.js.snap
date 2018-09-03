@@ -9,20 +9,6 @@ exports[`FeatureContextualMenu renders correctly for a selection of features 1`]
   items={
     Array [
       Object {
-        "key": "selectAll",
-        "onClick": [Function],
-        "text": "Select all",
-      },
-      Object {
-        "key": "deselectAll",
-        "onClick": [Function],
-        "text": "Deselect all",
-      },
-      Object {
-        "itemType": 1,
-        "key": "divider1",
-      },
-      Object {
         "disabled": true,
         "iconProps": Object {
           "iconName": "Add",
@@ -202,7 +188,7 @@ exports[`FeatureContextualMenu renders correctly for a single feature 1`] = `
       },
       Object {
         "itemType": 1,
-        "key": "divider3",
+        "key": "divider2",
       },
       Object {
         "iconOnly": true,

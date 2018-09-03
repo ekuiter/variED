@@ -3,14 +3,31 @@ import React from 'react';
 import constants from './constants';
 import {Link} from 'office-ui-fabric-react/lib/Link';
 
+const COMMAND = 'COMMAND', SHIFT = 'SHIFT';
+
+function shortcut(...keys) {
+    keys = keys
+        .map(key =>
+            key === COMMAND && navigator.platform.startsWith('Mac')
+                ? '⌘'
+                : key === COMMAND
+                    ? 'Ctrl'
+                    : key === SHIFT
+                        ? '⇧'
+                        : key);
+    const joinWith = keys.find(key => key.charCodeAt(0) >= 256) &&
+        keys.filter(key => key.charCodeAt(0) < 256).length <= 1 ? '' : '+';
+    return keys.join(joinWith);
+}
+
 export const strings = {
     commands: {
         edit: 'Edit',
         view: 'View'
     },
     shortcuts: {
-        undo: 'Ctrl-Z',
-        redo: 'Ctrl-Y'
+        undo: shortcut(COMMAND, 'Z'),
+        redo: shortcut(COMMAND, 'Y')
     },
     panels: {
         aboutPanel: {
