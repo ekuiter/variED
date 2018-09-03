@@ -1,10 +1,13 @@
 package de.ovgu.spldev.varied;
 
+import de.ovgu.featureide.fm.core.base.IFeature;
 import de.ovgu.featureide.fm.core.base.IFeatureModel;
+import de.ovgu.featureide.fm.core.base.IFeatureStructure;
 import de.ovgu.featureide.fm.core.base.impl.FMFormatManager;
 import de.ovgu.featureide.fm.core.io.IPersistentFormat;
 import de.ovgu.featureide.fm.core.io.manager.FeatureModelManager;
 
+import java.util.LinkedList;
 import java.util.stream.Stream;
 
 public class FeatureUtils {
@@ -38,5 +41,12 @@ public class FeatureUtils {
         if (featureModel == null)
             throw new RuntimeException("feature model could not be loaded");
         return featureModel;
+    }
+
+    public static void sortSiblingFeatures(LinkedList<IFeature> features) {
+        features.sort((o1, o2) -> {
+            IFeatureStructure s1 = o1.getStructure(), s2 = o2.getStructure();
+            return Integer.compare(s1.getParent().getChildIndex(s1), s2.getParent().getChildIndex(s2));
+        });
     }
 }

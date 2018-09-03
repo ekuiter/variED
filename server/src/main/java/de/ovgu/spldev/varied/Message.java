@@ -247,6 +247,7 @@ abstract public class Message {
             LinkedList<IFeature> _aboveFeatures = new LinkedList<>();
             for (String aboveFeature : aboveFeatures)
                 _aboveFeatures.add(featureModel.getFeature(aboveFeature));
+            FeatureUtils.sortSiblingFeatures(_aboveFeatures);
             return new StateChange.FeatureAddAbove(featureModel, _aboveFeatures);
         }
     }
