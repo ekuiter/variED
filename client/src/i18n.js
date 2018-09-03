@@ -42,6 +42,7 @@ export const strings = {
                     treeLayout: {
                         debug: 'Show developer information',
                         useTransitions: 'Animate feature model changes',
+                        transitionDuration: 'Animation duration in ms',
                         node: {
                             paddingX: 'Horizontal padding',
                             paddingY: 'Vertical padding',

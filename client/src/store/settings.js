@@ -11,7 +11,7 @@ export const defaultSettings = {
             debug: false, // whether to show the estimated bounding box and node anchors
             scaleExtent: [0.1, 4], // currently fixed, specifies how far the user can zoom in and out
             useTransitions: true, // whether to animate feature diagram updates
-            duration: 300, // animation duration in ms
+            transitionDuration: 300, // animation duration in ms
             node: {
                 // a node is imagined as "1px wide, 1px high", free space for drawing rectangles
                 size: [1, 1], // is made by calculations in AbstractTreeLayout.createLayout using the values below

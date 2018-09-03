@@ -7,6 +7,7 @@ import {Panel} from 'office-ui-fabric-react/lib/Panel';
 import {DefaultButton} from 'office-ui-fabric-react/lib/Button';
 import {SpinButton} from 'office-ui-fabric-react/lib/SpinButton';
 import {ColorPicker} from 'office-ui-fabric-react/lib/ColorPicker';
+import {Slider} from 'office-ui-fabric-react/lib/Slider';
 import i18n from '../../i18n';
 
 describe('Setting', () => {
@@ -44,9 +45,7 @@ describe('Setting', () => {
             settings={defaultSettings}
             onSetSetting={onSetSetting}
             path="featureDiagram.font.size"
-            suffix=" px"
-            min={min}
-            max={max}/>);
+            suffix=" px" min={min} max={max}/>);
 
         it('sets a number', () => {
             wrapper().find(SpinButton).simulate('validate', '42 px');
@@ -86,6 +85,18 @@ describe('Setting', () => {
             wrapper.find(ColorPicker).simulate('colorChanged', '#c0ffee');
             wrapper.simulate('apply', {key: 'featureDiagram.treeLayout.node.visibleFill'});
             expect(newSetting).toBe('#c0ffee');
+        });
+    });
+
+    describe('Slider', () => {
+        it('sets a number', () => {
+            const wrapper = shallow(<Setting.Slider
+                settings={defaultSettings}
+                onSetSetting={onSetSetting}
+                path="featureDiagram.treeLayout.transitionDuration"
+                min={0} max={100} step={1}/>);
+            wrapper.find(Slider).simulate('change', 42);
+            expect(newSetting).toBe(42);
         });
     });
 });

@@ -288,9 +288,9 @@ export default class extends React.Component {
         return {node, linkInBack, linkInFront, nodes};
     }
 
-    transition(selection, duration = getSetting(this.props.settings, 'featureDiagram.treeLayout.duration')) {
+    transition(selection, transitionDuration = getSetting(this.props.settings, 'featureDiagram.treeLayout.transitionDuration')) {
         return getSetting(this.props.settings, 'featureDiagram.treeLayout.useTransitions')
-            ? selection.transition().duration(duration)
+            ? selection.transition().duration(transitionDuration)
             : selection;
     }
 

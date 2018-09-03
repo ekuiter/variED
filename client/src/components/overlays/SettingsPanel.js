@@ -6,6 +6,7 @@ import {Panel, PanelType} from 'office-ui-fabric-react/lib/Panel';
 import {Toggle} from 'office-ui-fabric-react/lib/Toggle';
 import {SpinButton} from 'office-ui-fabric-react/lib/SpinButton';
 import {ColorPicker} from 'office-ui-fabric-react/lib/ColorPicker';
+import {Slider} from 'office-ui-fabric-react/lib/Slider';
 import {DialogContextualMenu} from '../../helpers/Dialog';
 import {DefaultButton} from 'office-ui-fabric-react/lib/Button';
 import PropTypes from 'prop-types';
@@ -128,6 +129,31 @@ export const Setting = {
                 </DialogContextualMenu>
             );
         }
+    },
+
+    Slider: class extends React.Component {
+        static propTypes = exact({
+            settings: SettingsType.isRequired,
+            onSetSetting: PropTypes.func.isRequired,
+            path: PropTypes.string.isRequired,
+            min: PropTypes.number.isRequired,
+            max: PropTypes.number.isRequired,
+            step: PropTypes.number.isRequired
+        });
+
+        render() {
+            return (
+                <div className="setting">
+                    <Slider
+                        label={getLabel(this.props.path)}
+                        min={this.props.min}
+                        max={this.props.max}
+                        step={this.props.step}
+                        value={getSetting(this.props.settings, this.props.path)}
+                        onChange={value => this.props.onSetSetting(this.props.path, value)}/>
+                </div>
+            );
+        }
     }
 };
 
@@ -195,10 +221,15 @@ export default class extends React.Component {
                 <React.Fragment>
                     <Setting.Toggle
                         {...props}
-                        path="featureDiagram.treeLayout.useTransitions"/>
+                        path="featureDiagram.treeLayout.debug"/>
                     <Setting.Toggle
                         {...props}
-                        path="featureDiagram.treeLayout.debug"/>
+                        path="featureDiagram.treeLayout.useTransitions"/>
+                    {getSetting(props.settings, 'featureDiagram.treeLayout.useTransitions') &&
+                    <Setting.Slider
+                        {...props}
+                        path="featureDiagram.treeLayout.transitionDuration"
+                        min={0} max={1000} step={10}/>}
 
                     <h4>{i18n.t('panels.settingsPanel.headings.features')}</h4>
                     <Setting.SpinButton
