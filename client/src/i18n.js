@@ -3,23 +3,6 @@ import React from 'react';
 import constants from './constants';
 import {Link} from 'office-ui-fabric-react/lib/Link';
 
-const COMMAND = 'COMMAND', SHIFT = 'SHIFT';
-
-function shortcut(...keys) {
-    keys = keys
-        .map(key =>
-            key === COMMAND && navigator.platform.startsWith('Mac')
-                ? '⌘'
-                : key === COMMAND
-                    ? 'Ctrl'
-                    : key === SHIFT
-                        ? '⇧'
-                        : key.toUpperCase());
-    const joinWith = keys.find(key => key.charCodeAt(0) >= 256) &&
-        keys.filter(key => key.charCodeAt(0) < 256).length <= 1 ? '' : '+';
-    return keys.join(joinWith);
-}
-
 export const strings = {
     commands: {
         file: 'File',
@@ -28,15 +11,6 @@ export const strings = {
         help: 'Help',
         settings: 'Settings…',
         about: 'About…'
-    },
-    shortcuts: {
-        undo: shortcut(COMMAND, 'z'),
-        redo: shortcut(COMMAND, 'y'),
-        settings: shortcut(COMMAND, ','),
-        selectAll: shortcut(COMMAND, 'a'),
-        deselectAll: shortcut(SHIFT, COMMAND, 'a'),
-        collapseAll: shortcut(COMMAND, 'c'),
-        expandAll: shortcut(SHIFT, COMMAND, 'c')
     },
     panels: {
         aboutPanel: {
@@ -146,8 +120,6 @@ export const strings = {
                 rename: 'Rename…',
                 setDescription: 'Set description…',
                 collapseExpand: isCollapsed => isCollapsed ? 'Expand' : 'Collapse',
-                collapseAll: 'Collapse all features',
-                expandAll: 'Expand all features',
                 properties: 'Properties',
                 abstract: 'Abstract',
                 concrete: 'Concrete',
@@ -161,7 +133,9 @@ export const strings = {
             features: {
                 selectAll: 'Select all features',
                 deselectAll: 'Deselect all features',
-                newFeatureAbove: 'New feature above'
+                newFeatureAbove: 'New feature above',
+                collapseAll: 'Collapse all features',
+                expandAll: 'Expand all features'
             }
         }
     }

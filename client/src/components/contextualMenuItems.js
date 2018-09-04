@@ -3,13 +3,14 @@ import actions from '../store/actions';
 import {selectMultipleFeaturesContextualMenuItems} from './overlays/FeatureContextualMenu';
 import {layoutTypes, overlayTypes} from '../types';
 import {ContextualMenuItemType} from '../../node_modules/office-ui-fabric-react/lib/ContextualMenu';
+import {getShortcutText} from '../shortcuts';
 
 const contextualMenuItems = {
     settings: onShowOverlay => ({
         key: 'settings',
         text: i18n.t('commands.settings'),
         iconProps: {iconName: 'Settings'},
-        secondaryText: i18n.t('shortcuts.settings'),
+        secondaryText: getShortcutText('settings'),
         onClick: () => onShowOverlay(overlayTypes.settingsPanel)
     }),
     about: onShowOverlay => ({
@@ -35,14 +36,14 @@ const contextualMenuItems = {
             key: 'undo',
             text: i18n.t('featureDiagram.commands.undo'),
             iconProps: {iconName: 'Undo'},
-            secondaryText: i18n.t('shortcuts.undo'),
+            secondaryText: getShortcutText('undo'),
             onClick: () => actions.server.undo()
         }),
         redo: () => ({
             key: 'redo',
             text: i18n.t('featureDiagram.commands.redo'),
             iconProps: {iconName: 'Redo'},
-            secondaryText: i18n.t('shortcuts.redo'),
+            secondaryText: getShortcutText('redo'),
             onClick: () => actions.server.redo()
         }),
         setLayout: (featureDiagramLayout, onSetFeatureDiagramLayout) => ({
@@ -212,13 +213,13 @@ const contextualMenuItems = {
             selectAll: onSelectAll => ({
                 key: 'selectAll',
                 text: i18n.t('featureDiagram.commands.features.selectAll'),
-                secondaryText: i18n.t('shortcuts.selectAll'),
+                secondaryText: getShortcutText('featureDiagram.features.selectAll'),
                 onClick: onSelectAll
             }),
             deselectAll: onDeselectAll => ({
                 key: 'deselectAll',
                 text: i18n.t('featureDiagram.commands.features.deselectAll'),
-                secondaryText: i18n.t('shortcuts.deselectAll'),
+                secondaryText: getShortcutText('featureDiagram.features.deselectAll'),
                 onClick: onDeselectAll
             }),
             newFeatureAbove: (featureNames, onClick, featureModel) => {
@@ -240,15 +241,15 @@ const contextualMenuItems = {
             },
             collapseAll:  onCollapseAllFeatures => ({
                 key: 'collapseAll',
-                text: i18n.t('featureDiagram.commands.feature.collapseAll'),
-                secondaryText: i18n.t('shortcuts.collapseAll'),
+                text: i18n.t('featureDiagram.commands.features.collapseAll'),
+                secondaryText: getShortcutText('featureDiagram.features.collapseAll'),
                 iconProps: {iconName: 'CollapseContent'},
                 onClick: onCollapseAllFeatures
             }),
             expandAll:  onExpandAllFeatures => ({
                 key: 'expandAll',
-                text: i18n.t('featureDiagram.commands.feature.expandAll'),
-                secondaryText: i18n.t('shortcuts.expandAll'),
+                text: i18n.t('featureDiagram.commands.features.expandAll'),
+                secondaryText: getShortcutText('featureDiagram.features.expandAll'),
                 iconProps: {iconName: 'ExploreContent'},
                 onClick: onExpandAllFeatures
             })

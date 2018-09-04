@@ -9,6 +9,7 @@ import withKeys from '../helpers/withKeys';
 import {ContextualMenuItemType} from '../../node_modules/office-ui-fabric-react/lib/ContextualMenu';
 import i18n from '../i18n';
 import {overlayTypes} from '../types';
+import {getShortcutKeyBinding} from '../shortcuts';
 
 /* eslint-disable react/prop-types */
 const CommandBarContainer = props => (
@@ -97,25 +98,12 @@ export default connect(
         onExpandAllFeatures: () => dispatch(actions.ui.features.expandAll()),
         onShowOverlay: (...args) => dispatch(actions.ui.overlay.show(...args))
     })
-)(withKeys({
-    key: ({event}) => event.isCommand('z'),
-    action: actions.server.undo
-}, {
-    key: ({event}) => event.isCommand('y') || event.isShiftCommand('z'),
-    action: actions.server.redo
-}, {
-    key: ({event}) => event.isCommand(','),
-    action: ({props}) => props.onShowOverlay(overlayTypes.settingsPanel)
-}, {
-    key: ({event}) => event.isCommand('a'),
-    action: ({props}) => props.onSelectAllFeatures()
-}, {
-    key: ({event}) => event.isShiftCommand('a'),
-    action: ({props}) => props.onDeselectAllFeatures()
-}, {
-    key: ({event}) => event.isCommand('c'),
-    action: ({props}) => props.onCollapseAllFeatures()
-}, {
-    key: ({event}) => event.isShiftCommand('c'),
-    action: ({props}) => props.onExpandAllFeatures()
-})(CommandBarContainer));
+)(withKeys(
+    getShortcutKeyBinding('undo', actions.server.undo),
+    getShortcutKeyBinding('redo', actions.server.redo),
+    getShortcutKeyBinding('settings', ({props}) => props.onShowOverlay(overlayTypes.settingsPanel)),
+    getShortcutKeyBinding('featureDiagram.features.selectAll', ({props}) => props.onSelectAllFeatures()),
+    getShortcutKeyBinding('featureDiagram.features.deselectAll', ({props}) => props.onDeselectAllFeatures()),
+    getShortcutKeyBinding('featureDiagram.features.collapseAll', ({props}) => props.onCollapseAllFeatures()),
+    getShortcutKeyBinding('featureDiagram.features.expandAll', ({props}) => props.onExpandAllFeatures()),
+)(CommandBarContainer));
