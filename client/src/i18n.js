@@ -14,7 +14,7 @@ function shortcut(...keys) {
                     ? 'Ctrl'
                     : key === SHIFT
                         ? '⇧'
-                        : key);
+                        : key.toUpperCase());
     const joinWith = keys.find(key => key.charCodeAt(0) >= 256) &&
         keys.filter(key => key.charCodeAt(0) < 256).length <= 1 ? '' : '+';
     return keys.join(joinWith);
@@ -23,11 +23,17 @@ function shortcut(...keys) {
 export const strings = {
     commands: {
         edit: 'Edit',
-        view: 'View'
+        view: 'View',
+        help: 'Help'
     },
     shortcuts: {
-        undo: shortcut(COMMAND, 'Z'),
-        redo: shortcut(COMMAND, 'Y')
+        undo: shortcut(COMMAND, 'z'),
+        redo: shortcut(COMMAND, 'y'),
+        settings: shortcut(COMMAND, ','),
+        selectAll: shortcut(COMMAND, 'a'),
+        deselectAll: shortcut(SHIFT, COMMAND, 'a'),
+        collapseAll: shortcut(COMMAND, 'c'),
+        expandAll: shortcut(SHIFT, COMMAND, 'c')
     },
     panels: {
         aboutPanel: {

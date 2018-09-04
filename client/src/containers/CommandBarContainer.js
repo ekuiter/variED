@@ -8,12 +8,18 @@ import actions from '../store/actions';
 import withKeys from '../helpers/withKeys';
 import {ContextualMenuItemType} from '../../node_modules/office-ui-fabric-react/lib/ContextualMenu';
 import i18n from '../i18n';
+import {overlayTypes} from '../types';
 
 /* eslint-disable react/prop-types */
 const CommandBarContainer = props => (
     <CommandBar
+        // Clicking on submenu items throws
+        // "Warning: Can't call setState (or forceUpdate) on an unmounted component".
+        // This is a known issue in Office UI Fabric:
+        // https://github.com/OfficeDev/office-ui-fabric-react/issues/5433
+        // TODO: wait for fix ...
         items={[{
-            key: 'Edit',
+            key: 'edit',
             text: i18n.t('commands.edit'),
             subMenuProps: {
                 items: [
@@ -31,21 +37,26 @@ const CommandBarContainer = props => (
                 ]
             }
         }, {
-            key: 'View',
+            key: 'view',
             text: i18n.t('commands.view'),
             subMenuProps: {
                 items: [
-                    // Clicking on submenu items throws
-                    // "Warning: Can't call setState (or forceUpdate) on an unmounted component".
-                    // This is a known issue in Office UI Fabric:
-                    // https://github.com/OfficeDev/office-ui-fabric-react/issues/5433
-                    // TODO: wait for fix ...
                     contextualMenuItems.featureDiagram.setLayout(
                         props.featureDiagramLayout,
                         props.onSetFeatureDiagramLayout),
-                    {key: 'divider', itemType: ContextualMenuItemType.Divider},
+                    {key: 'divider1', itemType: ContextualMenuItemType.Divider},
                     contextualMenuItems.featureDiagram.features.collapseAll(props.onCollapseAllFeatures),
-                    contextualMenuItems.featureDiagram.features.expandAll(props.onExpandAllFeatures)
+                    contextualMenuItems.featureDiagram.features.expandAll(props.onExpandAllFeatures),
+                    {key: 'divider2', itemType: ContextualMenuItemType.Divider},
+                    contextualMenuItems.settings(props.onShowOverlay)
+                ]
+            }
+        }, {
+            key: 'help',
+            text: i18n.t('commands.help'),
+            subMenuProps: {
+                items: [
+                    contextualMenuItems.about(props.onShowOverlay)
                 ]
             }
         }]}
@@ -56,9 +67,7 @@ const CommandBarContainer = props => (
                     <UserFacepile
                         users={props.users}
                         settings={props.settings}/>
-            },
-            contextualMenuItems.settings(props.onShowOverlay),
-            contextualMenuItems.about(props.onShowOverlay)
+            }
         ]}/>
 );
 
@@ -86,4 +95,19 @@ export default connect(
 }, {
     key: ({event}) => event.isCommand('y') || event.isShiftCommand('z'),
     action: actions.server.redo
+}, {
+    key: ({event}) => event.isCommand(','),
+    action: ({props}) => props.onShowOverlay(overlayTypes.settingsPanel)
+}, {
+    key: ({event}) => event.isCommand('a'),
+    action: ({props}) => props.onSelectAllFeatures()
+}, {
+    key: ({event}) => event.isShiftCommand('a'),
+    action: ({props}) => props.onDeselectAllFeatures()
+}, {
+    key: ({event}) => event.isCommand('c'),
+    action: ({props}) => props.onCollapseAllFeatures()
+}, {
+    key: ({event}) => event.isShiftCommand('c'),
+    action: ({props}) => props.onExpandAllFeatures()
 })(CommandBarContainer));

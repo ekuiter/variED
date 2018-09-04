@@ -8,14 +8,13 @@ const contextualMenuItems = {
     settings: onShowOverlay => ({
         key: 'settings',
         text: i18n.t('panels.settingsPanel.title'),
-        iconOnly: true,
         iconProps: {iconName: 'Settings'},
+        secondaryText: i18n.t('shortcuts.settings'),
         onClick: () => onShowOverlay(overlayTypes.settingsPanel)
     }),
     about: onShowOverlay => ({
         key: 'about',
         text: i18n.t('panels.aboutPanel.title'),
-        iconOnly: true,
         iconProps: {iconName: 'Info'},
         onClick: () => onShowOverlay(overlayTypes.aboutPanel)
     }),
@@ -201,11 +200,13 @@ const contextualMenuItems = {
             selectAll: onSelectAll => ({
                 key: 'selectAll',
                 text: i18n.t('featureDiagram.commands.features.selectAll'),
+                secondaryText: i18n.t('shortcuts.selectAll'),
                 onClick: onSelectAll
             }),
             deselectAll: onDeselectAll => ({
                 key: 'deselectAll',
                 text: i18n.t('featureDiagram.commands.features.deselectAll'),
+                secondaryText: i18n.t('shortcuts.deselectAll'),
                 onClick: onDeselectAll
             }),
             newFeatureAbove: (featureNames, onClick, featureModel) => {
@@ -228,12 +229,14 @@ const contextualMenuItems = {
             collapseAll:  onCollapseAllFeatures => ({
                 key: 'collapseAll',
                 text: i18n.t('featureDiagram.commands.feature.collapseAll'),
+                secondaryText: i18n.t('shortcuts.collapseAll'),
                 iconProps: {iconName: 'CollapseContent'},
                 onClick: onCollapseAllFeatures
             }),
             expandAll:  onExpandAllFeatures => ({
                 key: 'expandAll',
                 text: i18n.t('featureDiagram.commands.feature.expandAll'),
+                secondaryText: i18n.t('shortcuts.expandAll'),
                 iconProps: {iconName: 'ExploreContent'},
                 onClick: onExpandAllFeatures
             })
