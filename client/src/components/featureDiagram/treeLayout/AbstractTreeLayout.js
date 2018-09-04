@@ -51,6 +51,7 @@ export default class extends React.Component {
             this.getParentCoordinateFn('previousCoordinates'),
             this.treeNode);
         this.treeNode.treeLink = this.treeLink;
+        this.rerenderForExport = getSetting(props.settings, 'featureDiagram.rerenderForExport');
     }
 
     componentDidMount() {
@@ -229,7 +230,8 @@ export default class extends React.Component {
                 });
             });
 
-        if (isCreating || (fitOnResize && isResize)) {
+        if (isCreating || (fitOnResize && isResize) ||
+            this.rerenderForExport !== getSetting(settings, 'featureDiagram.rerenderForExport')) {
             const svgBbox = this.svgRef.current.getBoundingClientRect();
             svgRoot.call(zoom.scaleTo, Math.min(1,
                 svgBbox.width / estimatedBboxWidth,
