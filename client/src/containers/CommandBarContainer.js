@@ -87,7 +87,8 @@ export default connect(
         selectedFeatureNames: state.ui.selectedFeatureNames,
         users: state.server.users,
         settings: state.settings,
-        featureModel: getFeatureModel(state)
+        featureModel: getFeatureModel(state),
+        isKeyBindingActive: !state.ui.overlay
     }),
     dispatch => ({
         onSetFeatureDiagramLayout: layout => dispatch(actions.ui.setFeatureDiagramLayout(layout)),

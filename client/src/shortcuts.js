@@ -20,7 +20,7 @@ function shortcutText(...keys) {
 const commandShortcut = key => ({
     text: shortcutText(COMMAND, key),
     keyBinding: action => ({
-        key: ({event}) => event.isCommand(key),
+        key: ({event, props}) => props.isKeyBindingActive && event.isCommand(key),
         action
     })
 });
@@ -28,7 +28,7 @@ const commandShortcut = key => ({
 const shiftCommandShortcut = key => ({
     text: shortcutText(SHIFT, COMMAND, key),
     keyBinding: action => ({
-        key: ({event}) => event.isShiftCommand(key),
+        key: ({event, props}) => props.isKeyBindingActive && event.isShiftCommand(key),
         action
     })
 });
