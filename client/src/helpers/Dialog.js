@@ -7,6 +7,15 @@ import {TextField} from '../../node_modules/office-ui-fabric-react/lib/TextField
 import PropTypes from 'prop-types';
 import exact from 'prop-types-exact';
 
+export const largeDialogStyle = {
+    main: {
+        selectors: {
+            '@media (min-width: 480px)': {minWidth: 400, maxWidth: 500},
+            '@media (min-width: 720px)': {minWidth: 500, maxWidth: 600}
+        }
+    }
+};
+
 export const DialogWrapper = ({isOpen, onDismiss, onApply, children, label}) => (
     <Dialog
         hidden={!isOpen}

@@ -15,6 +15,7 @@ export const
         featurePanel: 'featurePanel',
         featureRenameDialog: 'featureRenameDialog',
         featureSetDescriptionDialog: 'featureSetDescriptionDialog',
+        exportSvgDialog: 'exportSvg',
         featureCallout: 'featureCallout',
         featureContextualMenu: 'featureContextualMenu',
         isShownAtSelectedFeature: type => type === 'featureCallout' || type === 'featureContextualMenu'

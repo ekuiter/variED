@@ -20,7 +20,7 @@ const contextualMenuItems = {
         onClick: () => onShowOverlay(overlayTypes.aboutPanel)
     }),
     featureDiagram: {
-        export: () => ({
+        export: onShowOverlay => ({
             key: 'export',
             text: i18n.t('featureDiagram.commands.export'),
             iconProps: {iconName: 'Share'},
@@ -28,7 +28,7 @@ const contextualMenuItems = {
                 items: [{
                     key: 'svg',
                     text: i18n.t('featureDiagram.commands.svg'),
-                    onClick: () => console.warn('not implemented yet')
+                    onClick: () => onShowOverlay(overlayTypes.exportSvgDialog)
                 }]
             }
         }),

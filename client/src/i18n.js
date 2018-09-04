@@ -97,6 +97,16 @@ export const strings = {
         featureSetDescriptionDialog: {
             title: 'Set feature description',
             rename: 'Save'
+        },
+        exportSvgDialog: {
+            title: 'Export as SVG',
+            export: 'Export',
+            content: (
+                <p>
+                Note that the font will <strong>not</strong> be embedded into the SVG file.
+                Please make sure to choose a font that is commonly available.
+                </p>
+            )
         }
     },
     featureDiagram: {

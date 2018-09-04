@@ -1,7 +1,7 @@
 import React from 'react';
 import i18n from '../../i18n';
 import actions from '../../store/actions';
-import {TextFieldDialog} from '../../helpers/Dialog';
+import {TextFieldDialog, largeDialogStyle} from '../../helpers/Dialog';
 import PropTypes from 'prop-types';
 import {FeatureModelType} from '../../server/FeatureModel';
 import FeatureComponent from './FeatureComponent';
@@ -23,14 +23,7 @@ export default class extends FeatureComponent() {
                 defaultValue={feature.description}
                 onSubmit={description => actions.server.feature.setDescription(feature.name, description)}
                 submitOnEnter={false}
-                styles={{
-                    main: {
-                        selectors: {
-                            '@media (min-width: 480px)': {minWidth: 400, maxWidth: 500},
-                            '@media (min-width: 720px)': {minWidth: 500, maxWidth: 600}
-                        }
-                    }
-                }}
+                styles={largeDialogStyle}
                 textFieldProps={{multiline: true, rows: 5}}/>
         );
     }

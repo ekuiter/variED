@@ -24,7 +24,7 @@ const CommandBarContainer = props => (
             text: i18n.t('commands.file'),
             subMenuProps: {
                 items: [
-                    contextualMenuItems.featureDiagram.export()
+                    contextualMenuItems.featureDiagram.export(props.onShowOverlay)
                 ]
             }
         }, {
