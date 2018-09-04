@@ -7,18 +7,30 @@ import {ContextualMenuItemType} from '../../node_modules/office-ui-fabric-react/
 const contextualMenuItems = {
     settings: onShowOverlay => ({
         key: 'settings',
-        text: i18n.t('panels.settingsPanel.title'),
+        text: i18n.t('commands.settings'),
         iconProps: {iconName: 'Settings'},
         secondaryText: i18n.t('shortcuts.settings'),
         onClick: () => onShowOverlay(overlayTypes.settingsPanel)
     }),
     about: onShowOverlay => ({
         key: 'about',
-        text: i18n.t('panels.aboutPanel.title'),
+        text: i18n.t('commands.about'),
         iconProps: {iconName: 'Info'},
         onClick: () => onShowOverlay(overlayTypes.aboutPanel)
     }),
     featureDiagram: {
+        export: () => ({
+            key: 'export',
+            text: i18n.t('featureDiagram.commands.export'),
+            iconProps: {iconName: 'Share'},
+            subMenuProps: {
+                items: [{
+                    key: 'svg',
+                    text: i18n.t('featureDiagram.commands.svg'),
+                    onClick: () => console.warn('not implemented yet')
+                }]
+            }
+        }),
         undo: () => ({
             key: 'undo',
             text: i18n.t('featureDiagram.commands.undo'),

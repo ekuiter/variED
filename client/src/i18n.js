@@ -22,9 +22,12 @@ function shortcut(...keys) {
 
 export const strings = {
     commands: {
+        file: 'File',
         edit: 'Edit',
         view: 'View',
-        help: 'Help'
+        help: 'Help',
+        settings: 'Settings…',
+        about: 'About…'
     },
     shortcuts: {
         undo: shortcut(COMMAND, 'z'),
@@ -124,6 +127,8 @@ export const strings = {
     },
     featureDiagram: {
         commands: {
+            export: 'Export as',
+            svg: 'SVG…',
             undo: 'Undo',
             redo: 'Redo',
             setLayout: 'Layout',

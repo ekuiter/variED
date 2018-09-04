@@ -19,6 +19,14 @@ const CommandBarContainer = props => (
         // https://github.com/OfficeDev/office-ui-fabric-react/issues/5433
         // TODO: wait for fix ...
         items={[{
+            key: 'file',
+            text: i18n.t('commands.file'),
+            subMenuProps: {
+                items: [
+                    contextualMenuItems.featureDiagram.export()
+                ]
+            }
+        }, {
             key: 'edit',
             text: i18n.t('commands.edit'),
             subMenuProps: {
