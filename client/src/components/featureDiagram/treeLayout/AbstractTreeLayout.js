@@ -22,7 +22,6 @@ export default class extends React.Component {
         overlay: OverlayType,
         overlayProps: PropTypes.object,
         onShowOverlay: PropTypes.func.isRequired,
-        onHideOverlayFn: PropTypes.func.isRequired,
         onSetSelectMultipleFeatures: PropTypes.func.isRequired,
         onSelectFeature: PropTypes.func.isRequired,
         onDeselectFeature: PropTypes.func.isRequired,
@@ -79,25 +78,14 @@ export default class extends React.Component {
                 ref={this.svgRef}/>
         );
     }
-
-    onHideOverlayIfOpen = node => {
-        if (overlayTypes.isShownAtSelectedFeature(this.props.overlay) &&
-            this.props.overlayProps.featureName === node.feature().name)
-            this.props.onHideOverlayFn(this.props.overlay)();
-    };
     
     getKeyFn(kind) {
         return d => `${kind}_${d.feature().name}`;
     }
 
-    removeSelectedNode(node) {
-        this.onHideOverlayIfOpen(node);
-        this.props.onDeselectFeature(node.feature().name);
-    }
-
     toggleSelectedNode(node) {
         if (this.props.selectedFeatureNames.includes(node.feature().name))
-            this.removeSelectedNode(node);
+            this.props.onDeselectFeature(node.feature().name);
         else
             this.props.onSelectFeature(node.feature().name);
     }
@@ -295,16 +283,6 @@ export default class extends React.Component {
         this.treeNode.exit(this.transition(node.exit()));
         this.treeLink.exit(this.transition(linkInBack.exit()), 'inBack');
         this.treeLink.exit(this.transition(linkInFront.exit()), 'inFront');
-
-        node.exit().each(d => {
-            // We COULD move this code to the Redux reducer, but here it notices nodes
-            // exiting due to more reasons (e.g., collapse) - node.exit() definitely
-            // catches all exiting nodes in contrast to Redux.
-            // TODO: maybe move to Redux nonetheless - cleaner state management and testing?
-            this.onHideOverlayIfOpen(d); // hide overlay if active node exits
-            if (this.props.selectedFeatureNames.includes(d.feature().name))
-                this.removeSelectedNode(d); // deselect exiting nodes, TODO: warn user that selection changed
-        });
 
         this.updateCoordinates('previousCoordinates', nodes);
     }

@@ -30,29 +30,48 @@ function stateWithNewUi(state, key, value) {
     };
 }
 
-function handleFeatureRename(state, action, key) {
-    // The new feature name is added and the old is not removed (yet).
-    // This is because we still wait for the feature model update,
-    // and the UI may flicker until the update is dispatched.
-    // TODO: improve this
+function removeObsoleteFeaturesFromFeatureList(state, key) {
+    const actualFeatureNames = getFeatureModel(state).getActualFeatureNames(),
+        obsoleteFeatureNames = state.ui[key].filter(featureName => !actualFeatureNames.includes(featureName));
+    if (obsoleteFeatureNames.length > 0)
+        return stateWithNewUi(state, key,
+            state.ui[key].filter(featureName => !obsoleteFeatureNames.includes(featureName)));
+    return state;
+}
+
+function renameFeatureInFeatureList(state, action, key) {
     if (state.ui[key].includes(action.oldFeature))
-        return stateWithNewUi(state, key, uniqueArrayAdd(state.ui[key], action.newFeature));
+        return stateWithNewUi(state, key,
+            uniqueArrayAdd(uniqueArrayRemove(state.ui[key], action.oldFeature), action.newFeature));
+    return state;
+}
+
+function hideOverlayForObsoleteFeature(state) {
+    const visibleFeatureNames = getFeatureModel(state).getVisibleFeatureNames();
+    if (state.ui.overlay && state.ui.overlayProps && state.ui.overlayProps.featureName &&
+        !visibleFeatureNames.includes(state.ui.overlayProps.featureName))
+        return updateOverlay(state, null, null);
+    return state;
+}
+
+function changeOverlayForRenamedFeature(state, action) {
+    if (state.ui.overlay && state.ui.overlayProps && state.ui.overlayProps.featureName === action.oldFeature)
+        return stateWithNewUi(state, 'overlayProps', {...state.ui.overlayProps, featureName: action.newFeature});
     return state;
 }
 
 function serverUiReducer(state, action) {
     if (action.type === constants.server.messageTypes.FEATURE_MODEL) {
-        const actualFeatureNames = getFeatureModel(state).getActualFeatureNames(),
-            obsoleteFeatureNames = state.ui.collapsedFeatureNames
-                .filter(collapsedFeatureName => !actualFeatureNames.includes(collapsedFeatureName));
-        if (obsoleteFeatureNames.length > 0)
-            return stateWithNewUi(state, 'collapsedFeatureNames',
-                state.ui.collapsedFeatureNames
-                    .filter(collapsedFeatureName => !obsoleteFeatureNames.includes(collapsedFeatureName)));
+        state = removeObsoleteFeaturesFromFeatureList(state, 'collapsedFeatureNames');
+        // TODO: warn user that selection changed
+        state = removeObsoleteFeaturesFromFeatureList(state, 'selectedFeatureNames');
+        // TODO: warn user that overlay was hidden
+        state = hideOverlayForObsoleteFeature(state);
     }
     if (action.type === constants.server.messageTypes.FEATURE_RENAME) {
-        state = handleFeatureRename(state, action, 'collapsedFeatureNames');
-        state = handleFeatureRename(state, action, 'selectedFeatureNames');
+        state = renameFeatureInFeatureList(state, action, 'collapsedFeatureNames');
+        state = renameFeatureInFeatureList(state, action, 'selectedFeatureNames');
+        state = changeOverlayForRenamedFeature(state, action);
     }
     return state;
 }

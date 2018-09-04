@@ -275,9 +275,7 @@ describe('reducers', () => {
                     oldFeature: 'FeatureIDE',
                     newFeature: 'new feature name'
                 });
-                // TODO: as of now, we don't rename features, but merely add them to
-                // the list (see reducers.js) - improve this
-                // expect(state.ui.selectedFeatureNames).not.toContain('FeatureIDE');
+                expect(state.ui.selectedFeatureNames).not.toContain('FeatureIDE');
                 expect(state.ui.selectedFeatureNames).toContain('new feature name');
             });
 
@@ -289,6 +287,7 @@ describe('reducers', () => {
                     oldFeature: 'FeatureIDE',
                     newFeature: 'new feature name'
                 });
+                expect(state.ui.selectedFeatureNames).not.toContain('FeatureIDE');
                 expect(state.ui.collapsedFeatureNames).toContain('new feature name');
             });
         });

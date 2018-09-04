@@ -39,20 +39,7 @@ describe('FeatureComponent', () => {
         expect(renderIfFeature).not.toBeCalled();
         expect(wrapper.get(0)).toBeNull();
     });
-
-    it('closes when the feature is no longer available', () => {
-        const onDismiss = jest.fn(),
-            {wrapper, renderIfFeature} = featureComponent({onDismiss});
-        expect(renderIfFeature).toHaveBeenCalledTimes(1);
-        expect(onDismiss).not.toBeCalled();
-        wrapper.setProps({featureName: 'FeatureHouse'});
-        expect(renderIfFeature).toHaveBeenCalledTimes(2);
-        expect(onDismiss).not.toBeCalled();
-        wrapper.setProps({featureName: '<invalid feature>'});
-        expect(renderIfFeature).toHaveBeenCalledTimes(2);
-        expect(onDismiss).toBeCalled();
-    });
-
+    
     it('is abstract', () => {
         expect(() => featureComponent({mockRenderIfFeature: false})).toThrow('abstract method not implemented');
     });

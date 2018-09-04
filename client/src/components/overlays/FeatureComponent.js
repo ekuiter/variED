@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import {FeatureModelType} from '../../server/FeatureModel';
 import {SettingsType} from '../../types';
 
-export default ({isOpenProp = 'isOpen', onDismissProp = 'onDismiss', doUpdate = false} = {}) =>
+export default ({doUpdate = false} = {}) =>
     class extends React.Component {
         static propTypes = {
             featureModel: FeatureModelType.isRequired,
@@ -25,14 +25,6 @@ export default ({isOpenProp = 'isOpen', onDismissProp = 'onDismiss', doUpdate = 
         }
 
         getFeature = () => this.props.featureModel && this.props.featureModel.getFeature(this.props.featureName);
-
-        componentDidUpdate() {
-            // todo: maybe move this to serverUiReducer?
-            if (this.props[isOpenProp] && !this.getFeature()) {
-                this.props[onDismissProp]();
-                //todo: warn user that feature vanished
-            }
-        }
 
         renderIfFeature() {
             throw new Error('abstract method not implemented');
