@@ -53,7 +53,8 @@ const OverlayContainer = props => (
             isOpen={true}
             onDismiss={props.onHideOverlayFn(overlayTypes.exportSvgDialog)}
             settings={props.settings}
-            onSetSetting={props.onSetSetting}/>}
+            onSetSetting={props.onSetSetting}
+            featureDiagramLayout={props.featureDiagramLayout}/>}
 
         {props.overlay === overlayTypes.featureCallout &&
         <FeatureCallout

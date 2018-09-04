@@ -5,17 +5,19 @@ import {Dialog, DialogFooter} from 'office-ui-fabric-react/lib/Dialog';
 import {PrimaryButton} from 'office-ui-fabric-react/lib/Button';
 import FontComboBox from '../../helpers/FontComboBox';
 import {getSetting} from '../../store/settings';
-import {SettingsType} from '../../types';
+import {SettingsType, LayoutType} from '../../types';
+import {doExport} from '../featureDiagram/export';
 
 export default class extends React.Component {
     static propTypes = {
         onDismiss: PropTypes.func.isRequired,
         isOpen: PropTypes.bool.isRequired,
         settings: SettingsType.isRequired,
-        onSetSetting: PropTypes.func.isRequired
+        onSetSetting: PropTypes.func.isRequired,
+        featureDiagramLayout: LayoutType.isRequired
     };
 
-    onSubmit = () => window.alert('TODO');
+    onSubmit = () => doExport(this.props.featureDiagramLayout, 'svg');
 
     render() {
         return (

@@ -84,34 +84,7 @@ export default class extends React.Component {
             this.props.overlayProps.featureName === node.feature().name)
             this.props.onHideOverlayFn(this.props.overlay)();
     };
-
-    canExport() {
-        return !!this.svgRef.current;
-    }
-
-    export() {
-        // TODO
-        return null;
-        /*return window.fetch(getSetting(this.props.settings, 'featureDiagram.font.publicPath')) // note: fetch polyfill removed
-            .then(response => response.blob())
-            .then(blob => new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onerror = reject;
-                reader.onload = () => resolve(reader.result);
-                reader.readAsDataURL(blob);
-            })).then(fontData => {
-                const svgRoot = this.svgRef.current.cloneNode(true);
-                const style = svgRoot.querySelector('style');
-                style.textContent = `
-                    @font-face {
-                        font-family: '${getSetting(this.props.settings, 'featureDiagram.font.family')}';
-                        src: url('${fontData}');
-                    }
-                ${style.textContent}`;
-                return new XMLSerializer().serializeToString(svgRoot);
-            });*/
-    }
-
+    
     getKeyFn(kind) {
         return d => `${kind}_${d.feature().name}`;
     }

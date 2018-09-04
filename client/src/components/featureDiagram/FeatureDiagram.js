@@ -38,12 +38,4 @@ export default class extends React.Component {
             <LayoutComponent key={this.getKey(props)} ref={this.layoutRef} {...props}/>
         );
     }
-
-    export() {
-        const layout = this.layoutRef.current;
-        if (layout && layout.canExport())
-            return layout.export().then(console.log);
-        else
-            return Promise.reject('can not export feature diagram');
-    }
 }

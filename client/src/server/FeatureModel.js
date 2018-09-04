@@ -140,6 +140,14 @@ class FeatureModel {
         return elements.length === 1 ? elements[0] : null;
     }
 
+    static getSvg() {
+        // Here we also assume for now that only one SVG is rendered and that is is a feature model.
+        const svg = document.querySelectorAll('svg');
+        if (svg.length !== 1)
+            throw new Error('no SVG feature model found');
+        return svg[0];
+    }
+
     getVisibleFeatureNames() {
         return this.visibleNodes.map(getName);
     }
