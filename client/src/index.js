@@ -1,9 +1,9 @@
+import './polyfills';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import AppContainer from './containers/AppContainer';
 import 'normalize.css';
 import './stylesheets/index.css';
-import 'element-closest';
 import {createStore} from 'redux';
 import {Provider} from 'react-redux';
 import reducers from './store/reducers';
