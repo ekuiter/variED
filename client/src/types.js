@@ -7,6 +7,12 @@ export const
     },
     LayoutType = PropTypes.oneOf(Object.values(layoutTypes)),
 
+    formatTypes = {
+        svg: 'svg',
+        png: 'png'
+    },
+    FormatType = PropTypes.oneOf(Object.values(formatTypes)),
+
     SettingsType = PropTypes.object,
 
     overlayTypes = {
@@ -15,7 +21,7 @@ export const
         featurePanel: 'featurePanel',
         featureRenameDialog: 'featureRenameDialog',
         featureSetDescriptionDialog: 'featureSetDescriptionDialog',
-        exportSvgDialog: 'exportSvg',
+        exportDialog: 'export',
         featureCallout: 'featureCallout',
         featureContextualMenu: 'featureContextualMenu',
         isShownAtSelectedFeature: type => type === 'featureCallout' || type === 'featureContextualMenu'

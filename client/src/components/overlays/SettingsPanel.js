@@ -2,9 +2,9 @@ import React from 'react';
 import {getSetting} from '../../store/settings';
 import i18n from '../../i18n';
 import FontComboBox from '../../helpers/FontComboBox';
+import SpinButton from '../../helpers/SpinButton';
 import {Panel, PanelType} from 'office-ui-fabric-react/lib/Panel';
 import {Toggle} from 'office-ui-fabric-react/lib/Toggle';
-import {SpinButton} from 'office-ui-fabric-react/lib/SpinButton';
 import {ColorPicker} from 'office-ui-fabric-react/lib/ColorPicker';
 import {Slider} from 'office-ui-fabric-react/lib/Slider';
 import {DialogContextualMenu} from '../../helpers/Dialog';
@@ -34,75 +34,15 @@ export const Setting = {
             onChange={font => onSetSetting(path, font)}/>
     ),
 
-    SpinButton: class extends React.Component {
-        static propTypes = exact({
-            settings: SettingsType.isRequired,
-            onSetSetting: PropTypes.func.isRequired,
-            path: PropTypes.string.isRequired,
-            min: PropTypes.number,
-            max: PropTypes.number,
-            step: PropTypes.number,
-            suffix: PropTypes.string,
-            iconProps: PropTypes.object
-        });
-
-        static defaultProps = {step: 1, suffix: ''};
-
-        removeSuffix = value =>
-            this.props.suffix && String(value).endsWith(this.props.suffix)
-                ? String(value).substr(0, value.length - this.props.suffix.length)
-                : String(value);
-
-        sanitizeValue = value => {
-            if (this.props.min !== null && value < this.props.min)
-                value = this.props.min;
-            if (this.props.max !== null && value > this.props.max)
-                value = this.props.max;
-            return value;
-        };
-
-        getValue = path => getSetting(this.props.settings, path) + this.props.suffix;
-        onChange = value => this.props.onSetSetting(this.props.path, value);
-
-        onValidate = value => {
-            value = this.removeSuffix(value);
-            if (value.trim().length === 0 || isNaN(+value))
-                return this.getValue(this.props.path);
-            value = this.sanitizeValue(+value);
-            this.onChange(+value);
-            return String(value) + this.props.suffix;
-        };
-
-        onIncrement = value => {
-            value = this.removeSuffix(value);
-            value = this.sanitizeValue(+value + this.props.step);
-            this.onChange(value);
-            return String(value) + this.props.suffix;
-        };
-
-        onDecrement = value => {
-            value = this.removeSuffix(value);
-            value = this.sanitizeValue(+value - this.props.step);
-            this.onChange(value);
-            return String(value) + this.props.suffix;
-        };
-
-        render() {
-            return (
-                <div className="setting">
-                    <SpinButton
-                        label={getLabel(this.props.path)}
-                        value={this.getValue(this.props.path)}
-                        onValidate={this.onValidate}
-                        onIncrement={this.onIncrement}
-                        onDecrement={this.onDecrement}
-                        iconProps={this.props.iconProps}
-                        styles={{label: {marginTop: 6, marginLeft: 4}, icon: {marginTop: 3}}}/>
-                </div>
-            );
-        }
-    },
-
+    SpinButton: ({settings, onSetSetting, path, ...props}) => (
+        <SpinButton
+            className="setting"
+            label={getLabel(path)}
+            value={getSetting(settings, path)}
+            onChange={value => onSetSetting(path, value)}
+            {...props}/>
+    ),
+    
     ColorPickerContextualMenu: class extends React.Component {
         static propTypes = exact({
             settings: SettingsType.isRequired,
@@ -168,6 +108,12 @@ Setting.FontComboBox.propTypes = exact({
     onSetSetting: PropTypes.func.isRequired,
     path: PropTypes.string.isRequired
 });
+
+Setting.SpinButton.propTypes = {
+    settings: SettingsType.isRequired,
+    onSetSetting: PropTypes.func.isRequired,
+    path: PropTypes.string.isRequired
+};
 
 export default class extends React.Component {
     static propTypes = {

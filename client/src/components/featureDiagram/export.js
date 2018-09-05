@@ -1,4 +1,4 @@
-import {layoutTypes} from '../../types';
+import {layoutTypes, formatTypes} from '../../types';
 import FeatureModel from '../../server/FeatureModel';
 import {saveAs} from 'file-saver';
 import canvg from 'canvg';
@@ -16,28 +16,34 @@ function svgString() {
     return new XMLSerializer().serializeToString(svg);
 }
 
-function svg() {
+function exportSvg() {
     return Promise.resolve(new Blob([svgString()], {type: 'image/svg+xml;charset=utf-8'}));
 }
 
-function png() {
+function exportPng() {
     const canvas = document.createElement('canvas');
     canvg(canvas, svgString());
     return new Promise(resolve => canvas.toBlob(resolve));
 }
 
 const exportMap = {
-    [layoutTypes.verticalTree]: {svg, png},
-    [layoutTypes.horizontalTree]: {svg, png}
+    [layoutTypes.verticalTree]: {
+        [formatTypes.svg]: exportSvg,
+        [formatTypes.png]: exportPng
+    },
+    [layoutTypes.horizontalTree]: {
+        [formatTypes.svg]: exportSvg,
+        [formatTypes.png]: exportPng
+    }
 };
 
-export function canExport(featureDiagramLayout, type) {
-    return !!exportMap[featureDiagramLayout][type];
+export function canExport(featureDiagramLayout, format) {
+    return !!exportMap[featureDiagramLayout][format];
 }
 
-export function doExport(featureDiagramLayout, type, ...args) {
-    const promise = exportMap[featureDiagramLayout][type](...args);
+export function doExport(featureDiagramLayout, format, ...args) {
+    const promise = exportMap[featureDiagramLayout][format](...args);
     if (promise)
         promise.then(blob =>
-            saveAs(blob, `featureModel-${new Date().toLocaleDateString()}.${type}`));
+            saveAs(blob, `featureModel-${new Date().toLocaleDateString()}.${format}`));
 }

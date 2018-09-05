@@ -1,10 +1,10 @@
 import i18n from '../i18n';
 import actions from '../store/actions';
 import {selectMultipleFeaturesContextualMenuItems} from './overlays/FeatureContextualMenu';
-import {layoutTypes, overlayTypes} from '../types';
+import {layoutTypes, overlayTypes, formatTypes} from '../types';
 import {ContextualMenuItemType} from '../../node_modules/office-ui-fabric-react/lib/ContextualMenu';
 import {getShortcutText} from '../shortcuts';
-import {canExport, doExport} from './featureDiagram/export';
+import {canExport} from './featureDiagram/export';
 
 const contextualMenuItems = {
     settings: onShowOverlay => ({
@@ -27,18 +27,18 @@ const contextualMenuItems = {
             iconProps: {iconName: 'Share'},
             subMenuProps: {
                 items: [
-                    ...canExport(featureDiagramLayout, 'svg')
-                        ? [{
-                            key: 'svg',
-                            text: i18n.t('featureDiagram.commands.svg'),
-                            onClick: () => onShowOverlay(overlayTypes.exportSvgDialog)
-                        }]
-                        : [],
-                    ...canExport(featureDiagramLayout, 'png')
+                    ...canExport(featureDiagramLayout, formatTypes.png)
                         ? [{
                             key: 'png',
                             text: i18n.t('featureDiagram.commands.png'),
-                            onClick: () => doExport(featureDiagramLayout, 'png')
+                            onClick: () => onShowOverlay(overlayTypes.exportDialog, {format: formatTypes.png})
+                        }]
+                        : [],
+                    ...canExport(featureDiagramLayout, formatTypes.svg)
+                        ? [{
+                            key: 'svg',
+                            text: i18n.t('featureDiagram.commands.svg'),
+                            onClick: () => onShowOverlay(overlayTypes.exportDialog, {format: formatTypes.svg})
                         }]
                         : []
                 ]

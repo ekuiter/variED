@@ -98,22 +98,28 @@ export const strings = {
             title: 'Set feature description',
             rename: 'Save'
         },
-        exportSvgDialog: {
-            title: 'Export as SVG',
+        exportDialog: {
             export: 'Export',
-            content: (
-                <p>
+            svg: {
+                title: 'Export as SVG',
+                content: (
+                    <p>
                 Note that the font will <strong>not</strong> be embedded into the SVG file.
                 Please make sure to choose a font that is commonly available.
-                </p>
-            )
+                    </p>
+                )
+            },
+            png: {
+                title: 'Export as PNG',
+                zoom: 'Zoom'
+            }
         }
     },
     featureDiagram: {
         commands: {
             export: 'Export as',
             svg: 'SVG…',
-            png: 'PNG',
+            png: 'PNG…',
             undo: 'Undo',
             redo: 'Redo',
             setLayout: 'Layout',

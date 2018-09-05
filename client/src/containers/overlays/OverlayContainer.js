@@ -9,7 +9,7 @@ import FeatureRenameDialog from '../../components/overlays/FeatureRenameDialog';
 import FeatureSetDescriptionDialog from '../../components/overlays/FeatureSetDescriptionDialog';
 import FeatureCallout from '../../components/overlays/FeatureCallout';
 import FeatureContextualMenu from '../../components/overlays/FeatureContextualMenu';
-import ExportSvgDialog from '../../components/overlays/ExportSvgDialog';
+import ExportDialog from '../../components/overlays/ExportDialog';
 import {overlayTypes} from '../../types';
 
 const OverlayContainer = props => (
@@ -48,13 +48,14 @@ const OverlayContainer = props => (
             onDismiss={props.onHideOverlayFn(overlayTypes.featureSetDescriptionDialog)}
             featureModel={props.featureModel}
             {...props.overlayProps}/>}
-        {props.overlay === overlayTypes.exportSvgDialog &&
-        <ExportSvgDialog
+        {props.overlay === overlayTypes.exportDialog &&
+        <ExportDialog
             isOpen={true}
-            onDismiss={props.onHideOverlayFn(overlayTypes.exportSvgDialog)}
+            onDismiss={props.onHideOverlayFn(overlayTypes.exportDialog)}
             settings={props.settings}
             onSetSetting={props.onSetSetting}
-            featureDiagramLayout={props.featureDiagramLayout}/>}
+            featureDiagramLayout={props.featureDiagramLayout}
+            {...props.overlayProps}/>}
 
         {props.overlay === overlayTypes.featureCallout &&
         <FeatureCallout
