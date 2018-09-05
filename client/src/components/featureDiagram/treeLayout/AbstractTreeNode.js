@@ -117,6 +117,7 @@ export default class {
         bboxes = [];
         nodeEnter.insert('text', 'path.arcClick')
             .call(addFontStyle, this.settings)
+            .attr('fill', getSetting(this.settings, 'featureDiagram.treeLayout.node.visibleFill'))
             .attr('class', 'collapse')
             .attr('text-anchor', 'middle')
             .attrs(d => this.treeLink.collapseAnchor(d))

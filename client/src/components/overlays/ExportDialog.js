@@ -19,11 +19,27 @@ export default class extends React.Component {
         format: FormatType.isRequired
     };
 
-    state = {zoom: 100};
-
-    onSubmit = () => doExport(this.props.featureDiagramLayout, this.props.format, this.state.zoom / 100);
+    state = {zoom: 100, quality: 80};
     onZoomChange = zoom => this.setState({zoom});
+    onQualityChange = quality => this.setState({quality});
 
+    onSubmit = () => {
+        doExport(this.props.featureDiagramLayout, this.props.format, {
+            scale: this.state.zoom / 100,
+            quality: this.state.quality / 100
+        });
+        this.props.onDismiss();
+    };
+
+    renderZoomSpinButton = () => (
+        <SpinButton
+            className="setting"
+            label={i18n.t('dialogs.exportDialog.zoom')}
+            onChange={this.onZoomChange}
+            value={this.state.zoom}
+            min={10} max={1000} suffix=" %"/>
+    );
+    
     render() {
         return (
             <Dialog
@@ -38,13 +54,16 @@ export default class extends React.Component {
                         selectedFont={getSetting(this.props.settings, 'featureDiagram.font.family')}
                         onChange={font => this.props.onSetSetting('featureDiagram.font.family', font)}/>
                 </React.Fragment>}
-                {this.props.format === formatTypes.png &&
+                {this.props.format === formatTypes.png && this.renderZoomSpinButton()}
+                {this.props.format === formatTypes.jpg &&
                 <React.Fragment>
+                    {this.renderZoomSpinButton()}
                     <SpinButton
-                        label={i18n.t('dialogs.exportDialog.png.zoom')}
-                        onChange={this.onZoomChange}
-                        value={this.state.zoom}
-                        min={10} max={1000} suffix=" %"/>
+                        className="setting"
+                        label={i18n.t('dialogs.exportDialog.jpg.quality')}
+                        onChange={this.onQualityChange}
+                        value={this.state.quality}
+                        min={10} max={100} suffix=" %"/>
                 </React.Fragment>}
                 <DialogFooter>
                     <PrimaryButton onClick={this.onSubmit} text={i18n.t('dialogs.exportDialog.export')}/>

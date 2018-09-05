@@ -9,7 +9,8 @@ export const
 
     formatTypes = {
         svg: 'svg',
-        png: 'png'
+        png: 'png',
+        jpg: 'jpg'
     },
     FormatType = PropTypes.oneOf(Object.values(formatTypes)),
 

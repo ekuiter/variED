@@ -34,6 +34,13 @@ const contextualMenuItems = {
                             onClick: () => onShowOverlay(overlayTypes.exportDialog, {format: formatTypes.png})
                         }]
                         : [],
+                    ...canExport(featureDiagramLayout, formatTypes.jpg)
+                        ? [{
+                            key: 'jpg',
+                            text: i18n.t('featureDiagram.commands.jpg'),
+                            onClick: () => onShowOverlay(overlayTypes.exportDialog, {format: formatTypes.jpg})
+                        }]
+                        : [],
                     ...canExport(featureDiagramLayout, formatTypes.svg)
                         ? [{
                             key: 'svg',

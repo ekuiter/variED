@@ -100,6 +100,7 @@ export const strings = {
         },
         exportDialog: {
             export: 'Export',
+            zoom: 'Zoom',
             svg: {
                 title: 'Export as SVG',
                 content: (
@@ -110,8 +111,11 @@ export const strings = {
                 )
             },
             png: {
-                title: 'Export as PNG',
-                zoom: 'Zoom'
+                title: 'Export as PNG'
+            },
+            jpg: {
+                title: 'Export as JPEG',
+                quality: 'Quality'
             }
         }
     },
@@ -120,6 +124,7 @@ export const strings = {
             export: 'Export as',
             svg: 'SVG…',
             png: 'PNG…',
+            jpg: 'JPEG…',
             undo: 'Undo',
             redo: 'Redo',
             setLayout: 'Layout',
