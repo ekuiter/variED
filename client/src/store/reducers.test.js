@@ -7,11 +7,16 @@ import {validFeatureModel, validFeatureModelWithRemovedFeatures} from '../fixtur
 import FeatureModel from '../server/FeatureModel';
 
 describe('reducers', () => {
-    const featureModelState = (state = reducers(undefined), featureModel = validFeatureModel) =>
-        reducers(state, {
+    const featureModelState = (state = reducers(undefined), featureModel = validFeatureModel) => {
+        // TODO: change this when we can load feature models
+        state.server.featureModel = undefined;
+        state.server.newFeatureModel = false;
+        state = reducers(state, {
             type: constants.server.messageTypes.FEATURE_MODEL,
             featureModel: featureModel
         });
+        return state;
+    };
 
     it('returns the initial state', () => {
         expect(reducers()).toBe(constants.store.initialState);
