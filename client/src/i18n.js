@@ -20,9 +20,9 @@ export const strings = {
                     <h3>variED: The variability editor</h3>
                     <p>View, edit and analyze feature models in the browser - with support for real-time
                         collaboration.</p>
-                    <p>This project is released under the <Link href={constants.panels.aboutPanel.licenseUri}
+                    <p>This project is released under the <Link href={constants.overlays.aboutPanel.licenseUri}
                         target="_blank">LGPL v3 license</Link>.</p>
-                    <p><Link href={constants.panels.aboutPanel.githubUri} target="_blank">View source code on
+                    <p><Link href={constants.overlays.aboutPanel.githubUri} target="_blank">View source code on
                         GitHub</Link></p>
                 </div>
             )
@@ -132,6 +132,7 @@ export const strings = {
             undo: 'Undo',
             redo: 'Redo',
             setLayout: 'Layout',
+            autoCollapse: 'Fit to screen',
             selection: (isSelectMultipleFeatures, selectedFeatureNames) =>
                 isSelectMultipleFeatures
                     ? `Feature selection (${selectedFeatureNames.length})`

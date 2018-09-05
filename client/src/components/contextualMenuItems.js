@@ -77,6 +77,11 @@ const contextualMenuItems = {
                 }]
             }
         }),
+        autoCollapse: onAutoCollapse => ({
+            key: 'autoCollapse',
+            text: i18n.t('featureDiagram.commands.autoCollapse'),
+            onClick: onAutoCollapse
+        }),
         selection: (isSelectMultipleFeatures, onSetSelectMultipleFeatures,
             selectedFeatureNames, onDeselectAllFeatures, featureModel) => ({
             key: 'selection',

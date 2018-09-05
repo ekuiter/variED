@@ -10,6 +10,7 @@ import {ContextualMenuItemType} from '../../node_modules/office-ui-fabric-react/
 import i18n from '../i18n';
 import {overlayTypes} from '../types';
 import {getShortcutKeyBinding} from '../shortcuts';
+import withDimensions from '../helpers/withDimensions';
 
 /* eslint-disable react/prop-types */
 const CommandBarContainer = props => (
@@ -56,6 +57,7 @@ const CommandBarContainer = props => (
                     {key: 'divider1', itemType: ContextualMenuItemType.Divider},
                     contextualMenuItems.featureDiagram.features.collapseAll(props.onCollapseAllFeatures),
                     contextualMenuItems.featureDiagram.features.expandAll(props.onExpandAllFeatures),
+                    contextualMenuItems.featureDiagram.autoCollapse(props.onAutoCollapse),
                     {key: 'divider2', itemType: ContextualMenuItemType.Divider},
                     contextualMenuItems.settings(props.onShowOverlay)
                 ]
@@ -80,7 +82,7 @@ const CommandBarContainer = props => (
         ]}/>
 );
 
-export default connect(
+export default withDimensions(connect(
     state => ({
         featureDiagramLayout: state.ui.featureDiagramLayout,
         isSelectMultipleFeatures: state.ui.isSelectMultipleFeatures,
@@ -90,14 +92,15 @@ export default connect(
         featureModel: getFeatureModel(state),
         isKeyBindingActive: !state.ui.overlay
     }),
-    dispatch => ({
+    (dispatch, ownProps) => ({
         onSetFeatureDiagramLayout: layout => dispatch(actions.ui.setFeatureDiagramLayout(layout)),
         onSetSelectMultipleFeatures: isSelectMultipleFeatures => dispatch(actions.ui.features.setSelectMultiple(isSelectMultipleFeatures)),
         onSelectAllFeatures: () => dispatch(actions.ui.features.selectAll()),
         onDeselectAllFeatures: () => dispatch(actions.ui.features.deselectAll()),
         onCollapseAllFeatures: () => dispatch(actions.ui.features.collapseAll()),
         onExpandAllFeatures: () => dispatch(actions.ui.features.expandAll()),
-        onShowOverlay: (...args) => dispatch(actions.ui.overlay.show(...args))
+        onShowOverlay: (...args) => dispatch(actions.ui.overlay.show(...args)),
+        onAutoCollapse: () => dispatch(actions.ui.autoCollapse(ownProps.width, ownProps.height))
     })
 )(withKeys(
     getShortcutKeyBinding('undo', actions.server.undo),
@@ -107,4 +110,4 @@ export default connect(
     getShortcutKeyBinding('featureDiagram.features.deselectAll', ({props}) => props.onDeselectAllFeatures()),
     getShortcutKeyBinding('featureDiagram.features.collapseAll', ({props}) => props.onCollapseAllFeatures()),
     getShortcutKeyBinding('featureDiagram.features.expandAll', ({props}) => props.onExpandAllFeatures()),
-)(CommandBarContainer));
+)(CommandBarContainer)));

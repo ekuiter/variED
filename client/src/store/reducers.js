@@ -60,7 +60,7 @@ function changeOverlayForRenamedFeature(state, action) {
     return state;
 }
 
-function serverUiReducer(state, action) {
+function finalReducer(state, action) {
     if (action.type === constants.server.messageTypes.FEATURE_MODEL) {
         state = removeObsoleteFeaturesFromFeatureList(state, 'collapsedFeatureNames');
         // TODO: warn user that selection changed
@@ -73,6 +73,8 @@ function serverUiReducer(state, action) {
         state = renameFeatureInFeatureList(state, action, 'selectedFeatureNames');
         state = changeOverlayForRenamedFeature(state, action);
     }
+    if (action.type === 'UI/AUTO_COLLAPSE')
+        state = {...state, settings: getNewSettings(state.settings, 'featureDiagram.forceRerender', +new Date())};
     return state;
 }
 
@@ -89,6 +91,11 @@ const uiReducer = rootState => handleActions({
     UI: {
         SET_FEATURE_DIAGRAM_LAYOUT: (state, {payload: {featureDiagramLayout}}) =>
             ({...state, featureDiagramLayout}),
+        AUTO_COLLAPSE: (state, {payload: {width, height}}) =>
+            rootState.server.featureModel
+                ? {...state, collapsedFeatureNames: getFeatureModel(rootState)
+                    .getAutoCollapsedFeatureNames(rootState.settings, state.featureDiagramLayout, width, height)}
+                : state,
         FEATURE: {
             SELECT: (state, {payload: {featureName}}) =>
                 ({...state, selectedFeatureNames: uniqueArrayAdd(state.selectedFeatureNames, featureName)}),
@@ -142,5 +149,5 @@ export default reduceReducers(
     serverReducer,
     (state, action) => ({...state, settings: settingsReducer(state.settings, action)}),
     (state, action) => ({...state, ui: uiReducer(state)(state.ui, action)}),
-    serverUiReducer,
+    finalReducer,
     constants.store.initialState);

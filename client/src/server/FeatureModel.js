@@ -2,6 +2,9 @@ import {hierarchy as d3Hierarchy} from 'd3-hierarchy';
 import constants from '../constants';
 import PropTypes from 'prop-types';
 import memoize from '../helpers/memoize';
+import {estimateHierarchySize} from '../components/featureDiagram/treeLayout/estimation';
+import {getSetting} from '../store/settings';
+import {layoutTypes} from '../types';
 
 const serialization = constants.server.featureModel.serialization;
 
@@ -23,6 +26,27 @@ function hasChildren(node) {
 
 function hasActualChildren(node) {
     return !!(node.actualChildren && node.actualChildren.length > 0);
+}
+
+function eachFeatureBelow(node, callback) {
+    var current, next = [node], children, i, n;
+    do {
+        current = next.reverse();
+        next = [];
+        while ((node = current.pop())) {
+            callback(node);
+            children = node.actualChildren;
+            if (children)
+                for (i = 0, n = children.length; i < n; ++i)
+                    next.push(children[i]);
+        }
+    } while (next.length);
+}
+
+function getFeaturesBelow(node) {
+    var nodes = [];
+    eachFeatureBelow(node, node => nodes.push(node));
+    return nodes;
 }
 
 d3Hierarchy.prototype.feature = function() {
@@ -166,6 +190,33 @@ class FeatureModel {
             .filter(node => node)
             .map(node => node.parent);
         return parents.every(parent => parent === parents[0]);
+    }
+
+    getAutoCollapsedFeatureNames(settings, featureDiagramLayout, width, height) {
+        const fontFamily = getSetting(settings, 'featureDiagram.font.family'),
+            fontSize = getSetting(settings, 'featureDiagram.font.size'),
+            widthPadding = 2 * getSetting(settings, 'featureDiagram.treeLayout.node.paddingX') +
+                2 * getSetting(settings, 'featureDiagram.treeLayout.node.strokeWidth'),
+            rectHeight = getSetting(settings, 'featureDiagram.font.size') +
+                2 * getSetting(settings, 'featureDiagram.treeLayout.node.paddingY') +
+                2 * getSetting(settings, 'featureDiagram.treeLayout.node.strokeWidth');
+        let nodes = this.actualNodes, collapsedFeatureNames = [];
+
+        while (true) { // eslint-disable-line no-constant-condition
+            const {estimatedSize, collapsibleNodes} = estimateHierarchySize(
+                nodes, collapsedFeatureNames, featureDiagramLayout,
+                {fontFamily, fontSize, widthPadding, rectHeight});
+    
+            if ((featureDiagramLayout === layoutTypes.verticalTree ? estimatedSize <= width : estimatedSize <= height) ||
+                collapsibleNodes.length === 0)
+                return collapsedFeatureNames;
+    
+            collapsedFeatureNames = collapsedFeatureNames.concat(collapsibleNodes.map(getName));
+            const invisibleNodes = collapsibleNodes
+                .map(node => getFeaturesBelow(node).slice(1))
+                .reduce((acc, children) => acc.concat(children), []);
+            nodes = nodes.filter(node => !invisibleNodes.includes(node));
+        }
     }
 }
 

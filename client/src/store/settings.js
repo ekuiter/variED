@@ -5,6 +5,7 @@ export const defaultSettings = {
     featureDiagram: {
         // settings paths that should NOT trigger a rerender of the feature diagram
         doNotRerenderForPaths: ['treeLayout.useTransitions', 'treeLayout.transitionDuration'],
+        forceRerender: +new Date(), // update this field to force a rerender
         font: {
             family: 'Arial', // font family for feature diagrams
             size: 16 // main font size for feature names

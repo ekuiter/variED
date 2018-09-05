@@ -2,7 +2,12 @@ import {defaultSettings} from './store/settings';
 import {layoutTypes} from './types';
 
 const constants = {
-    panels: {
+    featureDiagram: {
+        autoCollapse: {
+            maxCollapsibleNodes: nodes => nodes.length > 100 ? nodes.length / 10 : 1
+        }
+    },
+    overlays: {
         aboutPanel: {
             githubUri: 'https://github.com/ekuiter/variED',
             licenseUri: 'https://github.com/ekuiter/variED/blob/master/LICENSE.txt'
