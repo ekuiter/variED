@@ -1,7 +1,6 @@
 import {layoutTypes, formatTypes} from '../../types';
 import FeatureModel from '../../server/FeatureModel';
 import {saveAs} from 'file-saver';
-import canvg from 'canvg';
 
 function svgData(scale = 1) {
     const svg = FeatureModel.getSvg().cloneNode(true),
@@ -26,8 +25,9 @@ function exportSvg() {
 
 function exportPng({scale = 1}) {
     const canvas = document.createElement('canvas');
-    canvg(canvas, svgData(scale).string);
-    return new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+    return import('canvg')
+        .then(canvg => canvg(canvas, svgData(scale).string))
+        .then(() => new Promise(resolve => canvas.toBlob(resolve, 'image/png')));
 }
 
 function exportJpg({scale = 1, quality = 0.8}) {
@@ -38,8 +38,9 @@ function exportJpg({scale = 1, quality = 0.8}) {
     canvas.setAttribute('height', height);
     ctx.fillStyle = 'white';
     ctx.fillRect(0, 0, width, height);
-    ctx.drawSvg(string, 0, 0, width, height);
-    return new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', quality));
+    return import('canvg')
+        .then(() => ctx.drawSvg(string, 0, 0, width, height))
+        .then(() => new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', quality)));
 }
 
 const exportMap = {
