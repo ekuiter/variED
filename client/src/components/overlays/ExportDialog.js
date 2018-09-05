@@ -21,7 +21,7 @@ export default class extends React.Component {
 
     state = {zoom: 100};
 
-    onSubmit = () => doExport(this.props.featureDiagramLayout, this.props.format, this.state.zoom);
+    onSubmit = () => doExport(this.props.featureDiagramLayout, this.props.format, this.state.zoom / 100);
     onZoomChange = zoom => this.setState({zoom});
 
     render() {
