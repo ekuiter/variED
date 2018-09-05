@@ -19,11 +19,6 @@ export default class extends React.Component {
 
     onSubmit = () => doExport(this.props.featureDiagramLayout, 'svg');
 
-    componentDidMount() {
-        if (this.props.isOpen)
-            this.props.onSetSetting('featureDiagram.rerenderForExport', +new Date());
-    }
-
     render() {
         return (
             <Dialog

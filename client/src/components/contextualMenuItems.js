@@ -4,7 +4,7 @@ import {selectMultipleFeaturesContextualMenuItems} from './overlays/FeatureConte
 import {layoutTypes, overlayTypes} from '../types';
 import {ContextualMenuItemType} from '../../node_modules/office-ui-fabric-react/lib/ContextualMenu';
 import {getShortcutText} from '../shortcuts';
-import {canExport} from './featureDiagram/export';
+import {canExport, doExport} from './featureDiagram/export';
 
 const contextualMenuItems = {
     settings: onShowOverlay => ({
@@ -32,6 +32,13 @@ const contextualMenuItems = {
                             key: 'svg',
                             text: i18n.t('featureDiagram.commands.svg'),
                             onClick: () => onShowOverlay(overlayTypes.exportSvgDialog)
+                        }]
+                        : [],
+                    ...canExport(featureDiagramLayout, 'png')
+                        ? [{
+                            key: 'png',
+                            text: i18n.t('featureDiagram.commands.png'),
+                            onClick: () => doExport(featureDiagramLayout, 'png')
                         }]
                         : []
                 ]

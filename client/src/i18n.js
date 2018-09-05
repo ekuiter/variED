@@ -113,6 +113,7 @@ export const strings = {
         commands: {
             export: 'Export as',
             svg: 'SVG…',
+            png: 'PNG',
             undo: 'Undo',
             redo: 'Redo',
             setLayout: 'Layout',

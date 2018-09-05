@@ -339,8 +339,6 @@ abstract public class Message {
         }
 
         public StateChange getStateChange(StateContext stateContext) {
-            System.out.println(property);
-            System.out.println(value);
             IFeatureModel featureModel = stateContext.getFeatureModel();
             IFeature _feature = featureModel.getFeature(feature);
             return new StateChange.FeatureSetProperty(featureModel, _feature, property, value);

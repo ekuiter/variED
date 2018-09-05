@@ -50,7 +50,6 @@ export default class extends React.Component {
             this.getParentCoordinateFn('previousCoordinates'),
             this.treeNode);
         this.treeNode.treeLink = this.treeLink;
-        this.rerenderForExport = getSetting(props.settings, 'featureDiagram.rerenderForExport');
     }
 
     componentDidMount() {
@@ -185,6 +184,9 @@ export default class extends React.Component {
             estimatedBboxWidth = estimatedBbox[1][0] - estimatedBbox[0][0],
             estimatedBboxHeight = estimatedBbox[1][1] - estimatedBbox[0][1];
 
+        // bounding box information for export
+        svgRoot.attr('data-estimated-bbox', JSON.stringify(estimatedBbox));
+
         style.attr('type', 'text/css').text(`
             svg {
                 font-family: '${getSetting(settings, 'featureDiagram.font.family')}' !important;
@@ -218,8 +220,7 @@ export default class extends React.Component {
                 });
             });
 
-        if (isCreating || (fitOnResize && isResize) ||
-            this.rerenderForExport !== getSetting(settings, 'featureDiagram.rerenderForExport')) {
+        if (isCreating || (fitOnResize && isResize)) {
             const svgBbox = this.svgRef.current.getBoundingClientRect();
             svgRoot.call(zoom.scaleTo, Math.min(1,
                 svgBbox.width / estimatedBboxWidth,

@@ -1,5 +1,6 @@
 import 'element-closest';
 import 'blob-polyfill';
+import 'blueimp-canvas-to-blob';
 
 // some simple shims for IE11 (see MDN). we could use es*-shim, but it is very large
 /* eslint-disable no-extend-native */
