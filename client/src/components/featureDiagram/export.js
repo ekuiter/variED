@@ -13,6 +13,7 @@ function svgData(scale = 1) {
     svg.querySelector('g').setAttribute('transform',
         `translate(${-estimatedBbox[0][0] * scale},${-estimatedBbox[0][1] * scale}) scale(${scale})`);
     return {
+        svg,
         string: new XMLSerializer().serializeToString(svg),
         width: estimatedBboxWidth * scale,
         height: estimatedBboxHeight * scale
@@ -43,16 +44,40 @@ function exportJpg({scale = 1, quality = 0.8}) {
         .then(() => new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', quality)));
 }
 
+function exportPdf(_options, fileName) {
+    const {svg, width, height} = svgData();
+    Promise.all([import('svg2pdf.js'), import('jspdf-yworks')])
+        .then(([svg2pdf, jsPDF]) => {
+            const pdf = new jsPDF({
+                orientation: 'landscape',
+                unit: 'pt',
+                format: [width, height]
+            });
+            try {
+                svg2pdf(svg, pdf, {
+                    xOffset: 0,
+                    yOffset: 0,
+                    scale: 1
+                });
+                pdf.save(fileName);
+            } catch (e) {
+                console.warn('PDF export failed - choose Arial as font and try again');
+            }
+        });
+}
+
 const exportMap = {
     [layoutTypes.verticalTree]: {
         [formatTypes.svg]: exportSvg,
         [formatTypes.png]: exportPng,
-        [formatTypes.jpg]: exportJpg
+        [formatTypes.jpg]: exportJpg,
+        [formatTypes.pdf]: exportPdf
     },
     [layoutTypes.horizontalTree]: {
         [formatTypes.svg]: exportSvg,
         [formatTypes.png]: exportPng,
-        [formatTypes.jpg]: exportJpg
+        [formatTypes.jpg]: exportJpg,
+        [formatTypes.pdf]: exportPdf
     }
 };
 
@@ -60,9 +85,9 @@ export function canExport(featureDiagramLayout, format) {
     return !!exportMap[featureDiagramLayout][format];
 }
 
-export function doExport(featureDiagramLayout, format, ...args) {
-    const promise = exportMap[featureDiagramLayout][format](...args);
+export function doExport(featureDiagramLayout, format, options) {
+    const fileName = `featureModel-${new Date().toLocaleDateString()}.${format}`,
+        promise = exportMap[featureDiagramLayout][format](options, fileName);
     if (promise)
-        promise.then(blob =>
-            saveAs(blob, `featureModel-${new Date().toLocaleDateString()}.${format}`));
+        promise.then(blob => saveAs(blob, fileName));
 }

@@ -101,14 +101,14 @@ export const strings = {
         exportDialog: {
             export: 'Export',
             zoom: 'Zoom',
+            fontNotice: (
+                <p>
+                    Note that the font will <strong>not</strong> be embedded.
+                    Please make sure to choose a font that is commonly available.
+                </p>
+            ),
             svg: {
-                title: 'Export as SVG',
-                content: (
-                    <p>
-                Note that the font will <strong>not</strong> be embedded into the SVG file.
-                Please make sure to choose a font that is commonly available.
-                    </p>
-                )
+                title: 'Export as SVG'
             },
             png: {
                 title: 'Export as PNG'
@@ -116,6 +116,9 @@ export const strings = {
             jpg: {
                 title: 'Export as JPEG',
                 quality: 'Quality'
+            },
+            pdf: {
+                title: 'Export as PDF'
             }
         }
     },
@@ -125,6 +128,7 @@ export const strings = {
             svg: 'SVG…',
             png: 'PNG…',
             jpg: 'JPEG…',
+            pdf: 'PDF…',
             undo: 'Undo',
             redo: 'Redo',
             setLayout: 'Layout',

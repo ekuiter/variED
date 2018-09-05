@@ -6,6 +6,15 @@ import {ContextualMenuItemType} from '../../node_modules/office-ui-fabric-react/
 import {getShortcutText} from '../shortcuts';
 import {canExport} from './featureDiagram/export';
 
+const exportFormatItem = (featureDiagramLayout, onShowOverlay, format) =>
+    canExport(featureDiagramLayout, format)
+        ? [{
+            key: format,
+            text: i18n.t('featureDiagram.commands', format),
+            onClick: () => onShowOverlay(overlayTypes.exportDialog, {format})
+        }]
+        : [];
+
 const contextualMenuItems = {
     settings: onShowOverlay => ({
         key: 'settings',
@@ -27,27 +36,11 @@ const contextualMenuItems = {
             iconProps: {iconName: 'Share'},
             subMenuProps: {
                 items: [
-                    ...canExport(featureDiagramLayout, formatTypes.png)
-                        ? [{
-                            key: 'png',
-                            text: i18n.t('featureDiagram.commands.png'),
-                            onClick: () => onShowOverlay(overlayTypes.exportDialog, {format: formatTypes.png})
-                        }]
-                        : [],
-                    ...canExport(featureDiagramLayout, formatTypes.jpg)
-                        ? [{
-                            key: 'jpg',
-                            text: i18n.t('featureDiagram.commands.jpg'),
-                            onClick: () => onShowOverlay(overlayTypes.exportDialog, {format: formatTypes.jpg})
-                        }]
-                        : [],
-                    ...canExport(featureDiagramLayout, formatTypes.svg)
-                        ? [{
-                            key: 'svg',
-                            text: i18n.t('featureDiagram.commands.svg'),
-                            onClick: () => onShowOverlay(overlayTypes.exportDialog, {format: formatTypes.svg})
-                        }]
-                        : []
+                    ...exportFormatItem(featureDiagramLayout, onShowOverlay, formatTypes.png),
+                    ...exportFormatItem(featureDiagramLayout, onShowOverlay, formatTypes.jpg),
+                    {key: 'divider', itemType: ContextualMenuItemType.Divider},
+                    ...exportFormatItem(featureDiagramLayout, onShowOverlay, formatTypes.svg),
+                    ...exportFormatItem(featureDiagramLayout, onShowOverlay, formatTypes.pdf)
                 ]
             }
         }),

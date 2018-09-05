@@ -31,6 +31,16 @@ export default class extends React.Component {
         this.props.onDismiss();
     };
 
+    renderFontComboBox = () => (
+        <React.Fragment>
+            {i18n.t('dialogs.exportDialog.fontNotice')}
+            <FontComboBox
+                label={i18n.t('panels.settingsPanel.labels.featureDiagram.font.family')}
+                selectedFont={getSetting(this.props.settings, 'featureDiagram.font.family')}
+                onChange={font => this.props.onSetSetting('featureDiagram.font.family', font)}/>
+        </React.Fragment>
+    );
+
     renderZoomSpinButton = () => (
         <SpinButton
             className="setting"
@@ -46,14 +56,7 @@ export default class extends React.Component {
                 hidden={!this.props.isOpen}
                 onDismiss={this.props.onDismiss}
                 dialogContentProps={{title: i18n.t('dialogs.exportDialog', this.props.format, 'title')}}>
-                {this.props.format === formatTypes.svg &&
-                <React.Fragment>
-                    {i18n.t('dialogs.exportDialog.svg.content')}
-                    <FontComboBox
-                        label={i18n.t('panels.settingsPanel.labels.featureDiagram.font.family')}
-                        selectedFont={getSetting(this.props.settings, 'featureDiagram.font.family')}
-                        onChange={font => this.props.onSetSetting('featureDiagram.font.family', font)}/>
-                </React.Fragment>}
+                {this.props.format === formatTypes.svg && this.renderFontComboBox()}
                 {this.props.format === formatTypes.png && this.renderZoomSpinButton()}
                 {this.props.format === formatTypes.jpg &&
                 <React.Fragment>
@@ -65,6 +68,7 @@ export default class extends React.Component {
                         value={this.state.quality}
                         min={10} max={100} suffix=" %"/>
                 </React.Fragment>}
+                {this.props.format === formatTypes.pdf && this.renderFontComboBox()}
                 <DialogFooter>
                     <PrimaryButton onClick={this.onSubmit} text={i18n.t('dialogs.exportDialog.export')}/>
                 </DialogFooter>

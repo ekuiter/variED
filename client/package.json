@@ -27,7 +27,8 @@
     "reduce-reducers": "^0.4.3",
     "redux": "^4.0.0",
     "redux-actions": "^2.6.1",
-    "reselect": "^3.0.1"
+    "reselect": "^3.0.1",
+    "svg2pdf.js": "^1.2.1"
   },
   "devDependencies": {
     "babel-eslint": "^9.0.0",
