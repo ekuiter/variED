@@ -3,7 +3,7 @@ import {layoutTypes} from './types';
 
 const constants = {
     featureDiagram: {
-        autoCollapse: {
+        fitToScreen: {
             maxCollapsibleNodes: nodes => nodes.length > 100 ? nodes.length / 10 : 1
         }
     },

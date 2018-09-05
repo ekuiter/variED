@@ -69,14 +69,14 @@ function finalReducer(state, action) {
         // TODO: warn user that overlay was hidden
         state = hideOverlayForObsoleteFeature(state);
         if (state.server.newFeatureModel)
-            state = {...state, ui: autoCollapse(state, state.ui)};
+            state = {...state, ui: fitToScreen(state, state.ui)};
     }
     if (action.type === constants.server.messageTypes.FEATURE_RENAME) {
         state = renameFeatureInFeatureList(state, action, 'collapsedFeatureNames');
         state = renameFeatureInFeatureList(state, action, 'selectedFeatureNames');
         state = changeOverlayForRenamedFeature(state, action);
     }
-    if (action.type === 'UI/AUTO_COLLAPSE')
+    if (action.type === 'UI/FIT_TO_SCREEN')
         state = {...state, settings: getNewSettings(state.settings, 'featureDiagram.forceRerender', +new Date())};
     return state;
 }
@@ -90,10 +90,10 @@ function updateOverlay(state, overlay, overlayProps) {
         return {...state, overlay, overlayProps};
 }
 
-function autoCollapse(rootState, uiState) {
+function fitToScreen(rootState, uiState) {
     return rootState.server.featureModel
         ? {...uiState, collapsedFeatureNames: getFeatureModel(rootState)
-            .getAutoCollapsedFeatureNames(
+            .getFittingFeatureNames(
                 rootState.settings, uiState.featureDiagramLayout, getViewportWidth(), getViewportHeight())}
         : uiState;
 }
@@ -102,7 +102,7 @@ const uiReducer = rootState => handleActions({
     UI: {
         SET_FEATURE_DIAGRAM_LAYOUT: (state, {payload: {featureDiagramLayout}}) =>
             ({...state, featureDiagramLayout}),
-        AUTO_COLLAPSE: state => autoCollapse(rootState, state),
+        FIT_TO_SCREEN: state => fitToScreen(rootState, state),
         FEATURE: {
             SELECT: (state, {payload: {featureName}}) =>
                 ({...state, selectedFeatureNames: uniqueArrayAdd(state.selectedFeatureNames, featureName)}),

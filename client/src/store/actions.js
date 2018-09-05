@@ -9,7 +9,7 @@ const actions = createActions({
     UI: {
         SET_FEATURE_DIAGRAM_LAYOUT: featureDiagramLayout =>
             ({featureDiagramLayout}),
-        AUTO_COLLAPSE: () => {},
+        FIT_TO_SCREEN: () => {},
         FEATURE: {
             SELECT: featureName => ({featureName}),
             DESELECT: featureName => ({featureName}),

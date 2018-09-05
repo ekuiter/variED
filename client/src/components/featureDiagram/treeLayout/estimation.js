@@ -43,7 +43,7 @@ export function estimateYOffset(settings, sgn, _layout) {
 export function estimateHierarchySize(nodes, collapsedFeatureNames, featureDiagramLayout,
     {fontFamily, fontSize, widthPadding, rectHeight}) {
 
-    const maxCollapsibleNodes = constants.featureDiagram.autoCollapse.maxCollapsibleNodes(nodes),
+    const maxCollapsibleNodes = constants.featureDiagram.fitToScreen.maxCollapsibleNodes(nodes),
         minLayerSizes = [], collapsibleNodesPerLayer = [];
     let layerNum = -1;
     
@@ -72,8 +72,5 @@ export function estimateHierarchySize(nodes, collapsedFeatureNames, featureDiagr
         break;
     }
 
-    return {
-        estimatedSize: minLayerSizes[0].size,
-        collapsibleNodes
-    };
+    return {estimatedSize: minLayerSizes[0].size, collapsibleNodes};
 }

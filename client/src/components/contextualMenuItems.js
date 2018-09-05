@@ -77,10 +77,10 @@ const contextualMenuItems = {
                 }]
             }
         }),
-        autoCollapse: onAutoCollapse => ({
-            key: 'autoCollapse',
-            text: i18n.t('featureDiagram.commands.autoCollapse'),
-            onClick: onAutoCollapse
+        fitToScreen: onFitToScreen => ({
+            key: 'fitToScreen',
+            text: i18n.t('featureDiagram.commands.fitToScreen'),
+            onClick: onFitToScreen
         }),
         selection: (isSelectMultipleFeatures, onSetSelectMultipleFeatures,
             selectedFeatureNames, onDeselectAllFeatures, featureModel) => ({

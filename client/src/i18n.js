@@ -132,7 +132,7 @@ export const strings = {
             undo: 'Undo',
             redo: 'Redo',
             setLayout: 'Layout',
-            autoCollapse: 'Fit to screen',
+            fitToScreen: 'Fit to screen',
             selection: (isSelectMultipleFeatures, selectedFeatureNames) =>
                 isSelectMultipleFeatures
                     ? `Feature selection (${selectedFeatureNames.length})`

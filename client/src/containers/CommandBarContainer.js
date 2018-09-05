@@ -56,7 +56,7 @@ const CommandBarContainer = props => (
                     {key: 'divider1', itemType: ContextualMenuItemType.Divider},
                     contextualMenuItems.featureDiagram.features.collapseAll(props.onCollapseAllFeatures),
                     contextualMenuItems.featureDiagram.features.expandAll(props.onExpandAllFeatures),
-                    contextualMenuItems.featureDiagram.autoCollapse(props.onAutoCollapse),
+                    contextualMenuItems.featureDiagram.fitToScreen(props.onFitToScreen),
                     {key: 'divider2', itemType: ContextualMenuItemType.Divider},
                     contextualMenuItems.settings(props.onShowOverlay)
                 ]
@@ -99,7 +99,7 @@ export default connect(
         onCollapseAllFeatures: () => dispatch(actions.ui.features.collapseAll()),
         onExpandAllFeatures: () => dispatch(actions.ui.features.expandAll()),
         onShowOverlay: (...args) => dispatch(actions.ui.overlay.show(...args)),
-        onAutoCollapse: () => dispatch(actions.ui.autoCollapse())
+        onFitToScreen: () => dispatch(actions.ui.fitToScreen())
     })
 )(withKeys(
     getShortcutKeyBinding('undo', actions.server.undo),

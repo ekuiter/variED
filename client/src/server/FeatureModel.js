@@ -192,7 +192,7 @@ class FeatureModel {
         return parents.every(parent => parent === parents[0]);
     }
 
-    getAutoCollapsedFeatureNames(settings, featureDiagramLayout, width, height) {
+    getFittingFeatureNames(settings, featureDiagramLayout, width, height) {
         const fontFamily = getSetting(settings, 'featureDiagram.font.family'),
             fontSize = getSetting(settings, 'featureDiagram.font.size'),
             widthPadding = 2 * getSetting(settings, 'featureDiagram.treeLayout.node.paddingX') +
