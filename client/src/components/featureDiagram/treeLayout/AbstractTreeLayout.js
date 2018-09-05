@@ -172,8 +172,6 @@ export default class extends React.Component {
                     if (this.props.isSelectMultipleFeatures && d3Event.target.tagName === 'svg')
                         this.props.onDeselectAllFeatures();
                 }),
-            defs = isCreating ? svgRoot.append('defs') : svgRoot.select('defs'),
-            style = isCreating ? defs.append('style') : defs.select('style'),
             g = isCreating ? svgRoot.append('g') : svgRoot.select('g');
 
         if (isSelectionChange)
@@ -186,13 +184,6 @@ export default class extends React.Component {
 
         // bounding box information for export
         svgRoot.attr('data-estimated-bbox', JSON.stringify(estimatedBbox));
-
-        style.attr('type', 'text/css').text(`
-            svg {
-                font-family: '${getSetting(settings, 'featureDiagram.font.family')}' !important;
-                font-size: ${getSetting(settings, 'featureDiagram.font.size')}px !important;
-            }
-        `);
 
         if (getSetting(settings, 'featureDiagram.treeLayout.debug'))
             this.transition(rect)

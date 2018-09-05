@@ -20,10 +20,18 @@ function makeRect(settings, textBbox) {
         nodeSettings.paddingY + nodeSettings.strokeWidth);
 }
 
+function addFontStyle(selection, settings) {
+    selection.attrs({
+        'font-family': getSetting(settings, 'featureDiagram.font.family'),
+        'font-size': getSetting(settings, 'featureDiagram.font.size')
+    });
+}
+
 function makeText(settings, selection, isGettingRectInfo, textStyle) {
     if (isGettingRectInfo) {
         let rectInfo = null;
         selection.append('text')
+            .call(addFontStyle, settings)
             .text('some text used to determine rect y and height')
             .each(function() {
                 rectInfo = makeRect(settings, this.getBBox());
@@ -32,6 +40,7 @@ function makeText(settings, selection, isGettingRectInfo, textStyle) {
     } else {
         const bboxes = [];
         selection.append('text')
+            .call(addFontStyle, settings)
             .text(d => d.feature().name)
             .call(addStyle, textStyle, styles.node.hidden(settings))
             .each(function() {
@@ -107,6 +116,7 @@ export default class {
         i = 0;
         bboxes = [];
         nodeEnter.insert('text', 'path.arcClick')
+            .call(addFontStyle, this.settings)
             .attr('class', 'collapse')
             .attr('text-anchor', 'middle')
             .attrs(d => this.treeLink.collapseAnchor(d))
