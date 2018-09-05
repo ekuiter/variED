@@ -6,6 +6,9 @@ function getViewportDimension(key) {
     return Math.max(document.documentElement[key], 0);
 }
 
+export const getViewportWidth = () => getViewportDimension('clientWidth'),
+    getViewportHeight = () => getViewportDimension('clientHeight');
+
 export default WrappedComponent =>
     class extends React.Component {
         state = {

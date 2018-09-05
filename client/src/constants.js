@@ -16,7 +16,9 @@ const constants = {
     store: {
         initialState: {
             server: {
-                users: []
+                users: [],
+                featureModel: null,
+                newFeatureModel: true // TODO: change this when we can load feature models
             },
             settings: defaultSettings,
             ui: {

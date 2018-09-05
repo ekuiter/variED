@@ -10,7 +10,6 @@ import {ContextualMenuItemType} from '../../node_modules/office-ui-fabric-react/
 import i18n from '../i18n';
 import {overlayTypes} from '../types';
 import {getShortcutKeyBinding} from '../shortcuts';
-import withDimensions from '../helpers/withDimensions';
 
 /* eslint-disable react/prop-types */
 const CommandBarContainer = props => (
@@ -82,7 +81,7 @@ const CommandBarContainer = props => (
         ]}/>
 );
 
-export default withDimensions(connect(
+export default connect(
     state => ({
         featureDiagramLayout: state.ui.featureDiagramLayout,
         isSelectMultipleFeatures: state.ui.isSelectMultipleFeatures,
@@ -92,7 +91,7 @@ export default withDimensions(connect(
         featureModel: getFeatureModel(state),
         isKeyBindingActive: !state.ui.overlay
     }),
-    (dispatch, ownProps) => ({
+    dispatch => ({
         onSetFeatureDiagramLayout: layout => dispatch(actions.ui.setFeatureDiagramLayout(layout)),
         onSetSelectMultipleFeatures: isSelectMultipleFeatures => dispatch(actions.ui.features.setSelectMultiple(isSelectMultipleFeatures)),
         onSelectAllFeatures: () => dispatch(actions.ui.features.selectAll()),
@@ -100,7 +99,7 @@ export default withDimensions(connect(
         onCollapseAllFeatures: () => dispatch(actions.ui.features.collapseAll()),
         onExpandAllFeatures: () => dispatch(actions.ui.features.expandAll()),
         onShowOverlay: (...args) => dispatch(actions.ui.overlay.show(...args)),
-        onAutoCollapse: () => dispatch(actions.ui.autoCollapse(ownProps.width, ownProps.height))
+        onAutoCollapse: () => dispatch(actions.ui.autoCollapse())
     })
 )(withKeys(
     getShortcutKeyBinding('undo', actions.server.undo),
@@ -110,4 +109,4 @@ export default withDimensions(connect(
     getShortcutKeyBinding('featureDiagram.features.deselectAll', ({props}) => props.onDeselectAllFeatures()),
     getShortcutKeyBinding('featureDiagram.features.collapseAll', ({props}) => props.onCollapseAllFeatures()),
     getShortcutKeyBinding('featureDiagram.features.expandAll', ({props}) => props.onExpandAllFeatures()),
-)(CommandBarContainer)));
+)(CommandBarContainer));

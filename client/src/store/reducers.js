@@ -6,6 +6,7 @@ import {defaultSettings, getNewSettings} from './settings';
 import {overlayTypes} from '../types';
 import {uniqueArrayAdd, uniqueArrayRemove} from '../helpers/reducers';
 import {getFeatureModel} from './selectors';
+import {getViewportWidth, getViewportHeight} from '../helpers/withDimensions';
 
 function serverReducer(state, action) {
     if (constants.server.isMessageType(action.type))
@@ -67,6 +68,8 @@ function finalReducer(state, action) {
         state = removeObsoleteFeaturesFromFeatureList(state, 'selectedFeatureNames');
         // TODO: warn user that overlay was hidden
         state = hideOverlayForObsoleteFeature(state);
+        if (state.server.newFeatureModel)
+            state = {...state, ui: autoCollapse(state, state.ui)};
     }
     if (action.type === constants.server.messageTypes.FEATURE_RENAME) {
         state = renameFeatureInFeatureList(state, action, 'collapsedFeatureNames');
@@ -87,15 +90,19 @@ function updateOverlay(state, overlay, overlayProps) {
         return {...state, overlay, overlayProps};
 }
 
+function autoCollapse(rootState, uiState) {
+    return rootState.server.featureModel
+        ? {...uiState, collapsedFeatureNames: getFeatureModel(rootState)
+            .getAutoCollapsedFeatureNames(
+                rootState.settings, uiState.featureDiagramLayout, getViewportWidth(), getViewportHeight())}
+        : uiState;
+}
+
 const uiReducer = rootState => handleActions({
     UI: {
         SET_FEATURE_DIAGRAM_LAYOUT: (state, {payload: {featureDiagramLayout}}) =>
             ({...state, featureDiagramLayout}),
-        AUTO_COLLAPSE: (state, {payload: {width, height}}) =>
-            rootState.server.featureModel
-                ? {...state, collapsedFeatureNames: getFeatureModel(rootState)
-                    .getAutoCollapsedFeatureNames(rootState.settings, state.featureDiagramLayout, width, height)}
-                : state,
+        AUTO_COLLAPSE: state => autoCollapse(rootState, state),
         FEATURE: {
             SELECT: (state, {payload: {featureName}}) =>
                 ({...state, selectedFeatureNames: uniqueArrayAdd(state.selectedFeatureNames, featureName)}),
