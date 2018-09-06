@@ -76,7 +76,7 @@ function finalReducer(state, action) {
         state = renameFeatureInFeatureList(state, action, 'selectedFeatureNames');
         state = changeOverlayForRenamedFeature(state, action);
     }
-    if (action.type === 'UI/FIT_TO_SCREEN')
+    if (action.type === 'UI/FEATURE_DIAGRAM/FIT_TO_SCREEN')
         state = {...state, settings: getNewSettings(state.settings, 'featureDiagram.forceRerender', +new Date())};
     return state;
 }
@@ -102,9 +102,9 @@ const uiReducer = rootState => handleActions({
     UI: {
         FEATURE_DIAGRAM: {
             SET_LAYOUT: (state, {payload: {layout}}) =>
-                ({...state, layout})
+                ({...state, featureDiagram: {...state.featureDiagram, layout}}),
+            FIT_TO_SCREEN: state => fitToScreen(rootState, state)
         },
-        FIT_TO_SCREEN: state => fitToScreen(rootState, state),
         FEATURE: {
             SELECT: (state, {payload: {featureName}}) =>
                 ({...state, selectedFeatureNames: uniqueArrayAdd(state.selectedFeatureNames, featureName)}),

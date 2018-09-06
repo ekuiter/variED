@@ -99,7 +99,7 @@ export default connect(
         onCollapseAllFeatures: () => dispatch(actions.ui.features.collapseAll()),
         onExpandAllFeatures: () => dispatch(actions.ui.features.expandAll()),
         onShowOverlay: (...args) => dispatch(actions.ui.overlay.show(...args)),
-        onFitToScreen: () => dispatch(actions.ui.fitToScreen())
+        onFitToScreen: () => dispatch(actions.ui.featureDiagram.fitToScreen())
     })
 )(withKeys(
     getShortcutKeyBinding('undo', actions.server.undo),
