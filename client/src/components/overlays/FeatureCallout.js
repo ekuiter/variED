@@ -49,7 +49,7 @@ export default class extends FeatureComponent({doUpdate: true}) {
                     <CommandBar
                         items={[
                             contextualMenuItems.featureDiagram.feature.new(feature.name, onDismiss, true),
-                            contextualMenuItems.featureDiagram.feature.remove(feature, onDismiss),
+                            contextualMenuItems.featureDiagram.feature.remove(feature, onDismiss, true),
                             contextualMenuItems.featureDiagram.feature.collapseExpand(
                                 feature, this.props.onCollapseFeature, this.props.onExpandFeature,
                                 this.props.onCollapseFeaturesBelow, this.props.onExpandFeaturesBelow, onDismiss, true),

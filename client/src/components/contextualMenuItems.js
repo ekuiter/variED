@@ -113,14 +113,34 @@ const contextualMenuItems = {
                 iconProps: {iconName: 'Add'},
                 onClick: () => actions.server.feature.addBelow(featureName).then(onClick)
             }),
-            remove: (feature, onClick) => ({
+            remove: (feature, onClick, iconOnly = false) => ({
                 key: 'remove',
-                text: i18n.t('featureDiagram.commands.feature.remove'),
+                text: !iconOnly ? i18n.t('featureDiagram.commands.feature.remove') : null,
+                iconProps: {iconName: 'Remove'},
+                iconOnly,
+                split: true,
+                onClick: () => actions.server.feature.remove(feature.name).then(onClick),
+                disabled: feature.isRoot && (!feature.hasChildren || feature.node.children.length > 1),
+                subMenuProps: {
+                    items: [
+                        contextualMenuItems.featureDiagram.feature.removeFeature(feature, onClick),
+                        contextualMenuItems.featureDiagram.feature.removeBelow(feature, onClick)
+                    ]
+                }
+            }),
+            removeFeature: (feature, onClick) => ({
+                key: 'removeFeature',
+                text: i18n.t('featureDiagram.commands.feature.removeFeature'),
                 secondaryText: getShortcutText('featureDiagram.feature.remove'),
                 iconProps: {iconName: 'Remove'},
-                iconOnly: true,
-                disabled: feature.isRoot && (!feature.hasChildren || feature.node.children.length > 1),
                 onClick: () => actions.server.feature.remove(feature.name).then(onClick)
+            }),
+            removeBelow: (feature, onClick) => ({
+                key: 'removeBelow',
+                text: i18n.t('featureDiagram.commands.feature.removeBelow'),
+                iconProps: {iconName: 'Remove'},
+                disabled: feature.isRoot,
+                onClick: () => actions.server.feature.removeBelow(feature.name).then(onClick)
             }),
             details: (featureName, onShowOverlay) => ({
                 key: 'details',
@@ -144,7 +164,7 @@ const contextualMenuItems = {
                 onClick: () => onShowOverlay(overlayTypes.featureSetDescriptionDialog, {featureName})
             }),
             collapseExpandFeature: (feature, onCollapseFeature, onExpandFeature, onClick) => ({
-                key: 'collapseExpand',
+                key: 'collapseExpandFeature',
                 text: i18n.t('featureDiagram.commands.feature.collapseExpandFeature')(feature.isCollapsed),
                 secondaryText: feature.isCollapsed
                     ? getShortcutText('featureDiagram.features.expand')
@@ -177,7 +197,6 @@ const contextualMenuItems = {
                     items: [
                         contextualMenuItems.featureDiagram.feature.collapseExpandFeature(
                             feature, onCollapseFeature, onExpandFeature, onClick),
-                        {key: 'divider', itemType: ContextualMenuItemType.Divider},
                         contextualMenuItems.featureDiagram.features.collapseBelow(feature, onCollapseFeaturesBelow, onClick),
                         contextualMenuItems.featureDiagram.features.expandBelow(feature, onExpandFeaturesBelow, onClick)
                     ]

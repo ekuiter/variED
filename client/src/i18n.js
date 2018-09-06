@@ -143,6 +143,8 @@ export const strings = {
                 new: 'New',
                 newFeatureBelow: 'New feature below',
                 remove: 'Remove',
+                removeFeature: 'Remove feature',
+                removeBelow: 'Remove features below',
                 details: 'Details',
                 rename: 'Rename…',
                 setDescription: 'Set description…',

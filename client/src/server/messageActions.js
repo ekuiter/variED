@@ -19,6 +19,8 @@ export default {
             sendMessage({type: messageTypes.FEATURE_ADD_BELOW, belowFeature: belowFeatureName}),
         remove: (...featureNames) =>
             sendMultipleMessages(featureNames.map(featureName => ({type: messageTypes.FEATURE_REMOVE, feature: featureName}))),
+        removeBelow: (...featureNames) =>
+            sendMultipleMessages(featureNames.map(featureName => ({type: messageTypes.FEATURE_REMOVE_BELOW, feature: featureName}))),
         rename: (oldFeatureName, newFeatureName) =>
             sendMessage({type: messageTypes.FEATURE_RENAME, oldFeature: oldFeatureName, newFeature: newFeatureName}),
         setDescription: (featureName, description) =>

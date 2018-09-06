@@ -4,6 +4,7 @@ import de.ovgu.featureide.fm.core.base.FeatureUtils;
 import de.ovgu.featureide.fm.core.base.*;
 import de.ovgu.featureide.fm.core.base.impl.FMFactoryManager;
 import de.ovgu.featureide.fm.core.functional.Functional;
+import jdk.nashorn.tools.Shell;
 
 import java.util.*;
 
@@ -22,19 +23,15 @@ public abstract class StateChange {
         }
     }
 
-    // adapted from MultiFeatureModelOperation
-    public static class FeatureModelMultiple extends FeatureModelStateChange {
-        LinkedList<FeatureModelStateChange> stateChanges = new LinkedList<>();
+    public static abstract class FeatureModelMultipleStateChange extends FeatureModelStateChange {
+        private LinkedList<FeatureModelStateChange> stateChanges = new LinkedList<>();
 
-        public FeatureModelMultiple(StateContext stateContext, LinkedList<Message.IUndoable> messages) {
-            super(stateContext.getFeatureModel());
-            for (Message.IUndoable message : messages) {
-                StateChange stateChange = message.getStateChange(stateContext);
-                if (!(stateChange instanceof FeatureModelStateChange))
-                    throw new RuntimeException("expected feature model state change, got type " +
-                            stateChange.getClass().getName());
-                stateChanges.add((FeatureModelStateChange) stateChange);
-            }
+        public FeatureModelMultipleStateChange(IFeatureModel featureModel) {
+            super(featureModel);
+        }
+
+        public void addStateChange(FeatureModelStateChange stateChange) {
+            stateChanges.add(stateChange);
         }
 
         public Message.IEncodable[] apply() {
@@ -44,9 +41,23 @@ public abstract class StateChange {
         }
 
         public Message.IEncodable[] undo() {
-            for (final Iterator<FeatureModelStateChange> it = stateChanges.descendingIterator(); it.hasNext();)
+            for (final Iterator<FeatureModelStateChange> it = stateChanges.descendingIterator(); it.hasNext(); )
                 it.next().undo();
             return new Message.IEncodable[]{new Message.FeatureModel(featureModel)};
+        }
+    }
+
+    // adapted from MultiFeatureModelOperation
+    public static class FeatureModelMultiple extends FeatureModelMultipleStateChange {
+        public FeatureModelMultiple(StateContext stateContext, LinkedList<Message.IUndoable> messages) {
+            super(stateContext.getFeatureModel());
+            for (Message.IUndoable message : messages) {
+                StateChange stateChange = message.getStateChange(stateContext);
+                if (!(stateChange instanceof FeatureModelStateChange))
+                    throw new RuntimeException("expected feature model state change, got type " +
+                            stateChange.getClass().getName());
+                addStateChange((FeatureModelStateChange) stateChange);
+            }
         }
     }
 
@@ -289,6 +300,73 @@ public abstract class StateChange {
                 e.printStackTrace();
             }
 
+            return new Message.IEncodable[]{new Message.FeatureModel(featureModel)};
+        }
+    }
+
+    // adapted from FeatureTreeDeleteOperation
+    public static class FeatureRemoveBelow extends FeatureModelMultipleStateChange {
+        private LinkedList<IFeature> featureList = new LinkedList<>();
+        private LinkedList<IFeature> containedFeatureList = new LinkedList<>();
+        private LinkedList<IFeature> andList = new LinkedList<>();
+        private LinkedList<IFeature> orList = new LinkedList<>();
+        private LinkedList<IFeature> alternativeList = new LinkedList<>();
+
+        public FeatureRemoveBelow(IFeatureModel featureModel, IFeature feature) {
+            super(featureModel);
+
+            final LinkedList<IFeature> list = new LinkedList<>();
+            list.add(feature);
+            getFeaturesToDelete(list);
+
+            if (containedFeatureList.isEmpty()) {
+                for (final IFeature feat : featureList) {
+                    if (feat.getStructure().isAnd()) {
+                        andList.add(feat);
+                    } else if (feat.getStructure().isOr()) {
+                        orList.add(feat);
+                    } else if (feat.getStructure().isAlternative()) {
+                        alternativeList.add(feat);
+                    }
+                    addStateChange(new FeatureRemove(featureModel, feat));
+                }
+            } else {
+                final String containedFeatures = containedFeatureList.toString();
+                throw new RuntimeException("can not delete following features which are contained in constraints: " +
+                        containedFeatures.substring(1, containedFeatures.length() - 1));
+            }
+        }
+
+        private void getFeaturesToDelete(List<IFeature> linkedList) {
+            for (final IFeature feat : linkedList) {
+                if (!feat.getStructure().getRelevantConstraints().isEmpty()) {
+                    containedFeatureList.add(feat);
+                }
+                if (feat.getStructure().hasChildren()) {
+                    getFeaturesToDelete(FeatureUtils.convertToFeatureList(feat.getStructure().getChildren()));
+                }
+                featureList.add(feat);
+            }
+        }
+
+        public Message.IEncodable[] undo() {
+            super.undo();
+            // Set the right group types for the features
+            for (final IFeature ifeature : andList) {
+                if (featureModel.getFeature(ifeature.getName()) != null) {
+                    featureModel.getFeature(ifeature.getName()).getStructure().changeToAnd();
+                }
+            }
+            for (final IFeature ifeature : alternativeList) {
+                if (featureModel.getFeature(ifeature.getName()) != null) {
+                    featureModel.getFeature(ifeature.getName()).getStructure().changeToAlternative();
+                }
+            }
+            for (final IFeature ifeature : orList) {
+                if (featureModel.getFeature(ifeature.getName()) != null) {
+                    featureModel.getFeature(ifeature.getName()).getStructure().changeToOr();
+                }
+            }
             return new Message.IEncodable[]{new Message.FeatureModel(featureModel)};
         }
     }

@@ -61,6 +61,10 @@ abstract public class Message {
          */
         FEATURE_REMOVE,
         /**
+         * remove a feature and all its children recursively
+         */
+        FEATURE_REMOVE_BELOW,
+        /**
          * rename a feature
          */
         FEATURE_RENAME,
@@ -316,6 +320,30 @@ abstract public class Message {
             IFeatureModel featureModel = stateContext.getFeatureModel();
             IFeature _feature = featureModel.getFeature(feature);
             return new StateChange.FeatureRemove(featureModel, _feature);
+        }
+    }
+
+    public static class FeatureRemoveBelow extends Message implements IUndoable {
+        private String feature;
+
+        public FeatureRemoveBelow(String feature) {
+            super(TypeEnum.FEATURE_REMOVE_BELOW);
+            this.feature = feature;
+        }
+
+        public boolean isValid(StateContext stateContext) {
+            IFeatureModel featureModel = stateContext.getFeatureModel();
+            FeatureUtils.requireFeature(featureModel, feature);
+            IFeature feature = featureModel.getFeature(this.feature);
+            if (feature.getStructure().isRoot())
+                throw new RuntimeException("can not delete root feature and its children");
+            return true;
+        }
+
+        public StateChange getStateChange(StateContext stateContext) {
+            IFeatureModel featureModel = stateContext.getFeatureModel();
+            IFeature _feature = featureModel.getFeature(feature);
+            return new StateChange.FeatureRemoveBelow(featureModel, _feature);
         }
     }
 
