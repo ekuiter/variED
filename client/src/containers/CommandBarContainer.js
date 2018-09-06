@@ -37,7 +37,7 @@ const CommandBarContainer = props => (
                     {key: 'divider', itemType: ContextualMenuItemType.Divider},
                     contextualMenuItems.featureDiagram.feature.selectAll(props.onSelectAllFeatures),
                     contextualMenuItems.featureDiagram.feature.deselectAll(props.onDeselectAllFeatures),
-                    contextualMenuItems.featureDiagram.selection(
+                    contextualMenuItems.featureDiagram.feature.selection(
                         props.isSelectMultipleFeatures,
                         props.onSetSelectMultipleFeatures,
                         props.selectedFeatureNames,

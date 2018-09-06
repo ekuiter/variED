@@ -26,9 +26,9 @@ export default class extends FeatureComponent({onDismissProp: 'onDismissed'}) {
     onRenderFooterContent = () => (
         <CommandBar
             items={transparentItems([
-                contextualMenuItems.featureDiagram.feature.new(this.props.featureName, this.props.onDismissed, true),
-                contextualMenuItems.featureDiagram.feature.remove(this.feature, this.props.onDismissed, true),
-                contextualMenuItems.featureDiagram.feature.collapseExpand(
+                contextualMenuItems.featureDiagram.feature.newMenu(this.props.featureName, this.props.onDismissed, true),
+                contextualMenuItems.featureDiagram.feature.removeMenu(this.feature, this.props.onDismissed, true),
+                contextualMenuItems.featureDiagram.feature.collapseMenu(
                     this.feature, this.props.onCollapseFeature, this.props.onExpandFeature,
                     this.props.onCollapseFeaturesBelow, this.props.onExpandFeaturesBelow, this.props.onDismissed, true)
             ])}

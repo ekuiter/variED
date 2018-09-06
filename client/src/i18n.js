@@ -132,40 +132,48 @@ export const strings = {
             undo: 'Undo',
             redo: 'Redo',
             setLayout: 'Layout',
-            fitToScreen: 'Fit to screen',
-            selection: (isSelectMultipleFeatures, selectedFeatureNames) =>
-                isSelectMultipleFeatures
-                    ? `Feature selection (${selectedFeatureNames.length})`
-                    : 'Begin feature selection',
             verticalTree: 'Vertical tree',
             horizontalTree: 'Horizontal tree',
+            fitToScreen: 'Fit to screen',
             feature: {
-                new: 'New',
-                newFeatureBelow: 'New feature below',
-                remove: 'Remove',
-                removeFeature: 'Remove feature',
-                removeBelow: 'Remove features below',
-                details: 'Details',
+                newMenu: {
+                    title: 'New',
+                    newBelow: 'New feature below',
+                    newAbove: 'New feature above',
+                },
+                removeMenu: {
+                    title: 'Remove',
+                    remove: 'Remove feature',
+                    removeBelow: 'Remove features below'
+                },
+                details: 'Details…',
                 rename: 'Rename…',
                 setDescription: 'Set description…',
-                collapseExpand: isCollapsed => isCollapsed ? 'Expand' : 'Collapse',
-                collapseExpandFeature: isCollapsed => isCollapsed ? 'Expand feature' : 'Collapse feature',
-                properties: 'Properties',
-                abstract: 'Abstract',
-                concrete: 'Concrete',
-                hidden: 'Hidden',
-                mandatory: 'Mandatory',
-                optional: 'Optional',
-                and: 'And',
-                or: 'Or',
-                alternative: 'Alternative',
+                propertiesMenu: {
+                    title: 'Properties',
+                    abstract: 'Abstract',
+                    concrete: 'Concrete',
+                    hidden: 'Hidden',
+                    mandatory: 'Mandatory',
+                    optional: 'Optional',
+                    and: 'And',
+                    or: 'Or',
+                    alternative: 'Alternative'
+                },
+                selection: (isSelectMultipleFeatures, selectedFeatureNames) =>
+                    isSelectMultipleFeatures
+                        ? `Feature selection (${selectedFeatureNames.length})`
+                        : 'Begin feature selection',
                 selectAll: 'Select all features',
                 deselectAll: 'Deselect all features',
-                newFeatureAbove: 'New feature above',
+                collapseMenu: {
+                    title: isCollapsed => isCollapsed ? 'Expand' : 'Collapse',
+                    collapse: isCollapsed => isCollapsed ? 'Expand feature' : 'Collapse feature',
+                    collapseBelow: 'Collapse features below',
+                    expandBelow: 'Expand features below'
+                },
                 collapseAll: 'Collapse all features',
-                expandAll: 'Expand all features',
-                collapseBelow: 'Collapse features below',
-                expandBelow: 'Expand features below'
+                expandAll: 'Expand all features'
             }
         }
     }

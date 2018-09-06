@@ -13,7 +13,7 @@ exports[`FeatureContextualMenu renders correctly for a selection of features 1`]
         "iconProps": Object {
           "iconName": "Add",
         },
-        "key": "featureAbove",
+        "key": "newAbove",
         "onClick": [Function],
         "text": "New feature above",
       },
@@ -37,7 +37,7 @@ exports[`FeatureContextualMenu renders correctly for a single feature 1`] = `
         "iconProps": Object {
           "iconName": "Add",
         },
-        "key": "new",
+        "key": "newMenu",
         "onClick": [Function],
         "split": true,
         "subMenuProps": Object {
@@ -46,7 +46,7 @@ exports[`FeatureContextualMenu renders correctly for a single feature 1`] = `
               "iconProps": Object {
                 "iconName": "Add",
               },
-              "key": "newFeatureBelow",
+              "key": "newBelow",
               "onClick": [Function],
               "secondaryText": "Ctrl+N",
               "text": "New feature below",
@@ -56,7 +56,7 @@ exports[`FeatureContextualMenu renders correctly for a single feature 1`] = `
               "iconProps": Object {
                 "iconName": "Add",
               },
-              "key": "featureAbove",
+              "key": "newAbove",
               "onClick": [Function],
               "text": "New feature above",
             },
@@ -70,7 +70,7 @@ exports[`FeatureContextualMenu renders correctly for a single feature 1`] = `
         "iconProps": Object {
           "iconName": "Remove",
         },
-        "key": "remove",
+        "key": "removeMenu",
         "onClick": [Function],
         "split": true,
         "subMenuProps": Object {
@@ -79,7 +79,7 @@ exports[`FeatureContextualMenu renders correctly for a single feature 1`] = `
               "iconProps": Object {
                 "iconName": "Remove",
               },
-              "key": "removeFeature",
+              "key": "remove",
               "onClick": [Function],
               "secondaryText": "⌫",
               "text": "Remove feature",
@@ -103,7 +103,7 @@ exports[`FeatureContextualMenu renders correctly for a single feature 1`] = `
         "iconProps": Object {
           "iconName": "CollapseContentSingle",
         },
-        "key": "collapseExpand",
+        "key": "collapseMenu",
         "onClick": [Function],
         "split": true,
         "subMenuProps": Object {
@@ -112,7 +112,7 @@ exports[`FeatureContextualMenu renders correctly for a single feature 1`] = `
               "iconProps": Object {
                 "iconName": "CollapseContentSingle",
               },
-              "key": "collapseExpandFeature",
+              "key": "collapse",
               "onClick": [Function],
               "secondaryText": "Ctrl+C",
               "text": "Collapse feature",
@@ -162,7 +162,7 @@ exports[`FeatureContextualMenu renders correctly for a single feature 1`] = `
         "iconProps": Object {
           "iconName": "FieldNotChanged",
         },
-        "key": "properties",
+        "key": "propertiesMenu",
         "subMenuProps": Object {
           "items": Array [
             Object {
@@ -254,7 +254,7 @@ exports[`FeatureContextualMenu renders correctly for a single feature 1`] = `
         "key": "details",
         "onClick": [Function],
         "secondaryText": "Ctrl+,",
-        "text": "Details",
+        "text": "Details…",
       },
     ]
   }

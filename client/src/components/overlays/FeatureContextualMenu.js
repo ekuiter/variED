@@ -10,7 +10,7 @@ import {FeatureModelType} from '../../server/FeatureModel';
 import FeatureComponent from './FeatureComponent';
 
 export const selectMultipleFeaturesContextualMenuItems = (selectedFeatureNames, onDeselectAllFeatures, featureModel) => [
-    contextualMenuItems.featureDiagram.feature.newFeatureAbove(selectedFeatureNames, onDeselectAllFeatures, featureModel)
+    contextualMenuItems.featureDiagram.feature.newAbove(selectedFeatureNames, onDeselectAllFeatures, featureModel)
 ];
 
 export default class extends FeatureComponent({doUpdate: true}) {
@@ -50,9 +50,9 @@ export default class extends FeatureComponent({doUpdate: true}) {
                 items={isSelectMultipleFeatures
                     ? selectMultipleFeaturesContextualMenuItems(selectedFeatureNames, onDeselectAllFeatures, featureModel)
                     : [
-                        contextualMenuItems.featureDiagram.feature.new(feature.name, onDismiss),
-                        contextualMenuItems.featureDiagram.feature.remove(feature, onDismiss),
-                        contextualMenuItems.featureDiagram.feature.collapseExpand(
+                        contextualMenuItems.featureDiagram.feature.newMenu(feature.name, onDismiss),
+                        contextualMenuItems.featureDiagram.feature.removeMenu(feature, onDismiss),
+                        contextualMenuItems.featureDiagram.feature.collapseMenu(
                             feature, this.props.onCollapseFeature, this.props.onExpandFeature,
                             this.props.onCollapseFeaturesBelow, this.props.onExpandFeaturesBelow, onDismiss),
                         {key: 'divider1', itemType: ContextualMenuItemType.Divider},

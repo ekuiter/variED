@@ -37,7 +37,7 @@ exports[`FeatureCallout renders information for a feature with a description 1`]
             "key": "details",
             "onClick": [Function],
             "secondaryText": "Ctrl+,",
-            "text": "Details",
+            "text": "Details…",
           },
         ]
       }
@@ -48,7 +48,7 @@ exports[`FeatureCallout renders information for a feature with a description 1`]
             "iconProps": Object {
               "iconName": "Add",
             },
-            "key": "new",
+            "key": "newMenu",
             "onClick": [Function],
             "split": true,
             "subMenuProps": Object {
@@ -57,7 +57,7 @@ exports[`FeatureCallout renders information for a feature with a description 1`]
                   "iconProps": Object {
                     "iconName": "Add",
                   },
-                  "key": "newFeatureBelow",
+                  "key": "newBelow",
                   "onClick": [Function],
                   "secondaryText": "Ctrl+N",
                   "text": "New feature below",
@@ -67,7 +67,7 @@ exports[`FeatureCallout renders information for a feature with a description 1`]
                   "iconProps": Object {
                     "iconName": "Add",
                   },
-                  "key": "featureAbove",
+                  "key": "newAbove",
                   "onClick": [Function],
                   "text": "New feature above",
                 },
@@ -81,7 +81,7 @@ exports[`FeatureCallout renders information for a feature with a description 1`]
             "iconProps": Object {
               "iconName": "Remove",
             },
-            "key": "remove",
+            "key": "removeMenu",
             "onClick": [Function],
             "split": true,
             "subMenuProps": Object {
@@ -90,7 +90,7 @@ exports[`FeatureCallout renders information for a feature with a description 1`]
                   "iconProps": Object {
                     "iconName": "Remove",
                   },
-                  "key": "removeFeature",
+                  "key": "remove",
                   "onClick": [Function],
                   "secondaryText": "⌫",
                   "text": "Remove feature",
@@ -114,7 +114,7 @@ exports[`FeatureCallout renders information for a feature with a description 1`]
             "iconProps": Object {
               "iconName": "CollapseContentSingle",
             },
-            "key": "collapseExpand",
+            "key": "collapseMenu",
             "onClick": [Function],
             "split": true,
             "subMenuProps": Object {
@@ -123,7 +123,7 @@ exports[`FeatureCallout renders information for a feature with a description 1`]
                   "iconProps": Object {
                     "iconName": "CollapseContentSingle",
                   },
-                  "key": "collapseExpandFeature",
+                  "key": "collapse",
                   "onClick": [Function],
                   "secondaryText": "Ctrl+C",
                   "text": "Collapse feature",
@@ -188,7 +188,7 @@ exports[`FeatureCallout renders information for a feature without a description 
             "key": "details",
             "onClick": [Function],
             "secondaryText": "Ctrl+,",
-            "text": "Details",
+            "text": "Details…",
           },
         ]
       }
@@ -199,7 +199,7 @@ exports[`FeatureCallout renders information for a feature without a description 
             "iconProps": Object {
               "iconName": "Add",
             },
-            "key": "new",
+            "key": "newMenu",
             "onClick": [Function],
             "split": true,
             "subMenuProps": Object {
@@ -208,7 +208,7 @@ exports[`FeatureCallout renders information for a feature without a description 
                   "iconProps": Object {
                     "iconName": "Add",
                   },
-                  "key": "newFeatureBelow",
+                  "key": "newBelow",
                   "onClick": [Function],
                   "secondaryText": "Ctrl+N",
                   "text": "New feature below",
@@ -218,7 +218,7 @@ exports[`FeatureCallout renders information for a feature without a description 
                   "iconProps": Object {
                     "iconName": "Add",
                   },
-                  "key": "featureAbove",
+                  "key": "newAbove",
                   "onClick": [Function],
                   "text": "New feature above",
                 },
@@ -232,7 +232,7 @@ exports[`FeatureCallout renders information for a feature without a description 
             "iconProps": Object {
               "iconName": "Remove",
             },
-            "key": "remove",
+            "key": "removeMenu",
             "onClick": [Function],
             "split": true,
             "subMenuProps": Object {
@@ -241,7 +241,7 @@ exports[`FeatureCallout renders information for a feature without a description 
                   "iconProps": Object {
                     "iconName": "Remove",
                   },
-                  "key": "removeFeature",
+                  "key": "remove",
                   "onClick": [Function],
                   "secondaryText": "⌫",
                   "text": "Remove feature",
@@ -265,7 +265,7 @@ exports[`FeatureCallout renders information for a feature without a description 
             "iconProps": Object {
               "iconName": "CollapseContentSingle",
             },
-            "key": "collapseExpand",
+            "key": "collapseMenu",
             "onClick": [Function],
             "split": true,
             "subMenuProps": Object {
@@ -274,7 +274,7 @@ exports[`FeatureCallout renders information for a feature without a description 
                   "iconProps": Object {
                     "iconName": "CollapseContentSingle",
                   },
-                  "key": "collapseExpandFeature",
+                  "key": "collapse",
                   "onClick": [Function],
                   "secondaryText": "Ctrl+C",
                   "text": "Collapse feature",
