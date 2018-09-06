@@ -18,8 +18,8 @@ export default class extends FeatureComponent() {
         return (
             <TextFieldDialog
                 {...this.props}
-                title={i18n.t('dialogs.featureRenameDialog.title')}
-                submitText={i18n.t('dialogs.featureRenameDialog.rename')}
+                title={i18n.t('overlays.featureRenameDialog.title')}
+                submitText={i18n.t('overlays.featureRenameDialog.rename')}
                 defaultValue={feature.name}
                 onSubmit={newFeatureName => {
                     if (newFeatureName && feature.name !== newFeatureName)

@@ -18,8 +18,8 @@ export default class extends FeatureComponent() {
         return (
             <TextFieldDialog
                 {...this.props}
-                title={i18n.t('dialogs.featureSetDescriptionDialog.title')}
-                submitText={i18n.t('dialogs.featureSetDescriptionDialog.rename')}
+                title={i18n.t('overlays.featureSetDescriptionDialog.title')}
+                submitText={i18n.t('overlays.featureSetDescriptionDialog.rename')}
                 defaultValue={feature.description}
                 onSubmit={description => actions.server.feature.setDescription(feature.name, description)}
                 submitOnEnter={false}

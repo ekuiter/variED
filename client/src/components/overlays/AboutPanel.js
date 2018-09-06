@@ -9,8 +9,8 @@ const AboutPanel = props => (
         type={PanelType.smallFixedFar}
         onDismissed={props.onDismissed}
         isLightDismiss={true}
-        headerText={i18n.t('panels.aboutPanel.title')}>
-        {i18n.t('panels.aboutPanel.content')}
+        headerText={i18n.t('overlays.aboutPanel.title')}>
+        {i18n.t('overlays.aboutPanel.content')}
     </Panel>
 );
 

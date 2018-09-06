@@ -23,7 +23,7 @@ export default class extends React.Component {
             this.setState({errorMessage: null});
             this.props.onChange(font);
         } else
-            this.setState({errorMessage: i18n.t('panels.settingsPanel.errors.fontNotInstalled')});
+            this.setState({errorMessage: i18n.t('overlays.settingsPanel.errors.fontNotInstalled')});
     };
 
     render() {

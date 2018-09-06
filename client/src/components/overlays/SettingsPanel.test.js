@@ -92,9 +92,9 @@ describe('SettingsPanel', () => {
 
     it('displays different settings depending on the layout', () => {
         expect(settingsPanel(layoutTypes.verticalTree).find(Panel)
-            .contains(i18n.t('panels.settingsPanel.headings.verticalTree'))).toBe(true);
+            .contains(i18n.t('overlays.settingsPanel.headings.verticalTree'))).toBe(true);
         expect(settingsPanel(layoutTypes.horizontalTree).find(Panel)
-            .contains(i18n.t('panels.settingsPanel.headings.horizontalTree'))).toBe(true);
+            .contains(i18n.t('overlays.settingsPanel.headings.horizontalTree'))).toBe(true);
     });
 
     it('resets settings', () => {

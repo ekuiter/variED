@@ -33,9 +33,9 @@ export default class extends React.Component {
 
     renderFontComboBox = () => (
         <React.Fragment>
-            {i18n.t('dialogs.exportDialog.fontNotice')}
+            {i18n.t('overlays.exportDialog.fontNotice')}
             <FontComboBox
-                label={i18n.t('panels.settingsPanel.labels.featureDiagram.font.family')}
+                label={i18n.t('overlays.settingsPanel.labels.featureDiagram.font.family')}
                 selectedFont={getSetting(this.props.settings, 'featureDiagram.font.family')}
                 onChange={font => this.props.onSetSetting('featureDiagram.font.family', font)}/>
         </React.Fragment>
@@ -44,7 +44,7 @@ export default class extends React.Component {
     renderZoomSpinButton = () => (
         <SpinButton
             className="setting"
-            label={i18n.t('dialogs.exportDialog.zoom')}
+            label={i18n.t('overlays.exportDialog.zoom')}
             onChange={this.onZoomChange}
             value={this.state.zoom}
             min={10} max={1000} suffix=" %"/>
@@ -55,7 +55,7 @@ export default class extends React.Component {
             <Dialog
                 hidden={!this.props.isOpen}
                 onDismiss={this.props.onDismiss}
-                dialogContentProps={{title: i18n.t('dialogs.exportDialog', this.props.format, 'title')}}>
+                dialogContentProps={{title: i18n.t('overlays.exportDialog', this.props.format, 'title')}}>
                 {this.props.format === formatTypes.svg && this.renderFontComboBox()}
                 {this.props.format === formatTypes.png && this.renderZoomSpinButton()}
                 {this.props.format === formatTypes.jpg &&
@@ -63,14 +63,14 @@ export default class extends React.Component {
                     {this.renderZoomSpinButton()}
                     <SpinButton
                         className="setting"
-                        label={i18n.t('dialogs.exportDialog.jpg.quality')}
+                        label={i18n.t('overlays.exportDialog.jpg.quality')}
                         onChange={this.onQualityChange}
                         value={this.state.quality}
                         min={10} max={100} suffix=" %"/>
                 </React.Fragment>}
                 {this.props.format === formatTypes.pdf && this.renderFontComboBox()}
                 <DialogFooter>
-                    <PrimaryButton onClick={this.onSubmit} text={i18n.t('dialogs.exportDialog.export')}/>
+                    <PrimaryButton onClick={this.onSubmit} text={i18n.t('overlays.exportDialog.export')}/>
                 </DialogFooter>
             </Dialog>
         );

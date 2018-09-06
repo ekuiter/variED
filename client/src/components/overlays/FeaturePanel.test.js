@@ -36,7 +36,7 @@ describe('FeaturePanel', () => {
         const wrapper = featurePanel('FeatureHouse'),
             headerText = shallow(wrapper.find(Panel).prop('headerText'));
         expect(headerText.contains('FeatureHouse')).toBe(true);
-        expect(wrapper.find(Panel).contains(i18n.t('panels.featurePanel.noDescriptionSet'))).toBe(true);
+        expect(wrapper.find(Panel).contains(i18n.t('overlays.featurePanel.noDescriptionSet'))).toBe(true);
         expect(wrapper).toMatchSnapshot();
     });
     

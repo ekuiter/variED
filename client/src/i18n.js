@@ -65,7 +65,7 @@ export const strings = {
             }
         }
     },
-    panels: {
+    overlays: {
         aboutPanel: {
             title: 'About',
             content: (
@@ -140,9 +140,7 @@ export const strings = {
             title: 'Feature',
             edit: 'Edit',
             noDescriptionSet: 'No description set.'
-        }
-    },
-    dialogs: {
+        },
         featureRenameDialog: {
             title: 'Rename feature',
             rename: 'Rename'

@@ -23,7 +23,7 @@ export const DialogWrapper = ({isOpen, onDismiss, onApply, children, label}) => 
         dialogContentProps={{title: label}}>
         {children}
         <DialogFooter>
-            <PrimaryButton onClick={onApply} text={i18n.t('panels.settingsPanel.apply')}/>
+            <PrimaryButton onClick={onApply} text={i18n.t('overlays.settingsPanel.apply')}/>
         </DialogFooter>
     </Dialog>
 );

@@ -27,12 +27,12 @@ export default class extends FeatureComponent({onDismissProp: 'onDismissed'}) {
         <CommandBar
             items={transparentItems([
                 commands.featureDiagram.feature.newMenu(this.props.featureName, this.props.onDismissed, true),
-                commands.featureDiagram.feature.removeMenu(this.feature, this.props.onDismissed, true),
-                commands.featureDiagram.feature.collapseMenu(
-                    this.feature, this.props.onCollapseFeature, this.props.onExpandFeature,
-                    this.props.onCollapseFeaturesBelow, this.props.onExpandFeaturesBelow, this.props.onDismissed, true)
+                commands.featureDiagram.feature.removeMenu(this.feature, this.props.onDismissed, true)
             ])}
             overflowItems={[
+                commands.featureDiagram.feature.collapseMenu(
+                    this.feature, this.props.onCollapseFeature, this.props.onExpandFeature,
+                    this.props.onCollapseFeaturesBelow, this.props.onExpandFeaturesBelow, this.props.onDismissed),
                 commands.featureDiagram.feature.rename(this.props.featureName, this.props.onShowOverlay),
                 commands.featureDiagram.feature.setDescription(this.props.featureName, this.props.onShowOverlay),
                 commands.featureDiagram.feature.properties(this.feature, this.props.onDismissed)
@@ -50,10 +50,10 @@ export default class extends FeatureComponent({onDismissProp: 'onDismissed'}) {
                 isLightDismiss={true}
                 headerText={
                     <span>
-                        {i18n.t('panels.featurePanel.title')}: <strong>{feature.name}</strong>
+                        {i18n.t('overlays.featurePanel.title')}: <strong>{feature.name}</strong>
                     </span>}
                 onRenderFooterContent={this.onRenderFooterContent}>
-                <p>{feature.description || <em>{i18n.t('panels.featurePanel.noDescriptionSet')}</em>}</p>
+                <p>{feature.description || <em>{i18n.t('overlays.featurePanel.noDescriptionSet')}</em>}</p>
             </Panel>
         );
     }

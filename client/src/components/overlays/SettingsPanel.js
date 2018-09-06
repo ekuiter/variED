@@ -13,7 +13,7 @@ import PropTypes from 'prop-types';
 import exact from 'prop-types-exact';
 import {LayoutType, layoutTypes, SettingsType} from '../../types';
 
-const getLabel = path => i18n.t('panels.settingsPanel.labels', path);
+const getLabel = path => i18n.t('overlays.settingsPanel.labels', path);
 
 export const Setting = {
     Toggle: ({settings, onSetSetting, path}) => (
@@ -21,8 +21,8 @@ export const Setting = {
             className="setting"
             label={getLabel(path)}
             checked={getSetting(settings, path)}
-            onText={i18n.t('panels.settingsPanel.toggleOn')}
-            offText={i18n.t('panels.settingsPanel.toggleOn')}
+            onText={i18n.t('overlays.settingsPanel.toggleOn')}
+            offText={i18n.t('overlays.settingsPanel.toggleOn')}
             onClick={() => onSetSetting(path, bool => !bool)}/>
     ),
 
@@ -58,7 +58,7 @@ export const Setting = {
         render() {
             return (
                 <DialogContextualMenu
-                    label={i18n.t('panels.settingsPanel.customizeColors')}
+                    label={i18n.t('overlays.settingsPanel.customizeColors')}
                     options={this.props.paths.map(path => ({key: path, text: getLabel(path)}))}
                     onApply={this.onApply}
                     onRender={this.onRender}
@@ -147,14 +147,14 @@ export default class extends React.Component {
                 type={PanelType.smallFixedFar}
                 onDismissed={this.props.onDismissed}
                 isLightDismiss={true}
-                headerText={i18n.t('panels.settingsPanel.title')}>
+                headerText={i18n.t('overlays.settingsPanel.title')}>
 
                 <DefaultButton
                     onClick={this.onReset}
                     disabled={!this.state.canReset}
-                    text={i18n.t('panels.settingsPanel.resetToDefaults')}/>
+                    text={i18n.t('overlays.settingsPanel.resetToDefaults')}/>
 
-                <h4>{i18n.t('panels.settingsPanel.headings.featureDiagram')}</h4>
+                <h4>{i18n.t('overlays.settingsPanel.headings.featureDiagram')}</h4>
                 <Setting.FontComboBox
                     {...props}
                     path="featureDiagram.font.family"/>
@@ -177,7 +177,7 @@ export default class extends React.Component {
                         path="featureDiagram.treeLayout.transitionDuration"
                         min={0} max={1000} step={10}/>}
 
-                    <h4>{i18n.t('panels.settingsPanel.headings.features')}</h4>
+                    <h4>{i18n.t('overlays.settingsPanel.headings.features')}</h4>
                     <Setting.SpinButton
                         {...props}
                         path="featureDiagram.treeLayout.node.paddingX"
@@ -212,7 +212,7 @@ export default class extends React.Component {
                             'featureDiagram.treeLayout.node.concreteStroke'
                         ]}/>
 
-                    <h4>{i18n.t('panels.settingsPanel.headings.edges')}</h4>
+                    <h4>{i18n.t('overlays.settingsPanel.headings.edges')}</h4>
                     <Setting.SpinButton
                         {...props}
                         path="featureDiagram.treeLayout.link.strokeWidth"
@@ -224,7 +224,7 @@ export default class extends React.Component {
 
                     {featureDiagramLayout === layoutTypes.verticalTree
                         ? <React.Fragment>
-                            <h4>{i18n.t('panels.settingsPanel.headings.verticalTree')}</h4>
+                            <h4>{i18n.t('overlays.settingsPanel.headings.verticalTree')}</h4>
                             <Setting.SpinButton
                                 {...props}
                                 path="featureDiagram.treeLayout.vertical.marginX"
@@ -245,7 +245,7 @@ export default class extends React.Component {
                                 min={0} max={50} step={0.5} suffix=" px"/>
                         </React.Fragment>
                         : <React.Fragment>
-                            <h4>{i18n.t('panels.settingsPanel.headings.horizontalTree')}</h4>
+                            <h4>{i18n.t('overlays.settingsPanel.headings.horizontalTree')}</h4>
                             <Setting.SpinButton
                                 {...props}
                                 path="featureDiagram.treeLayout.horizontal.layerMargin"
