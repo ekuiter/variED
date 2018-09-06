@@ -7,8 +7,9 @@ const actions = createActions({
         RESET: () => {}
     },
     UI: {
-        SET_FEATURE_DIAGRAM_LAYOUT: featureDiagramLayout =>
-            ({featureDiagramLayout}),
+        FEATURE_DIAGRAM: {
+            SET_LAYOUT: layout => ({layout})
+        },
         FIT_TO_SCREEN: () => {},
         FEATURE: {
             SELECT: featureName => ({featureName}),

@@ -33,6 +33,7 @@ exports[`FeatureContextualMenu renders correctly for a single feature 1`] = `
   items={
     Array [
       Object {
+        "iconOnly": false,
         "iconProps": Object {
           "iconName": "Add",
         },
@@ -47,6 +48,7 @@ exports[`FeatureContextualMenu renders correctly for a single feature 1`] = `
               },
               "key": "newFeatureBelow",
               "onClick": [Function],
+              "secondaryText": "Ctrl+N",
               "text": "New feature below",
             },
             Object {
@@ -64,22 +66,75 @@ exports[`FeatureContextualMenu renders correctly for a single feature 1`] = `
       },
       Object {
         "disabled": false,
-        "iconOnly": true,
+        "iconOnly": false,
         "iconProps": Object {
           "iconName": "Remove",
         },
         "key": "remove",
         "onClick": [Function],
+        "split": true,
+        "subMenuProps": Object {
+          "items": Array [
+            Object {
+              "iconProps": Object {
+                "iconName": "Remove",
+              },
+              "key": "removeFeature",
+              "onClick": [Function],
+              "secondaryText": "⌫",
+              "text": "Remove feature",
+            },
+            Object {
+              "disabled": false,
+              "iconProps": Object {
+                "iconName": "Remove",
+              },
+              "key": "removeBelow",
+              "onClick": [Function],
+              "text": "Remove features below",
+            },
+          ],
+        },
         "text": "Remove",
       },
       Object {
         "disabled": false,
-        "iconOnly": true,
+        "iconOnly": false,
         "iconProps": Object {
-          "iconName": "CollapseContent",
+          "iconName": "CollapseContentSingle",
         },
         "key": "collapseExpand",
         "onClick": [Function],
+        "split": true,
+        "subMenuProps": Object {
+          "items": Array [
+            Object {
+              "iconProps": Object {
+                "iconName": "CollapseContentSingle",
+              },
+              "key": "collapseExpandFeature",
+              "onClick": [Function],
+              "secondaryText": "Ctrl+C",
+              "text": "Collapse feature",
+            },
+            Object {
+              "iconProps": Object {
+                "iconName": "CollapseContent",
+              },
+              "key": "collapseBelow",
+              "onClick": [Function],
+              "text": "Collapse features below",
+            },
+            Object {
+              "iconProps": Object {
+                "iconName": "ExploreContent",
+              },
+              "key": "expandBelow",
+              "onClick": [Function],
+              "text": "Expand features below",
+            },
+          ],
+        },
         "text": "Collapse",
       },
       Object {
@@ -92,6 +147,7 @@ exports[`FeatureContextualMenu renders correctly for a single feature 1`] = `
         },
         "key": "rename",
         "onClick": [Function],
+        "secondaryText": "F2",
         "text": "Rename…",
       },
       Object {
@@ -197,6 +253,7 @@ exports[`FeatureContextualMenu renders correctly for a single feature 1`] = `
         },
         "key": "details",
         "onClick": [Function],
+        "secondaryText": "Ctrl+,",
         "text": "Details",
       },
     ]

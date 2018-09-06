@@ -98,7 +98,7 @@ export default connect(
     state => ({
         overlay: state.ui.overlay,
         overlayProps: state.ui.overlayProps,
-        featureDiagramLayout: state.ui.featureDiagramLayout,
+        featureDiagramLayout: state.ui.featureDiagram.layout,
         isSelectMultipleFeatures: state.ui.isSelectMultipleFeatures,
         selectedFeatureNames: state.ui.selectedFeatureNames,
         settings: state.settings,

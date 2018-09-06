@@ -36,6 +36,7 @@ exports[`FeatureCallout renders information for a feature with a description 1`]
             },
             "key": "details",
             "onClick": [Function],
+            "secondaryText": "Ctrl+,",
             "text": "Details",
           },
         ]
@@ -43,6 +44,7 @@ exports[`FeatureCallout renders information for a feature with a description 1`]
       items={
         Array [
           Object {
+            "iconOnly": true,
             "iconProps": Object {
               "iconName": "Add",
             },
@@ -57,6 +59,7 @@ exports[`FeatureCallout renders information for a feature with a description 1`]
                   },
                   "key": "newFeatureBelow",
                   "onClick": [Function],
+                  "secondaryText": "Ctrl+N",
                   "text": "New feature below",
                 },
                 Object {
@@ -70,7 +73,7 @@ exports[`FeatureCallout renders information for a feature with a description 1`]
                 },
               ],
             },
-            "text": "New",
+            "text": null,
           },
           Object {
             "disabled": false,
@@ -80,17 +83,70 @@ exports[`FeatureCallout renders information for a feature with a description 1`]
             },
             "key": "remove",
             "onClick": [Function],
-            "text": "Remove",
+            "split": true,
+            "subMenuProps": Object {
+              "items": Array [
+                Object {
+                  "iconProps": Object {
+                    "iconName": "Remove",
+                  },
+                  "key": "removeFeature",
+                  "onClick": [Function],
+                  "secondaryText": "⌫",
+                  "text": "Remove feature",
+                },
+                Object {
+                  "disabled": false,
+                  "iconProps": Object {
+                    "iconName": "Remove",
+                  },
+                  "key": "removeBelow",
+                  "onClick": [Function],
+                  "text": "Remove features below",
+                },
+              ],
+            },
+            "text": null,
           },
           Object {
             "disabled": false,
             "iconOnly": true,
             "iconProps": Object {
-              "iconName": "CollapseContent",
+              "iconName": "CollapseContentSingle",
             },
             "key": "collapseExpand",
             "onClick": [Function],
-            "text": "Collapse",
+            "split": true,
+            "subMenuProps": Object {
+              "items": Array [
+                Object {
+                  "iconProps": Object {
+                    "iconName": "CollapseContentSingle",
+                  },
+                  "key": "collapseExpandFeature",
+                  "onClick": [Function],
+                  "secondaryText": "Ctrl+C",
+                  "text": "Collapse feature",
+                },
+                Object {
+                  "iconProps": Object {
+                    "iconName": "CollapseContent",
+                  },
+                  "key": "collapseBelow",
+                  "onClick": [Function],
+                  "text": "Collapse features below",
+                },
+                Object {
+                  "iconProps": Object {
+                    "iconName": "ExploreContent",
+                  },
+                  "key": "expandBelow",
+                  "onClick": [Function],
+                  "text": "Expand features below",
+                },
+              ],
+            },
+            "text": null,
           },
         ]
       }
@@ -131,6 +187,7 @@ exports[`FeatureCallout renders information for a feature without a description 
             },
             "key": "details",
             "onClick": [Function],
+            "secondaryText": "Ctrl+,",
             "text": "Details",
           },
         ]
@@ -138,6 +195,7 @@ exports[`FeatureCallout renders information for a feature without a description 
       items={
         Array [
           Object {
+            "iconOnly": true,
             "iconProps": Object {
               "iconName": "Add",
             },
@@ -152,6 +210,7 @@ exports[`FeatureCallout renders information for a feature without a description 
                   },
                   "key": "newFeatureBelow",
                   "onClick": [Function],
+                  "secondaryText": "Ctrl+N",
                   "text": "New feature below",
                 },
                 Object {
@@ -165,7 +224,7 @@ exports[`FeatureCallout renders information for a feature without a description 
                 },
               ],
             },
-            "text": "New",
+            "text": null,
           },
           Object {
             "disabled": false,
@@ -175,17 +234,70 @@ exports[`FeatureCallout renders information for a feature without a description 
             },
             "key": "remove",
             "onClick": [Function],
-            "text": "Remove",
+            "split": true,
+            "subMenuProps": Object {
+              "items": Array [
+                Object {
+                  "iconProps": Object {
+                    "iconName": "Remove",
+                  },
+                  "key": "removeFeature",
+                  "onClick": [Function],
+                  "secondaryText": "⌫",
+                  "text": "Remove feature",
+                },
+                Object {
+                  "disabled": false,
+                  "iconProps": Object {
+                    "iconName": "Remove",
+                  },
+                  "key": "removeBelow",
+                  "onClick": [Function],
+                  "text": "Remove features below",
+                },
+              ],
+            },
+            "text": null,
           },
           Object {
             "disabled": true,
             "iconOnly": true,
             "iconProps": Object {
-              "iconName": "CollapseContent",
+              "iconName": "CollapseContentSingle",
             },
             "key": "collapseExpand",
             "onClick": [Function],
-            "text": "Collapse",
+            "split": true,
+            "subMenuProps": Object {
+              "items": Array [
+                Object {
+                  "iconProps": Object {
+                    "iconName": "CollapseContentSingle",
+                  },
+                  "key": "collapseExpandFeature",
+                  "onClick": [Function],
+                  "secondaryText": "Ctrl+C",
+                  "text": "Collapse feature",
+                },
+                Object {
+                  "iconProps": Object {
+                    "iconName": "CollapseContent",
+                  },
+                  "key": "collapseBelow",
+                  "onClick": [Function],
+                  "text": "Collapse features below",
+                },
+                Object {
+                  "iconProps": Object {
+                    "iconName": "ExploreContent",
+                  },
+                  "key": "expandBelow",
+                  "onClick": [Function],
+                  "text": "Expand features below",
+                },
+              ],
+            },
+            "text": null,
           },
         ]
       }

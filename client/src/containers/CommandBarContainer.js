@@ -83,7 +83,7 @@ const CommandBarContainer = props => (
 
 export default connect(
     state => ({
-        featureDiagramLayout: state.ui.featureDiagramLayout,
+        featureDiagramLayout: state.ui.featureDiagram.layout,
         isSelectMultipleFeatures: state.ui.isSelectMultipleFeatures,
         selectedFeatureNames: state.ui.selectedFeatureNames,
         users: state.server.users,
@@ -92,7 +92,7 @@ export default connect(
         isKeyBindingActive: !state.ui.overlay
     }),
     dispatch => ({
-        onSetFeatureDiagramLayout: layout => dispatch(actions.ui.setFeatureDiagramLayout(layout)),
+        onSetFeatureDiagramLayout: layout => dispatch(actions.ui.featureDiagram.setLayout(layout)),
         onSetSelectMultipleFeatures: isSelectMultipleFeatures => dispatch(actions.ui.features.setSelectMultiple(isSelectMultipleFeatures)),
         onSelectAllFeatures: () => dispatch(actions.ui.features.selectAll()),
         onDeselectAllFeatures: () => dispatch(actions.ui.features.deselectAll()),

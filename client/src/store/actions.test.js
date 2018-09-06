@@ -15,8 +15,8 @@ describe('actions', () => {
 
     describe('user interface', () => {
         it('sets the feature diagram layout', () => {
-            expect(actions.ui.setFeatureDiagramLayout(layoutTypes.verticalTree))
-                .toEqual({type: 'UI/SET_FEATURE_DIAGRAM_LAYOUT', payload: {featureDiagramLayout: layoutTypes.verticalTree}});
+            expect(actions.ui.featureDiagram.setLayout(layoutTypes.verticalTree))
+                .toEqual({type: 'UI/FEATURE_DIAGRAM/SET_LAYOUT', payload: {layout: layoutTypes.verticalTree}});
         });
 
         describe('feature', () => {

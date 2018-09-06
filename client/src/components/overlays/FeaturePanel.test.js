@@ -17,6 +17,8 @@ describe('FeaturePanel', () => {
                 onShowOverlay={mock}
                 onCollapseFeature={mock}
                 onExpandFeature={mock}
+                onCollapseFeaturesBelow={mock}
+                onExpandFeaturesBelow={mock}
                 featureModel={featureModel}
                 featureName={featureName}/>
         );

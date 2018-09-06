@@ -94,14 +94,16 @@ function fitToScreen(rootState, uiState) {
     return rootState.server.featureModel
         ? {...uiState, collapsedFeatureNames: getFeatureModel(rootState)
             .getFittingFeatureNames(
-                rootState.settings, uiState.featureDiagramLayout, getViewportWidth(), getViewportHeight())}
+                rootState.settings, uiState.featureDiagram.layout, getViewportWidth(), getViewportHeight())}
         : uiState;
 }
 
 const uiReducer = rootState => handleActions({
     UI: {
-        SET_FEATURE_DIAGRAM_LAYOUT: (state, {payload: {featureDiagramLayout}}) =>
-            ({...state, featureDiagramLayout}),
+        FEATURE_DIAGRAM: {
+            SET_LAYOUT: (state, {payload: {layout}}) =>
+                ({...state, layout})
+        },
         FIT_TO_SCREEN: state => fitToScreen(rootState, state),
         FEATURE: {
             SELECT: (state, {payload: {featureName}}) =>

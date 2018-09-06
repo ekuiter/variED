@@ -8,7 +8,7 @@ import actions from '../../store/actions';
 export default connect(
     state => ({
         settings: state.settings,
-        layout: state.ui.featureDiagramLayout,
+        layout: state.ui.featureDiagram.layout,
         isSelectMultipleFeatures: state.ui.isSelectMultipleFeatures,
         selectedFeatureNames: state.ui.selectedFeatureNames,
         featureModel: getFeatureModel(state),

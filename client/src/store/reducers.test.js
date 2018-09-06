@@ -38,10 +38,10 @@ describe('reducers', () => {
 
     describe('user interface', () => {
         it('sets the feature diagram layout', () => {
-            let state = reducers(undefined, actions.ui.setFeatureDiagramLayout(layoutTypes.horizontalTree));
-            expect(state.ui.featureDiagramLayout).toEqual(layoutTypes.horizontalTree);
-            state = reducers(state, actions.ui.setFeatureDiagramLayout(layoutTypes.verticalTree));
-            expect(state.ui.featureDiagramLayout).toEqual(layoutTypes.verticalTree);
+            let state = reducers(undefined, actions.ui.featureDiagram.setLayout(layoutTypes.horizontalTree));
+            expect(state.ui.layout).toEqual(layoutTypes.horizontalTree);
+            state = reducers(state, actions.ui.featureDiagram.setLayout(layoutTypes.verticalTree));
+            expect(state.ui.layout).toEqual(layoutTypes.verticalTree);
         });
 
         describe('feature', () => {

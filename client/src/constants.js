@@ -24,7 +24,9 @@ const constants = {
             },
             settings: defaultSettings,
             ui: {
-                featureDiagramLayout: layoutTypes.verticalTree,
+                featureDiagram: {
+                    layout: layoutTypes.verticalTree
+                },
                 isSelectMultipleFeatures: false,
                 selectedFeatureNames: [],
                 collapsedFeatureNames: [],
