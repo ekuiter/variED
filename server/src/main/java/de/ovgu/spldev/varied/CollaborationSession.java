@@ -64,14 +64,15 @@ public class CollaborationSession {
         Message.IDecodable decodableMessage = (Message.IDecodable) message;
         if (!decodableMessage.isValid(stateContext))
             throw new RuntimeException("invalid message " + message);
-        Message.IEncodable[] stateChangeMessages;
+        Message.IEncodable[] stateChangeMessages = null;
         if (message instanceof Message.IApplicable) {
             Message.IApplicable applicableMessage = (Message.IApplicable) message;
             stateChangeMessages = applicableMessage.apply(stateContext);
         } else if (message instanceof Message.IUndoable) {
             Message.IUndoable undoableMessage = (Message.IUndoable) message;
             StateChange stateChange = undoableMessage.getStateChange(stateContext);
-            stateChangeMessages = stateContext.getStateChangeStack().apply(stateChange);
+            if (stateChange != null)
+                stateChangeMessages = stateContext.getStateChangeStack().apply(stateChange);
         } else
             throw new RuntimeException("message can not be processed");
         if (stateChangeMessages != null)

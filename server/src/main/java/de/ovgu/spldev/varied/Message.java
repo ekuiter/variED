@@ -37,6 +37,10 @@ abstract public class Message {
          */
         FEATURE_MODEL_PATCH, // todo
         /**
+         * contains multiple messages of the same type manipulating the feature model
+         */
+        FEATURE_MODEL_MULTIPLE,
+        /**
          * undo the last state change
          */
         UNDO,
@@ -171,6 +175,45 @@ abstract public class Message {
         public FeatureModel(IFeatureModel featureModel) {
             super(TypeEnum.FEATURE_MODEL);
             this.featureModel = featureModel;
+        }
+    }
+
+    public static class FeatureModelMultiple extends Message implements IUndoable {
+        private Message[] messages;
+
+        public FeatureModelMultiple(Message[] messages) {
+            super(TypeEnum.FEATURE_MODEL_MULTIPLE);
+            this.messages = messages;
+        }
+
+        public LinkedList<Message.IUndoable> getUndoableMessages() {
+            LinkedList<Message.IUndoable> undoableMessages = new LinkedList<>();
+            for (Message message : messages) {
+                if (!(message instanceof Message.IUndoable))
+                    throw new RuntimeException("expected undoable message, got type " +
+                            message.getClass().getName());
+                undoableMessages.add((Message.IUndoable) message);
+            }
+            return undoableMessages;
+        }
+
+        public boolean isValid(StateContext stateContext) {
+            if (messages == null || messages.length == 0)
+                throw new RuntimeException("no messages given");
+            Class messageClass = messages[0].getClass();
+            for (Message message : messages)
+                if (message.getClass() != messageClass)
+                    throw new RuntimeException("expected type " +
+                            messageClass.getName() + ", got type " + message.getClass().getName());
+
+            boolean valid = true;
+            for (Message.IUndoable message : getUndoableMessages())
+                valid = message.isValid(stateContext) && valid;
+            return valid;
+        }
+
+        public StateChange getStateChange(StateContext stateContext) {
+            return new StateChange.FeatureModelMultiple(stateContext, getUndoableMessages());
         }
     }
 

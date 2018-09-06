@@ -5,9 +5,7 @@ import de.ovgu.featureide.fm.core.base.*;
 import de.ovgu.featureide.fm.core.base.impl.FMFactoryManager;
 import de.ovgu.featureide.fm.core.functional.Functional;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.*;
 
 import static de.ovgu.featureide.fm.core.localization.StringTable.DEFAULT_FEATURE_LAYER_CAPTION;
 
@@ -21,6 +19,34 @@ public abstract class StateChange {
 
         public FeatureModelStateChange(IFeatureModel featureModel) {
             this.featureModel = featureModel;
+        }
+    }
+
+    // adapted from MultiFeatureModelOperation
+    public static class FeatureModelMultiple extends FeatureModelStateChange {
+        LinkedList<FeatureModelStateChange> stateChanges = new LinkedList<>();
+
+        public FeatureModelMultiple(StateContext stateContext, LinkedList<Message.IUndoable> messages) {
+            super(stateContext.getFeatureModel());
+            for (Message.IUndoable message : messages) {
+                StateChange stateChange = message.getStateChange(stateContext);
+                if (!(stateChange instanceof FeatureModelStateChange))
+                    throw new RuntimeException("expected feature model state change, got type " +
+                            stateChange.getClass().getName());
+                stateChanges.add((FeatureModelStateChange) stateChange);
+            }
+        }
+
+        public Message.IEncodable[] apply() {
+            for (FeatureModelStateChange stateChange : stateChanges)
+                stateChange.apply();
+            return new Message.IEncodable[]{new Message.FeatureModel(featureModel)};
+        }
+
+        public Message.IEncodable[] undo() {
+            for (final Iterator<FeatureModelStateChange> it = stateChanges.descendingIterator(); it.hasNext();)
+                it.next().undo();
+            return new Message.IEncodable[]{new Message.FeatureModel(featureModel)};
         }
     }
 

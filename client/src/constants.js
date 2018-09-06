@@ -52,7 +52,8 @@ const constants = {
             FEATURE_REMOVE: 'FEATURE_REMOVE',
             FEATURE_RENAME: 'FEATURE_RENAME',
             FEATURE_SET_DESCRIPTION: 'FEATURE_SET_DESCRIPTION',
-            FEATURE_SET_PROPERTY: 'FEATURE_SET_PROPERTY'
+            FEATURE_SET_PROPERTY: 'FEATURE_SET_PROPERTY',
+            FEATURE_MODEL_MULTIPLE: 'FEATURE_MODEL_MULTIPLE'
         },
         propertyTypes: {
             abstract: 'abstract',

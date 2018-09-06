@@ -3,14 +3,22 @@ import constants from '../constants';
 
 const {messageTypes, propertyTypes, groupValueTypes} = constants.server;
 
+function sendMultipleMessages(messages) {
+    if (!messages || messages.length === 0)
+        return Promise.resolve();
+    if (messages.length === 1)
+        return sendMessage(messages[0]);
+    return sendMessage({type: messageTypes.FEATURE_MODEL_MULTIPLE, messages});
+}
+
 export default {
     undo: () => sendMessage({type: messageTypes.UNDO}),
     redo: () => sendMessage({type: messageTypes.REDO}),
     feature: {
         addBelow: belowFeatureName =>
             sendMessage({type: messageTypes.FEATURE_ADD_BELOW, belowFeature: belowFeatureName}),
-        remove: featureName =>
-            sendMessage({type: messageTypes.FEATURE_REMOVE, feature: featureName}),
+        remove: (...featureNames) =>
+            sendMultipleMessages(featureNames.map(featureName => ({type: messageTypes.FEATURE_REMOVE, feature: featureName}))),
         rename: (oldFeatureName, newFeatureName) =>
             sendMessage({type: messageTypes.FEATURE_RENAME, oldFeature: oldFeatureName, newFeature: newFeatureName}),
         setDescription: (featureName, description) =>
