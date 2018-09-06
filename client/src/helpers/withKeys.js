@@ -1,7 +1,7 @@
 import React from 'react';
 
-export const isCommand = event => (event.ctrlKey || event.metaKey) && !event.shiftKey,
-    isShiftCommand = event => (event.ctrlKey || event.metaKey) && event.shiftKey;
+export const isCommand = event => (event.ctrlKey || event.metaKey || event.altKey) && !event.shiftKey,
+    isShiftCommand = event => (event.ctrlKey || event.metaKey || event.altKey) && event.shiftKey;
 
 export default (...keyBindings) =>
     WrappedComponent =>

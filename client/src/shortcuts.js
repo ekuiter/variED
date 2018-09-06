@@ -17,6 +17,14 @@ function shortcutText(...keys) {
     return keys.join(joinWith);
 }
 
+const shortcut = key => ({
+    text: key,
+    keyBinding: action => ({
+        key: ({event, props}) => props.isKeyBindingActive && event.key === key,
+        action
+    })
+});
+
 const commandShortcut = key => ({
     text: shortcutText(COMMAND, key),
     keyBinding: action => ({
@@ -38,11 +46,24 @@ export const shortcuts = {
     redo: commandShortcut('y'),
     settings: commandShortcut(','),
     featureDiagram: {
+        feature: {
+            new: commandShortcut('n'),
+            remove: {
+                text: '⌫',
+                keyBinding: action => ({
+                    key: ({event, props}) => props.isKeyBindingActive &&
+                        (event.key === 'Backspace' || event.key === 'Delete'),
+                    action
+                })
+            },
+            rename: shortcut('F2'),
+            details: commandShortcut(',')
+        },
         features: {
             selectAll: commandShortcut('a'),
             deselectAll: shiftCommandShortcut('a'),
-            collapseAll: commandShortcut('c'),
-            expandAll: shiftCommandShortcut('c')
+            collapse: commandShortcut('c'),
+            expand: shiftCommandShortcut('c')
         }
     }
 };

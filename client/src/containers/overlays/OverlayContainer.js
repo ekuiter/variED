@@ -11,6 +11,8 @@ import FeatureCallout from '../../components/overlays/FeatureCallout';
 import FeatureContextualMenu from '../../components/overlays/FeatureContextualMenu';
 import ExportDialog from '../../components/overlays/ExportDialog';
 import {overlayTypes} from '../../types';
+import withKeys from '../../helpers/withKeys';
+import {getShortcutKeyBinding} from '../../shortcuts';
 
 const OverlayContainer = props => (
     <React.Fragment>
@@ -100,7 +102,8 @@ export default connect(
         isSelectMultipleFeatures: state.ui.isSelectMultipleFeatures,
         selectedFeatureNames: state.ui.selectedFeatureNames,
         settings: state.settings,
-        featureModel: getFeatureModel(state)
+        featureModel: getFeatureModel(state),
+        isKeyBindingActive: overlayTypes.isShownAtSelectedFeature(state.ui.overlay)
     }),
     dispatch => ({
         onHideOverlayFn: overlay => () => dispatch(actions.ui.overlay.hide(overlay)),
@@ -114,4 +117,17 @@ export default connect(
         onCollapseFeaturesBelow: featureName => dispatch(actions.ui.features.collapseBelow(featureName)),
         onExpandFeaturesBelow: featureName => dispatch(actions.ui.features.expandBelow(featureName))
     })
-)(OverlayContainer);
+)(withKeys(
+    getShortcutKeyBinding('featureDiagram.feature.new', ({props}) =>
+        actions.server.feature.addBelow(props.overlayProps.featureName).then(props.onHideOverlayFn(props.overlay))),
+    getShortcutKeyBinding('featureDiagram.feature.remove', ({props}) =>
+        actions.server.feature.remove(props.overlayProps.featureName).then(props.onHideOverlayFn(props.overlay))),
+    getShortcutKeyBinding('featureDiagram.feature.rename', ({props}) =>
+        props.onShowOverlay(overlayTypes.featureRenameDialog, {featureName: props.overlayProps.featureName})),
+    getShortcutKeyBinding('featureDiagram.feature.details', ({props}) =>
+        props.onShowOverlay(overlayTypes.featurePanel, {featureName: props.overlayProps.featureName})),
+    getShortcutKeyBinding('featureDiagram.features.collapse', ({props}) =>
+        props.onCollapseFeature(props.overlayProps.featureName)),
+    getShortcutKeyBinding('featureDiagram.features.expand', ({props}) =>
+        props.onExpandFeature(props.overlayProps.featureName))
+)(OverlayContainer));

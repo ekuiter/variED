@@ -109,12 +109,14 @@ const contextualMenuItems = {
             newFeatureBelow: (featureName, onClick) => ({
                 key: 'newFeatureBelow',
                 text: i18n.t('featureDiagram.commands.feature.newFeatureBelow'),
+                secondaryText: getShortcutText('featureDiagram.feature.new'),
                 iconProps: {iconName: 'Add'},
                 onClick: () => actions.server.feature.addBelow(featureName).then(onClick)
             }),
             remove: (feature, onClick) => ({
                 key: 'remove',
                 text: i18n.t('featureDiagram.commands.feature.remove'),
+                secondaryText: getShortcutText('featureDiagram.feature.remove'),
                 iconProps: {iconName: 'Remove'},
                 iconOnly: true,
                 disabled: feature.isRoot && (!feature.hasChildren || feature.node.children.length > 1),
@@ -123,6 +125,7 @@ const contextualMenuItems = {
             details: (featureName, onShowOverlay) => ({
                 key: 'details',
                 text: i18n.t('featureDiagram.commands.feature.details'),
+                secondaryText: getShortcutText('featureDiagram.feature.details'),
                 iconProps: {iconName: 'Info'},
                 iconOnly: true,
                 onClick: () => onShowOverlay(overlayTypes.featurePanel, {featureName})
@@ -130,6 +133,7 @@ const contextualMenuItems = {
             rename: (featureName, onShowOverlay) => ({
                 key: 'rename',
                 text: i18n.t('featureDiagram.commands.feature.rename'),
+                secondaryText: getShortcutText('featureDiagram.feature.rename'),
                 iconProps: {iconName: 'Rename'},
                 onClick: () => onShowOverlay(overlayTypes.featureRenameDialog, {featureName})
             }),
@@ -142,6 +146,9 @@ const contextualMenuItems = {
             collapseExpandFeature: (feature, onCollapseFeature, onExpandFeature, onClick) => ({
                 key: 'collapseExpand',
                 text: i18n.t('featureDiagram.commands.feature.collapseExpandFeature')(feature.isCollapsed),
+                secondaryText: feature.isCollapsed
+                    ? getShortcutText('featureDiagram.features.expand')
+                    : getShortcutText('featureDiagram.features.collapse'),
                 iconProps: {iconName: feature.isCollapsed ? 'ExploreContentSingle' : 'CollapseContentSingle'},
                 onClick: () => {
                     if (feature.isCollapsed)
@@ -283,14 +290,14 @@ const contextualMenuItems = {
             collapseAll: onCollapseAllFeatures => ({
                 key: 'collapseAll',
                 text: i18n.t('featureDiagram.commands.features.collapseAll'),
-                secondaryText: getShortcutText('featureDiagram.features.collapseAll'),
+                secondaryText: getShortcutText('featureDiagram.features.collapse'),
                 iconProps: {iconName: 'CollapseContent'},
                 onClick: onCollapseAllFeatures
             }),
             expandAll: onExpandAllFeatures => ({
                 key: 'expandAll',
                 text: i18n.t('featureDiagram.commands.features.expandAll'),
-                secondaryText: getShortcutText('featureDiagram.features.expandAll'),
+                secondaryText: getShortcutText('featureDiagram.features.expand'),
                 iconProps: {iconName: 'ExploreContent'},
                 onClick: onExpandAllFeatures
             }),

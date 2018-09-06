@@ -107,6 +107,6 @@ export default connect(
     getShortcutKeyBinding('settings', ({props}) => props.onShowOverlay(overlayTypes.settingsPanel)),
     getShortcutKeyBinding('featureDiagram.features.selectAll', ({props}) => props.onSelectAllFeatures()),
     getShortcutKeyBinding('featureDiagram.features.deselectAll', ({props}) => props.onDeselectAllFeatures()),
-    getShortcutKeyBinding('featureDiagram.features.collapseAll', ({props}) => props.onCollapseAllFeatures()),
-    getShortcutKeyBinding('featureDiagram.features.expandAll', ({props}) => props.onExpandAllFeatures()),
+    getShortcutKeyBinding('featureDiagram.features.collapse', ({props}) => props.onCollapseAllFeatures()),
+    getShortcutKeyBinding('featureDiagram.features.expand', ({props}) => props.onExpandAllFeatures()),
 )(CommandBarContainer));
