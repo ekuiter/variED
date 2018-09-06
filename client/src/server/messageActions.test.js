@@ -148,7 +148,7 @@ describe('messageActions', () => {
 
     describe('features', () => {
         it('adds a feature above', () => {
-            messageActions.features.addAbove(['FeatureIDE', 'Eclipse']);
+            messageActions.feature.addAbove(['FeatureIDE', 'Eclipse']);
             expect(sendMessage).lastCalledWith({type: messageTypes.FEATURE_ADD_ABOVE, aboveFeatures: ['FeatureIDE', 'Eclipse']});
         });
     });

@@ -17,6 +17,8 @@ export default {
     feature: {
         addBelow: belowFeatureName =>
             sendMessage({type: messageTypes.FEATURE_ADD_BELOW, belowFeature: belowFeatureName}),
+        addAbove: aboveFeaturesNames =>
+            sendMessage({type: messageTypes.FEATURE_ADD_ABOVE, aboveFeatures: aboveFeaturesNames}),
         remove: (...featureNames) =>
             sendMultipleMessages(featureNames.map(featureName => ({type: messageTypes.FEATURE_REMOVE, feature: featureName}))),
         removeBelow: (...featureNames) =>
@@ -70,9 +72,5 @@ export default {
                             ? groupValueTypes.alternative : groupValueTypes.and
                 })
         }
-    },
-    features: {
-        addAbove: aboveFeaturesNames =>
-            sendMessage({type: messageTypes.FEATURE_ADD_ABOVE, aboveFeatures: aboveFeaturesNames})
     }
 };

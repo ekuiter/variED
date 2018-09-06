@@ -21,50 +21,50 @@ describe('actions', () => {
 
         describe('feature', () => {
             it('is selected', () => {
-                expect(actions.ui.feature.select('FeatureIDE'))
-                    .toEqual({type: 'UI/FEATURE/SELECT', payload: {featureName: 'FeatureIDE'}});
+                expect(actions.ui.featureDiagram.feature.select('FeatureIDE'))
+                    .toEqual({type: 'UI/FEATURE_DIAGRAM/FEATURE/SELECT', payload: {featureName: 'FeatureIDE'}});
             });
 
             it('is deselected', () => {
-                expect(actions.ui.feature.deselect('FeatureIDE'))
-                    .toEqual({type: 'UI/FEATURE/DESELECT', payload: {featureName: 'FeatureIDE'}});
+                expect(actions.ui.featureDiagram.feature.deselect('FeatureIDE'))
+                    .toEqual({type: 'UI/FEATURE_DIAGRAM/FEATURE/DESELECT', payload: {featureName: 'FeatureIDE'}});
             });
 
             it('is collapsed', () => {
-                expect(actions.ui.feature.collapse('FeatureIDE'))
-                    .toEqual({type: 'UI/FEATURE/COLLAPSE', payload: {featureName: 'FeatureIDE'}});
+                expect(actions.ui.featureDiagram.feature.collapse('FeatureIDE'))
+                    .toEqual({type: 'UI/FEATURE_DIAGRAM/FEATURE/COLLAPSE', payload: {featureName: 'FeatureIDE'}});
             });
 
             it('is expanded', () => {
-                expect(actions.ui.feature.expand('FeatureIDE'))
-                    .toEqual({type: 'UI/FEATURE/EXPAND', payload: {featureName: 'FeatureIDE'}});
+                expect(actions.ui.featureDiagram.feature.expand('FeatureIDE'))
+                    .toEqual({type: 'UI/FEATURE_DIAGRAM/FEATURE/EXPAND', payload: {featureName: 'FeatureIDE'}});
             });
         });
 
         describe('multiple features', () => {
             it('sets whether multiple features can be selected', () => {
-                expect(actions.ui.features.setSelectMultiple(true))
-                    .toEqual({type: 'UI/FEATURES/SET_SELECT_MULTIPLE', payload: {isSelectMultipleFeatures: true}});
+                expect(actions.ui.featureDiagram.feature.setSelectMultiple(true))
+                    .toEqual({type: 'UI/FEATURE_DIAGRAM/FEATURE/SET_SELECT_MULTIPLE', payload: {isSelectMultipleFeatures: true}});
             });
 
             it('selects all', () => {
-                expect(actions.ui.features.selectAll())
-                    .toEqual({type: 'UI/FEATURES/SELECT_ALL'});
+                expect(actions.ui.featureDiagram.feature.selectAll())
+                    .toEqual({type: 'UI/FEATURE_DIAGRAM/FEATURE/SELECT_ALL'});
             });
 
             it('deselects all', () => {
-                expect(actions.ui.features.deselectAll())
-                    .toEqual({type: 'UI/FEATURES/DESELECT_ALL'});
+                expect(actions.ui.featureDiagram.feature.deselectAll())
+                    .toEqual({type: 'UI/FEATURE_DIAGRAM/FEATURE/DESELECT_ALL'});
             });
 
             it('collapses all', () => {
-                expect(actions.ui.features.collapseAll())
-                    .toEqual({type: 'UI/FEATURES/COLLAPSE_ALL'});
+                expect(actions.ui.featureDiagram.feature.collapseAll())
+                    .toEqual({type: 'UI/FEATURE_DIAGRAM/FEATURE/COLLAPSE_ALL'});
             });
 
             it('expands all', () => {
-                expect(actions.ui.features.expandAll())
-                    .toEqual({type: 'UI/FEATURES/EXPAND_ALL'});
+                expect(actions.ui.featureDiagram.feature.expandAll())
+                    .toEqual({type: 'UI/FEATURE_DIAGRAM/FEATURE/EXPAND_ALL'});
             });
         });
 

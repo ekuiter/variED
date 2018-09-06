@@ -46,51 +46,51 @@ describe('reducers', () => {
 
         describe('feature', () => {
             it('is selected', () => {
-                const state = reducers(undefined, actions.ui.feature.select('FeatureIDE'));
+                const state = reducers(undefined, actions.ui.featureDiagram.feature.select('FeatureIDE'));
                 expect(state.ui.selectedFeatureNames).toContain('FeatureIDE');
             });
 
             it('is not selected multiple times', () => {
-                let state = reducers(undefined, actions.ui.feature.select('FeatureIDE'));
+                let state = reducers(undefined, actions.ui.featureDiagram.feature.select('FeatureIDE'));
                 expect(state.ui.selectedFeatureNames.filter(name => name === 'FeatureIDE')).toHaveLength(1);
-                state = reducers(state, actions.ui.feature.select('FeatureIDE'));
+                state = reducers(state, actions.ui.featureDiagram.feature.select('FeatureIDE'));
                 expect(state.ui.selectedFeatureNames.filter(name => name === 'FeatureIDE')).toHaveLength(1);
             });
 
             it('is deselected', () => {
-                let state = reducers(undefined, actions.ui.feature.select('FeatureIDE'));
+                let state = reducers(undefined, actions.ui.featureDiagram.feature.select('FeatureIDE'));
                 expect(state.ui.selectedFeatureNames).toContain('FeatureIDE');
-                state = reducers(state, actions.ui.feature.deselect('FeatureIDE'));
+                state = reducers(state, actions.ui.featureDiagram.feature.deselect('FeatureIDE'));
                 expect(state.ui.selectedFeatureNames).not.toContain('FeatureIDE');
             });
 
             it('disables multiple feature selection when the last feature is deselected', () => {
-                let state = reducers(undefined, actions.ui.features.setSelectMultiple(true));
-                state = reducers(state, actions.ui.feature.select('FeatureIDE'));
-                state = reducers(state, actions.ui.feature.select('Eclipse'));
+                let state = reducers(undefined, actions.ui.featureDiagram.feature.setSelectMultiple(true));
+                state = reducers(state, actions.ui.featureDiagram.feature.select('FeatureIDE'));
+                state = reducers(state, actions.ui.featureDiagram.feature.select('Eclipse'));
                 expect(state.ui.isSelectMultipleFeatures).toBe(true);
-                state = reducers(state, actions.ui.feature.deselect('FeatureIDE'));
+                state = reducers(state, actions.ui.featureDiagram.feature.deselect('FeatureIDE'));
                 expect(state.ui.isSelectMultipleFeatures).toBe(true);
-                state = reducers(state, actions.ui.feature.deselect('Eclipse'));
+                state = reducers(state, actions.ui.featureDiagram.feature.deselect('Eclipse'));
                 expect(state.ui.isSelectMultipleFeatures).toBe(false);
             });
 
             it('is collapsed', () => {
-                const state = reducers(undefined, actions.ui.feature.collapse('FeatureIDE'));
+                const state = reducers(undefined, actions.ui.featureDiagram.feature.collapse('FeatureIDE'));
                 expect(state.ui.collapsedFeatureNames).toContain('FeatureIDE');
             });
 
             it('is not collapsed multiple times', () => {
-                let state = reducers(undefined, actions.ui.feature.collapse('FeatureIDE'));
+                let state = reducers(undefined, actions.ui.featureDiagram.feature.collapse('FeatureIDE'));
                 expect(state.ui.collapsedFeatureNames.filter(name => name === 'FeatureIDE')).toHaveLength(1);
-                state = reducers(state, actions.ui.feature.collapse('FeatureIDE'));
+                state = reducers(state, actions.ui.featureDiagram.feature.collapse('FeatureIDE'));
                 expect(state.ui.collapsedFeatureNames.filter(name => name === 'FeatureIDE')).toHaveLength(1);
             });
 
             it('is expanded', () => {
-                let state = reducers(undefined, actions.ui.feature.collapse('FeatureIDE'));
+                let state = reducers(undefined, actions.ui.featureDiagram.feature.collapse('FeatureIDE'));
                 expect(state.ui.collapsedFeatureNames).toContain('FeatureIDE');
-                state = reducers(state, actions.ui.feature.expand('FeatureIDE'));
+                state = reducers(state, actions.ui.featureDiagram.feature.expand('FeatureIDE'));
                 expect(state.ui.collapsedFeatureNames).not.toContain('FeatureIDE');
             });
         });
@@ -98,99 +98,99 @@ describe('reducers', () => {
         describe('multiple features', () => {
             describe('multiple feature selection', () => {
                 it('sets whether multiple features can be selected', () => {
-                    const state = reducers(undefined, actions.ui.features.setSelectMultiple(true));
+                    const state = reducers(undefined, actions.ui.featureDiagram.feature.setSelectMultiple(true));
                     expect(state.ui.isSelectMultipleFeatures).toBe(true);
                 });
 
                 it('resets selected features when multiple feature selection is enabled', () => {
-                    let state = reducers(undefined, actions.ui.feature.select('FeatureIDE'));
+                    let state = reducers(undefined, actions.ui.featureDiagram.feature.select('FeatureIDE'));
                     expect(state.ui.selectedFeatureNames).toContain('FeatureIDE');
-                    state = reducers(undefined, actions.ui.features.setSelectMultiple(true));
+                    state = reducers(undefined, actions.ui.featureDiagram.feature.setSelectMultiple(true));
                     expect(state.ui.selectedFeatureNames).not.toContain('FeatureIDE');
                 });
 
                 it('resets selected features when multiple feature selection is disabled', () => {
-                    let state = reducers(undefined, actions.ui.feature.select('FeatureIDE'));
+                    let state = reducers(undefined, actions.ui.featureDiagram.feature.select('FeatureIDE'));
                     expect(state.ui.selectedFeatureNames).toContain('FeatureIDE');
-                    state = reducers(undefined, actions.ui.features.setSelectMultiple(false));
+                    state = reducers(undefined, actions.ui.featureDiagram.feature.setSelectMultiple(false));
                     expect(state.ui.selectedFeatureNames).not.toContain('FeatureIDE');
                 });
             });
 
             describe('select all features', () => {
                 it('selects all visibile features', () => {
-                    const state = reducers(featureModelState(), actions.ui.features.selectAll());
+                    const state = reducers(featureModelState(), actions.ui.featureDiagram.feature.selectAll());
                     expect(state.ui.selectedFeatureNames)
                         .toEqual(new FeatureModel(validFeatureModel, []).getVisibleFeatureNames());
                 });
 
                 it('does not select features of collapsed children', () => {
-                    let state = reducers(featureModelState(), actions.ui.feature.collapse('FeatureIDE'));
-                    state = reducers(state, actions.ui.features.selectAll());
+                    let state = reducers(featureModelState(), actions.ui.featureDiagram.feature.collapse('FeatureIDE'));
+                    state = reducers(state, actions.ui.featureDiagram.feature.selectAll());
                     expect(state.ui.selectedFeatureNames).toContain('FeatureIDE');
                     expect(state.ui.selectedFeatureNames).not.toContain('FeatureHouse');
                 });
 
                 it('enables multiple feature selection', () => {
-                    const state = reducers(featureModelState(), actions.ui.features.selectAll());
+                    const state = reducers(featureModelState(), actions.ui.featureDiagram.feature.selectAll());
                     expect(state.ui.isSelectMultipleFeatures).toBe(true);
                 });
 
                 it('does nothing if no feature model is available', () => {
-                    const state = reducers(undefined, actions.ui.features.selectAll());
+                    const state = reducers(undefined, actions.ui.featureDiagram.feature.selectAll());
                     expect(state).toEqual(constants.store.initialState);
                 });
             });
 
             describe('deselect all features', () => {
                 it('deselects all features', () => {
-                    let state = reducers(featureModelState(), actions.ui.feature.select('FeatureIDE'));
+                    let state = reducers(featureModelState(), actions.ui.featureDiagram.feature.select('FeatureIDE'));
                     expect(state.ui.selectedFeatureNames).toHaveLength(1);
-                    state = reducers(state, actions.ui.features.deselectAll());
+                    state = reducers(state, actions.ui.featureDiagram.feature.deselectAll());
                     expect(state.ui.selectedFeatureNames).toHaveLength(0);
                 });
 
                 it('disables multiple feature selection', () => {
-                    let state = reducers(featureModelState(), actions.ui.features.setSelectMultiple(true));
+                    let state = reducers(featureModelState(), actions.ui.featureDiagram.feature.setSelectMultiple(true));
                     expect(state.ui.isSelectMultipleFeatures).toBe(true);
-                    state = reducers(state, actions.ui.features.deselectAll());
+                    state = reducers(state, actions.ui.featureDiagram.feature.deselectAll());
                     expect(state.ui.isSelectMultipleFeatures).toBe(false);
                 });
 
                 it('does nothing if no feature model is available', () => {
-                    const state = reducers(undefined, actions.ui.features.deselectAll());
+                    const state = reducers(undefined, actions.ui.featureDiagram.feature.deselectAll());
                     expect(state).toEqual(constants.store.initialState);
                 });
             });
 
             describe('collapse all features', () => {
                 it('collapses all features with actual children', () => {
-                    const state = reducers(featureModelState(), actions.ui.features.collapseAll());
+                    const state = reducers(featureModelState(), actions.ui.featureDiagram.feature.collapseAll());
                     expect(state.ui.collapsedFeatureNames)
                         .toEqual(new FeatureModel(validFeatureModel, []).getFeatureNamesWithActualChildren());
                 });
 
                 it('does not collapse leaf features', () => {
-                    let state = reducers(featureModelState(), actions.ui.features.collapseAll());
+                    let state = reducers(featureModelState(), actions.ui.featureDiagram.feature.collapseAll());
                     expect(state.ui.selectedFeatureNames).not.toContain('FeatureHouse');
                 });
 
                 it('does nothing if no feature model is available', () => {
-                    const state = reducers(undefined, actions.ui.features.collapseAll());
+                    const state = reducers(undefined, actions.ui.featureDiagram.feature.collapseAll());
                     expect(state).toEqual(constants.store.initialState);
                 });
             });
 
             describe('expand all features', () => {
                 it('expands all features', () => {
-                    let state = reducers(featureModelState(), actions.ui.feature.collapse('FeatureIDE'));
+                    let state = reducers(featureModelState(), actions.ui.featureDiagram.feature.collapse('FeatureIDE'));
                     expect(state.ui.collapsedFeatureNames).toHaveLength(1);
-                    state = reducers(state, actions.ui.features.expandAll());
+                    state = reducers(state, actions.ui.featureDiagram.feature.expandAll());
                     expect(state.ui.collapsedFeatureNames).toHaveLength(0);
                 });
 
                 it('does nothing if no feature model is available', () => {
-                    const state = reducers(undefined, actions.ui.features.expandAll());
+                    const state = reducers(undefined, actions.ui.featureDiagram.feature.expandAll());
                     expect(state).toEqual(constants.store.initialState);
                 });
             });
@@ -242,7 +242,7 @@ describe('reducers', () => {
 
                 it('deselects a feature when switching from a feature callout or ' +
                     'contextual menu in single feature selection mode', () => {
-                    let state = reducers(undefined, actions.ui.feature.select('FeatureIDE'));
+                    let state = reducers(undefined, actions.ui.featureDiagram.feature.select('FeatureIDE'));
                     state = reducers(state, actions.ui.overlay.show(overlayTypes.featureCallout, {featureName: 'FeatureIDE'}));
                     expect(state.ui.selectedFeatureNames).toContain('FeatureIDE');
                     state = reducers(state, actions.ui.overlay.hide(overlayTypes.featureCallout));
@@ -250,8 +250,8 @@ describe('reducers', () => {
                 });
     
                 it('does not deselect a feature in multiple feature selection mode', () => {
-                    let state = reducers(undefined, actions.ui.features.setSelectMultiple(true));
-                    state = reducers(state, actions.ui.feature.select('FeatureIDE'));
+                    let state = reducers(undefined, actions.ui.featureDiagram.feature.setSelectMultiple(true));
+                    state = reducers(state, actions.ui.featureDiagram.feature.select('FeatureIDE'));
                     state = reducers(state, actions.ui.overlay.show(overlayTypes.featureCallout, {featureName: 'FeatureIDE'}));
                     expect(state.ui.selectedFeatureNames).toContain('FeatureIDE');
                     state = reducers(state, actions.ui.overlay.hide(overlayTypes.featureCallout));
@@ -264,7 +264,7 @@ describe('reducers', () => {
     describe('server and user interface interaction', () => {
         describe('feature model', () => {
             it('removes obsolete features from the list of collapsed features', () => {
-                let state = reducers(featureModelState(), actions.ui.features.collapseAll());
+                let state = reducers(featureModelState(), actions.ui.featureDiagram.feature.collapseAll());
                 expect(state.ui.collapsedFeatureNames).toContain('FeatureIDE');
                 state = featureModelState(state, validFeatureModelWithRemovedFeatures);
                 expect(state.ui.collapsedFeatureNames).not.toContain('FeatureIDE');
@@ -273,7 +273,7 @@ describe('reducers', () => {
 
         describe('feature rename', () => {
             it('renames features in the list of selected features', () => {
-                let state = reducers(undefined, actions.ui.feature.select('FeatureIDE'));
+                let state = reducers(undefined, actions.ui.featureDiagram.feature.select('FeatureIDE'));
                 expect(state.ui.selectedFeatureNames).toContain('FeatureIDE');
                 state = reducers(state, {
                     type: constants.server.messageTypes.FEATURE_RENAME,
@@ -285,7 +285,7 @@ describe('reducers', () => {
             });
 
             it('renames features in the list of collapsed features', () => {
-                let state = reducers(undefined, actions.ui.feature.collapse('FeatureIDE'));
+                let state = reducers(undefined, actions.ui.featureDiagram.feature.collapse('FeatureIDE'));
                 expect(state.ui.collapsedFeatureNames).toContain('FeatureIDE');
                 state = reducers(state, {
                     type: constants.server.messageTypes.FEATURE_RENAME,

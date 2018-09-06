@@ -35,8 +35,8 @@ const CommandBarContainer = props => (
                     contextualMenuItems.featureDiagram.undo(),
                     contextualMenuItems.featureDiagram.redo(),
                     {key: 'divider', itemType: ContextualMenuItemType.Divider},
-                    contextualMenuItems.featureDiagram.features.selectAll(props.onSelectAllFeatures),
-                    contextualMenuItems.featureDiagram.features.deselectAll(props.onDeselectAllFeatures),
+                    contextualMenuItems.featureDiagram.feature.selectAll(props.onSelectAllFeatures),
+                    contextualMenuItems.featureDiagram.feature.deselectAll(props.onDeselectAllFeatures),
                     contextualMenuItems.featureDiagram.selection(
                         props.isSelectMultipleFeatures,
                         props.onSetSelectMultipleFeatures,
@@ -54,8 +54,8 @@ const CommandBarContainer = props => (
                         props.featureDiagramLayout,
                         props.onSetFeatureDiagramLayout),
                     {key: 'divider1', itemType: ContextualMenuItemType.Divider},
-                    contextualMenuItems.featureDiagram.features.collapseAll(props.onCollapseAllFeatures),
-                    contextualMenuItems.featureDiagram.features.expandAll(props.onExpandAllFeatures),
+                    contextualMenuItems.featureDiagram.feature.collapseAll(props.onCollapseAllFeatures),
+                    contextualMenuItems.featureDiagram.feature.expandAll(props.onExpandAllFeatures),
                     contextualMenuItems.featureDiagram.fitToScreen(props.onFitToScreen),
                     {key: 'divider2', itemType: ContextualMenuItemType.Divider},
                     contextualMenuItems.settings(props.onShowOverlay)
@@ -93,11 +93,11 @@ export default connect(
     }),
     dispatch => ({
         onSetFeatureDiagramLayout: layout => dispatch(actions.ui.featureDiagram.setLayout(layout)),
-        onSetSelectMultipleFeatures: isSelectMultipleFeatures => dispatch(actions.ui.features.setSelectMultiple(isSelectMultipleFeatures)),
-        onSelectAllFeatures: () => dispatch(actions.ui.features.selectAll()),
-        onDeselectAllFeatures: () => dispatch(actions.ui.features.deselectAll()),
-        onCollapseAllFeatures: () => dispatch(actions.ui.features.collapseAll()),
-        onExpandAllFeatures: () => dispatch(actions.ui.features.expandAll()),
+        onSetSelectMultipleFeatures: isSelectMultipleFeatures => dispatch(actions.ui.featureDiagram.feature.setSelectMultiple(isSelectMultipleFeatures)),
+        onSelectAllFeatures: () => dispatch(actions.ui.featureDiagram.feature.selectAll()),
+        onDeselectAllFeatures: () => dispatch(actions.ui.featureDiagram.feature.deselectAll()),
+        onCollapseAllFeatures: () => dispatch(actions.ui.featureDiagram.feature.collapseAll()),
+        onExpandAllFeatures: () => dispatch(actions.ui.featureDiagram.feature.expandAll()),
         onShowOverlay: (...args) => dispatch(actions.ui.overlay.show(...args)),
         onFitToScreen: () => dispatch(actions.ui.featureDiagram.fitToScreen())
     })
@@ -105,8 +105,8 @@ export default connect(
     getShortcutKeyBinding('undo', actions.server.undo),
     getShortcutKeyBinding('redo', actions.server.redo),
     getShortcutKeyBinding('settings', ({props}) => props.onShowOverlay(overlayTypes.settingsPanel)),
-    getShortcutKeyBinding('featureDiagram.features.selectAll', ({props}) => props.onSelectAllFeatures()),
-    getShortcutKeyBinding('featureDiagram.features.deselectAll', ({props}) => props.onDeselectAllFeatures()),
-    getShortcutKeyBinding('featureDiagram.features.collapse', ({props}) => props.onCollapseAllFeatures()),
-    getShortcutKeyBinding('featureDiagram.features.expand', ({props}) => props.onExpandAllFeatures()),
+    getShortcutKeyBinding('featureDiagram.feature.selectAll', ({props}) => props.onSelectAllFeatures()),
+    getShortcutKeyBinding('featureDiagram.feature.deselectAll', ({props}) => props.onDeselectAllFeatures()),
+    getShortcutKeyBinding('featureDiagram.feature.collapse', ({props}) => props.onCollapseAllFeatures()),
+    getShortcutKeyBinding('featureDiagram.feature.expand', ({props}) => props.onExpandAllFeatures()),
 )(CommandBarContainer));

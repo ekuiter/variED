@@ -9,23 +9,21 @@ const actions = createActions({
     UI: {
         FEATURE_DIAGRAM: {
             SET_LAYOUT: layout => ({layout}),
-            FIT_TO_SCREEN: () => {}
-        },
-        FEATURE: {
-            SELECT: featureName => ({featureName}),
-            DESELECT: featureName => ({featureName}),
-            COLLAPSE: featureName => ({featureName}),
-            EXPAND: featureName => ({featureName}),
-        },
-        FEATURES: {
-            SET_SELECT_MULTIPLE: isSelectMultipleFeatures =>
-                ({isSelectMultipleFeatures}),
-            SELECT_ALL: () => {},
-            DESELECT_ALL: () => {},
-            COLLAPSE_ALL: () => {},
-            EXPAND_ALL: () => {},
-            COLLAPSE_BELOW: featureName => ({featureName}),
-            EXPAND_BELOW: featureName => ({featureName})
+            FIT_TO_SCREEN: () => {},
+            FEATURE: {
+                SET_SELECT_MULTIPLE: isSelectMultipleFeatures => ({isSelectMultipleFeatures}),
+                SELECT: featureName => ({featureName}),
+                DESELECT: featureName => ({featureName}),
+                SELECT_ALL: () => {},
+                DESELECT_ALL: () => {},
+
+                COLLAPSE: featureName => ({featureName}),
+                EXPAND: featureName => ({featureName}),
+                COLLAPSE_ALL: () => {},
+                EXPAND_ALL: () => {},
+                COLLAPSE_BELOW: featureName => ({featureName}),
+                EXPAND_BELOW: featureName => ({featureName})
+            }
         },
         OVERLAY: {
             SHOW: (overlay, overlayProps, {selectOneFeature} = {}) =>

@@ -17,11 +17,11 @@ export default connect(
     }),
     dispatch => ({
         onShowOverlay: (...args) => dispatch(actions.ui.overlay.show(...args)),
-        onSetSelectMultipleFeatures: isSelectMultipleFeatures => dispatch(actions.ui.features.setSelectMultiple(isSelectMultipleFeatures)),
-        onSelectFeature: featureName => dispatch(actions.ui.feature.select(featureName)),
-        onDeselectFeature: featureName => dispatch(actions.ui.feature.deselect(featureName)),
-        onExpandFeature: featureName => dispatch(actions.ui.feature.expand(featureName)),
-        onDeselectAllFeatures: () => dispatch(actions.ui.features.deselectAll())
+        onSetSelectMultipleFeatures: isSelectMultipleFeatures => dispatch(actions.ui.featureDiagram.feature.setSelectMultiple(isSelectMultipleFeatures)),
+        onSelectFeature: featureName => dispatch(actions.ui.featureDiagram.feature.select(featureName)),
+        onDeselectFeature: featureName => dispatch(actions.ui.featureDiagram.feature.deselect(featureName)),
+        onExpandFeature: featureName => dispatch(actions.ui.featureDiagram.feature.expand(featureName)),
+        onDeselectAllFeatures: () => dispatch(actions.ui.featureDiagram.feature.deselectAll())
     })
 )(props =>
     props.featureModel

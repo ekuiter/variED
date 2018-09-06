@@ -10,7 +10,7 @@ import {FeatureModelType} from '../../server/FeatureModel';
 import FeatureComponent from './FeatureComponent';
 
 export const selectMultipleFeaturesContextualMenuItems = (selectedFeatureNames, onDeselectAllFeatures, featureModel) => [
-    contextualMenuItems.featureDiagram.features.newFeatureAbove(selectedFeatureNames, onDeselectAllFeatures, featureModel)
+    contextualMenuItems.featureDiagram.feature.newFeatureAbove(selectedFeatureNames, onDeselectAllFeatures, featureModel)
 ];
 
 export default class extends FeatureComponent({doUpdate: true}) {

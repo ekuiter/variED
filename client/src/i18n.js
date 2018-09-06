@@ -158,9 +158,7 @@ export const strings = {
                 optional: 'Optional',
                 and: 'And',
                 or: 'Or',
-                alternative: 'Alternative'
-            },
-            features: {
+                alternative: 'Alternative',
                 selectAll: 'Select all features',
                 deselectAll: 'Deselect all features',
                 newFeatureAbove: 'New feature above',

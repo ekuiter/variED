@@ -57,9 +57,7 @@ export const shortcuts = {
                 })
             },
             rename: shortcut('F2'),
-            details: commandShortcut(',')
-        },
-        features: {
+            details: commandShortcut(','),
             selectAll: commandShortcut('a'),
             deselectAll: shiftCommandShortcut('a'),
             collapse: commandShortcut('c'),

@@ -103,59 +103,58 @@ const uiReducer = rootState => handleActions({
         FEATURE_DIAGRAM: {
             SET_LAYOUT: (state, {payload: {layout}}) =>
                 ({...state, featureDiagram: {...state.featureDiagram, layout}}),
-            FIT_TO_SCREEN: state => fitToScreen(rootState, state)
-        },
-        FEATURE: {
-            SELECT: (state, {payload: {featureName}}) =>
-                ({...state, selectedFeatureNames: uniqueArrayAdd(state.selectedFeatureNames, featureName)}),
-            DESELECT: (state, {payload: {featureName}}) => {
-                const selectedFeatureNames = uniqueArrayRemove(state.selectedFeatureNames, featureName);
-                return selectedFeatureNames.length > 0
-                    ? {...state, selectedFeatureNames}
-                    : {...state, selectedFeatureNames, isSelectMultipleFeatures: false};
-            },
-            COLLAPSE: (state, {payload: {featureName}}) =>
-                ({...state, collapsedFeatureNames: uniqueArrayAdd(state.collapsedFeatureNames, featureName)}),
-            EXPAND: (state, {payload: {featureName}}) =>
-                ({...state, collapsedFeatureNames: uniqueArrayRemove(state.collapsedFeatureNames, featureName)})
-        },
-        FEATURES: {
-            SET_SELECT_MULTIPLE: (state, {payload: {isSelectMultipleFeatures}}) =>
-                ({...state, isSelectMultipleFeatures, selectedFeatureNames: []}),
-            SELECT_ALL: state =>
-                rootState.server.featureModel
-                    ? {
-                        ...state,
-                        selectedFeatureNames: getFeatureModel(rootState).getVisibleFeatureNames(),
-                        isSelectMultipleFeatures: true
-                    }
-                    : state,
-            DESELECT_ALL: state =>
-                ({...state, selectedFeatureNames: [], isSelectMultipleFeatures: false}),
-            COLLAPSE_ALL: state => 
-                rootState.server.featureModel
-                    ? {
-                        ...state,
-                        collapsedFeatureNames: getFeatureModel(rootState).getFeatureNamesWithActualChildren()
-                    }
-                    : state,
-            EXPAND_ALL: state => ({...state, collapsedFeatureNames: []}),
-            COLLAPSE_BELOW: (state, {payload: {featureName}}) =>
-                rootState.server.featureModel
-                    ? {
-                        ...state,
-                        collapsedFeatureNames: uniqueArrayAdd(state.collapsedFeatureNames,
-                            ...getFeatureModel(rootState).getFeatureNamesBelowWithActualChildren(featureName))
-                    }
-                    : state,
-            EXPAND_BELOW: (state, {payload: {featureName}}) =>
-                rootState.server.featureModel
-                    ? {
-                        ...state,
-                        collapsedFeatureNames: uniqueArrayRemove(state.collapsedFeatureNames,
-                            ...getFeatureModel(rootState).getFeatureNamesBelowWithActualChildren(featureName))
-                    }
-                    : state
+            FIT_TO_SCREEN: state => fitToScreen(rootState, state),
+            FEATURE: {
+                SET_SELECT_MULTIPLE: (state, {payload: {isSelectMultipleFeatures}}) =>
+                    ({...state, isSelectMultipleFeatures, selectedFeatureNames: []}),
+                SELECT: (state, {payload: {featureName}}) =>
+                    ({...state, selectedFeatureNames: uniqueArrayAdd(state.selectedFeatureNames, featureName)}),
+                DESELECT: (state, {payload: {featureName}}) => {
+                    const selectedFeatureNames = uniqueArrayRemove(state.selectedFeatureNames, featureName);
+                    return selectedFeatureNames.length > 0
+                        ? {...state, selectedFeatureNames}
+                        : {...state, selectedFeatureNames, isSelectMultipleFeatures: false};
+                },
+                SELECT_ALL: state =>
+                    rootState.server.featureModel
+                        ? {
+                            ...state,
+                            selectedFeatureNames: getFeatureModel(rootState).getVisibleFeatureNames(),
+                            isSelectMultipleFeatures: true
+                        }
+                        : state,
+                DESELECT_ALL: state =>
+                    ({...state, selectedFeatureNames: [], isSelectMultipleFeatures: false}),
+
+                COLLAPSE: (state, {payload: {featureName}}) =>
+                    ({...state, collapsedFeatureNames: uniqueArrayAdd(state.collapsedFeatureNames, featureName)}),
+                EXPAND: (state, {payload: {featureName}}) =>
+                    ({...state, collapsedFeatureNames: uniqueArrayRemove(state.collapsedFeatureNames, featureName)}),
+                COLLAPSE_ALL: state => 
+                    rootState.server.featureModel
+                        ? {
+                            ...state,
+                            collapsedFeatureNames: getFeatureModel(rootState).getFeatureNamesWithActualChildren()
+                        }
+                        : state,
+                EXPAND_ALL: state => ({...state, collapsedFeatureNames: []}),
+                COLLAPSE_BELOW: (state, {payload: {featureName}}) =>
+                    rootState.server.featureModel
+                        ? {
+                            ...state,
+                            collapsedFeatureNames: uniqueArrayAdd(state.collapsedFeatureNames,
+                                ...getFeatureModel(rootState).getFeatureNamesBelowWithActualChildren(featureName))
+                        }
+                        : state,
+                EXPAND_BELOW: (state, {payload: {featureName}}) =>
+                    rootState.server.featureModel
+                        ? {
+                            ...state,
+                            collapsedFeatureNames: uniqueArrayRemove(state.collapsedFeatureNames,
+                                ...getFeatureModel(rootState).getFeatureNamesBelowWithActualChildren(featureName))
+                        }
+                        : state
+            }
         },
         OVERLAY: {
             SHOW: (state, {payload: {overlay, overlayProps, selectOneFeature}}) => {
