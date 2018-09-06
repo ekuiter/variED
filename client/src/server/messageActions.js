@@ -20,9 +20,9 @@ export default {
                 sendMessage({type: messageTypes.FEATURE_DIAGRAM_FEATURE_ADD_BELOW, belowFeature: belowFeatureName}),
             addAbove: aboveFeaturesNames =>
                 sendMessage({type: messageTypes.FEATURE_DIAGRAM_FEATURE_ADD_ABOVE, aboveFeatures: aboveFeaturesNames}),
-            remove: (...featureNames) =>
+            remove: featureNames =>
                 sendMultipleMessages(featureNames.map(featureName => ({type: messageTypes.FEATURE_DIAGRAM_FEATURE_REMOVE, feature: featureName}))),
-            removeBelow: (...featureNames) =>
+            removeBelow: featureNames =>
                 sendMultipleMessages(featureNames.map(featureName => ({type: messageTypes.FEATURE_DIAGRAM_FEATURE_REMOVE_BELOW, feature: featureName}))),
             rename: (oldFeatureName, newFeatureName) =>
                 sendMessage({type: messageTypes.FEATURE_DIAGRAM_FEATURE_RENAME, oldFeature: oldFeatureName, newFeature: newFeatureName}),

@@ -49,7 +49,7 @@ export default class extends FeatureComponent({doUpdate: true}) {
                     <CommandBar
                         items={[
                             commands.featureDiagram.feature.newMenu(feature.name, onDismiss, true),
-                            commands.featureDiagram.feature.removeMenu(feature, onDismiss, true),
+                            commands.featureDiagram.feature.removeMenu([feature], onDismiss, true),
                             commands.featureDiagram.feature.collapseMenu(
                                 feature, this.props.onCollapseFeature, this.props.onExpandFeature,
                                 this.props.onCollapseFeaturesBelow, this.props.onExpandFeaturesBelow, onDismiss, true),

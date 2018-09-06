@@ -122,27 +122,30 @@ const commands = {
                     onClick: () => actions.server.featureDiagram.feature.addAbove(featureNames).then(onClick)
                 });
             },
-            removeMenu: (feature, onClick, iconOnly = false) => ({
+            removeMenu: (features, onClick, iconOnly = false) => ({
                 key: 'removeMenu',
                 text: !iconOnly ? i18n.t('commands.featureDiagram.feature.removeMenu.title') : null,
                 iconProps: {iconName: 'Remove'},
                 iconOnly,
                 split: true,
-                onClick: () => actions.server.featureDiagram.feature.remove(feature.name).then(onClick),
-                disabled: feature.isRoot && (!feature.hasChildren || feature.node.children.length > 1),
+                onClick: () => actions.server.featureDiagram.feature.remove(
+                    features.map(feature => feature.name)).then(onClick),
+                disabled: !!features.find(feature => feature.isRoot && (!feature.hasChildren || feature.node.children.length > 1)),
                 subMenuProps: {
                     items: [{
                         key: 'remove',
-                        text: i18n.t('commands.featureDiagram.feature.removeMenu.remove'),
+                        text: i18n.t('commands.featureDiagram.feature.removeMenu.remove')(features),
                         secondaryText: getShortcutText('featureDiagram.feature.remove'),
                         iconProps: {iconName: 'Remove'},
-                        onClick: () => actions.server.featureDiagram.feature.remove(feature.name).then(onClick)
+                        onClick: () => actions.server.featureDiagram.feature.remove(
+                            features.map(feature => feature.name)).then(onClick)
                     }, {
                         key: 'removeBelow',
                         text: i18n.t('commands.featureDiagram.feature.removeMenu.removeBelow'),
                         iconProps: {iconName: 'Remove'},
-                        disabled: feature.isRoot,
-                        onClick: () => actions.server.featureDiagram.feature.removeBelow(feature.name).then(onClick)
+                        disabled: !!features.find(feature => feature.isRoot),
+                        onClick: () => actions.server.featureDiagram.feature.removeBelow(
+                            features.map(feature => feature.name)).then(onClick)
                     }]
                 }
             }),
@@ -244,7 +247,8 @@ const commands = {
                     : null
             }),
             selectionItems: (selectedFeatureNames, onDeselectAllFeatures, featureModel) => [
-                commands.featureDiagram.feature.newAbove(selectedFeatureNames, onDeselectAllFeatures, featureModel)
+                commands.featureDiagram.feature.newAbove(selectedFeatureNames, onDeselectAllFeatures, featureModel),
+                commands.featureDiagram.feature.removeMenu(featureModel.getFeatures(selectedFeatureNames), onDeselectAllFeatures)
             ],
             selectAll: onSelectAll => ({
                 key: 'selectAll',

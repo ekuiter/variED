@@ -27,7 +27,7 @@ export default class extends FeatureComponent({onDismissProp: 'onDismissed'}) {
         <CommandBar
             items={transparentItems([
                 commands.featureDiagram.feature.newMenu(this.props.featureName, this.props.onDismissed, true),
-                commands.featureDiagram.feature.removeMenu(this.feature, this.props.onDismissed, true)
+                commands.featureDiagram.feature.removeMenu([this.feature], this.props.onDismissed, true)
             ])}
             overflowItems={[
                 commands.featureDiagram.feature.collapseMenu(

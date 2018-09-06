@@ -31,8 +31,8 @@ export const strings = {
                 },
                 removeMenu: {
                     title: 'Remove',
-                    remove: 'Remove feature',
-                    removeBelow: 'Remove features below'
+                    remove: features => features.length === 1 ? 'Remove feature' : 'Remove features',
+                    removeBelow: 'Remove features below',
                 },
                 details: 'Details…',
                 rename: 'Rename…',

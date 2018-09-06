@@ -24,7 +24,7 @@ describe('messageActions', () => {
         });
 
         it('removes a feature', () => {
-            messageActions.featureDiagram.feature.remove('FeatureIDE');
+            messageActions.featureDiagram.feature.remove(['FeatureIDE']);
             expect(sendMessage).lastCalledWith({type: messageTypes.FEATURE_DIAGRAM_FEATURE_REMOVE, feature: 'FeatureIDE'});
         });
 

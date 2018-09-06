@@ -119,15 +119,20 @@ export default connect(
     })
 )(withKeys(
     getShortcutKeyBinding('featureDiagram.feature.new', ({props}) =>
+        !props.isSelectMultipleFeatures &&
         actions.server.featureDiagram.feature.addBelow(props.overlayProps.featureName).then(props.onHideOverlayFn(props.overlay))),
     getShortcutKeyBinding('featureDiagram.feature.remove', ({props}) =>
-        actions.server.featureDiagram.feature.remove(props.overlayProps.featureName).then(props.onHideOverlayFn(props.overlay))),
+        actions.server.featureDiagram.feature.remove(props.selectedFeatureNames).then(props.onHideOverlayFn(props.overlay))),
     getShortcutKeyBinding('featureDiagram.feature.rename', ({props}) =>
+        !props.isSelectMultipleFeatures &&
         props.onShowOverlay(overlayTypes.featureRenameDialog, {featureName: props.overlayProps.featureName})),
     getShortcutKeyBinding('featureDiagram.feature.details', ({props}) =>
+        !props.isSelectMultipleFeatures &&
         props.onShowOverlay(overlayTypes.featurePanel, {featureName: props.overlayProps.featureName})),
     getShortcutKeyBinding('featureDiagram.feature.collapse', ({props}) =>
+        !props.isSelectMultipleFeatures &&
         props.onCollapseFeature(props.overlayProps.featureName)),
     getShortcutKeyBinding('featureDiagram.feature.expand', ({props}) =>
+        !props.isSelectMultipleFeatures &&
         props.onExpandFeature(props.overlayProps.featureName))
 )(OverlayContainer));

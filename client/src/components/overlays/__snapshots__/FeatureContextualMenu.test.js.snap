@@ -17,6 +17,39 @@ exports[`FeatureContextualMenu renders correctly for a selection of features 1`]
         "onClick": [Function],
         "text": "New feature above",
       },
+      Object {
+        "disabled": true,
+        "iconOnly": false,
+        "iconProps": Object {
+          "iconName": "Remove",
+        },
+        "key": "removeMenu",
+        "onClick": [Function],
+        "split": true,
+        "subMenuProps": Object {
+          "items": Array [
+            Object {
+              "iconProps": Object {
+                "iconName": "Remove",
+              },
+              "key": "remove",
+              "onClick": [Function],
+              "secondaryText": "⌫",
+              "text": "Remove features",
+            },
+            Object {
+              "disabled": true,
+              "iconProps": Object {
+                "iconName": "Remove",
+              },
+              "key": "removeBelow",
+              "onClick": [Function],
+              "text": "Remove features below",
+            },
+          ],
+        },
+        "text": "Remove",
+      },
     ]
   }
   onDismiss={[Function]}

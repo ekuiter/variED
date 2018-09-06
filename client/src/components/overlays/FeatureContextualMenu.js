@@ -47,7 +47,7 @@ export default class extends FeatureComponent({doUpdate: true}) {
                     ? commands.featureDiagram.feature.selectionItems(selectedFeatureNames, onDeselectAllFeatures, featureModel)
                     : [
                         commands.featureDiagram.feature.newMenu(feature.name, onDismiss),
-                        commands.featureDiagram.feature.removeMenu(feature, onDismiss),
+                        commands.featureDiagram.feature.removeMenu([feature], onDismiss),
                         commands.featureDiagram.feature.collapseMenu(
                             feature, this.props.onCollapseFeature, this.props.onExpandFeature,
                             this.props.onCollapseFeaturesBelow, this.props.onExpandFeaturesBelow, onDismiss),

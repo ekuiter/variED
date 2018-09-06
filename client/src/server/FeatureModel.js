@@ -153,6 +153,10 @@ class FeatureModel {
         return node ? node.feature() : null;
     }
 
+    getFeatures(featureNames) {
+        return featureNames.map(this.getFeature.bind(this)).filter(feature => feature);
+    }
+
     getElement(featureName) {
         // Operate under the assumption that we only render ONE feature model, and that it is THIS feature model.
         // This way we don't need to propagate a concrete feature diagram instance.
