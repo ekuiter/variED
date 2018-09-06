@@ -1,4 +1,4 @@
-import commands from '../components/commands';
+import commands, {makeDivider} from '../components/commands';
 import UserFacepile from '../components/UserFacepile';
 import {CommandBar} from '../../node_modules/office-ui-fabric-react/lib/CommandBar';
 import React from 'react';
@@ -34,7 +34,7 @@ const CommandBarContainer = props => (
                 items: [
                     commands.featureDiagram.undo(),
                     commands.featureDiagram.redo(),
-                    {key: 'divider', itemType: ContextualMenuItemType.Divider},
+                    makeDivider(),
                     commands.featureDiagram.feature.selectAll(props.onSelectAllFeatures),
                     commands.featureDiagram.feature.deselectAll(props.onDeselectAllFeatures),
                     commands.featureDiagram.feature.selection(
@@ -53,11 +53,11 @@ const CommandBarContainer = props => (
                     commands.featureDiagram.setLayout(
                         props.featureDiagramLayout,
                         props.onSetFeatureDiagramLayout),
-                    {key: 'divider1', itemType: ContextualMenuItemType.Divider},
+                    makeDivider(),
                     commands.featureDiagram.feature.collapseAll(props.onCollapseAllFeatures),
                     commands.featureDiagram.feature.expandAll(props.onExpandAllFeatures),
                     commands.featureDiagram.fitToScreen(props.onFitToScreen),
-                    {key: 'divider2', itemType: ContextualMenuItemType.Divider},
+                    makeDivider(),
                     commands.settings(props.onShowOverlay)
                 ]
             }

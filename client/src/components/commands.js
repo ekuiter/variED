@@ -14,6 +14,9 @@ const exportFormatItem = (featureDiagramLayout, onShowOverlay, format) =>
         }]
         : [];
 
+export const makeDivider = () =>
+    ({key: 'divider', itemType: ContextualMenuItemType.Divider});
+
 const commands = {
     settings: onShowOverlay => ({
         key: 'settings',
@@ -37,7 +40,7 @@ const commands = {
                 items: [
                     ...exportFormatItem(featureDiagramLayout, onShowOverlay, formatTypes.png),
                     ...exportFormatItem(featureDiagramLayout, onShowOverlay, formatTypes.jpg),
-                    {key: 'divider', itemType: ContextualMenuItemType.Divider},
+                    makeDivider(),
                     ...exportFormatItem(featureDiagramLayout, onShowOverlay, formatTypes.svg),
                     ...exportFormatItem(featureDiagramLayout, onShowOverlay, formatTypes.pdf)
                 ]
@@ -186,17 +189,13 @@ const commands = {
                             canCheck: true,
                             isChecked: !feature.isAbstract,
                             onClick: toggleAbstract
-                        }, {
-                            key: 'divider1', itemType: ContextualMenuItemType.Divider
-                        }, {
+                        }, makeDivider(), {
                             key: 'hidden',
                             text: i18n.t('commands.featureDiagram.feature.propertiesMenu.hidden'),
                             canCheck: true,
                             isChecked: feature.isHidden,
                             onClick: () => actions.server.feature.properties.setHidden(feature.name, !feature.isHidden).then(onClick)
-                        }, {
-                            key: 'divider2', itemType: ContextualMenuItemType.Divider
-                        }, {
+                        }, makeDivider(), {
                             key: 'mandatory',
                             text: i18n.t('commands.featureDiagram.feature.propertiesMenu.mandatory'),
                             disabled: mandatoryDisabled,
@@ -210,9 +209,7 @@ const commands = {
                             canCheck: true,
                             isChecked: !feature.isMandatory,
                             onClick: toggleMandatory
-                        }, {
-                            key: 'divider2', itemType: ContextualMenuItemType.Divider
-                        }, {
+                        }, makeDivider(), {
                             key: 'and',
                             text: i18n.t('commands.featureDiagram.feature.propertiesMenu.and'),
                             disabled: groupDisabled,

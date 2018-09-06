@@ -1,7 +1,7 @@
 import React from 'react';
 import {DirectionalHint} from 'office-ui-fabric-react/lib/Callout';
 import {ContextualMenu, ContextualMenuItemType} from 'office-ui-fabric-react/lib/ContextualMenu';
-import commands from '../commands';
+import commands, {makeDivider} from '../commands';
 import {getSetting} from '../../store/settings';
 import PropTypes from 'prop-types';
 import {layoutTypes} from '../../types';
@@ -51,11 +51,11 @@ export default class extends FeatureComponent({doUpdate: true}) {
                         commands.featureDiagram.feature.collapseMenu(
                             feature, this.props.onCollapseFeature, this.props.onExpandFeature,
                             this.props.onCollapseFeaturesBelow, this.props.onExpandFeaturesBelow, onDismiss),
-                        {key: 'divider1', itemType: ContextualMenuItemType.Divider},
+                        makeDivider(),
                         commands.featureDiagram.feature.rename(feature.name, this.props.onShowOverlay),
                         commands.featureDiagram.feature.setDescription(feature.name, this.props.onShowOverlay),
                         commands.featureDiagram.feature.properties(feature, onDismiss),
-                        {key: 'divider2', itemType: ContextualMenuItemType.Divider},
+                        makeDivider(),
                         commands.featureDiagram.feature.details(feature.name, this.props.onShowOverlay)
                     ]
                 }/>
