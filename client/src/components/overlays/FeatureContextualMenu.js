@@ -1,17 +1,13 @@
 import React from 'react';
 import {DirectionalHint} from 'office-ui-fabric-react/lib/Callout';
 import {ContextualMenu, ContextualMenuItemType} from 'office-ui-fabric-react/lib/ContextualMenu';
-import contextualMenuItems from '../contextualMenuItems';
+import commands from '../commands';
 import {getSetting} from '../../store/settings';
 import PropTypes from 'prop-types';
 import {layoutTypes} from '../../types';
 import {LayoutType, SettingsType} from '../../types';
 import {FeatureModelType} from '../../server/FeatureModel';
 import FeatureComponent from './FeatureComponent';
-
-export const selectMultipleFeaturesContextualMenuItems = (selectedFeatureNames, onDeselectAllFeatures, featureModel) => [
-    contextualMenuItems.featureDiagram.feature.newAbove(selectedFeatureNames, onDeselectAllFeatures, featureModel)
-];
 
 export default class extends FeatureComponent({doUpdate: true}) {
     static propTypes = {
@@ -48,19 +44,19 @@ export default class extends FeatureComponent({doUpdate: true}) {
                         ? DirectionalHint.bottomCenter
                         : DirectionalHint.rightCenter}
                 items={isSelectMultipleFeatures
-                    ? selectMultipleFeaturesContextualMenuItems(selectedFeatureNames, onDeselectAllFeatures, featureModel)
+                    ? commands.featureDiagram.feature.selectionItems(selectedFeatureNames, onDeselectAllFeatures, featureModel)
                     : [
-                        contextualMenuItems.featureDiagram.feature.newMenu(feature.name, onDismiss),
-                        contextualMenuItems.featureDiagram.feature.removeMenu(feature, onDismiss),
-                        contextualMenuItems.featureDiagram.feature.collapseMenu(
+                        commands.featureDiagram.feature.newMenu(feature.name, onDismiss),
+                        commands.featureDiagram.feature.removeMenu(feature, onDismiss),
+                        commands.featureDiagram.feature.collapseMenu(
                             feature, this.props.onCollapseFeature, this.props.onExpandFeature,
                             this.props.onCollapseFeaturesBelow, this.props.onExpandFeaturesBelow, onDismiss),
                         {key: 'divider1', itemType: ContextualMenuItemType.Divider},
-                        contextualMenuItems.featureDiagram.feature.rename(feature.name, this.props.onShowOverlay),
-                        contextualMenuItems.featureDiagram.feature.setDescription(feature.name, this.props.onShowOverlay),
-                        contextualMenuItems.featureDiagram.feature.properties(feature, onDismiss),
+                        commands.featureDiagram.feature.rename(feature.name, this.props.onShowOverlay),
+                        commands.featureDiagram.feature.setDescription(feature.name, this.props.onShowOverlay),
+                        commands.featureDiagram.feature.properties(feature, onDismiss),
                         {key: 'divider2', itemType: ContextualMenuItemType.Divider},
-                        contextualMenuItems.featureDiagram.feature.details(feature.name, this.props.onShowOverlay)
+                        commands.featureDiagram.feature.details(feature.name, this.props.onShowOverlay)
                     ]
                 }/>
         );

@@ -1,4 +1,4 @@
-import contextualMenuItems from '../components/contextualMenuItems';
+import commands from '../components/commands';
 import UserFacepile from '../components/UserFacepile';
 import {CommandBar} from '../../node_modules/office-ui-fabric-react/lib/CommandBar';
 import React from 'react';
@@ -24,7 +24,7 @@ const CommandBarContainer = props => (
             text: i18n.t('commands.file'),
             subMenuProps: {
                 items: [
-                    contextualMenuItems.featureDiagram.export(props.featureDiagramLayout, props.onShowOverlay)
+                    commands.featureDiagram.export(props.featureDiagramLayout, props.onShowOverlay)
                 ]
             }
         }, {
@@ -32,12 +32,12 @@ const CommandBarContainer = props => (
             text: i18n.t('commands.edit'),
             subMenuProps: {
                 items: [
-                    contextualMenuItems.featureDiagram.undo(),
-                    contextualMenuItems.featureDiagram.redo(),
+                    commands.featureDiagram.undo(),
+                    commands.featureDiagram.redo(),
                     {key: 'divider', itemType: ContextualMenuItemType.Divider},
-                    contextualMenuItems.featureDiagram.feature.selectAll(props.onSelectAllFeatures),
-                    contextualMenuItems.featureDiagram.feature.deselectAll(props.onDeselectAllFeatures),
-                    contextualMenuItems.featureDiagram.feature.selection(
+                    commands.featureDiagram.feature.selectAll(props.onSelectAllFeatures),
+                    commands.featureDiagram.feature.deselectAll(props.onDeselectAllFeatures),
+                    commands.featureDiagram.feature.selection(
                         props.isSelectMultipleFeatures,
                         props.onSetSelectMultipleFeatures,
                         props.selectedFeatureNames,
@@ -50,15 +50,15 @@ const CommandBarContainer = props => (
             text: i18n.t('commands.view'),
             subMenuProps: {
                 items: [
-                    contextualMenuItems.featureDiagram.setLayout(
+                    commands.featureDiagram.setLayout(
                         props.featureDiagramLayout,
                         props.onSetFeatureDiagramLayout),
                     {key: 'divider1', itemType: ContextualMenuItemType.Divider},
-                    contextualMenuItems.featureDiagram.feature.collapseAll(props.onCollapseAllFeatures),
-                    contextualMenuItems.featureDiagram.feature.expandAll(props.onExpandAllFeatures),
-                    contextualMenuItems.featureDiagram.fitToScreen(props.onFitToScreen),
+                    commands.featureDiagram.feature.collapseAll(props.onCollapseAllFeatures),
+                    commands.featureDiagram.feature.expandAll(props.onExpandAllFeatures),
+                    commands.featureDiagram.fitToScreen(props.onFitToScreen),
                     {key: 'divider2', itemType: ContextualMenuItemType.Divider},
-                    contextualMenuItems.settings(props.onShowOverlay)
+                    commands.settings(props.onShowOverlay)
                 ]
             }
         }, {
@@ -66,7 +66,7 @@ const CommandBarContainer = props => (
             text: i18n.t('commands.help'),
             subMenuProps: {
                 items: [
-                    contextualMenuItems.about(props.onShowOverlay)
+                    commands.about(props.onShowOverlay)
                 ]
             }
         }]}

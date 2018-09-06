@@ -10,7 +10,60 @@ export const strings = {
         view: 'View',
         help: 'Help',
         settings: 'Settings…',
-        about: 'About…'
+        about: 'About…',
+        featureDiagram: {
+            export: 'Export as',
+            svg: 'SVG…',
+            png: 'PNG…',
+            jpg: 'JPEG…',
+            pdf: 'PDF…',
+            undo: 'Undo',
+            redo: 'Redo',
+            setLayout: 'Layout',
+            verticalTree: 'Vertical tree',
+            horizontalTree: 'Horizontal tree',
+            fitToScreen: 'Fit to screen',
+            feature: {
+                newMenu: {
+                    title: 'New',
+                    newBelow: 'New feature below',
+                    newAbove: 'New feature above',
+                },
+                removeMenu: {
+                    title: 'Remove',
+                    remove: 'Remove feature',
+                    removeBelow: 'Remove features below'
+                },
+                details: 'Details…',
+                rename: 'Rename…',
+                setDescription: 'Set description…',
+                propertiesMenu: {
+                    title: 'Properties',
+                    abstract: 'Abstract',
+                    concrete: 'Concrete',
+                    hidden: 'Hidden',
+                    mandatory: 'Mandatory',
+                    optional: 'Optional',
+                    and: 'And',
+                    or: 'Or',
+                    alternative: 'Alternative'
+                },
+                selection: (isSelectMultipleFeatures, selectedFeatureNames) =>
+                    isSelectMultipleFeatures
+                        ? `Feature selection (${selectedFeatureNames.length})`
+                        : 'Begin feature selection',
+                selectAll: 'Select all features',
+                deselectAll: 'Deselect all features',
+                collapseMenu: {
+                    title: isCollapsed => isCollapsed ? 'Expand' : 'Collapse',
+                    collapse: isCollapsed => isCollapsed ? 'Expand feature' : 'Collapse feature',
+                    collapseBelow: 'Collapse features below',
+                    expandBelow: 'Expand features below'
+                },
+                collapseAll: 'Collapse all features',
+                expandAll: 'Expand all features'
+            }
+        }
     },
     panels: {
         aboutPanel: {
@@ -119,61 +172,6 @@ export const strings = {
             },
             pdf: {
                 title: 'Export as PDF'
-            }
-        }
-    },
-    featureDiagram: {
-        commands: {
-            export: 'Export as',
-            svg: 'SVG…',
-            png: 'PNG…',
-            jpg: 'JPEG…',
-            pdf: 'PDF…',
-            undo: 'Undo',
-            redo: 'Redo',
-            setLayout: 'Layout',
-            verticalTree: 'Vertical tree',
-            horizontalTree: 'Horizontal tree',
-            fitToScreen: 'Fit to screen',
-            feature: {
-                newMenu: {
-                    title: 'New',
-                    newBelow: 'New feature below',
-                    newAbove: 'New feature above',
-                },
-                removeMenu: {
-                    title: 'Remove',
-                    remove: 'Remove feature',
-                    removeBelow: 'Remove features below'
-                },
-                details: 'Details…',
-                rename: 'Rename…',
-                setDescription: 'Set description…',
-                propertiesMenu: {
-                    title: 'Properties',
-                    abstract: 'Abstract',
-                    concrete: 'Concrete',
-                    hidden: 'Hidden',
-                    mandatory: 'Mandatory',
-                    optional: 'Optional',
-                    and: 'And',
-                    or: 'Or',
-                    alternative: 'Alternative'
-                },
-                selection: (isSelectMultipleFeatures, selectedFeatureNames) =>
-                    isSelectMultipleFeatures
-                        ? `Feature selection (${selectedFeatureNames.length})`
-                        : 'Begin feature selection',
-                selectAll: 'Select all features',
-                deselectAll: 'Deselect all features',
-                collapseMenu: {
-                    title: isCollapsed => isCollapsed ? 'Expand' : 'Collapse',
-                    collapse: isCollapsed => isCollapsed ? 'Expand feature' : 'Collapse feature',
-                    collapseBelow: 'Collapse features below',
-                    expandBelow: 'Expand features below'
-                },
-                collapseAll: 'Collapse all features',
-                expandAll: 'Expand all features'
             }
         }
     }

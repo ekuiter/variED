@@ -2,7 +2,7 @@ import React from 'react';
 import {Panel, PanelType} from 'office-ui-fabric-react/lib/Panel';
 import i18n from '../../i18n';
 import {CommandBar} from 'office-ui-fabric-react/lib/CommandBar';
-import contextualMenuItems from '../contextualMenuItems';
+import commands from '../commands';
 import PropTypes from 'prop-types';
 import {FeatureModelType} from '../../server/FeatureModel';
 import FeatureComponent from './FeatureComponent';
@@ -26,16 +26,16 @@ export default class extends FeatureComponent({onDismissProp: 'onDismissed'}) {
     onRenderFooterContent = () => (
         <CommandBar
             items={transparentItems([
-                contextualMenuItems.featureDiagram.feature.newMenu(this.props.featureName, this.props.onDismissed, true),
-                contextualMenuItems.featureDiagram.feature.removeMenu(this.feature, this.props.onDismissed, true),
-                contextualMenuItems.featureDiagram.feature.collapseMenu(
+                commands.featureDiagram.feature.newMenu(this.props.featureName, this.props.onDismissed, true),
+                commands.featureDiagram.feature.removeMenu(this.feature, this.props.onDismissed, true),
+                commands.featureDiagram.feature.collapseMenu(
                     this.feature, this.props.onCollapseFeature, this.props.onExpandFeature,
                     this.props.onCollapseFeaturesBelow, this.props.onExpandFeaturesBelow, this.props.onDismissed, true)
             ])}
             overflowItems={[
-                contextualMenuItems.featureDiagram.feature.rename(this.props.featureName, this.props.onShowOverlay),
-                contextualMenuItems.featureDiagram.feature.setDescription(this.props.featureName, this.props.onShowOverlay),
-                contextualMenuItems.featureDiagram.feature.properties(this.feature, this.props.onDismissed)
+                commands.featureDiagram.feature.rename(this.props.featureName, this.props.onShowOverlay),
+                commands.featureDiagram.feature.setDescription(this.props.featureName, this.props.onShowOverlay),
+                commands.featureDiagram.feature.properties(this.feature, this.props.onDismissed)
             ]}
             overflowButtonProps={{styles: buttonStyles}}
             styles={{root: {margin: '0 -40px', padding: '0 35px'}}}/>

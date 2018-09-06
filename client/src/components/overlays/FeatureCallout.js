@@ -1,7 +1,7 @@
 import React from 'react';
 import {Callout, DirectionalHint} from 'office-ui-fabric-react/lib/Callout';
 import {getSetting} from '../../store/settings';
-import contextualMenuItems from '../contextualMenuItems';
+import commands from '../commands';
 import {CommandBar} from 'office-ui-fabric-react/lib/CommandBar';
 import PropTypes from 'prop-types';
 import {layoutTypes} from '../../types';
@@ -48,14 +48,14 @@ export default class extends FeatureComponent({doUpdate: true}) {
                         : <div className="inner empty"/>}
                     <CommandBar
                         items={[
-                            contextualMenuItems.featureDiagram.feature.newMenu(feature.name, onDismiss, true),
-                            contextualMenuItems.featureDiagram.feature.removeMenu(feature, onDismiss, true),
-                            contextualMenuItems.featureDiagram.feature.collapseMenu(
+                            commands.featureDiagram.feature.newMenu(feature.name, onDismiss, true),
+                            commands.featureDiagram.feature.removeMenu(feature, onDismiss, true),
+                            commands.featureDiagram.feature.collapseMenu(
                                 feature, this.props.onCollapseFeature, this.props.onExpandFeature,
                                 this.props.onCollapseFeaturesBelow, this.props.onExpandFeaturesBelow, onDismiss, true),
                         ]}
                         farItems={[
-                            contextualMenuItems.featureDiagram.feature.details(feature.name, this.props.onShowOverlay)
+                            commands.featureDiagram.feature.details(feature.name, this.props.onShowOverlay)
                         ]}/>
                 </div>
             </Callout>
