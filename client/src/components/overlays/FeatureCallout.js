@@ -19,6 +19,8 @@ export default class extends FeatureComponent({doUpdate: true}) {
         onShowOverlay: PropTypes.func.isRequired,
         onCollapseFeature: PropTypes.func.isRequired,
         onExpandFeature: PropTypes.func.isRequired,
+        onCollapseFeaturesBelow: PropTypes.func.isRequired,
+        onExpandFeaturesBelow: PropTypes.func.isRequired,
         settings: SettingsType.isRequired
     };
 
@@ -46,10 +48,11 @@ export default class extends FeatureComponent({doUpdate: true}) {
                         : <div className="inner empty"/>}
                     <CommandBar
                         items={[
-                            contextualMenuItems.featureDiagram.feature.new(feature.name, onDismiss),
+                            contextualMenuItems.featureDiagram.feature.new(feature.name, onDismiss, true),
                             contextualMenuItems.featureDiagram.feature.remove(feature, onDismiss),
                             contextualMenuItems.featureDiagram.feature.collapseExpand(
-                                feature, this.props.onCollapseFeature, this.props.onExpandFeature, onDismiss),
+                                feature, this.props.onCollapseFeature, this.props.onExpandFeature,
+                                this.props.onCollapseFeaturesBelow, this.props.onExpandFeaturesBelow, onDismiss, true),
                         ]}
                         farItems={[
                             contextualMenuItems.featureDiagram.feature.details(feature.name, this.props.onShowOverlay)

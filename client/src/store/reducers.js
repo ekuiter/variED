@@ -137,7 +137,23 @@ const uiReducer = rootState => handleActions({
                         collapsedFeatureNames: getFeatureModel(rootState).getFeatureNamesWithActualChildren()
                     }
                     : state,
-            EXPAND_ALL: state => ({...state, collapsedFeatureNames: []})
+            EXPAND_ALL: state => ({...state, collapsedFeatureNames: []}),
+            COLLAPSE_BELOW: (state, {payload: {featureName}}) =>
+                rootState.server.featureModel
+                    ? {
+                        ...state,
+                        collapsedFeatureNames: uniqueArrayAdd(state.collapsedFeatureNames,
+                            ...getFeatureModel(rootState).getFeatureNamesBelowWithActualChildren(featureName))
+                    }
+                    : state,
+            EXPAND_BELOW: (state, {payload: {featureName}}) =>
+                rootState.server.featureModel
+                    ? {
+                        ...state,
+                        collapsedFeatureNames: uniqueArrayRemove(state.collapsedFeatureNames,
+                            ...getFeatureModel(rootState).getFeatureNamesBelowWithActualChildren(featureName))
+                    }
+                    : state
         },
         OVERLAY: {
             SHOW: (state, {payload: {overlay, overlayProps, selectOneFeature}}) => {

@@ -28,7 +28,7 @@ function hasActualChildren(node) {
     return !!(node.actualChildren && node.actualChildren.length > 0);
 }
 
-function eachFeatureBelow(node, callback) {
+function eachNodeBelow(node, callback) {
     var current, next = [node], children, i, n;
     do {
         current = next.reverse();
@@ -43,9 +43,9 @@ function eachFeatureBelow(node, callback) {
     } while (next.length);
 }
 
-function getFeaturesBelow(node) {
+function getNodesBelow(node) {
     var nodes = [];
-    eachFeatureBelow(node, node => nodes.push(node));
+    eachNodeBelow(node, node => nodes.push(node));
     return nodes;
 }
 
@@ -184,6 +184,11 @@ class FeatureModel {
         return this.actualNodes.filter(hasActualChildren).map(getName);
     }
 
+    getFeatureNamesBelowWithActualChildren(featureName) {
+        const node = this.getNode(featureName);
+        return node ? getNodesBelow(node).filter(hasActualChildren).map(getName) : [];
+    }
+
     isSiblingFeatures(featureNames) {
         const parents = featureNames
             .map(this.getNode.bind(this))
@@ -215,7 +220,7 @@ class FeatureModel {
     
             collapsedFeatureNames = collapsedFeatureNames.concat(collapsibleNodes.map(getName));
             const invisibleNodes = collapsibleNodes
-                .map(node => getFeaturesBelow(node).slice(1))
+                .map(node => getNodesBelow(node).slice(1))
                 .reduce((acc, children) => acc.concat(children), []);
             nodes = nodes.filter(node => !invisibleNodes.includes(node));
         }

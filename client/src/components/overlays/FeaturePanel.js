@@ -18,16 +18,19 @@ export default class extends FeatureComponent({onDismissProp: 'onDismissed'}) {
         isOpen: PropTypes.bool.isRequired,
         onShowOverlay: PropTypes.func.isRequired,
         onCollapseFeature: PropTypes.func.isRequired,
-        onExpandFeature: PropTypes.func.isRequired
+        onExpandFeature: PropTypes.func.isRequired,
+        onCollapseFeaturesBelow: PropTypes.func.isRequired,
+        onExpandFeaturesBelow: PropTypes.func.isRequired
     };
 
     onRenderFooterContent = () => (
         <CommandBar
             items={transparentItems([
-                contextualMenuItems.featureDiagram.feature.new(this.props.featureName, this.props.onDismissed),
+                contextualMenuItems.featureDiagram.feature.new(this.props.featureName, this.props.onDismissed, true),
                 contextualMenuItems.featureDiagram.feature.remove(this.feature, this.props.onDismissed),
                 contextualMenuItems.featureDiagram.feature.collapseExpand(
-                    this.feature, this.props.onCollapseFeature, this.props.onExpandFeature, this.props.onDismissed)
+                    this.feature, this.props.onCollapseFeature, this.props.onExpandFeature,
+                    this.props.onCollapseFeaturesBelow, this.props.onExpandFeaturesBelow, this.props.onDismissed, true)
             ])}
             overflowItems={[
                 contextualMenuItems.featureDiagram.feature.rename(this.props.featureName, this.props.onShowOverlay),

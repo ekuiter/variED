@@ -92,10 +92,11 @@ const contextualMenuItems = {
                 : null
         }),
         feature: {
-            new: (featureName, onClick) => ({
+            new: (featureName, onClick, iconOnly = false) => ({
                 key: 'new',
-                text: i18n.t('featureDiagram.commands.feature.new'),
+                text: !iconOnly ? i18n.t('featureDiagram.commands.feature.new') : null,
                 iconProps: {iconName: 'Add'},
+                iconOnly,
                 split: true,
                 onClick: () => actions.server.feature.addBelow(featureName).then(onClick),
                 subMenuProps: {
@@ -138,11 +139,25 @@ const contextualMenuItems = {
                 iconProps: {iconName: 'TextDocument'},
                 onClick: () => onShowOverlay(overlayTypes.featureSetDescriptionDialog, {featureName})
             }),
-            collapseExpand: (feature, onCollapseFeature, onExpandFeature, onClick) => ({
+            collapseExpandFeature: (feature, onCollapseFeature, onExpandFeature, onClick) => ({
                 key: 'collapseExpand',
-                text: i18n.t('featureDiagram.commands.feature.collapseExpand')(feature.isCollapsed),
-                iconProps: {iconName: feature.isCollapsed ? 'ExploreContent' : 'CollapseContent'},
-                iconOnly: true,
+                text: i18n.t('featureDiagram.commands.feature.collapseExpandFeature')(feature.isCollapsed),
+                iconProps: {iconName: feature.isCollapsed ? 'ExploreContentSingle' : 'CollapseContentSingle'},
+                onClick: () => {
+                    if (feature.isCollapsed)
+                        onExpandFeature(feature.name);
+                    else
+                        onCollapseFeature(feature.name);
+                    onClick();
+                }
+            }),
+            collapseExpand: (feature, onCollapseFeature, onExpandFeature,
+                onCollapseFeaturesBelow, onExpandFeaturesBelow, onClick, iconOnly = false) => ({
+                key: 'collapseExpand',
+                text: !iconOnly ? i18n.t('featureDiagram.commands.feature.collapseExpand')(feature.isCollapsed) : null,
+                iconProps: {iconName: feature.isCollapsed ? 'ExploreContentSingle' : 'CollapseContentSingle'},
+                iconOnly,
+                split: true,
                 disabled: !feature.hasActualChildren,
                 onClick: () => {
                     if (feature.isCollapsed)
@@ -150,6 +165,15 @@ const contextualMenuItems = {
                     else
                         onCollapseFeature(feature.name);
                     onClick();
+                },
+                subMenuProps: {
+                    items: [
+                        contextualMenuItems.featureDiagram.feature.collapseExpandFeature(
+                            feature, onCollapseFeature, onExpandFeature, onClick),
+                        {key: 'divider', itemType: ContextualMenuItemType.Divider},
+                        contextualMenuItems.featureDiagram.features.collapseBelow(feature, onCollapseFeaturesBelow, onClick),
+                        contextualMenuItems.featureDiagram.features.expandBelow(feature, onExpandFeaturesBelow, onClick)
+                    ]
                 }
             }),
             properties: (feature, onClick) => {
@@ -256,20 +280,38 @@ const contextualMenuItems = {
                     onClick: () => actions.server.features.addAbove(featureNames).then(onClick)
                 });
             },
-            collapseAll:  onCollapseAllFeatures => ({
+            collapseAll: onCollapseAllFeatures => ({
                 key: 'collapseAll',
                 text: i18n.t('featureDiagram.commands.features.collapseAll'),
                 secondaryText: getShortcutText('featureDiagram.features.collapseAll'),
                 iconProps: {iconName: 'CollapseContent'},
                 onClick: onCollapseAllFeatures
             }),
-            expandAll:  onExpandAllFeatures => ({
+            expandAll: onExpandAllFeatures => ({
                 key: 'expandAll',
                 text: i18n.t('featureDiagram.commands.features.expandAll'),
                 secondaryText: getShortcutText('featureDiagram.features.expandAll'),
                 iconProps: {iconName: 'ExploreContent'},
                 onClick: onExpandAllFeatures
-            })
+            }),
+            collapseBelow: (feature, onCollapseFeaturesBelow, onClick) => ({
+                key: 'collapseBelow',
+                text: i18n.t('featureDiagram.commands.features.collapseBelow'),
+                iconProps: {iconName: 'CollapseContent'},
+                onClick: () => {
+                    onCollapseFeaturesBelow(feature.name);
+                    onClick();
+                }
+            }),
+            expandBelow: (feature, onExpandFeaturesBelow, onClick) => ({
+                key: 'expandBelow',
+                text: i18n.t('featureDiagram.commands.features.expandBelow'),
+                iconProps: {iconName: 'ExploreContent'},
+                onClick: () => {
+                    onExpandFeaturesBelow(feature.name);
+                    onClick();
+                }
+            }),
         }
     }
 };

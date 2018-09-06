@@ -23,6 +23,8 @@ const actions = createActions({
             DESELECT_ALL: () => {},
             COLLAPSE_ALL: () => {},
             EXPAND_ALL: () => {},
+            COLLAPSE_BELOW: featureName => ({featureName}),
+            EXPAND_BELOW: featureName => ({featureName})
         },
         OVERLAY: {
             SHOW: (overlay, overlayProps, {selectOneFeature} = {}) =>

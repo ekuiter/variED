@@ -1,10 +1,7 @@
-export function uniqueArrayAdd(array, element) {
-    let index = array.findIndex(_element => _element === element);
-    if (index === -1)
-        return [...array, element];
-    return array;
+export function uniqueArrayAdd(array, ...elements) {
+    return array.filter(element => !elements.includes(element)).concat(elements);
 }
 
-export function uniqueArrayRemove(array, element) {
-    return array.filter(_element => _element !== element);
+export function uniqueArrayRemove(array, ...elements) {
+    return array.filter(element => !elements.includes(element));
 }

@@ -147,6 +147,7 @@ export const strings = {
                 rename: 'Rename…',
                 setDescription: 'Set description…',
                 collapseExpand: isCollapsed => isCollapsed ? 'Expand' : 'Collapse',
+                collapseExpandFeature: isCollapsed => isCollapsed ? 'Expand feature' : 'Collapse feature',
                 properties: 'Properties',
                 abstract: 'Abstract',
                 concrete: 'Concrete',
@@ -162,7 +163,9 @@ export const strings = {
                 deselectAll: 'Deselect all features',
                 newFeatureAbove: 'New feature above',
                 collapseAll: 'Collapse all features',
-                expandAll: 'Expand all features'
+                expandAll: 'Expand all features',
+                collapseBelow: 'Collapse features below',
+                expandBelow: 'Expand features below'
             }
         }
     }

@@ -33,6 +33,8 @@ const OverlayContainer = props => (
             onShowOverlay={props.onShowOverlay}
             onCollapseFeature={props.onCollapseFeature}
             onExpandFeature={props.onExpandFeature}
+            onCollapseFeaturesBelow={props.onCollapseFeaturesBelow}
+            onExpandFeaturesBelow={props.onExpandFeaturesBelow}
             featureModel={props.featureModel}
             {...props.overlayProps}/>}
 
@@ -66,6 +68,8 @@ const OverlayContainer = props => (
             onShowOverlay={props.onShowOverlay}
             onCollapseFeature={props.onCollapseFeature}
             onExpandFeature={props.onExpandFeature}
+            onCollapseFeaturesBelow={props.onCollapseFeaturesBelow}
+            onExpandFeaturesBelow={props.onExpandFeaturesBelow}
             featureModel={props.featureModel}
             {...props.overlayProps}/>}
 
@@ -79,6 +83,8 @@ const OverlayContainer = props => (
             onDeselectAllFeatures={props.onDeselectAllFeatures}
             onCollapseFeature={props.onCollapseFeature}
             onExpandFeature={props.onExpandFeature}
+            onCollapseFeaturesBelow={props.onCollapseFeaturesBelow}
+            onExpandFeaturesBelow={props.onExpandFeaturesBelow}
             featureModel={props.featureModel}
             isSelectMultipleFeatures={props.isSelectMultipleFeatures}
             selectedFeatureNames={props.selectedFeatureNames}
@@ -104,6 +110,8 @@ export default connect(
         onSetSetting: (path, value) => dispatch(actions.settings.set(path, value)),
         onResetSettings: () => dispatch(actions.settings.reset()),
         onCollapseFeature: featureName => dispatch(actions.ui.feature.collapse(featureName)),
-        onExpandFeature: featureName => dispatch(actions.ui.feature.expand(featureName))
+        onExpandFeature: featureName => dispatch(actions.ui.feature.expand(featureName)),
+        onCollapseFeaturesBelow: featureName => dispatch(actions.ui.features.collapseBelow(featureName)),
+        onExpandFeaturesBelow: featureName => dispatch(actions.ui.features.expandBelow(featureName))
     })
 )(OverlayContainer);
