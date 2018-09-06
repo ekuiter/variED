@@ -9,12 +9,12 @@ import java.util.*;
 
 import static de.ovgu.featureide.fm.core.localization.StringTable.DEFAULT_FEATURE_LAYER_CAPTION;
 
-public abstract class StateChange {
-    public abstract Message.IEncodable[] apply();
+public interface StateChange {
+    Message.IEncodable[] apply();
 
-    public abstract Message.IEncodable[] undo();
+    Message.IEncodable[] undo();
 
-    public static abstract class FeatureModelStateChange extends StateChange {
+    abstract class FeatureModelStateChange implements StateChange {
         protected IFeatureModel featureModel;
 
         public FeatureModelStateChange(IFeatureModel featureModel) {
@@ -26,45 +26,43 @@ public abstract class StateChange {
         }
     }
 
-    public static abstract class FeatureModelMultipleStateChange extends FeatureModelStateChange {
-        private LinkedList<FeatureModelStateChange> stateChanges = new LinkedList<>();
+    interface MultipleStateChange extends StateChange {
+        LinkedList<StateChange> getStateChanges();
 
-        public FeatureModelMultipleStateChange(IFeatureModel featureModel) {
-            super(featureModel);
+        default void addStateChange(StateChange stateChange) {
+            getStateChanges().add(stateChange);
         }
 
-        public void addStateChange(FeatureModelStateChange stateChange) {
-            stateChanges.add(stateChange);
+        default Message.IEncodable[] apply() {
+            Message.IEncodable[] stateChangeMessages = new Message.IEncodable[0];
+            for (StateChange stateChange : getStateChanges())
+                stateChangeMessages = stateChange.apply();
+            return stateChangeMessages;
         }
 
-        public Message.IEncodable[] apply() {
-            for (FeatureModelStateChange stateChange : stateChanges)
-                stateChange.apply();
-            return updatedFeatureModel();
-        }
-
-        public Message.IEncodable[] undo() {
-            for (final Iterator<FeatureModelStateChange> it = stateChanges.descendingIterator(); it.hasNext(); )
-                it.next().undo();
-            return updatedFeatureModel();
+        default Message.IEncodable[] undo() {
+            Message.IEncodable[] stateChangeMessages = new Message.IEncodable[0];
+            for (final Iterator<StateChange> it = getStateChanges().descendingIterator(); it.hasNext(); )
+                stateChangeMessages = it.next().undo();
+            return stateChangeMessages;
         }
     }
 
     // adapted from MultiFeatureModelOperation
-    public static class FeatureModelMultiple extends FeatureModelMultipleStateChange {
-        public FeatureModelMultiple(StateContext stateContext, LinkedList<Message.IUndoable> messages) {
-            super(stateContext.getFeatureModel());
-            for (Message.IUndoable message : messages) {
-                StateChange stateChange = message.getStateChange(stateContext);
-                if (!(stateChange instanceof FeatureModelStateChange))
-                    throw new RuntimeException("expected feature model state change, got type " +
-                            stateChange.getClass().getName());
-                addStateChange((FeatureModelStateChange) stateChange);
-            }
+    class MultipleMessages implements MultipleStateChange {
+        LinkedList<StateChange> stateChanges = new LinkedList<>();
+
+        public MultipleMessages(StateContext stateContext, LinkedList<Message.IUndoable> messages) {
+            for (Message.IUndoable message : messages)
+                addStateChange(message.getStateChange(stateContext));
+        }
+
+        public LinkedList<StateChange> getStateChanges() {
+            return stateChanges;
         }
     }
 
-    public static class FeatureDiagram {
+    class FeatureDiagram {
         public static class Feature {
             // adapted from CreateFeatureBelowOperation
             public static class AddBelow extends FeatureModelStateChange {
@@ -310,7 +308,8 @@ public abstract class StateChange {
             }
 
             // adapted from FeatureTreeDeleteOperation
-            public static class RemoveBelow extends FeatureModelMultipleStateChange {
+            public static class RemoveBelow extends FeatureModelStateChange implements MultipleStateChange {
+                LinkedList<StateChange> stateChanges = new LinkedList<>();
                 private LinkedList<IFeature> featureList = new LinkedList<>();
                 private LinkedList<IFeature> containedFeatureList = new LinkedList<>();
                 private LinkedList<IFeature> andList = new LinkedList<>();
@@ -354,8 +353,12 @@ public abstract class StateChange {
                     }
                 }
 
+                public LinkedList<StateChange> getStateChanges() {
+                    return stateChanges;
+                }
+
                 public Message.IEncodable[] undo() {
-                    super.undo();
+                    MultipleStateChange.super.undo();
                     // Set the right group types for the features
                     for (final IFeature ifeature : andList) {
                         if (featureModel.getFeature(ifeature.getName()) != null) {

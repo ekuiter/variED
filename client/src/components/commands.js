@@ -31,6 +31,20 @@ const commands = {
         iconProps: {iconName: 'Info'},
         onClick: () => onShowOverlay(overlayTypes.aboutPanel)
     }),
+    undo: () => ({
+        key: 'undo',
+        text: i18n.t('commands.undo'),
+        iconProps: {iconName: 'Undo'},
+        secondaryText: getShortcutText('undo'),
+        onClick: () => actions.server.undo()
+    }),
+    redo: () => ({
+        key: 'redo',
+        text: i18n.t('commands.redo'),
+        iconProps: {iconName: 'Redo'},
+        secondaryText: getShortcutText('redo'),
+        onClick: () => actions.server.redo()
+    }),
     featureDiagram: {
         export: (featureDiagramLayout, onShowOverlay) => ({
             key: 'export',
@@ -45,20 +59,6 @@ const commands = {
                     ...exportFormatItem(featureDiagramLayout, onShowOverlay, formatTypes.pdf)
                 ]
             }
-        }),
-        undo: () => ({
-            key: 'undo',
-            text: i18n.t('commands.featureDiagram.undo'),
-            iconProps: {iconName: 'Undo'},
-            secondaryText: getShortcutText('undo'),
-            onClick: () => actions.server.featureDiagram.undo()
-        }),
-        redo: () => ({
-            key: 'redo',
-            text: i18n.t('commands.featureDiagram.redo'),
-            iconProps: {iconName: 'Redo'},
-            secondaryText: getShortcutText('redo'),
-            onClick: () => actions.server.featureDiagram.redo()
         }),
         setLayout: (featureDiagramLayout, onSetFeatureDiagramLayout) => ({
             key: 'setLayout',

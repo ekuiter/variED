@@ -6,7 +6,6 @@ import connect from 'react-redux/es/connect/connect';
 import {getFeatureModel} from '../store/selectors';
 import actions from '../store/actions';
 import withKeys from '../helpers/withKeys';
-import {ContextualMenuItemType} from '../../node_modules/office-ui-fabric-react/lib/ContextualMenu';
 import i18n from '../i18n';
 import {overlayTypes} from '../types';
 import {getShortcutKeyBinding} from '../shortcuts';
@@ -32,8 +31,8 @@ const CommandBarContainer = props => (
             text: i18n.t('commands.edit'),
             subMenuProps: {
                 items: [
-                    commands.featureDiagram.undo(),
-                    commands.featureDiagram.redo(),
+                    commands.undo(),
+                    commands.redo(),
                     makeDivider(),
                     commands.featureDiagram.feature.selectAll(props.onSelectAllFeatures),
                     commands.featureDiagram.feature.deselectAll(props.onDeselectAllFeatures),
@@ -102,8 +101,8 @@ export default connect(
         onFitToScreen: () => dispatch(actions.ui.featureDiagram.fitToScreen())
     })
 )(withKeys(
-    getShortcutKeyBinding('undo', actions.server.featureDiagram.undo),
-    getShortcutKeyBinding('redo', actions.server.featureDiagram.redo),
+    getShortcutKeyBinding('undo', actions.server.undo),
+    getShortcutKeyBinding('redo', actions.server.redo),
     getShortcutKeyBinding('settings', ({props}) => props.onShowOverlay(overlayTypes.settingsPanel)),
     getShortcutKeyBinding('featureDiagram.feature.selectAll', ({props}) => props.onSelectAllFeatures()),
     getShortcutKeyBinding('featureDiagram.feature.deselectAll', ({props}) => props.onDeselectAllFeatures()),

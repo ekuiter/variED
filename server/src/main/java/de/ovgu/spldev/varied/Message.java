@@ -21,6 +21,19 @@ abstract public class Message {
          */
         ERROR,
         /**
+         * undo the last state change
+         */
+        UNDO,
+        /**
+         * undo the last undone state change
+         */
+        REDO,
+        /**
+         * contains multiple undoable messages of the same type
+         * only the last message's response message is returned to the client
+         */
+        MULTIPLE_MESSAGES,
+        /**
          * a user has subscribed an editing session
          */
         USER_SUBSCRIBE,
@@ -32,18 +45,6 @@ abstract public class Message {
          * a serialized feature model
          */
         FEATURE_DIAGRAM_FEATURE_MODEL,
-        /**
-         * contains multiple messages of the same type manipulating the feature model
-         */
-        FEATURE_DIAGRAM_FEATURE_MODEL_MULTIPLE,
-        /**
-         * undo the last state change
-         */
-        FEATURE_DIAGRAM_UNDO,
-        /**
-         * undo the last undone state change
-         */
-        FEATURE_DIAGRAM_REDO,
         /**
          * add a new feature below another feature
          */
@@ -151,38 +152,43 @@ abstract public class Message {
         }
     }
 
-    public static class UserSubscribe extends Message implements IEncodable {
-        private String user;
+    public static class Undo extends Message implements IApplicable {
+        Undo() {
+            super(TypeEnum.UNDO);
+        }
 
-        public UserSubscribe(Endpoint endpoint) {
-            super(TypeEnum.USER_SUBSCRIBE);
-            this.user = endpoint.getLabel();
+        public boolean isValid(StateContext stateContext) {
+            if (!stateContext.getStateChangeStack().canUndo())
+                throw new RuntimeException("can not undo");
+            return true;
+        }
+
+        public Message.IEncodable[] apply(StateContext stateContext) {
+            return stateContext.getStateChangeStack().undo();
         }
     }
 
-    public static class UserUnsubscribe extends Message implements IEncodable {
-        private String user;
+    public static class Redo extends Message implements IApplicable {
+        Redo() {
+            super(TypeEnum.REDO);
+        }
 
-        public UserUnsubscribe(Endpoint endpoint) {
-            super(TypeEnum.USER_UNSUBSCRIBE);
-            this.user = endpoint.getLabel();
+        public boolean isValid(StateContext stateContext) {
+            if (!stateContext.getStateChangeStack().canRedo())
+                throw new RuntimeException("can not redo");
+            return true;
+        }
+
+        public Message.IEncodable[] apply(StateContext stateContext) {
+            return stateContext.getStateChangeStack().redo();
         }
     }
 
-    public static class FeatureDiagramFeatureModel extends Message implements IEncodable {
-        private IFeatureModel featureModel;
-
-        public FeatureDiagramFeatureModel(IFeatureModel featureModel) {
-            super(TypeEnum.FEATURE_DIAGRAM_FEATURE_MODEL);
-            this.featureModel = featureModel;
-        }
-    }
-
-    public static class FeatureDiagramFeatureModelMultiple extends Message implements IUndoable {
+    public static class MultipleMessages extends Message implements IUndoable {
         private Message[] messages;
 
-        public FeatureDiagramFeatureModelMultiple(Message[] messages) {
-            super(TypeEnum.FEATURE_DIAGRAM_FEATURE_MODEL_MULTIPLE);
+        public MultipleMessages(Message[] messages) {
+            super(TypeEnum.MULTIPLE_MESSAGES);
             this.messages = messages;
         }
 
@@ -213,39 +219,34 @@ abstract public class Message {
         }
 
         public StateChange getStateChange(StateContext stateContext) {
-            return new StateChange.FeatureModelMultiple(stateContext, getUndoableMessages());
+            return new StateChange.MultipleMessages(stateContext, getUndoableMessages());
         }
     }
 
-    public static class FeatureDiagramUndo extends Message implements IApplicable {
-        FeatureDiagramUndo(Type type) {
-            super(TypeEnum.FEATURE_DIAGRAM_UNDO);
-        }
+    public static class UserSubscribe extends Message implements IEncodable {
+        private String user;
 
-        public boolean isValid(StateContext stateContext) {
-            if (!stateContext.getStateChangeStack().canUndo())
-                throw new RuntimeException("can not undo");
-            return true;
-        }
-
-        public Message.IEncodable[] apply(StateContext stateContext) {
-            return stateContext.getStateChangeStack().undo();
+        public UserSubscribe(Endpoint endpoint) {
+            super(TypeEnum.USER_SUBSCRIBE);
+            this.user = endpoint.getLabel();
         }
     }
 
-    public static class FeatureDiagramRedo extends Message implements IApplicable {
-        FeatureDiagramRedo(Type type) {
-            super(TypeEnum.FEATURE_DIAGRAM_REDO);
-        }
+    public static class UserUnsubscribe extends Message implements IEncodable {
+        private String user;
 
-        public boolean isValid(StateContext stateContext) {
-            if (!stateContext.getStateChangeStack().canRedo())
-                throw new RuntimeException("can not redo");
-            return true;
+        public UserUnsubscribe(Endpoint endpoint) {
+            super(TypeEnum.USER_UNSUBSCRIBE);
+            this.user = endpoint.getLabel();
         }
+    }
 
-        public Message.IEncodable[] apply(StateContext stateContext) {
-            return stateContext.getStateChangeStack().redo();
+    public static class FeatureDiagramFeatureModel extends Message implements IEncodable {
+        private IFeatureModel featureModel;
+
+        public FeatureDiagramFeatureModel(IFeatureModel featureModel) {
+            super(TypeEnum.FEATURE_DIAGRAM_FEATURE_MODEL);
+            this.featureModel = featureModel;
         }
     }
 

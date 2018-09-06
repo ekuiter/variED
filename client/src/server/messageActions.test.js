@@ -8,13 +8,13 @@ const {messageTypes, propertyTypes, groupValueTypes} = constants.server;
 
 describe('messageActions', () => {
     it('undoes a state change', () => {
-        messageActions.featureDiagram.undo();
-        expect(sendMessage).lastCalledWith({type: messageTypes.FEATURE_DIAGRAM_UNDO});
+        messageActions.undo();
+        expect(sendMessage).lastCalledWith({type: messageTypes.UNDO});
     });
 
     it('redoes a state change', () => {
-        messageActions.featureDiagram.redo();
-        expect(sendMessage).lastCalledWith({type: messageTypes.FEATURE_DIAGRAM_REDO});
+        messageActions.redo();
+        expect(sendMessage).lastCalledWith({type: messageTypes.REDO});
     });
 
     describe('feature', () => {

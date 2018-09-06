@@ -8,13 +8,13 @@ function sendMultipleMessages(messages) {
         return Promise.resolve();
     if (messages.length === 1)
         return sendMessage(messages[0]);
-    return sendMessage({type: messageTypes.FEATURE_DIAGRAM_FEATURE_MODEL_MULTIPLE, messages});
+    return sendMessage({type: messageTypes.MULTIPLE_MESSAGES, messages});
 }
 
 export default {
+    undo: () => sendMessage({type: messageTypes.UNDO}),
+    redo: () => sendMessage({type: messageTypes.REDO}),
     featureDiagram: {
-        undo: () => sendMessage({type: messageTypes.FEATURE_DIAGRAM_UNDO}),
-        redo: () => sendMessage({type: messageTypes.FEATURE_DIAGRAM_REDO}),
         feature: {
             addBelow: belowFeatureName =>
                 sendMessage({type: messageTypes.FEATURE_DIAGRAM_FEATURE_ADD_BELOW, belowFeature: belowFeatureName}),

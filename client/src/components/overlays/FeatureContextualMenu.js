@@ -1,6 +1,6 @@
 import React from 'react';
 import {DirectionalHint} from 'office-ui-fabric-react/lib/Callout';
-import {ContextualMenu, ContextualMenuItemType} from 'office-ui-fabric-react/lib/ContextualMenu';
+import {ContextualMenu} from 'office-ui-fabric-react/lib/ContextualMenu';
 import commands, {makeDivider} from '../commands';
 import {getSetting} from '../../store/settings';
 import PropTypes from 'prop-types';
