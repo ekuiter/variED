@@ -51,14 +51,14 @@ const commands = {
             text: i18n.t('commands.featureDiagram.undo'),
             iconProps: {iconName: 'Undo'},
             secondaryText: getShortcutText('undo'),
-            onClick: () => actions.server.undo()
+            onClick: () => actions.server.featureDiagram.undo()
         }),
         redo: () => ({
             key: 'redo',
             text: i18n.t('commands.featureDiagram.redo'),
             iconProps: {iconName: 'Redo'},
             secondaryText: getShortcutText('redo'),
-            onClick: () => actions.server.redo()
+            onClick: () => actions.server.featureDiagram.redo()
         }),
         setLayout: (featureDiagramLayout, onSetFeatureDiagramLayout) => ({
             key: 'setLayout',
@@ -91,7 +91,7 @@ const commands = {
                 iconProps: {iconName: 'Add'},
                 iconOnly,
                 split: true,
-                onClick: () => actions.server.feature.addBelow(featureName).then(onClick),
+                onClick: () => actions.server.featureDiagram.feature.addBelow(featureName).then(onClick),
                 subMenuProps: {
                     items: [
                         {
@@ -99,7 +99,7 @@ const commands = {
                             text: i18n.t('commands.featureDiagram.feature.newMenu.newBelow'),
                             secondaryText: getShortcutText('featureDiagram.feature.new'),
                             iconProps: {iconName: 'Add'},
-                            onClick: () => actions.server.feature.addBelow(featureName).then(onClick)
+                            onClick: () => actions.server.featureDiagram.feature.addBelow(featureName).then(onClick)
                         },
                         commands.featureDiagram.feature.newAbove([featureName], onClick)
                     ]
@@ -119,7 +119,7 @@ const commands = {
                     text: i18n.t('commands.featureDiagram.feature.newMenu.newAbove'),
                     iconProps: {iconName: 'Add'},
                     disabled,
-                    onClick: () => actions.server.feature.addAbove(featureNames).then(onClick)
+                    onClick: () => actions.server.featureDiagram.feature.addAbove(featureNames).then(onClick)
                 });
             },
             removeMenu: (feature, onClick, iconOnly = false) => ({
@@ -128,7 +128,7 @@ const commands = {
                 iconProps: {iconName: 'Remove'},
                 iconOnly,
                 split: true,
-                onClick: () => actions.server.feature.remove(feature.name).then(onClick),
+                onClick: () => actions.server.featureDiagram.feature.remove(feature.name).then(onClick),
                 disabled: feature.isRoot && (!feature.hasChildren || feature.node.children.length > 1),
                 subMenuProps: {
                     items: [{
@@ -136,13 +136,13 @@ const commands = {
                         text: i18n.t('commands.featureDiagram.feature.removeMenu.remove'),
                         secondaryText: getShortcutText('featureDiagram.feature.remove'),
                         iconProps: {iconName: 'Remove'},
-                        onClick: () => actions.server.feature.remove(feature.name).then(onClick)
+                        onClick: () => actions.server.featureDiagram.feature.remove(feature.name).then(onClick)
                     }, {
                         key: 'removeBelow',
                         text: i18n.t('commands.featureDiagram.feature.removeMenu.removeBelow'),
                         iconProps: {iconName: 'Remove'},
                         disabled: feature.isRoot,
-                        onClick: () => actions.server.feature.removeBelow(feature.name).then(onClick)
+                        onClick: () => actions.server.featureDiagram.feature.removeBelow(feature.name).then(onClick)
                     }]
                 }
             }),
@@ -168,8 +168,8 @@ const commands = {
                 onClick: () => onShowOverlay(overlayTypes.featureSetDescriptionDialog, {featureName})
             }),
             properties: (feature, onClick) => {
-                const toggleAbstract = () => actions.server.feature.properties.setAbstract(feature.name, !feature.isAbstract).then(onClick),
-                    toggleMandatory = () => actions.server.feature.properties.setMandatory(feature.name, !feature.isMandatory).then(onClick),
+                const toggleAbstract = () => actions.server.featureDiagram.feature.properties.setAbstract(feature.name, !feature.isAbstract).then(onClick),
+                    toggleMandatory = () => actions.server.featureDiagram.feature.properties.setMandatory(feature.name, !feature.isMandatory).then(onClick),
                     mandatoryDisabled = feature.isRoot || feature.node.parent.feature().isGroup,
                     groupDisabled = !feature.node.children || feature.node.children.length <= 1;
                 return ({
@@ -194,7 +194,7 @@ const commands = {
                             text: i18n.t('commands.featureDiagram.feature.propertiesMenu.hidden'),
                             canCheck: true,
                             isChecked: feature.isHidden,
-                            onClick: () => actions.server.feature.properties.setHidden(feature.name, !feature.isHidden).then(onClick)
+                            onClick: () => actions.server.featureDiagram.feature.properties.setHidden(feature.name, !feature.isHidden).then(onClick)
                         }, makeDivider(), {
                             key: 'mandatory',
                             text: i18n.t('commands.featureDiagram.feature.propertiesMenu.mandatory'),
@@ -215,21 +215,21 @@ const commands = {
                             disabled: groupDisabled,
                             canCheck: true,
                             isChecked: feature.isAnd,
-                            onClick: () => actions.server.feature.properties.setAnd(feature.name).then(onClick)
+                            onClick: () => actions.server.featureDiagram.feature.properties.setAnd(feature.name).then(onClick)
                         }, {
                             key: 'or',
                             text: i18n.t('commands.featureDiagram.feature.propertiesMenu.or'),
                             disabled: groupDisabled,
                             canCheck: true,
                             isChecked: feature.isOr,
-                            onClick: () => actions.server.feature.properties.setOr(feature.name).then(onClick)
+                            onClick: () => actions.server.featureDiagram.feature.properties.setOr(feature.name).then(onClick)
                         }, {
                             key: 'alternative',
                             text: i18n.t('commands.featureDiagram.feature.propertiesMenu.alternative'),
                             disabled: groupDisabled,
                             canCheck: true,
                             isChecked: feature.isAlternative,
-                            onClick: () => actions.server.feature.properties.setAlternative(feature.name).then(onClick)
+                            onClick: () => actions.server.featureDiagram.feature.properties.setAlternative(feature.name).then(onClick)
                         }]
                     }
                 });

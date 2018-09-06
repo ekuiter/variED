@@ -139,7 +139,7 @@ exports[`FeatureContextualMenu renders correctly for a single feature 1`] = `
       },
       Object {
         "itemType": 1,
-        "key": "divider1",
+        "key": "divider",
       },
       Object {
         "iconProps": Object {
@@ -181,7 +181,7 @@ exports[`FeatureContextualMenu renders correctly for a single feature 1`] = `
             },
             Object {
               "itemType": 1,
-              "key": "divider1",
+              "key": "divider",
             },
             Object {
               "canCheck": true,
@@ -192,7 +192,7 @@ exports[`FeatureContextualMenu renders correctly for a single feature 1`] = `
             },
             Object {
               "itemType": 1,
-              "key": "divider2",
+              "key": "divider",
             },
             Object {
               "canCheck": true,
@@ -212,7 +212,7 @@ exports[`FeatureContextualMenu renders correctly for a single feature 1`] = `
             },
             Object {
               "itemType": 1,
-              "key": "divider2",
+              "key": "divider",
             },
             Object {
               "canCheck": true,
@@ -244,7 +244,7 @@ exports[`FeatureContextualMenu renders correctly for a single feature 1`] = `
       },
       Object {
         "itemType": 1,
-        "key": "divider2",
+        "key": "divider",
       },
       Object {
         "iconOnly": true,

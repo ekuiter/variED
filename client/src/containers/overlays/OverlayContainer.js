@@ -119,9 +119,9 @@ export default connect(
     })
 )(withKeys(
     getShortcutKeyBinding('featureDiagram.feature.new', ({props}) =>
-        actions.server.feature.addBelow(props.overlayProps.featureName).then(props.onHideOverlayFn(props.overlay))),
+        actions.server.featureDiagram.feature.addBelow(props.overlayProps.featureName).then(props.onHideOverlayFn(props.overlay))),
     getShortcutKeyBinding('featureDiagram.feature.remove', ({props}) =>
-        actions.server.feature.remove(props.overlayProps.featureName).then(props.onHideOverlayFn(props.overlay))),
+        actions.server.featureDiagram.feature.remove(props.overlayProps.featureName).then(props.onHideOverlayFn(props.overlay))),
     getShortcutKeyBinding('featureDiagram.feature.rename', ({props}) =>
         props.onShowOverlay(overlayTypes.featureRenameDialog, {featureName: props.overlayProps.featureName})),
     getShortcutKeyBinding('featureDiagram.feature.details', ({props}) =>

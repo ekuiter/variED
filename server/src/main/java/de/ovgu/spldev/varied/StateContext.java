@@ -26,6 +26,6 @@ public class StateContext {
     }
 
     public void sendInitialState(Endpoint endpoint) {
-        endpoint.send(new Message.FeatureModel(featureModel));
+        endpoint.send(new Message.FeatureDiagramFeatureModel(featureModel));
     }
 }

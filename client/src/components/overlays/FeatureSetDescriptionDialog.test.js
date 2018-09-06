@@ -30,8 +30,8 @@ describe('FeatureSetDescriptionDialog', () => {
 
     it('triggers a rename if a new name is entered', () => {
         const wrapper = shallow(featureSetDescriptionDialog);
-        actions.server.feature.setDescription.mockClear();
+        actions.server.featureDiagram.feature.setDescription.mockClear();
         wrapper.find(TextFieldDialog).simulate('submit', 'new description');
-        expect(actions.server.feature.setDescription).lastCalledWith('FeatureIDE', 'new description');
+        expect(actions.server.featureDiagram.feature.setDescription).lastCalledWith('FeatureIDE', 'new description');
     });
 });

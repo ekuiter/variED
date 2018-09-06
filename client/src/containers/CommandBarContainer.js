@@ -102,8 +102,8 @@ export default connect(
         onFitToScreen: () => dispatch(actions.ui.featureDiagram.fitToScreen())
     })
 )(withKeys(
-    getShortcutKeyBinding('undo', actions.server.undo),
-    getShortcutKeyBinding('redo', actions.server.redo),
+    getShortcutKeyBinding('undo', actions.server.featureDiagram.undo),
+    getShortcutKeyBinding('redo', actions.server.featureDiagram.redo),
     getShortcutKeyBinding('settings', ({props}) => props.onShowOverlay(overlayTypes.settingsPanel)),
     getShortcutKeyBinding('featureDiagram.feature.selectAll', ({props}) => props.onSelectAllFeatures()),
     getShortcutKeyBinding('featureDiagram.feature.deselectAll', ({props}) => props.onDeselectAllFeatures()),

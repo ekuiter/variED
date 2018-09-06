@@ -62,7 +62,7 @@ function changeOverlayForRenamedFeature(state, action) {
 }
 
 function finalReducer(state, action) {
-    if (action.type === constants.server.messageTypes.FEATURE_MODEL) {
+    if (action.type === constants.server.messageTypes.FEATURE_DIAGRAM_FEATURE_MODEL) {
         state = removeObsoleteFeaturesFromFeatureList(state, 'collapsedFeatureNames');
         // TODO: warn user that selection changed
         state = removeObsoleteFeaturesFromFeatureList(state, 'selectedFeatureNames');
@@ -71,7 +71,7 @@ function finalReducer(state, action) {
         if (state.server.newFeatureModel)
             state = {...state, ui: fitToScreen(state, state.ui)};
     }
-    if (action.type === constants.server.messageTypes.FEATURE_RENAME) {
+    if (action.type === constants.server.messageTypes.FEATURE_DIAGRAM_FEATURE_RENAME) {
         state = renameFeatureInFeatureList(state, action, 'collapsedFeatureNames');
         state = renameFeatureInFeatureList(state, action, 'selectedFeatureNames');
         state = changeOverlayForRenamedFeature(state, action);

@@ -12,7 +12,7 @@ describe('reducers', () => {
         state.server.featureModel = undefined;
         state.server.newFeatureModel = false;
         state = reducers(state, {
-            type: constants.server.messageTypes.FEATURE_MODEL,
+            type: constants.server.messageTypes.FEATURE_DIAGRAM_FEATURE_MODEL,
             featureModel: featureModel
         });
         return state;
@@ -276,7 +276,7 @@ describe('reducers', () => {
                 let state = reducers(undefined, actions.ui.featureDiagram.feature.select('FeatureIDE'));
                 expect(state.ui.selectedFeatureNames).toContain('FeatureIDE');
                 state = reducers(state, {
-                    type: constants.server.messageTypes.FEATURE_RENAME,
+                    type: constants.server.messageTypes.FEATURE_DIAGRAM_FEATURE_RENAME,
                     oldFeature: 'FeatureIDE',
                     newFeature: 'new feature name'
                 });
@@ -288,7 +288,7 @@ describe('reducers', () => {
                 let state = reducers(undefined, actions.ui.featureDiagram.feature.collapse('FeatureIDE'));
                 expect(state.ui.collapsedFeatureNames).toContain('FeatureIDE');
                 state = reducers(state, {
-                    type: constants.server.messageTypes.FEATURE_RENAME,
+                    type: constants.server.messageTypes.FEATURE_DIAGRAM_FEATURE_RENAME,
                     oldFeature: 'FeatureIDE',
                     newFeature: 'new feature name'
                 });

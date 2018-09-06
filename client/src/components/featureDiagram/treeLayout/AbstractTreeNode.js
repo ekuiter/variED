@@ -109,7 +109,7 @@ export default class {
             arcClick = nodeEnter.append('path')
                 .attr('class', 'arcClick')
                 .call(addStyle, styles.node.arcClick(this.settings))
-                .on('dblclick', d => actions.server.feature.properties.toggleGroup(d.feature()));
+                .on('dblclick', d => actions.server.featureDiagram.feature.properties.toggleGroup(d.feature()));
         this.treeLink.drawGroup(arcSegment, arcSlice, arcClick);
 
         const expandFeature = d => d.feature().isCollapsed && this.onExpandFeature(d.feature().name);

@@ -109,7 +109,7 @@ export default class {
                 center: from,
                 radius: 0,
                 style: styles.link.mandatory(this.settings),
-                fn: circle => circle.on('dblclick', d => actions.server.feature.properties.toggleMandatory(d.feature()))
+                fn: circle => circle.on('dblclick', d => actions.server.featureDiagram.feature.properties.toggleMandatory(d.feature()))
             });
 
         return linkEnter;

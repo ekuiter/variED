@@ -47,10 +47,10 @@ describe('messageReducer', () => {
 
     it('updates the feature model', () => {
         let state = messageReducer(initialState,
-            {type: messageTypes.FEATURE_MODEL, featureModel: validFeatureModel});
+            {type: messageTypes.FEATURE_DIAGRAM_FEATURE_MODEL, featureModel: validFeatureModel});
         expect(state.featureModel).toBe(validFeatureModel);
         state = messageReducer(initialState,
-            {type: messageTypes.FEATURE_MODEL, featureModel: validFeatureModelWithRemovedFeatures});
+            {type: messageTypes.FEATURE_DIAGRAM_FEATURE_MODEL, featureModel: validFeatureModelWithRemovedFeatures});
         expect(state.featureModel).toBe(validFeatureModelWithRemovedFeatures);
     });
 

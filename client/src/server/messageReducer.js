@@ -13,10 +13,10 @@ const messageTypes = constants.server.messageTypes,
         [messageTypes.USER_UNSUBSCRIBE](state, action) {
             return {...state, users: uniqueArrayRemove(state.users, action.user)};
         },
-        [messageTypes.FEATURE_MODEL](state, action) {
+        [messageTypes.FEATURE_DIAGRAM_FEATURE_MODEL](state, action) {
             return {...state, featureModel: action.featureModel, newFeatureModel: state.featureModel === null};
         },
-        [messageTypes.FEATURE_RENAME](state, _action) {
+        [messageTypes.FEATURE_DIAGRAM_FEATURE_RENAME](state, _action) {
             // Feature renaming is handled by the serverUiReducer
             // because it has access to the UI state.
             return state;

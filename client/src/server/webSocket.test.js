@@ -84,9 +84,9 @@ describe('webSocket', () => {
         });
         expect(messageMock).not.toBeCalled();
         return getPromise()
-            .then(() => sendMessage({type: 'UNDO'}))
+            .then(() => sendMessage({type: 'FEATURE_DIAGRAM_UNDO'}))
             .then(wait())
-            .then(() => expect(messageMock).toBeCalledWith(JSON.stringify({type: 'UNDO'})))
+            .then(() => expect(messageMock).toBeCalledWith(JSON.stringify({type: 'FEATURE_DIAGRAM_UNDO'})))
             .then(close(mockServer));
     };
 

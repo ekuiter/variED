@@ -31,51 +31,47 @@ abstract public class Message {
         /**
          * a serialized feature model
          */
-        FEATURE_MODEL,
-        /**
-         * a diff between the current and last known feature model (used for compression)
-         */
-        FEATURE_MODEL_PATCH, // todo
+        FEATURE_DIAGRAM_FEATURE_MODEL,
         /**
          * contains multiple messages of the same type manipulating the feature model
          */
-        FEATURE_MODEL_MULTIPLE,
+        FEATURE_DIAGRAM_FEATURE_MODEL_MULTIPLE,
         /**
          * undo the last state change
          */
-        UNDO,
+        FEATURE_DIAGRAM_UNDO,
         /**
          * undo the last undone state change
          */
-        REDO,
+        FEATURE_DIAGRAM_REDO,
         /**
          * add a new feature below another feature
          */
-        FEATURE_ADD_BELOW,
+        FEATURE_DIAGRAM_FEATURE_ADD_BELOW,
         /**
          * add a new feature above (adjacent) feature(s)
          */
-        FEATURE_ADD_ABOVE,
+        FEATURE_DIAGRAM_FEATURE_ADD_ABOVE,
         /**
          * remove a feature
          */
-        FEATURE_REMOVE,
+        FEATURE_DIAGRAM_FEATURE_REMOVE,
         /**
          * remove a feature and all its children recursively
          */
-        FEATURE_REMOVE_BELOW,
+        FEATURE_DIAGRAM_FEATURE_REMOVE_BELOW,
         /**
          * rename a feature
          */
-        FEATURE_RENAME,
+        FEATURE_DIAGRAM_FEATURE_RENAME,
         /**
          * set a feature description
          */
-        FEATURE_SET_DESCRIPTION,
+        FEATURE_DIAGRAM_FEATURE_SET_DESCRIPTION,
         /**
          * set one of a feature's properties (e.g., abstract, hidden, mandatory, or, alternative)
          */
-        FEATURE_SET_PROPERTY
+        FEATURE_DIAGRAM_FEATURE_SET_PROPERTY
     }
 
     public static class Type {
@@ -173,20 +169,20 @@ abstract public class Message {
         }
     }
 
-    public static class FeatureModel extends Message implements IEncodable {
+    public static class FeatureDiagramFeatureModel extends Message implements IEncodable {
         private IFeatureModel featureModel;
 
-        public FeatureModel(IFeatureModel featureModel) {
-            super(TypeEnum.FEATURE_MODEL);
+        public FeatureDiagramFeatureModel(IFeatureModel featureModel) {
+            super(TypeEnum.FEATURE_DIAGRAM_FEATURE_MODEL);
             this.featureModel = featureModel;
         }
     }
 
-    public static class FeatureModelMultiple extends Message implements IUndoable {
+    public static class FeatureDiagramFeatureModelMultiple extends Message implements IUndoable {
         private Message[] messages;
 
-        public FeatureModelMultiple(Message[] messages) {
-            super(TypeEnum.FEATURE_MODEL_MULTIPLE);
+        public FeatureDiagramFeatureModelMultiple(Message[] messages) {
+            super(TypeEnum.FEATURE_DIAGRAM_FEATURE_MODEL_MULTIPLE);
             this.messages = messages;
         }
 
@@ -221,9 +217,9 @@ abstract public class Message {
         }
     }
 
-    public static class Undo extends Message implements IApplicable {
-        Undo(Type type) {
-            super(TypeEnum.UNDO);
+    public static class FeatureDiagramUndo extends Message implements IApplicable {
+        FeatureDiagramUndo(Type type) {
+            super(TypeEnum.FEATURE_DIAGRAM_UNDO);
         }
 
         public boolean isValid(StateContext stateContext) {
@@ -237,9 +233,9 @@ abstract public class Message {
         }
     }
 
-    public static class Redo extends Message implements IApplicable {
-        Redo(Type type) {
-            super(TypeEnum.REDO);
+    public static class FeatureDiagramRedo extends Message implements IApplicable {
+        FeatureDiagramRedo(Type type) {
+            super(TypeEnum.FEATURE_DIAGRAM_REDO);
         }
 
         public boolean isValid(StateContext stateContext) {
@@ -253,11 +249,11 @@ abstract public class Message {
         }
     }
 
-    public static class FeatureAddBelow extends Message implements IUndoable {
+    public static class FeatureDiagramFeatureAddBelow extends Message implements IUndoable {
         private String belowFeature;
 
-        public FeatureAddBelow(String belowFeature) {
-            super(TypeEnum.FEATURE_ADD_BELOW);
+        public FeatureDiagramFeatureAddBelow(String belowFeature) {
+            super(TypeEnum.FEATURE_DIAGRAM_FEATURE_ADD_BELOW);
             this.belowFeature = belowFeature;
         }
 
@@ -268,15 +264,15 @@ abstract public class Message {
         public StateChange getStateChange(StateContext stateContext) {
             IFeatureModel featureModel = stateContext.getFeatureModel();
             IFeature _belowFeature = featureModel.getFeature(belowFeature);
-            return new StateChange.FeatureAddBelow(_belowFeature, featureModel);
+            return new StateChange.FeatureDiagram.Feature.AddBelow(_belowFeature, featureModel);
         }
     }
 
-    public static class FeatureAddAbove extends Message implements IUndoable {
+    public static class FeatureDiagramFeatureAddAbove extends Message implements IUndoable {
         private String[] aboveFeatures;
 
-        public FeatureAddAbove(String[] aboveFeatures) {
-            super(TypeEnum.FEATURE_ADD_ABOVE);
+        public FeatureDiagramFeatureAddAbove(String[] aboveFeatures) {
+            super(TypeEnum.FEATURE_DIAGRAM_FEATURE_ADD_ABOVE);
             this.aboveFeatures = aboveFeatures;
         }
 
@@ -295,15 +291,15 @@ abstract public class Message {
             for (String aboveFeature : aboveFeatures)
                 _aboveFeatures.add(featureModel.getFeature(aboveFeature));
             FeatureUtils.sortSiblingFeatures(_aboveFeatures);
-            return new StateChange.FeatureAddAbove(featureModel, _aboveFeatures);
+            return new StateChange.FeatureDiagram.Feature.AddAbove(featureModel, _aboveFeatures);
         }
     }
 
-    public static class FeatureRemove extends Message implements IUndoable {
+    public static class FeatureDiagramFeatureRemove extends Message implements IUndoable {
         private String feature;
 
-        public FeatureRemove(String feature) {
-            super(TypeEnum.FEATURE_REMOVE);
+        public FeatureDiagramFeatureRemove(String feature) {
+            super(TypeEnum.FEATURE_DIAGRAM_FEATURE_REMOVE);
             this.feature = feature;
         }
 
@@ -319,15 +315,15 @@ abstract public class Message {
         public StateChange getStateChange(StateContext stateContext) {
             IFeatureModel featureModel = stateContext.getFeatureModel();
             IFeature _feature = featureModel.getFeature(feature);
-            return new StateChange.FeatureRemove(featureModel, _feature);
+            return new StateChange.FeatureDiagram.Feature.Remove(featureModel, _feature);
         }
     }
 
-    public static class FeatureRemoveBelow extends Message implements IUndoable {
+    public static class FeatureDiagramFeatureRemoveBelow extends Message implements IUndoable {
         private String feature;
 
-        public FeatureRemoveBelow(String feature) {
-            super(TypeEnum.FEATURE_REMOVE_BELOW);
+        public FeatureDiagramFeatureRemoveBelow(String feature) {
+            super(TypeEnum.FEATURE_DIAGRAM_FEATURE_REMOVE_BELOW);
             this.feature = feature;
         }
 
@@ -343,15 +339,15 @@ abstract public class Message {
         public StateChange getStateChange(StateContext stateContext) {
             IFeatureModel featureModel = stateContext.getFeatureModel();
             IFeature _feature = featureModel.getFeature(feature);
-            return new StateChange.FeatureRemoveBelow(featureModel, _feature);
+            return new StateChange.FeatureDiagram.Feature.RemoveBelow(featureModel, _feature);
         }
     }
 
-    public static class FeatureRename extends Message implements IEncodable, IUndoable {
+    public static class FeatureDiagramFeatureRename extends Message implements IEncodable, IUndoable {
         private String oldFeature, newFeature;
 
-        public FeatureRename(String oldFeature, String newFeature) {
-            super(TypeEnum.FEATURE_RENAME);
+        public FeatureDiagramFeatureRename(String oldFeature, String newFeature) {
+            super(TypeEnum.FEATURE_DIAGRAM_FEATURE_RENAME);
             this.oldFeature = oldFeature;
             this.newFeature = newFeature;
         }
@@ -361,15 +357,15 @@ abstract public class Message {
         }
 
         public StateChange getStateChange(StateContext stateContext) {
-            return new StateChange.FeatureRename(stateContext.getFeatureModel(), oldFeature, newFeature);
+            return new StateChange.FeatureDiagram.Feature.Rename(stateContext.getFeatureModel(), oldFeature, newFeature);
         }
     }
 
-    public static class FeatureSetDescription extends Message implements IUndoable {
+    public static class FeatureDiagramFeatureSetDescription extends Message implements IUndoable {
         private String feature, description;
 
-        public FeatureSetDescription(String feature, String description) {
-            super(TypeEnum.FEATURE_SET_DESCRIPTION);
+        public FeatureDiagramFeatureSetDescription(String feature, String description) {
+            super(TypeEnum.FEATURE_DIAGRAM_FEATURE_SET_DESCRIPTION);
             this.feature = feature;
             this.description = description;
         }
@@ -382,15 +378,15 @@ abstract public class Message {
         public StateChange getStateChange(StateContext stateContext) {
             IFeatureModel featureModel = stateContext.getFeatureModel();
             IFeature _feature = featureModel.getFeature(feature);
-            return new StateChange.FeatureSetDescription(featureModel, _feature, description);
+            return new StateChange.FeatureDiagram.Feature.SetDescription(featureModel, _feature, description);
         }
     }
 
-    public static class FeatureSetProperty extends Message implements IUndoable {
+    public static class FeatureDiagramFeatureSetProperty extends Message implements IUndoable {
         private String feature, property, value;
 
-        public FeatureSetProperty(String feature, String property, String value) {
-            super(TypeEnum.FEATURE_SET_PROPERTY);
+        public FeatureDiagramFeatureSetProperty(String feature, String property, String value) {
+            super(TypeEnum.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY);
             this.feature = feature;
             this.property = property;
             this.value = value;
@@ -412,7 +408,7 @@ abstract public class Message {
         public StateChange getStateChange(StateContext stateContext) {
             IFeatureModel featureModel = stateContext.getFeatureModel();
             IFeature _feature = featureModel.getFeature(feature);
-            return new StateChange.FeatureSetProperty(featureModel, _feature, property, value);
+            return new StateChange.FeatureDiagram.Feature.SetProperty(featureModel, _feature, property, value);
         }
     }
 }
