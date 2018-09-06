@@ -201,6 +201,8 @@ class FeatureModel {
                 2 * getSetting(settings, 'featureDiagram.treeLayout.node.paddingY') +
                 2 * getSetting(settings, 'featureDiagram.treeLayout.node.strokeWidth');
         let nodes = this.actualNodes, collapsedFeatureNames = [];
+        width = Math.max(width, constants.featureDiagram.fitToScreen.minWidth);
+        height = Math.max(height, constants.featureDiagram.fitToScreen.minHeight);
 
         while (true) { // eslint-disable-line no-constant-condition
             const {estimatedSize, collapsibleNodes} = estimateHierarchySize(

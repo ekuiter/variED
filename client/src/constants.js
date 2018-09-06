@@ -4,6 +4,8 @@ import {layoutTypes} from './types';
 const constants = {
     featureDiagram: {
         fitToScreen: {
+            minWidth: 500,
+            minHeight: 500,
             maxCollapsibleNodes: nodes => nodes.length > 100 ? nodes.length / 10 : 1
         }
     },
