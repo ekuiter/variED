@@ -56,6 +56,11 @@ export const defaultSettings = {
         maxDisplayableUsers: 3, // number of users to display before overflowing
         overflowBreakpoint: 768, // viewport width under which all users will be overflowed
         gapSpace: 3 // space between facepile and overlay
+    },
+    overlays: {
+        settingsPanel: {
+            debounceUpdate: 200 // after which time continuous (e.g., slider) settings should be applied
+        }
     }
 };
 

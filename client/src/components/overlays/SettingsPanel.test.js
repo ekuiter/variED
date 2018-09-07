@@ -66,12 +66,15 @@ describe('Setting', () => {
 
     describe('Slider', () => {
         it('sets a number', () => {
+            jest.useFakeTimers();
             const wrapper = shallow(<Setting.Slider
                 settings={defaultSettings}
                 onSetSetting={onSetSetting}
                 path="featureDiagram.treeLayout.transitionDuration"
                 min={0} max={100} step={1}/>);
             wrapper.find(Slider).simulate('change', 42);
+            expect(newSetting).not.toBe(42);
+            jest.runAllTimers();
             expect(newSetting).toBe(42);
         });
     });

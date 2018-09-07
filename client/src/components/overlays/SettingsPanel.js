@@ -12,6 +12,7 @@ import {DefaultButton} from 'office-ui-fabric-react/lib/Button';
 import PropTypes from 'prop-types';
 import exact from 'prop-types-exact';
 import {LayoutType, layoutTypes, SettingsType} from '../../types';
+import debounce from '../../helpers/debounce';
 
 const getLabel = path => i18n.t('overlays.settingsPanel.labels', path);
 
@@ -81,6 +82,9 @@ export const Setting = {
             step: PropTypes.number.isRequired
         });
 
+        onChange = debounce(value => this.props.onSetSetting(this.props.path, value),
+            getSetting(this.props.settings, 'overlays.settingsPanel.debounceUpdate'));
+
         render() {
             return (
                 <div className="setting">
@@ -90,7 +94,7 @@ export const Setting = {
                         max={this.props.max}
                         step={this.props.step}
                         value={getSetting(this.props.settings, this.props.path)}
-                        onChange={value => this.props.onSetSetting(this.props.path, value)}/>
+                        onChange={this.onChange}/>
                 </div>
             );
         }
