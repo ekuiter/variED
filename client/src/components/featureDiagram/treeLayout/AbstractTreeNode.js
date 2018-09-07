@@ -51,12 +51,12 @@ function makeText(settings, selection, isGettingRectInfo, textStyle) {
 }
 
 export default class {
-    constructor(settings, isSelectMultipleFeatures, setActiveNode, onShowOverlay, onExpandFeature) {
+    constructor(settings, isSelectMultipleFeatures, setActiveNode, onShowOverlay, onExpandFeatures) {
         this.settings = settings;
         this.isSelectMultipleFeatures = isSelectMultipleFeatures;
         this.setActiveNode = setActiveNode;
         this.onShowOverlay = onShowOverlay;
-        this.onExpandFeature = onExpandFeature;
+        this.onExpandFeatures = onExpandFeatures;
     }
 
     x(_node) {
@@ -112,7 +112,7 @@ export default class {
                 .on('dblclick', d => actions.server.featureDiagram.feature.properties.toggleGroup(d.feature()));
         this.treeLink.drawGroup(arcSegment, arcSlice, arcClick);
 
-        const expandFeature = d => d.feature().isCollapsed && this.onExpandFeature(d.feature().name);
+        const expandFeature = d => d.feature().isCollapsed && this.onExpandFeatures(d.feature().name);
         i = 0;
         bboxes = [];
         nodeEnter.insert('text', 'path.arcClick')

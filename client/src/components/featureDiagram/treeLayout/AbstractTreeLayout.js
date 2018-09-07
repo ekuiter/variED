@@ -26,7 +26,7 @@ export default class extends React.Component {
         onSetSelectMultipleFeatures: PropTypes.func.isRequired,
         onSelectFeature: PropTypes.func.isRequired,
         onDeselectFeature: PropTypes.func.isRequired,
-        onExpandFeature: PropTypes.func.isRequired,
+        onExpandFeatures: PropTypes.func.isRequired,
         onDeselectAllFeatures: PropTypes.func.isRequired,
         isSelectMultipleFeatures: PropTypes.bool.isRequired,
         selectedFeatureNames: PropTypes.arrayOf(PropTypes.string).isRequired
@@ -44,7 +44,7 @@ export default class extends React.Component {
             props.isSelectMultipleFeatures,
             this.setActiveNode.bind(this),
             this.props.onShowOverlay,
-            this.props.onExpandFeature);
+            this.props.onExpandFeatures);
         this.treeLink = new TreeLink(
             props.settings,
             this.getParentCoordinateFn('currentCoordinates'),

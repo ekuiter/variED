@@ -17,8 +17,8 @@ export default class extends FeatureComponent({doUpdate: true}) {
         isOpen: PropTypes.bool.isRequired,
         featureDiagramLayout: LayoutType.isRequired,
         onShowOverlay: PropTypes.func.isRequired,
-        onCollapseFeature: PropTypes.func.isRequired,
-        onExpandFeature: PropTypes.func.isRequired,
+        onCollapseFeatures: PropTypes.func.isRequired,
+        onExpandFeatures: PropTypes.func.isRequired,
         onCollapseFeaturesBelow: PropTypes.func.isRequired,
         onExpandFeaturesBelow: PropTypes.func.isRequired,
         settings: SettingsType.isRequired
@@ -51,7 +51,7 @@ export default class extends FeatureComponent({doUpdate: true}) {
                             commands.featureDiagram.feature.newMenu(feature.name, onDismiss, true),
                             commands.featureDiagram.feature.removeMenu([feature], onDismiss, true),
                             commands.featureDiagram.feature.collapseMenu(
-                                [feature], this.props.onCollapseFeature, this.props.onExpandFeature,
+                                [feature], this.props.onCollapseFeatures, this.props.onExpandFeatures,
                                 this.props.onCollapseFeaturesBelow, this.props.onExpandFeaturesBelow, onDismiss, true),
                         ]}
                         farItems={[

@@ -238,22 +238,22 @@ const commands = {
                 });
             },
             selection: (isSelectMultipleFeatures, onSetSelectMultipleFeatures,
-                selectedFeatureNames, onDeselectAllFeatures, onCollapseFeature,
-                onExpandFeature, onCollapseFeaturesBelow, onExpandFeaturesBelow, featureModel) => ({
+                selectedFeatureNames, onDeselectAllFeatures, onCollapseFeatures,
+                onExpandFeatures, onCollapseFeaturesBelow, onExpandFeaturesBelow, featureModel) => ({
                 key: 'selection',
                 text: i18n.t('commands.featureDiagram.feature.selection')(isSelectMultipleFeatures, selectedFeatureNames),
                 onClick: () => onSetSelectMultipleFeatures(!isSelectMultipleFeatures), // TODO: tell the user he can choose features now
                 subMenuProps: isSelectMultipleFeatures
                     ? {items: commands.featureDiagram.feature.selectionItems(selectedFeatureNames, onDeselectAllFeatures,
-                        onCollapseFeature, onExpandFeature, onCollapseFeaturesBelow, onExpandFeaturesBelow, featureModel)}
+                        onCollapseFeatures, onExpandFeatures, onCollapseFeaturesBelow, onExpandFeaturesBelow, featureModel)}
                     : null
             }),
-            selectionItems: (selectedFeatureNames, onDeselectAllFeatures, onCollapseFeature,
-                onExpandFeature, onCollapseFeaturesBelow, onExpandFeaturesBelow, featureModel) => [
+            selectionItems: (selectedFeatureNames, onDeselectAllFeatures, onCollapseFeatures,
+                onExpandFeatures, onCollapseFeaturesBelow, onExpandFeaturesBelow, featureModel) => [
                 commands.featureDiagram.feature.newAbove(selectedFeatureNames, onDeselectAllFeatures, featureModel),
                 commands.featureDiagram.feature.removeMenu(featureModel.getFeatures(selectedFeatureNames), onDeselectAllFeatures),
                 commands.featureDiagram.feature.collapseMenu(featureModel.getFeatures(selectedFeatureNames),
-                    onCollapseFeature, onExpandFeature, onCollapseFeaturesBelow, onExpandFeaturesBelow, onDeselectAllFeatures)
+                    onCollapseFeatures, onExpandFeatures, onCollapseFeaturesBelow, onExpandFeaturesBelow, onDeselectAllFeatures)
             ],
             selectAll: onSelectAll => ({
                 key: 'selectAll',
@@ -267,7 +267,7 @@ const commands = {
                 secondaryText: getShortcutText('featureDiagram.feature.deselectAll'),
                 onClick: onDeselectAll
             }),
-            collapseMenu: (features, onCollapseFeature, onExpandFeature,
+            collapseMenu: (features, onCollapseFeatures, onExpandFeatures,
                 onCollapseFeaturesBelow, onExpandFeaturesBelow, onClick, iconOnly = false) => {
                 const isSingleFeature = features.length === 1,
                     isCollapsedSingleFeature = isSingleFeature && features[0].isCollapsed,
@@ -282,9 +282,9 @@ const commands = {
                     onClick: isSingleFeature
                         ? () => {
                             if (features[0].isCollapsed)
-                                onExpandFeature([features[0].name]);
+                                onExpandFeatures([features[0].name]);
                             else
-                                onCollapseFeature([features[0].name]);
+                                onCollapseFeatures([features[0].name]);
                             onClick();
                         }
                         : null,
@@ -300,9 +300,9 @@ const commands = {
                                     iconProps: {iconName: features[0].isCollapsed ? 'ExploreContentSingle' : 'CollapseContentSingle'},
                                     onClick: () => {
                                         if (features[0].isCollapsed)
-                                            onExpandFeature([features[0].name]);
+                                            onExpandFeatures([features[0].name]);
                                         else
-                                            onCollapseFeature([features[0].name]);
+                                            onCollapseFeatures([features[0].name]);
                                         onClick();
                                     }
                                 }]
@@ -312,7 +312,7 @@ const commands = {
                                     secondaryText: getShortcutText('featureDiagram.feature.collapse'),
                                     iconProps: {iconName: 'CollapseContentSingle'},
                                     onClick: () => {
-                                        onCollapseFeature(featureNames);
+                                        onCollapseFeatures(featureNames);
                                         onClick();
                                     }
                                 }, {
@@ -321,7 +321,7 @@ const commands = {
                                     secondaryText: getShortcutText('featureDiagram.feature.expand'),
                                     iconProps: {iconName: 'ExploreContentSingle'},
                                     onClick: () => {
-                                        onExpandFeature(featureNames);
+                                        onExpandFeatures(featureNames);
                                         onClick();
                                     }
                                 }],

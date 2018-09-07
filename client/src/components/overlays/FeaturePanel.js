@@ -17,8 +17,8 @@ export default class extends FeatureComponent({onDismissProp: 'onDismissed'}) {
         featureName: PropTypes.string.isRequired,
         isOpen: PropTypes.bool.isRequired,
         onShowOverlay: PropTypes.func.isRequired,
-        onCollapseFeature: PropTypes.func.isRequired,
-        onExpandFeature: PropTypes.func.isRequired,
+        onCollapseFeatures: PropTypes.func.isRequired,
+        onExpandFeatures: PropTypes.func.isRequired,
         onCollapseFeaturesBelow: PropTypes.func.isRequired,
         onExpandFeaturesBelow: PropTypes.func.isRequired
     };
@@ -31,7 +31,7 @@ export default class extends FeatureComponent({onDismissProp: 'onDismissed'}) {
             ])}
             overflowItems={[
                 commands.featureDiagram.feature.collapseMenu(
-                    [this.feature], this.props.onCollapseFeature, this.props.onExpandFeature,
+                    [this.feature], this.props.onCollapseFeatures, this.props.onExpandFeatures,
                     this.props.onCollapseFeaturesBelow, this.props.onExpandFeaturesBelow, this.props.onDismissed),
                 commands.featureDiagram.feature.rename(this.props.featureName, this.props.onShowOverlay),
                 commands.featureDiagram.feature.setDescription(this.props.featureName, this.props.onShowOverlay),

@@ -13,8 +13,8 @@ export default class extends FeatureComponent({doUpdate: true}) {
     static propTypes = {
         onDismiss: PropTypes.func.isRequired,
         onDeselectAllFeatures: PropTypes.func.isRequired,
-        onCollapseFeature: PropTypes.func.isRequired,
-        onExpandFeature: PropTypes.func.isRequired,
+        onCollapseFeatures: PropTypes.func.isRequired,
+        onExpandFeatures: PropTypes.func.isRequired,
         isSelectMultipleFeatures: PropTypes.bool.isRequired,
         selectedFeatureNames: PropTypes.arrayOf(PropTypes.string).isRequired,
         featureModel: FeatureModelType.isRequired,
@@ -45,13 +45,13 @@ export default class extends FeatureComponent({doUpdate: true}) {
                         : DirectionalHint.rightCenter}
                 items={isSelectMultipleFeatures
                     ? commands.featureDiagram.feature.selectionItems(selectedFeatureNames, onDeselectAllFeatures,
-                        this.props.onCollapseFeature, this.props.onExpandFeature, this.props.onCollapseFeaturesBelow,
+                        this.props.onCollapseFeatures, this.props.onExpandFeatures, this.props.onCollapseFeaturesBelow,
                         this.props.onExpandFeaturesBelow, featureModel)
                     : [
                         commands.featureDiagram.feature.newMenu(feature.name, onDismiss),
                         commands.featureDiagram.feature.removeMenu([feature], onDismiss),
                         commands.featureDiagram.feature.collapseMenu(
-                            [feature], this.props.onCollapseFeature, this.props.onExpandFeature,
+                            [feature], this.props.onCollapseFeatures, this.props.onExpandFeatures,
                             this.props.onCollapseFeaturesBelow, this.props.onExpandFeaturesBelow, onDismiss),
                         makeDivider(),
                         commands.featureDiagram.feature.rename(feature.name, this.props.onShowOverlay),
