@@ -1,4 +1,4 @@
-import commands, {makeDivider} from '../components/commands';
+import commands, {makeDivider, removeCommand, collapseCommand} from '../components/commands';
 import UserFacepile from '../components/UserFacepile';
 import {CommandBar} from '../../node_modules/office-ui-fabric-react/lib/CommandBar';
 import React from 'react';
@@ -114,15 +114,29 @@ export default connect(
     getShortcutKeyBinding('settings', ({props}) => props.onShowOverlay(overlayTypes.settingsPanel)),
     getShortcutKeyBinding('featureDiagram.feature.selectAll', ({props}) => props.onSelectAllFeatures()),
     getShortcutKeyBinding('featureDiagram.feature.deselectAll', ({props}) => props.onDeselectAllFeatures()),
-    getShortcutKeyBinding('featureDiagram.feature.collapse', ({props}) =>
-        props.isSelectMultipleFeatures
-            ? props.onCollapseFeatures(props.selectedFeatureNames)
-            : props.onCollapseAllFeatures()),
-    getShortcutKeyBinding('featureDiagram.feature.expand', ({props}) =>
-        props.isSelectMultipleFeatures
-            ? props.onExpandFeatures(props.selectedFeatureNames)
-            : props.onExpandAllFeatures()),
-    getShortcutKeyBinding('featureDiagram.feature.remove', ({props}) =>
-        props.isSelectMultipleFeatures &&
-        actions.server.featureDiagram.feature.remove(props.selectedFeatureNames))
+    getShortcutKeyBinding('featureDiagram.feature.remove', ({props}) => {
+        const {disabled, action} = removeCommand(props.featureModel.getFeatures(props.selectedFeatureNames));
+        if (props.isSelectMultipleFeatures && !disabled)
+            action();
+    }),
+    getShortcutKeyBinding('featureDiagram.feature.collapse', ({props}) => {
+        if (!props.isSelectMultipleFeatures) {
+            props.onCollapseAllFeatures();
+            return;
+        }
+        const {disabled, action} = collapseCommand(props.featureModel.getFeatures(props.selectedFeatureNames),
+            props.onCollapseFeatures, props.onExpandFeatures);
+        if (!disabled)
+            action(props.onCollapseFeatures);
+    }),
+    getShortcutKeyBinding('featureDiagram.feature.expand', ({props}) => {
+        if (!props.isSelectMultipleFeatures) {
+            props.onExpandAllFeatures();
+            return;
+        }
+        const {disabled, action} = collapseCommand(props.featureModel.getFeatures(props.selectedFeatureNames),
+            props.onCollapseFeatures, props.onExpandFeatures);
+        if (!disabled)
+            action(props.onExpandFeatures);
+    })
 )(CommandBarContainer));

@@ -57,7 +57,7 @@ exports[`FeatureContextualMenu renders correctly for a selection of features 1`]
           "iconName": "CollapseContentSingle",
         },
         "key": "collapseMenu",
-        "onClick": null,
+        "onClick": [Function],
         "split": false,
         "subMenuProps": Object {
           "items": Array [
