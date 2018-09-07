@@ -1,14 +1,11 @@
-import commands, {makeDivider, removeCommand, collapseCommand} from '../components/commands';
+import commands, {makeDivider} from '../components/commands';
 import UserFacepile from '../components/UserFacepile';
 import {CommandBar} from '../../node_modules/office-ui-fabric-react/lib/CommandBar';
 import React from 'react';
-import connect from 'react-redux/es/connect/connect';
+import {connect} from 'react-redux';
 import {getFeatureModel} from '../store/selectors';
 import actions from '../store/actions';
-import withKeys from '../helpers/withKeys';
 import i18n from '../i18n';
-import {overlayTypes} from '../types';
-import {getShortcutKeyBinding} from '../shortcuts';
 
 /* eslint-disable react/prop-types */
 const CommandBarContainer = props => (
@@ -91,8 +88,7 @@ export default connect(
         selectedFeatureNames: state.ui.selectedFeatureNames,
         users: state.server.users,
         settings: state.settings,
-        featureModel: getFeatureModel(state),
-        isKeyBindingActive: !state.ui.overlay
+        featureModel: getFeatureModel(state)
     }),
     dispatch => ({
         onSetFeatureDiagramLayout: layout => dispatch(actions.ui.featureDiagram.setLayout(layout)),
@@ -108,35 +104,4 @@ export default connect(
         onShowOverlay: (...args) => dispatch(actions.ui.overlay.show(...args)),
         onFitToScreen: () => dispatch(actions.ui.featureDiagram.fitToScreen())
     })
-)(withKeys(
-    getShortcutKeyBinding('undo', actions.server.undo),
-    getShortcutKeyBinding('redo', actions.server.redo),
-    getShortcutKeyBinding('settings', ({props}) => props.onShowOverlay(overlayTypes.settingsPanel)),
-    getShortcutKeyBinding('featureDiagram.feature.selectAll', ({props}) => props.onSelectAllFeatures()),
-    getShortcutKeyBinding('featureDiagram.feature.deselectAll', ({props}) => props.onDeselectAllFeatures()),
-    getShortcutKeyBinding('featureDiagram.feature.remove', ({props}) => {
-        const {disabled, action} = removeCommand(props.featureModel.getFeatures(props.selectedFeatureNames));
-        if (props.isSelectMultipleFeatures && !disabled)
-            action();
-    }),
-    getShortcutKeyBinding('featureDiagram.feature.collapse', ({props}) => {
-        if (!props.isSelectMultipleFeatures) {
-            props.onCollapseAllFeatures();
-            return;
-        }
-        const {disabled, action} = collapseCommand(props.featureModel.getFeatures(props.selectedFeatureNames),
-            props.onCollapseFeatures, props.onExpandFeatures);
-        if (!disabled)
-            action(props.onCollapseFeatures);
-    }),
-    getShortcutKeyBinding('featureDiagram.feature.expand', ({props}) => {
-        if (!props.isSelectMultipleFeatures) {
-            props.onExpandAllFeatures();
-            return;
-        }
-        const {disabled, action} = collapseCommand(props.featureModel.getFeatures(props.selectedFeatureNames),
-            props.onCollapseFeatures, props.onExpandFeatures);
-        if (!disabled)
-            action(props.onExpandFeatures);
-    })
-)(CommandBarContainer));
+)(CommandBarContainer);

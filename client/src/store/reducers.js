@@ -83,8 +83,8 @@ function finalReducer(state, action) {
 
 function updateOverlay(state, overlay, overlayProps) {
     if (!state.isSelectMultipleFeatures &&
-        overlayTypes.isShownAtSelectedFeature(state.overlay) &&
-        !overlayTypes.isShownAtSelectedFeature(overlay))
+        overlayTypes.isFloatingFeature(state.overlay) &&
+        !overlayTypes.isFloatingFeature(overlay))
         return {...state, overlay, overlayProps, selectedFeatureNames: []};
     else
         return {...state, overlay, overlayProps};

@@ -5,6 +5,7 @@ import {connect} from 'react-redux';
 import {Fabric} from 'office-ui-fabric-react/lib/Fabric';
 import OverlayContainer from './overlays/OverlayContainer';
 import CommandBarContainer from './CommandBarContainer';
+import ShortcutContainer from './ShortcutContainer';
 
 /* eslint-disable react/prop-types */
 class AppContainer extends React.Component {
@@ -20,6 +21,7 @@ class AppContainer extends React.Component {
                 </div>
                 <FeatureDiagramContainer className="content"/>
                 <OverlayContainer/>
+                <ShortcutContainer/>
             </Fabric>
         );
     }

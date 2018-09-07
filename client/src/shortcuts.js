@@ -19,24 +19,24 @@ function shortcutText(...keys) {
 
 const shortcut = key => ({
     text: key,
-    keyBinding: action => ({
-        key: ({event, props}) => props.isKeyBindingActive && event.key === key,
+    keyBinding: (conditionFn, action) => ({
+        key: ({event, props}) => conditionFn(props) && event.key === key,
         action
     })
 });
 
 const commandShortcut = key => ({
     text: shortcutText(COMMAND, key),
-    keyBinding: action => ({
-        key: ({event, props}) => props.isKeyBindingActive && event.isCommand(key),
+    keyBinding: (conditionFn, action) => ({
+        key: ({event, props}) => conditionFn(props) && event.isCommand(key),
         action
     })
 });
 
 const shiftCommandShortcut = key => ({
     text: shortcutText(SHIFT, COMMAND, key),
-    keyBinding: action => ({
-        key: ({event, props}) => props.isKeyBindingActive && event.isShiftCommand(key),
+    keyBinding: (conditionFn, action) => ({
+        key: ({event, props}) => conditionFn(props) && event.isShiftCommand(key),
         action
     })
 });
@@ -50,9 +50,9 @@ export const shortcuts = {
             new: commandShortcut('n'),
             remove: {
                 text: '⌫',
-                keyBinding: action => ({
-                    key: ({event, props}) => props.isKeyBindingActive &&
-                        (event.key === 'Backspace' || event.key === 'Delete'),
+                keyBinding: (conditionFn, action) => ({
+                    key: ({event, props}) =>
+                        conditionFn(props) && (event.key === 'Backspace' || event.key === 'Delete'),
                     action
                 })
             },
@@ -73,8 +73,8 @@ function getShortcut(...paths) {
     return objectPath.get(shortcuts, path);
 }
 
-export function getShortcutKeyBinding(path, action) {
-    return getShortcut(path).keyBinding(action);
+export function getShortcutKeyBinding(path, conditionFn, action) {
+    return getShortcut(path).keyBinding(conditionFn, action);
 }
 
 export function getShortcutText(...paths) {
