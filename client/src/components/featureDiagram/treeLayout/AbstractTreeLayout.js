@@ -22,6 +22,7 @@ export default class extends React.Component {
         overlay: OverlayType,
         overlayProps: PropTypes.object,
         onShowOverlay: PropTypes.func.isRequired,
+        onHideOverlay: PropTypes.func.isRequired,
         onSetSelectMultipleFeatures: PropTypes.func.isRequired,
         onSelectFeature: PropTypes.func.isRequired,
         onDeselectFeature: PropTypes.func.isRequired,
@@ -54,7 +55,6 @@ export default class extends React.Component {
 
     componentDidMount() {
         this.renderD3();
-        this.updateSelection();
     }
 
     componentDidUpdate(prevProps) {
@@ -92,8 +92,12 @@ export default class extends React.Component {
     setActiveNode(overlay, activeNode) {
         const featureName = activeNode.feature().name;
         if (this.props.isSelectMultipleFeatures) {
-            if (overlay === overlayTypes.featureCallout || overlay === 'select')
+            if (overlay === overlayTypes.featureCallout || overlay === 'select') {
                 this.toggleSelectedNode(activeNode);
+                if (this.props.overlay === overlayTypes.featureContextualMenu &&
+                    this.props.overlayProps.featureName === featureName)
+                    this.props.onHideOverlay(overlayTypes.featureContextualMenu);
+            }
             else if (overlay === overlayTypes.featureContextualMenu &&
                 this.props.selectedFeatureNames.includes(featureName))
                 this.props.onShowOverlay(overlay, {featureName});
@@ -259,6 +263,7 @@ export default class extends React.Component {
         this.treeLink.update(this.treeLink.enter(linkInBack.enter(), 'inBack'), 'inBack');
         this.treeLink.update(this.treeLink.enter(linkInFront.enter(), 'inFront'), 'inFront');
         this.updateCoordinates('previousCoordinates', nodes);
+        this.updateSelection(node);
     }
 
     updateD3(isResize) {
@@ -277,10 +282,11 @@ export default class extends React.Component {
         this.treeLink.exit(this.transition(linkInFront.exit()), 'inFront');
 
         this.updateCoordinates('previousCoordinates', nodes);
+        this.updateSelection(node);
     }
 
-    updateSelection() {
-        const {node} = this.joinData(false, false, true);
+    updateSelection(node) {
+        ({node} = this.joinData(false, false, true));
         node.filter(d => this.props.selectedFeatureNames.includes(d.feature().name)).attr('class', 'node selected');
         node.filter(d => !this.props.selectedFeatureNames.includes(d.feature().name)).attr('class', 'node');
     }

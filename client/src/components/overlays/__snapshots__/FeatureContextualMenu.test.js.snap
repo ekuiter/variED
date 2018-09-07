@@ -50,6 +50,59 @@ exports[`FeatureContextualMenu renders correctly for a selection of features 1`]
         },
         "text": "Remove",
       },
+      Object {
+        "disabled": false,
+        "iconOnly": false,
+        "iconProps": Object {
+          "iconName": "CollapseContentSingle",
+        },
+        "key": "collapseMenu",
+        "onClick": null,
+        "split": false,
+        "subMenuProps": Object {
+          "items": Array [
+            Object {
+              "iconProps": Object {
+                "iconName": "CollapseContentSingle",
+              },
+              "key": "collapse",
+              "onClick": [Function],
+              "secondaryText": "Ctrl+C",
+              "text": "Collapse features",
+            },
+            Object {
+              "iconProps": Object {
+                "iconName": "ExploreContentSingle",
+              },
+              "key": "expand",
+              "onClick": [Function],
+              "secondaryText": "⇧+Ctrl+C",
+              "text": "Expand features",
+            },
+            Object {
+              "itemType": 1,
+              "key": "divider",
+            },
+            Object {
+              "iconProps": Object {
+                "iconName": "CollapseContent",
+              },
+              "key": "collapseBelow",
+              "onClick": [Function],
+              "text": "Collapse features below",
+            },
+            Object {
+              "iconProps": Object {
+                "iconName": "ExploreContent",
+              },
+              "key": "expandBelow",
+              "onClick": [Function],
+              "text": "Expand features below",
+            },
+          ],
+        },
+        "text": "Collapse",
+      },
     ]
   }
   onDismiss={[Function]}
@@ -149,6 +202,10 @@ exports[`FeatureContextualMenu renders correctly for a single feature 1`] = `
               "onClick": [Function],
               "secondaryText": "Ctrl+C",
               "text": "Collapse feature",
+            },
+            Object {
+              "itemType": 1,
+              "key": "divider",
             },
             Object {
               "iconProps": Object {

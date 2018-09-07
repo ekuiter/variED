@@ -31,13 +31,13 @@ describe('actions', () => {
             });
 
             it('is collapsed', () => {
-                expect(actions.ui.featureDiagram.feature.collapse('FeatureIDE'))
-                    .toEqual({type: 'UI/FEATURE_DIAGRAM/FEATURE/COLLAPSE', payload: {featureName: 'FeatureIDE'}});
+                expect(actions.ui.featureDiagram.feature.collapse(['FeatureIDE']))
+                    .toEqual({type: 'UI/FEATURE_DIAGRAM/FEATURE/COLLAPSE', payload: {featureNames: ['FeatureIDE']}});
             });
 
             it('is expanded', () => {
-                expect(actions.ui.featureDiagram.feature.expand('FeatureIDE'))
-                    .toEqual({type: 'UI/FEATURE_DIAGRAM/FEATURE/EXPAND', payload: {featureName: 'FeatureIDE'}});
+                expect(actions.ui.featureDiagram.feature.expand(['FeatureIDE']))
+                    .toEqual({type: 'UI/FEATURE_DIAGRAM/FEATURE/EXPAND', payload: {featureNames: ['FeatureIDE']}});
             });
         });
 

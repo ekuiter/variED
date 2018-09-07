@@ -58,7 +58,9 @@ export const strings = {
                     title: isCollapsed => isCollapsed ? 'Expand' : 'Collapse',
                     collapse: isCollapsed => isCollapsed ? 'Expand feature' : 'Collapse feature',
                     collapseBelow: 'Collapse features below',
-                    expandBelow: 'Expand features below'
+                    expandBelow: 'Expand features below',
+                    collapseMultiple: 'Collapse features',
+                    expandMultiple: 'Expand features'
                 },
                 collapseAll: 'Collapse all features',
                 expandAll: 'Expand all features'

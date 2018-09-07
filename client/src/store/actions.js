@@ -17,12 +17,12 @@ const actions = createActions({
                 SELECT_ALL: () => {},
                 DESELECT_ALL: () => {},
 
-                COLLAPSE: featureName => ({featureName}),
-                EXPAND: featureName => ({featureName}),
+                COLLAPSE: featureNames => ({featureNames}),
+                EXPAND: featureNames => ({featureNames}),
                 COLLAPSE_ALL: () => {},
                 EXPAND_ALL: () => {},
-                COLLAPSE_BELOW: featureName => ({featureName}),
-                EXPAND_BELOW: featureName => ({featureName})
+                COLLAPSE_BELOW: featureNames => ({featureNames}),
+                EXPAND_BELOW: featureNames => ({featureNames})
             }
         },
         OVERLAY: {

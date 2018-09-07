@@ -129,6 +129,10 @@ exports[`FeatureCallout renders information for a feature with a description 1`]
                   "text": "Collapse feature",
                 },
                 Object {
+                  "itemType": 1,
+                  "key": "divider",
+                },
+                Object {
                   "iconProps": Object {
                     "iconName": "CollapseContent",
                   },
@@ -278,6 +282,10 @@ exports[`FeatureCallout renders information for a feature without a description 
                   "onClick": [Function],
                   "secondaryText": "Ctrl+C",
                   "text": "Collapse feature",
+                },
+                Object {
+                  "itemType": 1,
+                  "key": "divider",
                 },
                 Object {
                   "iconProps": Object {

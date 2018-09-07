@@ -44,12 +44,14 @@ export default class extends FeatureComponent({doUpdate: true}) {
                         ? DirectionalHint.bottomCenter
                         : DirectionalHint.rightCenter}
                 items={isSelectMultipleFeatures
-                    ? commands.featureDiagram.feature.selectionItems(selectedFeatureNames, onDeselectAllFeatures, featureModel)
+                    ? commands.featureDiagram.feature.selectionItems(selectedFeatureNames, onDeselectAllFeatures,
+                        this.props.onCollapseFeature, this.props.onExpandFeature, this.props.onCollapseFeaturesBelow,
+                        this.props.onExpandFeaturesBelow, featureModel)
                     : [
                         commands.featureDiagram.feature.newMenu(feature.name, onDismiss),
                         commands.featureDiagram.feature.removeMenu([feature], onDismiss),
                         commands.featureDiagram.feature.collapseMenu(
-                            feature, this.props.onCollapseFeature, this.props.onExpandFeature,
+                            [feature], this.props.onCollapseFeature, this.props.onExpandFeature,
                             this.props.onCollapseFeaturesBelow, this.props.onExpandFeaturesBelow, onDismiss),
                         makeDivider(),
                         commands.featureDiagram.feature.rename(feature.name, this.props.onShowOverlay),

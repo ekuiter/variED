@@ -31,7 +31,7 @@ export default class extends FeatureComponent({onDismissProp: 'onDismissed'}) {
             ])}
             overflowItems={[
                 commands.featureDiagram.feature.collapseMenu(
-                    this.feature, this.props.onCollapseFeature, this.props.onExpandFeature,
+                    [this.feature], this.props.onCollapseFeature, this.props.onExpandFeature,
                     this.props.onCollapseFeaturesBelow, this.props.onExpandFeaturesBelow, this.props.onDismissed),
                 commands.featureDiagram.feature.rename(this.props.featureName, this.props.onShowOverlay),
                 commands.featureDiagram.feature.setDescription(this.props.featureName, this.props.onShowOverlay),

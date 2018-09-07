@@ -41,6 +41,10 @@ const CommandBarContainer = props => (
                         props.onSetSelectMultipleFeatures,
                         props.selectedFeatureNames,
                         props.onDeselectAllFeatures,
+                        props.onCollapseFeature,
+                        props.onExpandFeature,
+                        props.onCollapseFeaturesBelow,
+                        props.onExpandFeaturesBelow,
                         props.featureModel)
                 ]
             }
@@ -97,6 +101,10 @@ export default connect(
         onDeselectAllFeatures: () => dispatch(actions.ui.featureDiagram.feature.deselectAll()),
         onCollapseAllFeatures: () => dispatch(actions.ui.featureDiagram.feature.collapseAll()),
         onExpandAllFeatures: () => dispatch(actions.ui.featureDiagram.feature.expandAll()),
+        onCollapseFeature: featureNames => dispatch(actions.ui.featureDiagram.feature.collapse(featureNames)),
+        onExpandFeature: featureNames => dispatch(actions.ui.featureDiagram.feature.expand(featureNames)),
+        onCollapseFeaturesBelow: featureNames => dispatch(actions.ui.featureDiagram.feature.collapseBelow(featureNames)),
+        onExpandFeaturesBelow: featureNames => dispatch(actions.ui.featureDiagram.feature.expandBelow(featureNames)),
         onShowOverlay: (...args) => dispatch(actions.ui.overlay.show(...args)),
         onFitToScreen: () => dispatch(actions.ui.featureDiagram.fitToScreen())
     })
@@ -106,8 +114,14 @@ export default connect(
     getShortcutKeyBinding('settings', ({props}) => props.onShowOverlay(overlayTypes.settingsPanel)),
     getShortcutKeyBinding('featureDiagram.feature.selectAll', ({props}) => props.onSelectAllFeatures()),
     getShortcutKeyBinding('featureDiagram.feature.deselectAll', ({props}) => props.onDeselectAllFeatures()),
-    getShortcutKeyBinding('featureDiagram.feature.collapse', ({props}) => props.onCollapseAllFeatures()),
-    getShortcutKeyBinding('featureDiagram.feature.expand', ({props}) => props.onExpandAllFeatures()),
+    getShortcutKeyBinding('featureDiagram.feature.collapse', ({props}) =>
+        props.isSelectMultipleFeatures
+            ? props.onCollapseFeature(props.selectedFeatureNames)
+            : props.onCollapseAllFeatures()),
+    getShortcutKeyBinding('featureDiagram.feature.expand', ({props}) =>
+        props.isSelectMultipleFeatures
+            ? props.onExpandFeature(props.selectedFeatureNames)
+            : props.onExpandAllFeatures()),
     getShortcutKeyBinding('featureDiagram.feature.remove', ({props}) =>
         props.isSelectMultipleFeatures &&
         actions.server.featureDiagram.feature.remove(props.selectedFeatureNames))

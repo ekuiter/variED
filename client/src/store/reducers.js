@@ -98,6 +98,12 @@ function fitToScreen(rootState, uiState) {
         : uiState;
 }
 
+function getFeatureNamesBelowWithActualChildren(rootState, featureNames) {
+    return featureNames.map(featureName =>
+        getFeatureModel(rootState).getFeatureNamesBelowWithActualChildren(featureName))
+        .reduce((acc, children) => acc.concat(children), []);
+}
+
 const uiReducer = rootState => handleActions({
     UI: {
         FEATURE_DIAGRAM: {
@@ -126,10 +132,10 @@ const uiReducer = rootState => handleActions({
                 DESELECT_ALL: state =>
                     ({...state, selectedFeatureNames: [], isSelectMultipleFeatures: false}),
 
-                COLLAPSE: (state, {payload: {featureName}}) =>
-                    ({...state, collapsedFeatureNames: uniqueArrayAdd(state.collapsedFeatureNames, featureName)}),
-                EXPAND: (state, {payload: {featureName}}) =>
-                    ({...state, collapsedFeatureNames: uniqueArrayRemove(state.collapsedFeatureNames, featureName)}),
+                COLLAPSE: (state, {payload: {featureNames}}) =>
+                    ({...state, collapsedFeatureNames: uniqueArrayAdd(state.collapsedFeatureNames, featureNames)}),
+                EXPAND: (state, {payload: {featureNames}}) =>
+                    ({...state, collapsedFeatureNames: uniqueArrayRemove(state.collapsedFeatureNames, featureNames)}),
                 COLLAPSE_ALL: state => 
                     rootState.server.featureModel
                         ? {
@@ -138,20 +144,20 @@ const uiReducer = rootState => handleActions({
                         }
                         : state,
                 EXPAND_ALL: state => ({...state, collapsedFeatureNames: []}),
-                COLLAPSE_BELOW: (state, {payload: {featureName}}) =>
+                COLLAPSE_BELOW: (state, {payload: {featureNames}}) =>
                     rootState.server.featureModel
                         ? {
                             ...state,
                             collapsedFeatureNames: uniqueArrayAdd(state.collapsedFeatureNames,
-                                ...getFeatureModel(rootState).getFeatureNamesBelowWithActualChildren(featureName))
+                                getFeatureNamesBelowWithActualChildren(rootState, featureNames))
                         }
                         : state,
-                EXPAND_BELOW: (state, {payload: {featureName}}) =>
+                EXPAND_BELOW: (state, {payload: {featureNames}}) =>
                     rootState.server.featureModel
                         ? {
                             ...state,
                             collapsedFeatureNames: uniqueArrayRemove(state.collapsedFeatureNames,
-                                ...getFeatureModel(rootState).getFeatureNamesBelowWithActualChildren(featureName))
+                                getFeatureNamesBelowWithActualChildren(rootState, featureNames))
                         }
                         : state
             }

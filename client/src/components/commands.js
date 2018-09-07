@@ -238,17 +238,22 @@ const commands = {
                 });
             },
             selection: (isSelectMultipleFeatures, onSetSelectMultipleFeatures,
-                selectedFeatureNames, onDeselectAllFeatures, featureModel) => ({
+                selectedFeatureNames, onDeselectAllFeatures, onCollapseFeature,
+                onExpandFeature, onCollapseFeaturesBelow, onExpandFeaturesBelow, featureModel) => ({
                 key: 'selection',
                 text: i18n.t('commands.featureDiagram.feature.selection')(isSelectMultipleFeatures, selectedFeatureNames),
                 onClick: () => onSetSelectMultipleFeatures(!isSelectMultipleFeatures), // TODO: tell the user he can choose features now
                 subMenuProps: isSelectMultipleFeatures
-                    ? {items: commands.featureDiagram.feature.selectionItems(selectedFeatureNames, onDeselectAllFeatures, featureModel)}
+                    ? {items: commands.featureDiagram.feature.selectionItems(selectedFeatureNames, onDeselectAllFeatures,
+                        onCollapseFeature, onExpandFeature, onCollapseFeaturesBelow, onExpandFeaturesBelow, featureModel)}
                     : null
             }),
-            selectionItems: (selectedFeatureNames, onDeselectAllFeatures, featureModel) => [
+            selectionItems: (selectedFeatureNames, onDeselectAllFeatures, onCollapseFeature,
+                onExpandFeature, onCollapseFeaturesBelow, onExpandFeaturesBelow, featureModel) => [
                 commands.featureDiagram.feature.newAbove(selectedFeatureNames, onDeselectAllFeatures, featureModel),
-                commands.featureDiagram.feature.removeMenu(featureModel.getFeatures(selectedFeatureNames), onDeselectAllFeatures)
+                commands.featureDiagram.feature.removeMenu(featureModel.getFeatures(selectedFeatureNames), onDeselectAllFeatures),
+                commands.featureDiagram.feature.collapseMenu(featureModel.getFeatures(selectedFeatureNames),
+                    onCollapseFeature, onExpandFeature, onCollapseFeaturesBelow, onExpandFeaturesBelow, onDeselectAllFeatures)
             ],
             selectAll: onSelectAll => ({
                 key: 'selectAll',
@@ -262,55 +267,85 @@ const commands = {
                 secondaryText: getShortcutText('featureDiagram.feature.deselectAll'),
                 onClick: onDeselectAll
             }),
-            collapseMenu: (feature, onCollapseFeature, onExpandFeature,
-                onCollapseFeaturesBelow, onExpandFeaturesBelow, onClick, iconOnly = false) => ({
-                key: 'collapseMenu',
-                text: !iconOnly ? i18n.t('commands.featureDiagram.feature.collapseMenu.title')(feature.isCollapsed) : null,
-                iconProps: {iconName: feature.isCollapsed ? 'ExploreContentSingle' : 'CollapseContentSingle'},
-                iconOnly,
-                split: true,
-                disabled: !feature.hasActualChildren,
-                onClick: () => {
-                    if (feature.isCollapsed)
-                        onExpandFeature(feature.name);
-                    else
-                        onCollapseFeature(feature.name);
-                    onClick();
-                },
-                subMenuProps: {
-                    items: [{
-                        key: 'collapse',
-                        text: i18n.t('commands.featureDiagram.feature.collapseMenu.collapse')(feature.isCollapsed),
-                        secondaryText: feature.isCollapsed
-                            ? getShortcutText('featureDiagram.feature.expand')
-                            : getShortcutText('featureDiagram.feature.collapse'),
-                        iconProps: {iconName: feature.isCollapsed ? 'ExploreContentSingle' : 'CollapseContentSingle'},
-                        onClick: () => {
-                            if (feature.isCollapsed)
-                                onExpandFeature(feature.name);
+            collapseMenu: (features, onCollapseFeature, onExpandFeature,
+                onCollapseFeaturesBelow, onExpandFeaturesBelow, onClick, iconOnly = false) => {
+                const isSingleFeature = features.length === 1,
+                    isCollapsedSingleFeature = isSingleFeature && features[0].isCollapsed,
+                    featureNames = features.map(feature => feature.name);
+                return ({
+                    key: 'collapseMenu',
+                    text: !iconOnly ? i18n.t('commands.featureDiagram.feature.collapseMenu.title')(isCollapsedSingleFeature) : null,
+                    iconProps: {iconName: isCollapsedSingleFeature ? 'ExploreContentSingle' : 'CollapseContentSingle'},
+                    iconOnly,
+                    split: isSingleFeature,
+                    disabled: features.some(feature => !feature.hasActualChildren),
+                    onClick: isSingleFeature
+                        ? () => {
+                            if (features[0].isCollapsed)
+                                onExpandFeature([features[0].name]);
                             else
-                                onCollapseFeature(feature.name);
+                                onCollapseFeature([features[0].name]);
                             onClick();
                         }
-                    }, {
-                        key: 'collapseBelow',
-                        text: i18n.t('commands.featureDiagram.feature.collapseMenu.collapseBelow'),
-                        iconProps: {iconName: 'CollapseContent'},
-                        onClick: () => {
-                            onCollapseFeaturesBelow(feature.name);
-                            onClick();
-                        }
-                    }, {
-                        key: 'expandBelow',
-                        text: i18n.t('commands.featureDiagram.feature.collapseMenu.expandBelow'),
-                        iconProps: {iconName: 'ExploreContent'},
-                        onClick: () => {
-                            onExpandFeaturesBelow(feature.name);
-                            onClick();
-                        }
-                    }]
-                }
-            }),
+                        : null,
+                    subMenuProps: {
+                        items: [
+                            ...isSingleFeature
+                                ? [{
+                                    key: 'collapse',
+                                    text: i18n.t('commands.featureDiagram.feature.collapseMenu.collapse')(features[0].isCollapsed),
+                                    secondaryText: features[0].isCollapsed
+                                        ? getShortcutText('featureDiagram.feature.expand')
+                                        : getShortcutText('featureDiagram.feature.collapse'),
+                                    iconProps: {iconName: features[0].isCollapsed ? 'ExploreContentSingle' : 'CollapseContentSingle'},
+                                    onClick: () => {
+                                        if (features[0].isCollapsed)
+                                            onExpandFeature([features[0].name]);
+                                        else
+                                            onCollapseFeature([features[0].name]);
+                                        onClick();
+                                    }
+                                }]
+                                : [{
+                                    key: 'collapse',
+                                    text: i18n.t('commands.featureDiagram.feature.collapseMenu.collapseMultiple'),
+                                    secondaryText: getShortcutText('featureDiagram.feature.collapse'),
+                                    iconProps: {iconName: 'CollapseContentSingle'},
+                                    onClick: () => {
+                                        onCollapseFeature(featureNames);
+                                        onClick();
+                                    }
+                                }, {
+                                    key: 'expand',
+                                    text: i18n.t('commands.featureDiagram.feature.collapseMenu.expandMultiple'),
+                                    secondaryText: getShortcutText('featureDiagram.feature.expand'),
+                                    iconProps: {iconName: 'ExploreContentSingle'},
+                                    onClick: () => {
+                                        onExpandFeature(featureNames);
+                                        onClick();
+                                    }
+                                }],
+                            makeDivider(), {
+                                key: 'collapseBelow',
+                                text: i18n.t('commands.featureDiagram.feature.collapseMenu.collapseBelow'),
+                                iconProps: {iconName: 'CollapseContent'},
+                                onClick: () => {
+                                    onCollapseFeaturesBelow(featureNames);
+                                    onClick();
+                                }
+                            }, {
+                                key: 'expandBelow',
+                                text: i18n.t('commands.featureDiagram.feature.collapseMenu.expandBelow'),
+                                iconProps: {iconName: 'ExploreContent'},
+                                onClick: () => {
+                                    onExpandFeaturesBelow(featureNames);
+                                    onClick();
+                                }
+                            }
+                        ]
+                    }
+                });
+            },
             collapseAll: onCollapseAllFeatures => ({
                 key: 'collapseAll',
                 text: i18n.t('commands.featureDiagram.feature.collapseAll'),

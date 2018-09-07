@@ -76,19 +76,19 @@ describe('reducers', () => {
             });
 
             it('is collapsed', () => {
-                const state = reducers(undefined, actions.ui.featureDiagram.feature.collapse('FeatureIDE'));
+                const state = reducers(undefined, actions.ui.featureDiagram.feature.collapse(['FeatureIDE']));
                 expect(state.ui.collapsedFeatureNames).toContain('FeatureIDE');
             });
 
             it('is not collapsed multiple times', () => {
-                let state = reducers(undefined, actions.ui.featureDiagram.feature.collapse('FeatureIDE'));
+                let state = reducers(undefined, actions.ui.featureDiagram.feature.collapse(['FeatureIDE']));
                 expect(state.ui.collapsedFeatureNames.filter(name => name === 'FeatureIDE')).toHaveLength(1);
                 state = reducers(state, actions.ui.featureDiagram.feature.collapse('FeatureIDE'));
                 expect(state.ui.collapsedFeatureNames.filter(name => name === 'FeatureIDE')).toHaveLength(1);
             });
 
             it('is expanded', () => {
-                let state = reducers(undefined, actions.ui.featureDiagram.feature.collapse('FeatureIDE'));
+                let state = reducers(undefined, actions.ui.featureDiagram.feature.collapse(['FeatureIDE']));
                 expect(state.ui.collapsedFeatureNames).toContain('FeatureIDE');
                 state = reducers(state, actions.ui.featureDiagram.feature.expand('FeatureIDE'));
                 expect(state.ui.collapsedFeatureNames).not.toContain('FeatureIDE');

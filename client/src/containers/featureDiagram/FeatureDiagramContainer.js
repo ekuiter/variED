@@ -17,6 +17,7 @@ export default connect(
     }),
     dispatch => ({
         onShowOverlay: (...args) => dispatch(actions.ui.overlay.show(...args)),
+        onHideOverlay: overlay => dispatch(actions.ui.overlay.hide(overlay)),
         onSetSelectMultipleFeatures: isSelectMultipleFeatures => dispatch(actions.ui.featureDiagram.feature.setSelectMultiple(isSelectMultipleFeatures)),
         onSelectFeature: featureName => dispatch(actions.ui.featureDiagram.feature.select(featureName)),
         onDeselectFeature: featureName => dispatch(actions.ui.featureDiagram.feature.deselect(featureName)),
