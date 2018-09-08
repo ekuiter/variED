@@ -103,6 +103,96 @@ exports[`FeatureContextualMenu renders correctly for a selection of features 1`]
         },
         "text": "Collapse",
       },
+      Object {
+        "itemType": 1,
+        "key": "divider",
+      },
+      Object {
+        "iconProps": Object {
+          "iconName": "FieldNotChanged",
+        },
+        "key": "propertiesMenu",
+        "subMenuProps": Object {
+          "items": Array [
+            Object {
+              "canCheck": true,
+              "disabled": false,
+              "isChecked": false,
+              "key": "abstract",
+              "onClick": [Function],
+              "text": "Abstract",
+            },
+            Object {
+              "canCheck": true,
+              "disabled": true,
+              "isChecked": true,
+              "key": "concrete",
+              "onClick": [Function],
+              "text": "Concrete",
+            },
+            Object {
+              "itemType": 1,
+              "key": "divider",
+            },
+            Object {
+              "canCheck": true,
+              "isChecked": false,
+              "key": "hidden",
+              "onClick": [Function],
+              "text": "Hidden",
+            },
+            Object {
+              "itemType": 1,
+              "key": "divider",
+            },
+            Object {
+              "canCheck": true,
+              "disabled": true,
+              "isChecked": false,
+              "key": "mandatory",
+              "onClick": [Function],
+              "text": "Mandatory",
+            },
+            Object {
+              "canCheck": true,
+              "disabled": true,
+              "isChecked": false,
+              "key": "optional",
+              "onClick": [Function],
+              "text": "Optional",
+            },
+            Object {
+              "itemType": 1,
+              "key": "divider",
+            },
+            Object {
+              "canCheck": true,
+              "disabled": false,
+              "isChecked": false,
+              "key": "and",
+              "onClick": [Function],
+              "text": "And",
+            },
+            Object {
+              "canCheck": true,
+              "disabled": false,
+              "isChecked": false,
+              "key": "or",
+              "onClick": [Function],
+              "text": "Or",
+            },
+            Object {
+              "canCheck": true,
+              "disabled": false,
+              "isChecked": false,
+              "key": "alternative",
+              "onClick": [Function],
+              "text": "Alternative",
+            },
+          ],
+        },
+        "text": "Properties",
+      },
     ]
   }
   onDismiss={[Function]}
@@ -257,6 +347,7 @@ exports[`FeatureContextualMenu renders correctly for a single feature 1`] = `
           "items": Array [
             Object {
               "canCheck": true,
+              "disabled": false,
               "isChecked": false,
               "key": "abstract",
               "onClick": [Function],
@@ -264,6 +355,7 @@ exports[`FeatureContextualMenu renders correctly for a single feature 1`] = `
             },
             Object {
               "canCheck": true,
+              "disabled": true,
               "isChecked": true,
               "key": "concrete",
               "onClick": [Function],
@@ -294,7 +386,7 @@ exports[`FeatureContextualMenu renders correctly for a single feature 1`] = `
             },
             Object {
               "canCheck": true,
-              "disabled": false,
+              "disabled": true,
               "isChecked": true,
               "key": "optional",
               "onClick": [Function],
@@ -314,7 +406,7 @@ exports[`FeatureContextualMenu renders correctly for a single feature 1`] = `
             },
             Object {
               "canCheck": true,
-              "disabled": false,
+              "disabled": true,
               "isChecked": true,
               "key": "or",
               "onClick": [Function],

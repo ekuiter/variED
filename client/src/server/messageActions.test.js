@@ -42,19 +42,19 @@ describe('messageActions', () => {
 
         describe('properties', () => {
             it('sets the abstract property', () => {
-                messageActions.featureDiagram.feature.properties.setAbstract('FeatureIDE', true);
+                messageActions.featureDiagram.feature.properties.setAbstract(['FeatureIDE'], true);
                 expect(sendMessage).lastCalledWith(
                     {type: messageTypes.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY, feature: 'FeatureIDE', property: propertyTypes.abstract, value: true});
             });
 
             it('sets the hidden property', () => {
-                messageActions.featureDiagram.feature.properties.setHidden('FeatureIDE', true);
+                messageActions.featureDiagram.feature.properties.setHidden(['FeatureIDE'], true);
                 expect(sendMessage).lastCalledWith(
                     {type: messageTypes.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY, feature: 'FeatureIDE', property: propertyTypes.hidden, value: true});
             });
 
             it('sets the mandatory property', () => {
-                messageActions.featureDiagram.feature.properties.setMandatory('FeatureIDE', true);
+                messageActions.featureDiagram.feature.properties.setMandatory(['FeatureIDE'], true);
                 expect(sendMessage).lastCalledWith(
                     {type: messageTypes.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY, feature: 'FeatureIDE', property: propertyTypes.mandatory, value: true});
             });
@@ -70,7 +70,7 @@ describe('messageActions', () => {
             });
 
             it('changes the group type to and', () => {
-                messageActions.featureDiagram.feature.properties.setAnd('FeatureIDE');
+                messageActions.featureDiagram.feature.properties.setAnd(['FeatureIDE']);
                 expect(sendMessage).lastCalledWith({
                     type: messageTypes.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
                     feature: 'FeatureIDE',
@@ -80,7 +80,7 @@ describe('messageActions', () => {
             });
 
             it('changes the group type to or', () => {
-                messageActions.featureDiagram.feature.properties.setOr('FeatureIDE');
+                messageActions.featureDiagram.feature.properties.setOr(['FeatureIDE']);
                 expect(sendMessage).lastCalledWith({
                     type: messageTypes.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
                     feature: 'FeatureIDE',
@@ -90,7 +90,7 @@ describe('messageActions', () => {
             });
 
             it('changes the group type to alternative', () => {
-                messageActions.featureDiagram.feature.properties.setAlternative('FeatureIDE');
+                messageActions.featureDiagram.feature.properties.setAlternative(['FeatureIDE']);
                 expect(sendMessage).lastCalledWith({
                     type: messageTypes.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
                     feature: 'FeatureIDE',

@@ -42,7 +42,7 @@ describe('FeaturePanel', () => {
     
     it('renders footer content', () => {
         const wrapper = featurePanel(),
-            footerWrapper = shallow(wrapper.instance().onRenderFooterContent());
-        expect(footerWrapper.prop('items')).not.toHaveLength(0);
+            footer = wrapper.instance().onRenderFooterContent();
+        expect(footer.props.items).not.toHaveLength(0);
     });
 });
