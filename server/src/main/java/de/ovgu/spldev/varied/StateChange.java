@@ -231,7 +231,7 @@ public abstract class StateChange {
                 private IFeature newCompound;
                 private IFeature child;
                 private LinkedList<IFeature> selectedFeatures;
-                private HashMap<IFeature, Integer> children = new HashMap<>();
+                private TreeMap<Integer, IFeature> children = new TreeMap<>();
                 private boolean parentOr = false;
                 private boolean parentAlternative = false;
 
@@ -259,7 +259,7 @@ public abstract class StateChange {
                         newCompound.getStructure().setMultiple(parent.isMultiple());
                         final int index = parent.getChildIndex(child.getStructure());
                         for (final IFeature iFeature : selectedFeatures) {
-                            children.put(iFeature, parent.getChildIndex(iFeature.getStructure()));
+                            children.put(parent.getChildIndex(iFeature.getStructure()), iFeature);
                         }
                         for (final IFeature iFeature : selectedFeatures) {
                             parent.removeChild(iFeature.getStructure());
@@ -288,13 +288,12 @@ public abstract class StateChange {
                 }
 
                 public Message.IEncodable[] _undo() {
-                    // TODO: does not restore original position/order of features (relevant selectedFeatures.size() > 1)
                     final IFeatureStructure parent = newCompound.getStructure().getParent();
                     if (parent != null) {
                         newCompound.getStructure().setChildren(Collections.emptyList());
                         featureModel.deleteFeature(newCompound);
-                        for (final IFeature iFeature : children.keySet()) {
-                            parent.addChildAtPosition(children.get(iFeature), iFeature.getStructure());
+                        for (final Integer position : children.keySet()) {
+                            parent.addChildAtPosition(position, children.get(position).getStructure());
                         }
 
                         if (parentOr) {
