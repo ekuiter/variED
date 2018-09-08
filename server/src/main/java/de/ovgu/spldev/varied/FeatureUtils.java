@@ -11,18 +11,20 @@ import java.util.LinkedList;
 import java.util.stream.Stream;
 
 public class FeatureUtils {
-    public static boolean requireFeature(IFeatureModel featureModel, String feature) {
+    public static IFeature requireFeature(IFeatureModel featureModel, String feature) {
         if (!StringUtils.isPresent(feature))
             throw new RuntimeException("no feature given");
-        if (featureModel.getFeature(feature) == null)
+        IFeature _feature = featureModel.getFeature(feature);
+        if (_feature == null)
             throw new RuntimeException("invalid feature \"" + feature + "\"");
-        return true;
+        return _feature;
     }
 
-    public static boolean requireFeatures(IFeatureModel featureModel, String[] features) {
+    public static LinkedList<IFeature> requireFeatures(IFeatureModel featureModel, String[] features) {
+        LinkedList<IFeature> _features = new LinkedList<>();
         for (String feature : features)
-            FeatureUtils.requireFeature(featureModel, feature);
-        return true;
+            _features.add(FeatureUtils.requireFeature(featureModel, feature));
+        return _features;
     }
 
     public static boolean requireSiblings(IFeatureModel featureModel, String[] features) {

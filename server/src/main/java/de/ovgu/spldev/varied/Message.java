@@ -1,11 +1,9 @@
 package de.ovgu.spldev.varied;
 
 import com.google.gson.typeadapters.RuntimeTypeAdapterFactory;
-import de.ovgu.featureide.fm.core.base.IFeature;
 import de.ovgu.featureide.fm.core.base.IFeatureModel;
 
 import java.util.LinkedList;
-import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
@@ -131,7 +129,9 @@ abstract public class Message {
     }
 
     public interface IDecodable {
-        boolean isValid(StateContext stateContext);
+        default boolean isValid(StateContext stateContext) {
+            return true;
+        }
     }
 
     public interface IApplicable extends IDecodable {
@@ -258,14 +258,8 @@ abstract public class Message {
             this.belowFeature = belowFeature;
         }
 
-        public boolean isValid(StateContext stateContext) {
-            return FeatureUtils.requireFeature(stateContext.getFeatureModel(), belowFeature);
-        }
-
         public StateChange getStateChange(StateContext stateContext) {
-            IFeatureModel featureModel = stateContext.getFeatureModel();
-            IFeature _belowFeature = featureModel.getFeature(belowFeature);
-            return new StateChange.FeatureDiagram.Feature.AddBelow(_belowFeature, featureModel);
+            return new StateChange.FeatureDiagram.Feature.AddBelow(stateContext.getFeatureModel(), belowFeature);
         }
     }
 
@@ -277,22 +271,8 @@ abstract public class Message {
             this.aboveFeatures = aboveFeatures;
         }
 
-        public boolean isValid(StateContext stateContext) {
-            if (aboveFeatures.length == 0)
-                throw new RuntimeException("no features given");
-            IFeatureModel featureModel = stateContext.getFeatureModel();
-            FeatureUtils.requireFeatures(featureModel, aboveFeatures);
-            FeatureUtils.requireSiblings(featureModel, aboveFeatures);
-            return true;
-        }
-
         public StateChange getStateChange(StateContext stateContext) {
-            IFeatureModel featureModel = stateContext.getFeatureModel();
-            LinkedList<IFeature> _aboveFeatures = new LinkedList<>();
-            for (String aboveFeature : aboveFeatures)
-                _aboveFeatures.add(featureModel.getFeature(aboveFeature));
-            FeatureUtils.sortSiblingFeatures(_aboveFeatures);
-            return new StateChange.FeatureDiagram.Feature.AddAbove(featureModel, _aboveFeatures);
+            return new StateChange.FeatureDiagram.Feature.AddAbove(stateContext.getFeatureModel(), aboveFeatures);
         }
     }
 
@@ -304,19 +284,8 @@ abstract public class Message {
             this.feature = feature;
         }
 
-        public boolean isValid(StateContext stateContext) {
-            IFeatureModel featureModel = stateContext.getFeatureModel();
-            FeatureUtils.requireFeature(featureModel, feature);
-            IFeature feature = featureModel.getFeature(this.feature);
-            if (feature.getStructure().isRoot() && feature.getStructure().getChildren().size() != 1)
-                throw new RuntimeException("can only delete root feature when it has exactly one child");
-            return true;
-        }
-
         public StateChange getStateChange(StateContext stateContext) {
-            IFeatureModel featureModel = stateContext.getFeatureModel();
-            IFeature _feature = featureModel.getFeature(feature);
-            return new StateChange.FeatureDiagram.Feature.Remove(featureModel, _feature);
+            return new StateChange.FeatureDiagram.Feature.Remove(stateContext.getFeatureModel(), feature);
         }
     }
 
@@ -328,19 +297,8 @@ abstract public class Message {
             this.feature = feature;
         }
 
-        public boolean isValid(StateContext stateContext) {
-            IFeatureModel featureModel = stateContext.getFeatureModel();
-            FeatureUtils.requireFeature(featureModel, feature);
-            IFeature feature = featureModel.getFeature(this.feature);
-            if (feature.getStructure().isRoot())
-                throw new RuntimeException("can not delete root feature and its children");
-            return true;
-        }
-
         public StateChange getStateChange(StateContext stateContext) {
-            IFeatureModel featureModel = stateContext.getFeatureModel();
-            IFeature _feature = featureModel.getFeature(feature);
-            return new StateChange.FeatureDiagram.Feature.RemoveBelow(featureModel, _feature);
+            return new StateChange.FeatureDiagram.Feature.RemoveBelow(stateContext.getFeatureModel(), feature);
         }
     }
 
@@ -351,10 +309,6 @@ abstract public class Message {
             super(TypeEnum.FEATURE_DIAGRAM_FEATURE_RENAME);
             this.oldFeature = oldFeature;
             this.newFeature = newFeature;
-        }
-
-        public boolean isValid(StateContext stateContext) {
-            return FeatureUtils.requireFeature(stateContext.getFeatureModel(), oldFeature);
         }
 
         public StateChange getStateChange(StateContext stateContext) {
@@ -371,15 +325,8 @@ abstract public class Message {
             this.description = description;
         }
 
-        public boolean isValid(StateContext stateContext) {
-            return FeatureUtils.requireFeature(stateContext.getFeatureModel(), feature) &&
-                    (StringUtils.isPresent(description) || Objects.equals(description, ""));
-        }
-
         public StateChange getStateChange(StateContext stateContext) {
-            IFeatureModel featureModel = stateContext.getFeatureModel();
-            IFeature _feature = featureModel.getFeature(feature);
-            return new StateChange.FeatureDiagram.Feature.SetDescription(featureModel, _feature, description);
+            return new StateChange.FeatureDiagram.Feature.SetDescription(stateContext.getFeatureModel(), feature, description);
         }
     }
 
@@ -393,23 +340,8 @@ abstract public class Message {
             this.value = value;
         }
 
-        public boolean isValid(StateContext stateContext) {
-            IFeatureModel featureModel = stateContext.getFeatureModel();
-            FeatureUtils.requireFeature(featureModel, feature);
-            if (!StringUtils.isOneOf(property, new String[]{"abstract", "hidden", "mandatory", "group"}))
-                throw new RuntimeException("invalid property given");
-            if (property.equals("group")) {
-                if (!StringUtils.isOneOf(value, new String[]{"and", "or", "alternative"}))
-                    throw new RuntimeException("invalid value given");
-            } else if (!StringUtils.isOneOf(value, new String[]{"true", "false"}))
-                throw new RuntimeException("invalid value given");
-            return true;
-        }
-
         public StateChange getStateChange(StateContext stateContext) {
-            IFeatureModel featureModel = stateContext.getFeatureModel();
-            IFeature _feature = featureModel.getFeature(feature);
-            return new StateChange.FeatureDiagram.Feature.SetProperty(featureModel, _feature, property, value);
+            return new StateChange.FeatureDiagram.Feature.SetProperty(stateContext.getFeatureModel(), feature, property, value);
         }
     }
 }

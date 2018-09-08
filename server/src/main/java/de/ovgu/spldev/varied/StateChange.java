@@ -20,12 +20,11 @@ public abstract class StateChange {
                 messages = _apply();
             } catch (Throwable t) {
                 applyWasSuccessful = false;
-                messages = new Message.IEncodable[]{new Message.Error(t)};
                 applyThrowable = t;
+                throw t;
             }
         else
-            messages = new Message.IEncodable[]{new Message.Error(
-                    new RuntimeException("can not redo an invalid state change"))};
+            throw new RuntimeException("can not redo an invalid state change");
         return messages;
     }
 
@@ -36,12 +35,11 @@ public abstract class StateChange {
                 messages = _undo();
             } catch (Throwable t) {
                 undoWasSuccessful = false;
-                messages = new Message.IEncodable[]{new Message.Error(t)};
                 undoThrowable = t;
+                throw t;
             }
         else
-            messages = new Message.IEncodable[]{new Message.Error(
-                    new RuntimeException("can not undo an invalid state change"))};
+            throw new RuntimeException("can not undo an invalid state change");
         return messages;
     }
 
@@ -55,46 +53,79 @@ public abstract class StateChange {
     // this MAY NOT normally throw because undoing a valid state change must always be possible!
     abstract Message.IEncodable[] _undo();
 
-    Message.IEncodable[] applyMultiple() {
-        return apply();
-    }
-
-    Message.IEncodable[] undoMultiple() {
-        return undo();
-    }
-
     static Message.IEncodable[] featureModelMessage(IFeatureModel featureModel) {
         return new Message.IEncodable[]{new Message.FeatureDiagramFeatureModel(featureModel)};
     }
 
     abstract static class MultipleStateChange extends StateChange {
         LinkedList<StateChange> stateChanges = new LinkedList<>();
+        Iterator<StateChange> stateChangeIterator;
 
         void addStateChange(StateChange stateChange) {
             stateChanges.add(stateChange);
         }
 
+        final boolean hasNextStateChange() {
+            if (stateChangeIterator == null)
+                return _hasNextStateChange();
+            else
+                return stateChangeIterator.hasNext();
+        }
+
+        final StateChange nextStateChange() {
+            if (stateChangeIterator == null) {
+                StateChange stateChange = _nextStateChange();
+                stateChanges.add(stateChange);
+                return stateChange;
+            } else
+                return stateChangeIterator.next();
+        }
+
+        // can be overridden to provide custom iterator-based state change instantiation
+        boolean _hasNextStateChange() {
+            if (stateChangeIterator == null)
+                stateChangeIterator = stateChanges.iterator();
+            return stateChangeIterator.hasNext();
+        }
+
+        StateChange _nextStateChange() {
+            if (stateChangeIterator == null)
+                stateChangeIterator = stateChanges.iterator();
+            return stateChangeIterator.next();
+        }
+
         // if applying one state change fails, undo all applied state changes to guarantee atomicity
         Message.IEncodable[] _apply() {
             Message.IEncodable[] stateChangeMessages = new Message.IEncodable[0];
-            for (StateChange stateChange : stateChanges) {
-                stateChangeMessages = stateChange.applyMultiple();
-                if (!stateChange.applyWasSuccessful) {
+            while (hasNextStateChange()) {
+                StateChange stateChange = null;
+                Throwable t = null;
+                try {
+                    stateChange = nextStateChange();
+                    stateChangeMessages = stateChange.apply();
+                } catch (Throwable _t) {
+                    t = _t;
+                }
+                if (stateChange == null || !stateChange.applyWasSuccessful) {
                     boolean found = false;
                     for (final Iterator<StateChange> it = stateChanges.descendingIterator(); it.hasNext(); ) {
                         StateChange _stateChange = it.next();
                         if (found)
                             try {
-                                _stateChange.undoMultiple();
-                            } catch (Throwable t) {
+                                _stateChange.undo();
+                            } catch (Throwable _t) {
                                 throw new RuntimeException("error while undoing an invalid state change");
                             }
                         if (_stateChange == stateChange)
                             found = true;
                     }
-                    throw new RuntimeException(stateChange.applyThrowable.getMessage());
+                    if (t == null)
+                        throw new RuntimeException("unknown error while applying state change");
+                    else
+                        throw new RuntimeException(t);
                 }
             }
+            stateChangeIterator = stateChanges.iterator();
             return stateChangeMessages;
         }
 
@@ -103,20 +134,23 @@ public abstract class StateChange {
             Message.IEncodable[] stateChangeMessages = new Message.IEncodable[0];
             for (final Iterator<StateChange> it = stateChanges.descendingIterator(); it.hasNext(); ) {
                 StateChange stateChange = it.next();
-                stateChangeMessages = stateChange.undoMultiple();
+                try {
+                    stateChangeMessages = stateChange.undo();
+                } catch (Throwable t) {
+                }
                 if (!stateChange.undoWasSuccessful) {
                     boolean found = false;
                     for (StateChange _stateChange : stateChanges) {
                         if (found)
                             try {
-                                _stateChange.applyMultiple();
+                                _stateChange.apply();
                             } catch (Throwable t) {
                                 throw new RuntimeException("error while redoing an invalid state change");
                             }
                         if (_stateChange == stateChange)
                             found = true;
                     }
-                    throw new RuntimeException(stateChange.undoThrowable.getMessage());
+                    throw new RuntimeException(stateChange.undoThrowable);
                 }
             }
             return stateChangeMessages;
@@ -125,9 +159,22 @@ public abstract class StateChange {
 
     // adapted from MultiFeatureModelOperation
     static class MultipleMessages extends MultipleStateChange {
+        StateContext stateContext;
+        LinkedList<Message.IUndoable> messages;
+        Iterator<Message.IUndoable> messageIterator;
+
         public MultipleMessages(StateContext stateContext, LinkedList<Message.IUndoable> messages) {
-            for (Message.IUndoable message : messages)
-                addStateChange(message.getStateChange(stateContext));
+            this.stateContext = stateContext;
+            this.messages = messages;
+            this.messageIterator = messages.iterator();
+        }
+
+        boolean _hasNextStateChange() {
+            return messageIterator.hasNext();
+        }
+
+        StateChange _nextStateChange() {
+            return messageIterator.next().getStateChange(stateContext);
         }
     }
 
@@ -139,9 +186,9 @@ public abstract class StateChange {
                 private IFeature feature;
                 private IFeature newFeature;
 
-                public AddBelow(IFeature feature, IFeatureModel featureModel) {
+                public AddBelow(IFeatureModel featureModel, String belowFeature) {
                     this.featureModel = featureModel;
-                    this.feature = feature;
+                    this.feature = de.ovgu.spldev.varied.FeatureUtils.requireFeature(featureModel, belowFeature);
                 }
 
                 public Message.IEncodable[] _apply() {
@@ -176,9 +223,13 @@ public abstract class StateChange {
                 private boolean parentOr = false;
                 private boolean parentAlternative = false;
 
-                public AddAbove(IFeatureModel featureModel, LinkedList<IFeature> selectedFeatures) {
+                public AddAbove(IFeatureModel featureModel, String[] aboveFeatures) {
+                    if (aboveFeatures.length == 0)
+                        throw new RuntimeException("no features given");
                     this.featureModel = featureModel;
-                    this.selectedFeatures = selectedFeatures;
+                    this.selectedFeatures = de.ovgu.spldev.varied.FeatureUtils.requireFeatures(featureModel, aboveFeatures);
+                    de.ovgu.spldev.varied.FeatureUtils.requireSiblings(featureModel, aboveFeatures);
+                    de.ovgu.spldev.varied.FeatureUtils.sortSiblingFeatures(this.selectedFeatures);
                     child = selectedFeatures.get(0);
                     int number = 0;
                     while (FeatureUtils.getFeatureNames(featureModel).contains(DEFAULT_FEATURE_LAYER_CAPTION + ++number)) {
@@ -262,9 +313,15 @@ public abstract class StateChange {
                 private boolean alternative = false;
                 private final IFeature replacement;
 
+                public Remove(IFeatureModel featureModel, String feature) {
+                    this(featureModel, de.ovgu.spldev.varied.FeatureUtils.requireFeature(featureModel, feature));
+                }
+
                 public Remove(IFeatureModel featureModel, IFeature feature) {
                     this.featureModel = featureModel;
                     this.feature = feature;
+                    if (this.feature.getStructure().isRoot() && this.feature.getStructure().getChildren().size() != 1)
+                        throw new RuntimeException("can only delete root feature when it has exactly one child");
                     replacement = null;
                 }
 
@@ -322,14 +379,6 @@ public abstract class StateChange {
                     }
 
                     return StateChange.featureModelMessage(featureModel);
-                }
-
-                public Message.IEncodable[] applyMultiple() {
-                    // do nothing if the feature has already been removed by another
-                    // state change in a multiple message
-                    if (featureModel.getFeature(feature.getName()) == null)
-                        return StateChange.featureModelMessage(featureModel);
-                    return apply();
                 }
 
                 public Message.IEncodable[] _undo() {
@@ -391,10 +440,13 @@ public abstract class StateChange {
                 private LinkedList<IFeature> orList = new LinkedList<>();
                 private LinkedList<IFeature> alternativeList = new LinkedList<>();
 
-                public RemoveBelow(IFeatureModel featureModel, IFeature feature) {
+                public RemoveBelow(IFeatureModel featureModel, String feature) {
                     this.featureModel = featureModel;
+                    IFeature _feature = de.ovgu.spldev.varied.FeatureUtils.requireFeature(featureModel, feature);
+                    if (_feature.getStructure().isRoot())
+                        throw new RuntimeException("can not delete root feature and its children");
                     final LinkedList<IFeature> list = new LinkedList<>();
-                    list.add(feature);
+                    list.add(_feature);
                     getFeaturesToDelete(list);
 
                     if (containedFeatureList.isEmpty()) {
@@ -459,6 +511,7 @@ public abstract class StateChange {
                     this.featureModel = featureModel;
                     this.oldName = oldName;
                     this.newName = newName;
+                    de.ovgu.spldev.varied.FeatureUtils.requireFeature(featureModel, oldName);
                 }
 
                 public Message.IEncodable[] _apply() {
@@ -485,11 +538,13 @@ public abstract class StateChange {
                 private IFeature feature;
                 private String oldDescription, description;
 
-                public SetDescription(IFeatureModel featureModel, IFeature feature, String description) {
+                public SetDescription(IFeatureModel featureModel, String feature, String description) {
                     this.featureModel = featureModel;
-                    this.feature = feature;
-                    this.oldDescription = feature.getProperty().getDescription();
+                    this.feature = de.ovgu.spldev.varied.FeatureUtils.requireFeature(featureModel, feature);
+                    this.oldDescription = this.feature.getProperty().getDescription();
                     this.description = description;
+                    if (!StringUtils.isPresent(description) && !Objects.equals(description, ""))
+                        throw new RuntimeException("no description given");
                 }
 
                 public Message.IEncodable[] _apply() {
@@ -509,11 +564,18 @@ public abstract class StateChange {
                 private String property, oldValue, value;
                 private LinkedList<IFeatureStructure> oldMandatoryChildren;
 
-                public SetProperty(IFeatureModel featureModel, IFeature feature, String property, String value) {
+                public SetProperty(IFeatureModel featureModel, String feature, String property, String value) {
                     this.featureModel = featureModel;
-                    this.feature = feature;
+                    this.feature = de.ovgu.spldev.varied.FeatureUtils.requireFeature(featureModel, feature);
                     this.property = property;
                     this.value = value;
+                    if (!StringUtils.isOneOf(property, new String[]{"abstract", "hidden", "mandatory", "group"}))
+                        throw new RuntimeException("invalid property given");
+                    if (property.equals("group")) {
+                        if (!StringUtils.isOneOf(value, new String[]{"and", "or", "alternative"}))
+                            throw new RuntimeException("invalid value given");
+                    } else if (!StringUtils.isOneOf(value, new String[]{"true", "false"}))
+                        throw new RuntimeException("invalid value given");
                 }
 
                 private void setMandatoryChildrenToOptional() {
