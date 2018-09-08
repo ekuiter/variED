@@ -14,6 +14,14 @@ public interface StateChange {
 
     Message.IEncodable[] undo();
 
+    default Message.IEncodable[] applyMultiple() {
+        return apply();
+    }
+
+    default Message.IEncodable[] undoMultiple() {
+        return undo();
+    }
+
     abstract class FeatureModelStateChange implements StateChange {
         protected IFeatureModel featureModel;
 
@@ -21,7 +29,7 @@ public interface StateChange {
             this.featureModel = featureModel;
         }
 
-        protected Message.IEncodable[] updatedFeatureModel() {
+        protected Message.IEncodable[] currentFeatureModel() {
             return new Message.IEncodable[]{new Message.FeatureDiagramFeatureModel(featureModel)};
         }
     }
@@ -36,14 +44,14 @@ public interface StateChange {
         default Message.IEncodable[] apply() {
             Message.IEncodable[] stateChangeMessages = new Message.IEncodable[0];
             for (StateChange stateChange : getStateChanges())
-                stateChangeMessages = stateChange.apply();
+                stateChangeMessages = stateChange.applyMultiple();
             return stateChangeMessages;
         }
 
         default Message.IEncodable[] undo() {
             Message.IEncodable[] stateChangeMessages = new Message.IEncodable[0];
             for (final Iterator<StateChange> it = getStateChanges().descendingIterator(); it.hasNext(); )
-                stateChangeMessages = it.next().undo();
+                stateChangeMessages = it.next().undoMultiple();
             return stateChangeMessages;
         }
     }
@@ -86,13 +94,13 @@ public interface StateChange {
                     feature = featureModel.getFeature(feature.getName());
                     feature.getStructure().addChild(newFeature.getStructure());
 
-                    return updatedFeatureModel();
+                    return currentFeatureModel();
                 }
 
                 public Message.IEncodable[] undo() {
                     newFeature = featureModel.getFeature(newFeature.getName());
                     featureModel.deleteFeature(newFeature);
-                    return updatedFeatureModel();
+                    return currentFeatureModel();
                 }
             }
 
@@ -150,7 +158,7 @@ public interface StateChange {
                         featureModel.getStructure().setRoot(newCompound.getStructure());
                     }
 
-                    return updatedFeatureModel();
+                    return currentFeatureModel();
                 }
 
                 public Message.IEncodable[] undo() {
@@ -175,7 +183,7 @@ public interface StateChange {
                         newCompound.getStructure().removeChild(child.getStructure());
                     }
 
-                    return updatedFeatureModel();
+                    return currentFeatureModel();
                 }
             }
 
@@ -210,7 +218,7 @@ public interface StateChange {
                         or = oldParent.getStructure().isOr();
                         alternative = oldParent.getStructure().isAlternative();
                     }
-                    oldChildren = new LinkedList<IFeature>();
+                    oldChildren = new LinkedList<>();
                     oldChildren.addAll(Functional.toList(FeatureUtils.convertToFeatureList(feature.getStructure().getChildren())));
 
                     if (oldParent != null) {
@@ -249,7 +257,15 @@ public interface StateChange {
                         }
                     }
 
-                    return updatedFeatureModel();
+                    return currentFeatureModel();
+                }
+
+                public Message.IEncodable[] applyMultiple() {
+                    // do nothing if the feature has already been removed by another
+                    // state change in a multiple message
+                    if (featureModel.getFeature(feature.getName()) == null)
+                        return currentFeatureModel();
+                    return apply();
                 }
 
                 public Message.IEncodable[] undo() {
@@ -303,7 +319,7 @@ public interface StateChange {
                         e.printStackTrace();
                     }
 
-                    return updatedFeatureModel();
+                    return currentFeatureModel();
                 }
             }
 
@@ -375,7 +391,7 @@ public interface StateChange {
                             featureModel.getFeature(ifeature.getName()).getStructure().changeToOr();
                         }
                     }
-                    return updatedFeatureModel();
+                    return currentFeatureModel();
                 }
             }
 
@@ -422,12 +438,12 @@ public interface StateChange {
 
                 public Message.IEncodable[] apply() {
                     feature.getProperty().setDescription(description);
-                    return updatedFeatureModel();
+                    return currentFeatureModel();
                 }
 
                 public Message.IEncodable[] undo() {
                     feature.getProperty().setDescription(oldDescription);
-                    return updatedFeatureModel();
+                    return currentFeatureModel();
                 }
             }
 
@@ -497,7 +513,7 @@ public interface StateChange {
                                 feature.getStructure().changeToAnd();
                             break;
                     }
-                    return updatedFeatureModel();
+                    return currentFeatureModel();
                 }
 
                 public Message.IEncodable[] undo() {
@@ -522,7 +538,7 @@ public interface StateChange {
                             }
                             break;
                     }
-                    return updatedFeatureModel();
+                    return currentFeatureModel();
                 }
             }
         }
