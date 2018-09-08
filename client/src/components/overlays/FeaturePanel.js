@@ -35,7 +35,7 @@ export default class extends FeatureComponent({onDismissProp: 'onDismissed'}) {
                     this.props.onCollapseFeaturesBelow, this.props.onExpandFeaturesBelow, this.props.onDismissed),
                 commands.featureDiagram.feature.rename(this.props.featureName, this.props.onShowOverlay),
                 commands.featureDiagram.feature.setDescription(this.props.featureName, this.props.onShowOverlay),
-                commands.featureDiagram.feature.properties(this.feature, this.props.onDismissed)
+                commands.featureDiagram.feature.properties([this.feature], this.props.onDismissed)
             ]}
             overflowButtonProps={{styles: buttonStyles}}
             styles={{root: {margin: '0 -40px', padding: '0 35px'}}}/>

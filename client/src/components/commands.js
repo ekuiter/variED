@@ -18,7 +18,7 @@ export const makeDivider = () =>
     ({key: 'divider', itemType: ContextualMenuItemType.Divider});
 
 export const removeCommand = features => ({
-    disabled: !!features.find(feature => feature.isRoot && (!feature.hasChildren || feature.node.children.length > 1)),
+    disabled: features.some(feature => feature.isRoot && (!feature.hasChildren || feature.node.children.length > 1)),
     action: () => actions.server.featureDiagram.feature.remove(
         features.map(feature => feature.name))
 });
@@ -160,7 +160,7 @@ const commands = {
                             key: 'removeBelow',
                             text: i18n.t('commands.featureDiagram.feature.removeMenu.removeBelow'),
                             iconProps: {iconName: 'Remove'},
-                            disabled: !!features.find(feature => feature.isRoot),
+                            disabled: features.some(feature => feature.isRoot),
                             onClick: () => actions.server.featureDiagram.feature.removeBelow(
                                 features.map(feature => feature.name)).then(onClick)
                         }]
@@ -188,11 +188,9 @@ const commands = {
                 iconProps: {iconName: 'TextDocument'},
                 onClick: () => onShowOverlay(overlayTypes.featureSetDescriptionDialog, {featureName})
             }),
-            properties: (feature, onClick) => {
-                const toggleAbstract = () => actions.server.featureDiagram.feature.properties.setAbstract(feature.name, !feature.isAbstract).then(onClick),
-                    toggleMandatory = () => actions.server.featureDiagram.feature.properties.setMandatory(feature.name, !feature.isMandatory).then(onClick),
-                    mandatoryDisabled = feature.isRoot || feature.node.parent.feature().isGroup,
-                    groupDisabled = !feature.node.children || feature.node.children.length <= 1;
+            properties: (features, onClick) => {
+                const mandatoryDisabled = features.some(feature => feature.isRoot || feature.node.parent.feature().isGroup),
+                    groupDisabled = features.some(feature => !feature.node.children || feature.node.children.length <= 1);
                 return ({
                     key: 'propertiesMenu',
                     text: i18n.t('commands.featureDiagram.feature.propertiesMenu.title'),
@@ -202,55 +200,65 @@ const commands = {
                             key: 'abstract',
                             text: i18n.t('commands.featureDiagram.feature.propertiesMenu.abstract'),
                             canCheck: true,
-                            isChecked: feature.isAbstract,
-                            onClick: toggleAbstract
+                            disabled: features.every(feature => feature.isAbstract),
+                            isChecked: features.every(feature => feature.isAbstract),
+                            onClick: () => actions.server.featureDiagram.feature.properties.setAbstract(
+                                features.map(feature => feature.name), true).then(onClick)
                         }, {
                             key: 'concrete',
                             text: i18n.t('commands.featureDiagram.feature.propertiesMenu.concrete'),
                             canCheck: true,
-                            isChecked: !feature.isAbstract,
-                            onClick: toggleAbstract
+                            disabled: features.every(feature => !feature.isAbstract),
+                            isChecked: features.every(feature => !feature.isAbstract),
+                            onClick: () => actions.server.featureDiagram.feature.properties.setAbstract(
+                                features.map(feature => feature.name), false).then(onClick)
                         }, makeDivider(), {
                             key: 'hidden',
                             text: i18n.t('commands.featureDiagram.feature.propertiesMenu.hidden'),
                             canCheck: true,
-                            isChecked: feature.isHidden,
-                            onClick: () => actions.server.featureDiagram.feature.properties.setHidden(feature.name, !feature.isHidden).then(onClick)
+                            isChecked: features.every(feature => feature.isHidden),
+                            onClick: () => actions.server.featureDiagram.feature.properties.setHidden(
+                                features.map(feature => feature.name), !features.every(feature => feature.isHidden)).then(onClick)
                         }, makeDivider(), {
                             key: 'mandatory',
                             text: i18n.t('commands.featureDiagram.feature.propertiesMenu.mandatory'),
-                            disabled: mandatoryDisabled,
                             canCheck: true,
-                            isChecked: feature.isMandatory,
-                            onClick: toggleMandatory
+                            disabled: mandatoryDisabled || features.every(feature => feature.isMandatory),
+                            isChecked: features.every(feature => feature.isMandatory),
+                            onClick: () => actions.server.featureDiagram.feature.properties.setMandatory(
+                                features.map(feature => feature.name), true).then(onClick)
                         }, {
                             key: 'optional',
                             text: i18n.t('commands.featureDiagram.feature.propertiesMenu.optional'),
-                            disabled: mandatoryDisabled,
                             canCheck: true,
-                            isChecked: !feature.isMandatory,
-                            onClick: toggleMandatory
+                            disabled: mandatoryDisabled || features.every(feature => !feature.isMandatory),
+                            isChecked: features.every(feature => !feature.isMandatory),
+                            onClick: () => actions.server.featureDiagram.feature.properties.setMandatory(
+                                features.map(feature => feature.name), false).then(onClick)
                         }, makeDivider(), {
                             key: 'and',
                             text: i18n.t('commands.featureDiagram.feature.propertiesMenu.and'),
-                            disabled: groupDisabled,
                             canCheck: true,
-                            isChecked: feature.isAnd,
-                            onClick: () => actions.server.featureDiagram.feature.properties.setAnd(feature.name).then(onClick)
+                            disabled: groupDisabled || features.every(feature => feature.isAnd),
+                            isChecked: features.every(feature => feature.isAnd),
+                            onClick: () => actions.server.featureDiagram.feature.properties.setAnd(
+                                features.map(feature => feature.name)).then(onClick)
                         }, {
                             key: 'or',
                             text: i18n.t('commands.featureDiagram.feature.propertiesMenu.or'),
-                            disabled: groupDisabled,
                             canCheck: true,
-                            isChecked: feature.isOr,
-                            onClick: () => actions.server.featureDiagram.feature.properties.setOr(feature.name).then(onClick)
+                            disabled: groupDisabled || features.every(feature => feature.isOr),
+                            isChecked: features.every(feature => feature.isOr),
+                            onClick: () => actions.server.featureDiagram.feature.properties.setOr(
+                                features.map(feature => feature.name)).then(onClick)
                         }, {
                             key: 'alternative',
                             text: i18n.t('commands.featureDiagram.feature.propertiesMenu.alternative'),
-                            disabled: groupDisabled,
                             canCheck: true,
-                            isChecked: feature.isAlternative,
-                            onClick: () => actions.server.featureDiagram.feature.properties.setAlternative(feature.name).then(onClick)
+                            disabled: groupDisabled || features.every(feature => feature.isAlternative),
+                            isChecked: features.every(feature => feature.isAlternative),
+                            onClick: () => actions.server.featureDiagram.feature.properties.setAlternative(
+                                features.map(feature => feature.name)).then(onClick)
                         }]
                     }
                 });
@@ -271,7 +279,9 @@ const commands = {
                 commands.featureDiagram.feature.newAbove(selectedFeatureNames, onDeselectAllFeatures, featureModel),
                 commands.featureDiagram.feature.removeMenu(featureModel.getFeatures(selectedFeatureNames), onDeselectAllFeatures),
                 commands.featureDiagram.feature.collapseMenu(featureModel.getFeatures(selectedFeatureNames),
-                    onCollapseFeatures, onExpandFeatures, onCollapseFeaturesBelow, onExpandFeaturesBelow, onDeselectAllFeatures)
+                    onCollapseFeatures, onExpandFeatures, onCollapseFeaturesBelow, onExpandFeaturesBelow, onDeselectAllFeatures),
+                makeDivider(),
+                commands.featureDiagram.feature.properties(featureModel.getFeatures(selectedFeatureNames), onDeselectAllFeatures)
             ],
             selectAll: onSelectAll => ({
                 key: 'selectAll',

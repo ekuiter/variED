@@ -56,7 +56,7 @@ export default class extends FeatureComponent({doUpdate: true}) {
                         makeDivider(),
                         commands.featureDiagram.feature.rename(feature.name, this.props.onShowOverlay),
                         commands.featureDiagram.feature.setDescription(feature.name, this.props.onShowOverlay),
-                        commands.featureDiagram.feature.properties(feature, onDismiss),
+                        commands.featureDiagram.feature.properties([feature], onDismiss),
                         makeDivider(),
                         commands.featureDiagram.feature.details(feature.name, this.props.onShowOverlay)
                     ]

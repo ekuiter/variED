@@ -29,41 +29,41 @@ export default {
             setDescription: (featureName, description) =>
                 sendMessage({type: messageTypes.FEATURE_DIAGRAM_FEATURE_SET_DESCRIPTION, feature: featureName, description}),
             properties: {
-                setAbstract: (featureName, value) =>
-                    sendMessage({
+                setAbstract: (featureNames, value) =>
+                    sendMultipleMessages(featureNames.map(featureName => ({
                         type: messageTypes.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
                         feature: featureName, property: propertyTypes.abstract, value
-                    }),
-                setHidden: (featureName, value) =>
-                    sendMessage({
+                    }))),
+                setHidden: (featureNames, value) =>
+                    sendMultipleMessages(featureNames.map(featureName => ({
                         type: messageTypes.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
                         feature: featureName, property: propertyTypes.hidden, value
-                    }),
-                setMandatory: (featureName, value) =>
-                    sendMessage({
+                    }))),
+                setMandatory: (featureNames, value) =>
+                    sendMultipleMessages(featureNames.map(featureName => ({
                         type: messageTypes.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
                         feature: featureName, property: propertyTypes.mandatory, value
-                    }),
+                    }))),
                 toggleMandatory: feature =>
                     sendMessage({
                         type: messageTypes.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
                         feature: feature.name, property: propertyTypes.mandatory, value: !feature.isMandatory
                     }),
-                setAnd: featureName =>
-                    sendMessage({
+                setAnd: featureNames =>
+                    sendMultipleMessages(featureNames.map(featureName => ({
                         type: messageTypes.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
                         feature: featureName, property: propertyTypes.group, value: groupValueTypes.and
-                    }),
-                setOr: featureName =>
-                    sendMessage({
+                    }))),
+                setOr: featureNames =>
+                    sendMultipleMessages(featureNames.map(featureName => ({
                         type: messageTypes.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
                         feature: featureName, property: propertyTypes.group, value: groupValueTypes.or
-                    }),
-                setAlternative: featureName =>
-                    sendMessage({
+                    }))),
+                setAlternative: featureNames =>
+                    sendMultipleMessages(featureNames.map(featureName => ({
                         type: messageTypes.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
                         feature: featureName, property: propertyTypes.group, value: groupValueTypes.alternative
-                    }),
+                    }))),
                 toggleGroup: feature =>
                     sendMessage({
                         type: messageTypes.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,

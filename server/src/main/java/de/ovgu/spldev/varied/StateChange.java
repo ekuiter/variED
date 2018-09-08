@@ -9,76 +9,63 @@ import java.util.*;
 
 import static de.ovgu.featureide.fm.core.localization.StringTable.DEFAULT_FEATURE_LAYER_CAPTION;
 
-public interface StateChange {
-    Message.IEncodable[] apply();
+public abstract class StateChange {
+    abstract Message.IEncodable[] apply();
 
-    Message.IEncodable[] undo();
+    abstract Message.IEncodable[] undo();
 
-    default Message.IEncodable[] applyMultiple() {
+    Message.IEncodable[] applyMultiple() {
         return apply();
     }
 
-    default Message.IEncodable[] undoMultiple() {
+    Message.IEncodable[] undoMultiple() {
         return undo();
     }
 
-    abstract class FeatureModelStateChange implements StateChange {
-        protected IFeatureModel featureModel;
-
-        public FeatureModelStateChange(IFeatureModel featureModel) {
-            this.featureModel = featureModel;
-        }
-
-        protected Message.IEncodable[] currentFeatureModel() {
-            return new Message.IEncodable[]{new Message.FeatureDiagramFeatureModel(featureModel)};
-        }
+    static Message.IEncodable[] featureModelMessage(IFeatureModel featureModel) {
+        return new Message.IEncodable[]{new Message.FeatureDiagramFeatureModel(featureModel)};
     }
 
-    interface MultipleStateChange extends StateChange {
-        LinkedList<StateChange> getStateChanges();
+    abstract static class MultipleStateChange extends StateChange {
+        LinkedList<StateChange> stateChanges = new LinkedList<>();
 
-        default void addStateChange(StateChange stateChange) {
-            getStateChanges().add(stateChange);
+        void addStateChange(StateChange stateChange) {
+            stateChanges.add(stateChange);
         }
 
-        default Message.IEncodable[] apply() {
+        Message.IEncodable[] apply() {
             Message.IEncodable[] stateChangeMessages = new Message.IEncodable[0];
-            for (StateChange stateChange : getStateChanges())
+            for (StateChange stateChange : stateChanges)
                 stateChangeMessages = stateChange.applyMultiple();
             return stateChangeMessages;
         }
 
-        default Message.IEncodable[] undo() {
+        Message.IEncodable[] undo() {
             Message.IEncodable[] stateChangeMessages = new Message.IEncodable[0];
-            for (final Iterator<StateChange> it = getStateChanges().descendingIterator(); it.hasNext(); )
+            for (final Iterator<StateChange> it = stateChanges.descendingIterator(); it.hasNext(); )
                 stateChangeMessages = it.next().undoMultiple();
             return stateChangeMessages;
         }
     }
 
     // adapted from MultiFeatureModelOperation
-    class MultipleMessages implements MultipleStateChange {
-        LinkedList<StateChange> stateChanges = new LinkedList<>();
-
+    static class MultipleMessages extends MultipleStateChange {
         public MultipleMessages(StateContext stateContext, LinkedList<Message.IUndoable> messages) {
             for (Message.IUndoable message : messages)
                 addStateChange(message.getStateChange(stateContext));
         }
-
-        public LinkedList<StateChange> getStateChanges() {
-            return stateChanges;
-        }
     }
 
-    class FeatureDiagram {
+    static class FeatureDiagram {
         public static class Feature {
             // adapted from CreateFeatureBelowOperation
-            public static class AddBelow extends FeatureModelStateChange {
+            public static class AddBelow extends StateChange {
+                private IFeatureModel featureModel;
                 private IFeature feature;
                 private IFeature newFeature;
 
                 public AddBelow(IFeature feature, IFeatureModel featureModel) {
-                    super(featureModel);
+                    this.featureModel = featureModel;
                     this.feature = feature;
                 }
 
@@ -94,18 +81,19 @@ public interface StateChange {
                     feature = featureModel.getFeature(feature.getName());
                     feature.getStructure().addChild(newFeature.getStructure());
 
-                    return currentFeatureModel();
+                    return StateChange.featureModelMessage(featureModel);
                 }
 
                 public Message.IEncodable[] undo() {
                     newFeature = featureModel.getFeature(newFeature.getName());
                     featureModel.deleteFeature(newFeature);
-                    return currentFeatureModel();
+                    return StateChange.featureModelMessage(featureModel);
                 }
             }
 
             // adapted from CreateFeatureAboveOperation
-            public static class AddAbove extends FeatureModelStateChange {
+            public static class AddAbove extends StateChange {
+                private IFeatureModel featureModel;
                 private IFeature newCompound;
                 private IFeature child;
                 private LinkedList<IFeature> selectedFeatures;
@@ -114,7 +102,7 @@ public interface StateChange {
                 private boolean parentAlternative = false;
 
                 public AddAbove(IFeatureModel featureModel, LinkedList<IFeature> selectedFeatures) {
-                    super(featureModel);
+                    this.featureModel = featureModel;
                     this.selectedFeatures = selectedFeatures;
                     child = selectedFeatures.get(0);
                     int number = 0;
@@ -158,7 +146,7 @@ public interface StateChange {
                         featureModel.getStructure().setRoot(newCompound.getStructure());
                     }
 
-                    return currentFeatureModel();
+                    return StateChange.featureModelMessage(featureModel);
                 }
 
                 public Message.IEncodable[] undo() {
@@ -183,12 +171,13 @@ public interface StateChange {
                         newCompound.getStructure().removeChild(child.getStructure());
                     }
 
-                    return currentFeatureModel();
+                    return StateChange.featureModelMessage(featureModel);
                 }
             }
 
             // adapted from DeleteFeatureOperation
-            public static class Remove extends FeatureModelStateChange {
+            public static class Remove extends StateChange {
+                private IFeatureModel featureModel;
                 private IFeature feature;
                 private IFeature oldParent;
                 private int oldIndex;
@@ -199,13 +188,13 @@ public interface StateChange {
                 private final IFeature replacement;
 
                 public Remove(IFeatureModel featureModel, IFeature feature) {
-                    super(featureModel);
+                    this.featureModel = featureModel;
                     this.feature = feature;
                     replacement = null;
                 }
 
                 public Remove(IFeatureModel featureModel, IFeature feature, IFeature replacement) {
-                    super(featureModel);
+                    this.featureModel = featureModel;
                     this.feature = feature;
                     this.replacement = replacement;
                 }
@@ -257,14 +246,14 @@ public interface StateChange {
                         }
                     }
 
-                    return currentFeatureModel();
+                    return StateChange.featureModelMessage(featureModel);
                 }
 
                 public Message.IEncodable[] applyMultiple() {
                     // do nothing if the feature has already been removed by another
                     // state change in a multiple message
                     if (featureModel.getFeature(feature.getName()) == null)
-                        return currentFeatureModel();
+                        return StateChange.featureModelMessage(featureModel);
                     return apply();
                 }
 
@@ -319,12 +308,13 @@ public interface StateChange {
                         e.printStackTrace();
                     }
 
-                    return currentFeatureModel();
+                    return StateChange.featureModelMessage(featureModel);
                 }
             }
 
             // adapted from FeatureTreeDeleteOperation
-            public static class RemoveBelow extends FeatureModelStateChange implements MultipleStateChange {
+            public static class RemoveBelow extends MultipleStateChange {
+                private IFeatureModel featureModel;
                 LinkedList<StateChange> stateChanges = new LinkedList<>();
                 private LinkedList<IFeature> featureList = new LinkedList<>();
                 private LinkedList<IFeature> containedFeatureList = new LinkedList<>();
@@ -333,8 +323,7 @@ public interface StateChange {
                 private LinkedList<IFeature> alternativeList = new LinkedList<>();
 
                 public RemoveBelow(IFeatureModel featureModel, IFeature feature) {
-                    super(featureModel);
-
+                    this.featureModel = featureModel;
                     final LinkedList<IFeature> list = new LinkedList<>();
                     list.add(feature);
                     getFeaturesToDelete(list);
@@ -374,7 +363,7 @@ public interface StateChange {
                 }
 
                 public Message.IEncodable[] undo() {
-                    MultipleStateChange.super.undo();
+                    super.undo();
                     // Set the right group types for the features
                     for (final IFeature ifeature : andList) {
                         if (featureModel.getFeature(ifeature.getName()) != null) {
@@ -391,17 +380,18 @@ public interface StateChange {
                             featureModel.getFeature(ifeature.getName()).getStructure().changeToOr();
                         }
                     }
-                    return currentFeatureModel();
+                    return StateChange.featureModelMessage(featureModel);
                 }
             }
 
             // adapted from RenameFeatureOperation
-            public static class Rename extends FeatureModelStateChange {
+            public static class Rename extends StateChange {
+                private IFeatureModel featureModel;
                 private final String oldName;
                 private final String newName;
 
                 public Rename(IFeatureModel featureModel, String oldName, String newName) {
-                    super(featureModel);
+                    this.featureModel = featureModel;
                     this.oldName = oldName;
                     this.newName = newName;
                 }
@@ -425,12 +415,13 @@ public interface StateChange {
                 }
             }
 
-            public static class SetDescription extends FeatureModelStateChange {
+            public static class SetDescription extends StateChange {
+                private IFeatureModel featureModel;
                 private IFeature feature;
                 private String oldDescription, description;
 
                 public SetDescription(IFeatureModel featureModel, IFeature feature, String description) {
-                    super(featureModel);
+                    this.featureModel = featureModel;
                     this.feature = feature;
                     this.oldDescription = feature.getProperty().getDescription();
                     this.description = description;
@@ -438,22 +429,23 @@ public interface StateChange {
 
                 public Message.IEncodable[] apply() {
                     feature.getProperty().setDescription(description);
-                    return currentFeatureModel();
+                    return StateChange.featureModelMessage(featureModel);
                 }
 
                 public Message.IEncodable[] undo() {
                     feature.getProperty().setDescription(oldDescription);
-                    return currentFeatureModel();
+                    return StateChange.featureModelMessage(featureModel);
                 }
             }
 
-            public static class SetProperty extends FeatureModelStateChange {
+            public static class SetProperty extends StateChange {
+                private IFeatureModel featureModel;
                 private IFeature feature;
                 private String property, oldValue, value;
                 private LinkedList<IFeatureStructure> oldMandatoryChildren;
 
                 public SetProperty(IFeatureModel featureModel, IFeature feature, String property, String value) {
-                    super(featureModel);
+                    this.featureModel = featureModel;
                     this.feature = feature;
                     this.property = property;
                     this.value = value;
@@ -513,7 +505,7 @@ public interface StateChange {
                                 feature.getStructure().changeToAnd();
                             break;
                     }
-                    return currentFeatureModel();
+                    return StateChange.featureModelMessage(featureModel);
                 }
 
                 public Message.IEncodable[] undo() {
@@ -538,7 +530,7 @@ public interface StateChange {
                             }
                             break;
                     }
-                    return currentFeatureModel();
+                    return StateChange.featureModelMessage(featureModel);
                 }
             }
         }
