@@ -362,7 +362,7 @@ abstract public class Message {
         }
     }
 
-    public static class FeatureDiagramFeatureSetProperty extends Message implements IUndoable {
+    public static class FeatureDiagramFeatureSetProperty extends Message implements IMultipleUndoable {
         private String feature, property, value;
 
         public FeatureDiagramFeatureSetProperty(String feature, String property, String value) {
@@ -374,6 +374,19 @@ abstract public class Message {
 
         public StateChange getStateChange(StateContext stateContext) {
             return new StateChange.FeatureDiagram.Feature.SetProperty(stateContext.getFeatureModel(), feature, property, value);
+        }
+
+        public StateChange getStateChange(StateContext stateContext, Object multipleContext) {
+            return new StateChange.FeatureDiagram.Feature.SetProperty(
+                    stateContext.getFeatureModel(), feature, property, value, multipleContext);
+        }
+
+        public Object createMultipleContext() {
+            return property; // only allow the same property for all messages in the multiple message
+        }
+
+        public Object nextMultipleContext(StateChange stateChange, Object multipleContext) {
+            return property;
         }
     }
 }

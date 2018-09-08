@@ -602,6 +602,13 @@ public abstract class StateChange {
                 private LinkedList<IFeatureStructure> oldMandatoryChildren;
 
                 public SetProperty(IFeatureModel featureModel, String feature, String property, String value) {
+                    this(featureModel, feature, property, value, property);
+                }
+
+                public SetProperty(IFeatureModel featureModel, String feature, String property, String value, Object multipleContext) {
+                    if (!property.equals(multipleContext))
+                        throw new RuntimeException("can not set different properties in one multiple message");
+
                     this.featureModel = featureModel;
                     this.feature = de.ovgu.spldev.varied.FeatureUtils.requireFeature(featureModel, feature);
                     this.property = property;
