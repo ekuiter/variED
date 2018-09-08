@@ -6,12 +6,12 @@ import de.ovgu.featureide.fm.core.base.impl.FMFactoryManager;
 import de.ovgu.featureide.fm.core.functional.Functional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static de.ovgu.featureide.fm.core.localization.StringTable.DEFAULT_FEATURE_LAYER_CAPTION;
 
 public abstract class StateChange {
     private boolean applyWasSuccessful = true, undoWasSuccessful = true;
-    private Throwable applyThrowable, undoThrowable;
 
     final Message.IEncodable[] apply() {
         Message.IEncodable[] messages;
@@ -20,7 +20,6 @@ public abstract class StateChange {
                 messages = _apply();
             } catch (Throwable t) {
                 applyWasSuccessful = false;
-                applyThrowable = t;
                 throw t;
             }
         else
@@ -35,7 +34,6 @@ public abstract class StateChange {
                 messages = _undo();
             } catch (Throwable t) {
                 undoWasSuccessful = false;
-                undoThrowable = t;
                 throw t;
             }
         else
@@ -107,7 +105,7 @@ public abstract class StateChange {
                     t = _t;
                 }
                 if (stateChange == null || !stateChange.applyWasSuccessful) {
-                    boolean found = false;
+                    boolean found = stateChange == null; // if building the state changes, undo all state changes
                     for (final Iterator<StateChange> it = stateChanges.descendingIterator(); it.hasNext(); ) {
                         StateChange _stateChange = it.next();
                         if (found)
@@ -134,9 +132,11 @@ public abstract class StateChange {
             Message.IEncodable[] stateChangeMessages = new Message.IEncodable[0];
             for (final Iterator<StateChange> it = stateChanges.descendingIterator(); it.hasNext(); ) {
                 StateChange stateChange = it.next();
+                Throwable t = null;
                 try {
                     stateChangeMessages = stateChange.undo();
-                } catch (Throwable t) {
+                } catch (Throwable _t) {
+                    t = _t;
                 }
                 if (!stateChange.undoWasSuccessful) {
                     boolean found = false;
@@ -144,13 +144,16 @@ public abstract class StateChange {
                         if (found)
                             try {
                                 _stateChange.apply();
-                            } catch (Throwable t) {
+                            } catch (Throwable _t) {
                                 throw new RuntimeException("error while redoing an invalid state change");
                             }
                         if (_stateChange == stateChange)
                             found = true;
                     }
-                    throw new RuntimeException(stateChange.undoThrowable);
+                    if (t == null)
+                        throw new RuntimeException("unknown error while undoing state change");
+                    else
+                        throw new RuntimeException(t);
                 }
             }
             return stateChangeMessages;
@@ -160,10 +163,12 @@ public abstract class StateChange {
     // adapted from MultiFeatureModelOperation
     static class MultipleMessages extends MultipleStateChange {
         StateContext stateContext;
-        LinkedList<Message.IUndoable> messages;
-        Iterator<Message.IUndoable> messageIterator;
+        LinkedList<Message.IMultipleUndoable> messages;
+        Iterator<Message.IMultipleUndoable> messageIterator;
+        boolean atStart = true;
+        Object multipleContext;
 
-        public MultipleMessages(StateContext stateContext, LinkedList<Message.IUndoable> messages) {
+        public MultipleMessages(StateContext stateContext, LinkedList<Message.IMultipleUndoable> messages) {
             this.stateContext = stateContext;
             this.messages = messages;
             this.messageIterator = messages.iterator();
@@ -174,7 +179,14 @@ public abstract class StateChange {
         }
 
         StateChange _nextStateChange() {
-            return messageIterator.next().getStateChange(stateContext);
+            Message.IMultipleUndoable message = messageIterator.next();
+            if (atStart) {
+                multipleContext = message.createMultipleContext();
+                atStart = false;
+            }
+            StateChange stateChange = message.getStateChange(stateContext, multipleContext);
+            multipleContext = message.nextMultipleContext(stateChange, multipleContext);
+            return stateChange;
         }
     }
 
@@ -441,7 +453,17 @@ public abstract class StateChange {
                 private LinkedList<IFeature> alternativeList = new LinkedList<>();
 
                 public RemoveBelow(IFeatureModel featureModel, String feature) {
+                    this(featureModel, feature, null);
+                }
+
+                public RemoveBelow(IFeatureModel featureModel, String feature, Object multipleContext) {
                     this.featureModel = featureModel;
+
+                    // do nothing if the feature has already been removed by another state change in a multiple message
+                    if (featureModel.getFeature(feature) == null && multipleContext != null &&
+                            ((LinkedList<String>) multipleContext).contains(feature))
+                        return;
+
                     IFeature _feature = de.ovgu.spldev.varied.FeatureUtils.requireFeature(featureModel, feature);
                     if (_feature.getStructure().isRoot())
                         throw new RuntimeException("can not delete root feature and its children");
@@ -467,6 +489,16 @@ public abstract class StateChange {
                     }
                 }
 
+                public static Object createMultipleContext() {
+                    return new LinkedList<String>();
+                }
+
+                public Object nextMultipleContext(Object multipleContext) {
+                    LinkedList<String> featuresToDelete = (LinkedList<String>) multipleContext;
+                    featuresToDelete.addAll(featureList.stream().map(IFeatureModelElement::getName).collect(Collectors.toList()));
+                    return featuresToDelete;
+                }
+
                 private void getFeaturesToDelete(List<IFeature> linkedList) {
                     for (final IFeature feat : linkedList) {
                         if (!feat.getStructure().getRelevantConstraints().isEmpty()) {
@@ -477,6 +509,11 @@ public abstract class StateChange {
                         }
                         featureList.add(feat);
                     }
+                }
+
+                public Message.IEncodable[] _apply() {
+                    super._apply();
+                    return StateChange.featureModelMessage(featureModel);
                 }
 
                 public Message.IEncodable[] _undo() {

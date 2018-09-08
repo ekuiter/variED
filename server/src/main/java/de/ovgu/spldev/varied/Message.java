@@ -125,21 +125,41 @@ abstract public class Message {
         return new MessageSerializer.MessageEncoder().encode(this);
     }
 
+    // may be sent by the server
     public interface IEncodable {
     }
 
+    // may be received by the server
     public interface IDecodable {
         default boolean isValid(StateContext stateContext) {
             return true;
         }
     }
 
+    // may be received and applied (but not undone)
     public interface IApplicable extends IDecodable {
         Message.IEncodable[] apply(StateContext stateContext);
     }
 
+    // may be received, applied, undone and redone
     public interface IUndoable extends IDecodable {
         StateChange getStateChange(StateContext stateContext);
+    }
+
+    // may be received, applied, undone and redone as a single message,
+    // but also as part of a multiple message
+    public interface IMultipleUndoable extends IUndoable {
+        default StateChange getStateChange(StateContext stateContext, Object multipleContext) {
+            return getStateChange(stateContext);
+        }
+
+        default Object createMultipleContext() {
+            return null;
+        }
+
+        default Object nextMultipleContext(StateChange stateChange, Object multipleContext) {
+            return null;
+        }
     }
 
     public static class Error extends Message implements IEncodable {
@@ -192,15 +212,15 @@ abstract public class Message {
             this.messages = messages;
         }
 
-        public LinkedList<Message.IUndoable> getUndoableMessages() {
-            LinkedList<Message.IUndoable> undoableMessages = new LinkedList<>();
-            for (Message message : messages) {
-                if (!(message instanceof Message.IUndoable))
-                    throw new RuntimeException("expected undoable message, got type " +
+        public LinkedList<Message.IMultipleUndoable> getMessages() {
+            LinkedList<Message.IMultipleUndoable> messages = new LinkedList<>();
+            for (Message message : this.messages) {
+                if (!(message instanceof Message.IMultipleUndoable))
+                    throw new RuntimeException("expected multiple undoable message, got type " +
                             message.getClass().getName());
-                undoableMessages.add((Message.IUndoable) message);
+                messages.add((Message.IMultipleUndoable) message);
             }
-            return undoableMessages;
+            return messages;
         }
 
         public boolean isValid(StateContext stateContext) {
@@ -213,13 +233,13 @@ abstract public class Message {
                             messageClass.getName() + ", got type " + message.getClass().getName());
 
             boolean valid = true;
-            for (Message.IUndoable message : getUndoableMessages())
+            for (Message.IMultipleUndoable message : getMessages())
                 valid = message.isValid(stateContext) && valid;
             return valid;
         }
 
         public StateChange getStateChange(StateContext stateContext) {
-            return new StateChange.MultipleMessages(stateContext, getUndoableMessages());
+            return new StateChange.MultipleMessages(stateContext, getMessages());
         }
     }
 
@@ -276,7 +296,7 @@ abstract public class Message {
         }
     }
 
-    public static class FeatureDiagramFeatureRemove extends Message implements IUndoable {
+    public static class FeatureDiagramFeatureRemove extends Message implements IMultipleUndoable {
         private String feature;
 
         public FeatureDiagramFeatureRemove(String feature) {
@@ -289,7 +309,7 @@ abstract public class Message {
         }
     }
 
-    public static class FeatureDiagramFeatureRemoveBelow extends Message implements IUndoable {
+    public static class FeatureDiagramFeatureRemoveBelow extends Message implements IMultipleUndoable {
         private String feature;
 
         public FeatureDiagramFeatureRemoveBelow(String feature) {
@@ -299,6 +319,18 @@ abstract public class Message {
 
         public StateChange getStateChange(StateContext stateContext) {
             return new StateChange.FeatureDiagram.Feature.RemoveBelow(stateContext.getFeatureModel(), feature);
+        }
+
+        public StateChange getStateChange(StateContext stateContext, Object multipleContext) {
+            return new StateChange.FeatureDiagram.Feature.RemoveBelow(stateContext.getFeatureModel(), feature, multipleContext);
+        }
+
+        public Object createMultipleContext() {
+            return StateChange.FeatureDiagram.Feature.RemoveBelow.createMultipleContext();
+        }
+
+        public Object nextMultipleContext(StateChange stateChange, Object multipleContext) {
+            return ((StateChange.FeatureDiagram.Feature.RemoveBelow) stateChange).nextMultipleContext(multipleContext);
         }
     }
 
