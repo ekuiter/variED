@@ -10,9 +10,50 @@ import java.util.*;
 import static de.ovgu.featureide.fm.core.localization.StringTable.DEFAULT_FEATURE_LAYER_CAPTION;
 
 public abstract class StateChange {
-    abstract Message.IEncodable[] apply();
+    private boolean applyWasSuccessful = true, undoWasSuccessful = true;
+    private Throwable applyThrowable, undoThrowable;
 
-    abstract Message.IEncodable[] undo();
+    final Message.IEncodable[] apply() {
+        Message.IEncodable[] messages;
+        if (undoWasSuccessful)
+            try {
+                messages = _apply();
+            } catch (Throwable t) {
+                applyWasSuccessful = false;
+                messages = new Message.IEncodable[]{new Message.Error(t)};
+                applyThrowable = t;
+            }
+        else
+            messages = new Message.IEncodable[]{new Message.Error(
+                    new RuntimeException("can not redo an invalid state change"))};
+        return messages;
+    }
+
+    final Message.IEncodable[] undo() {
+        Message.IEncodable[] messages;
+        if (applyWasSuccessful)
+            try {
+                messages = _undo();
+            } catch (Throwable t) {
+                undoWasSuccessful = false;
+                messages = new Message.IEncodable[]{new Message.Error(t)};
+                undoThrowable = t;
+            }
+        else
+            messages = new Message.IEncodable[]{new Message.Error(
+                    new RuntimeException("can not undo an invalid state change"))};
+        return messages;
+    }
+
+    // contract: do not throw if apply was successful, throw indicates that undo is invalid
+    // throw also indicates that _the feature model was not changed_ (should be atomic).
+    // this may throw and does not affect feature model integrity.
+    abstract Message.IEncodable[] _apply();
+
+    // contract: do not throw if undo was successful, throw indicates that redo is invalid
+    // throw also indicates that _the feature model was not changed_ (should be atomic).
+    // this MAY NOT normally throw because undoing a valid state change must always be possible!
+    abstract Message.IEncodable[] _undo();
 
     Message.IEncodable[] applyMultiple() {
         return apply();
@@ -33,17 +74,51 @@ public abstract class StateChange {
             stateChanges.add(stateChange);
         }
 
-        Message.IEncodable[] apply() {
+        // if applying one state change fails, undo all applied state changes to guarantee atomicity
+        Message.IEncodable[] _apply() {
             Message.IEncodable[] stateChangeMessages = new Message.IEncodable[0];
-            for (StateChange stateChange : stateChanges)
+            for (StateChange stateChange : stateChanges) {
                 stateChangeMessages = stateChange.applyMultiple();
+                if (!stateChange.applyWasSuccessful) {
+                    boolean found = false;
+                    for (final Iterator<StateChange> it = stateChanges.descendingIterator(); it.hasNext(); ) {
+                        StateChange _stateChange = it.next();
+                        if (found)
+                            try {
+                                _stateChange.undoMultiple();
+                            } catch (Throwable t) {
+                                throw new RuntimeException("error while undoing an invalid state change");
+                            }
+                        if (_stateChange == stateChange)
+                            found = true;
+                    }
+                    throw new RuntimeException(stateChange.applyThrowable.getMessage());
+                }
+            }
             return stateChangeMessages;
         }
 
-        Message.IEncodable[] undo() {
+        // if undoing one state change fails, redo all undone state changes to guarantee atomicity
+        Message.IEncodable[] _undo() {
             Message.IEncodable[] stateChangeMessages = new Message.IEncodable[0];
-            for (final Iterator<StateChange> it = stateChanges.descendingIterator(); it.hasNext(); )
-                stateChangeMessages = it.next().undoMultiple();
+            for (final Iterator<StateChange> it = stateChanges.descendingIterator(); it.hasNext(); ) {
+                StateChange stateChange = it.next();
+                stateChangeMessages = stateChange.undoMultiple();
+                if (!stateChange.undoWasSuccessful) {
+                    boolean found = false;
+                    for (StateChange _stateChange : stateChanges) {
+                        if (found)
+                            try {
+                                _stateChange.applyMultiple();
+                            } catch (Throwable t) {
+                                throw new RuntimeException("error while redoing an invalid state change");
+                            }
+                        if (_stateChange == stateChange)
+                            found = true;
+                    }
+                    throw new RuntimeException(stateChange.undoThrowable.getMessage());
+                }
+            }
             return stateChangeMessages;
         }
     }
@@ -69,7 +144,7 @@ public abstract class StateChange {
                     this.feature = feature;
                 }
 
-                public Message.IEncodable[] apply() {
+                public Message.IEncodable[] _apply() {
                     int number = 1;
 
                     while (FeatureUtils.getFeatureNames(featureModel).contains(DEFAULT_FEATURE_LAYER_CAPTION + number)) {
@@ -84,7 +159,7 @@ public abstract class StateChange {
                     return StateChange.featureModelMessage(featureModel);
                 }
 
-                public Message.IEncodable[] undo() {
+                public Message.IEncodable[] _undo() {
                     newFeature = featureModel.getFeature(newFeature.getName());
                     featureModel.deleteFeature(newFeature);
                     return StateChange.featureModelMessage(featureModel);
@@ -112,7 +187,7 @@ public abstract class StateChange {
                     newCompound = FMFactoryManager.getFactory(featureModel).createFeature(featureModel, DEFAULT_FEATURE_LAYER_CAPTION + number);
                 }
 
-                public Message.IEncodable[] apply() {
+                public Message.IEncodable[] _apply() {
                     final IFeatureStructure parent = child.getStructure().getParent();
                     if (parent != null) {
                         parentOr = parent.isOr();
@@ -149,7 +224,7 @@ public abstract class StateChange {
                     return StateChange.featureModelMessage(featureModel);
                 }
 
-                public Message.IEncodable[] undo() {
+                public Message.IEncodable[] _undo() {
                     // TODO: does not restore original position/order of features (relevant selectedFeatures.size() > 1)
                     final IFeatureStructure parent = newCompound.getStructure().getParent();
                     if (parent != null) {
@@ -199,7 +274,7 @@ public abstract class StateChange {
                     this.replacement = replacement;
                 }
 
-                public Message.IEncodable[] apply() {
+                public Message.IEncodable[] _apply() {
                     feature = featureModel.getFeature(feature.getName());
                     oldParent = FeatureUtils.getParent(feature);
                     if (oldParent != null) {
@@ -257,55 +332,50 @@ public abstract class StateChange {
                     return apply();
                 }
 
-                public Message.IEncodable[] undo() {
-                    try {
-                        if (!deleted) {
-                            return null;
-                        }
+                public Message.IEncodable[] _undo() {
+                    if (!deleted) {
+                        return null;
+                    }
 
-                        if (oldParent != null) {
-                            oldParent = featureModel.getFeature(oldParent.getName());
-                        }
-                        final LinkedList<IFeature> oldChildrenCopy = new LinkedList<IFeature>();
+                    if (oldParent != null) {
+                        oldParent = featureModel.getFeature(oldParent.getName());
+                    }
+                    final LinkedList<IFeature> oldChildrenCopy = new LinkedList<IFeature>();
 
-                        for (final IFeature f : oldChildren) {
-                            if (!f.getName().equals(feature.getName())) {
-                                final IFeature child = featureModel.getFeature(f.getName());
-                                if ((child != null) && (child.getStructure().getParent() != null)) {
-                                    child.getStructure().getParent().removeChild(child.getStructure());
-                                }
-                                oldChildrenCopy.add(child);
+                    for (final IFeature f : oldChildren) {
+                        if (!f.getName().equals(feature.getName())) {
+                            final IFeature child = featureModel.getFeature(f.getName());
+                            if ((child != null) && (child.getStructure().getParent() != null)) {
+                                child.getStructure().getParent().removeChild(child.getStructure());
+                            }
+                            oldChildrenCopy.add(child);
+                        }
+                    }
+
+                    oldChildren = oldChildrenCopy;
+
+                    feature.getStructure().setChildren(Functional.toList(FeatureUtils.convertToFeatureStructureList(oldChildren)));
+                    if (oldParent != null) {
+                        oldParent.getStructure().addChildAtPosition(oldIndex, feature.getStructure());
+                    } else {
+                        featureModel.getStructure().setRoot(feature.getStructure());
+                    }
+                    featureModel.addFeature(feature);
+
+                    // Replace feature name in Constraints
+                    if (replacement != null) {
+                        for (final IConstraint c : featureModel.getConstraints()) {
+                            if (c.getContainedFeatures().contains(replacement)) {
+                                c.getNode().replaceFeature(replacement, feature);
                             }
                         }
+                    }
 
-                        oldChildren = oldChildrenCopy;
-
-                        feature.getStructure().setChildren(Functional.toList(FeatureUtils.convertToFeatureStructureList(oldChildren)));
-                        if (oldParent != null) {
-                            oldParent.getStructure().addChildAtPosition(oldIndex, feature.getStructure());
-                        } else {
-                            featureModel.getStructure().setRoot(feature.getStructure());
-                        }
-                        featureModel.addFeature(feature);
-
-                        // Replace feature name in Constraints
-                        if (replacement != null) {
-                            for (final IConstraint c : featureModel.getConstraints()) {
-                                if (c.getContainedFeatures().contains(replacement)) {
-                                    c.getNode().replaceFeature(replacement, feature);
-                                }
-                            }
-                        }
-
-                        // When deleting a child and leaving one child behind the group type will be changed to and. reverse to old group type
-                        if ((oldParent != null) && or) {
-                            oldParent.getStructure().changeToOr();
-                        } else if ((oldParent != null) && alternative) {
-                            oldParent.getStructure().changeToAlternative();
-                        }
-
-                    } catch (final Exception e) {
-                        e.printStackTrace();
+                    // When deleting a child and leaving one child behind the group type will be changed to and. reverse to old group type
+                    if ((oldParent != null) && or) {
+                        oldParent.getStructure().changeToOr();
+                    } else if ((oldParent != null) && alternative) {
+                        oldParent.getStructure().changeToAlternative();
                     }
 
                     return StateChange.featureModelMessage(featureModel);
@@ -315,7 +385,6 @@ public abstract class StateChange {
             // adapted from FeatureTreeDeleteOperation
             public static class RemoveBelow extends MultipleStateChange {
                 private IFeatureModel featureModel;
-                LinkedList<StateChange> stateChanges = new LinkedList<>();
                 private LinkedList<IFeature> featureList = new LinkedList<>();
                 private LinkedList<IFeature> containedFeatureList = new LinkedList<>();
                 private LinkedList<IFeature> andList = new LinkedList<>();
@@ -358,12 +427,8 @@ public abstract class StateChange {
                     }
                 }
 
-                public LinkedList<StateChange> getStateChanges() {
-                    return stateChanges;
-                }
-
-                public Message.IEncodable[] undo() {
-                    super.undo();
+                public Message.IEncodable[] _undo() {
+                    super._undo();
                     // Set the right group types for the features
                     for (final IFeature ifeature : andList) {
                         if (featureModel.getFeature(ifeature.getName()) != null) {
@@ -396,7 +461,7 @@ public abstract class StateChange {
                     this.newName = newName;
                 }
 
-                public Message.IEncodable[] apply() {
+                public Message.IEncodable[] _apply() {
                     if (!featureModel.getRenamingsManager().renameFeature(oldName, newName))
                         throw new RuntimeException("invalid renaming operation");
                     return new Message.IEncodable[]{
@@ -405,7 +470,7 @@ public abstract class StateChange {
                     };
                 }
 
-                public Message.IEncodable[] undo() {
+                public Message.IEncodable[] _undo() {
                     if (!featureModel.getRenamingsManager().renameFeature(newName, oldName))
                         throw new RuntimeException("invalid renaming operation");
                     return new Message.IEncodable[]{
@@ -427,12 +492,12 @@ public abstract class StateChange {
                     this.description = description;
                 }
 
-                public Message.IEncodable[] apply() {
+                public Message.IEncodable[] _apply() {
                     feature.getProperty().setDescription(description);
                     return StateChange.featureModelMessage(featureModel);
                 }
 
-                public Message.IEncodable[] undo() {
+                public Message.IEncodable[] _undo() {
                     feature.getProperty().setDescription(oldDescription);
                     return StateChange.featureModelMessage(featureModel);
                 }
@@ -464,7 +529,7 @@ public abstract class StateChange {
                     oldMandatoryChildren.forEach(child -> child.setMandatory(true));
                 }
 
-                public Message.IEncodable[] apply() {
+                public Message.IEncodable[] _apply() {
                     oldMandatoryChildren = new LinkedList<>();
                     switch (property) {
                         case "abstract":
@@ -508,7 +573,7 @@ public abstract class StateChange {
                     return StateChange.featureModelMessage(featureModel);
                 }
 
-                public Message.IEncodable[] undo() {
+                public Message.IEncodable[] _undo() {
                     switch (property) {
                         case "abstract":
                             feature.getStructure().setAbstract(oldValue.equals("true"));
