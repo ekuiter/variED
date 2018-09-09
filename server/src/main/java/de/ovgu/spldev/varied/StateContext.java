@@ -27,7 +27,7 @@ public class StateContext {
         return stateChangeStack;
     }
 
-    public void sendInitialState(Endpoint endpoint) {
-        endpoint.send(new Api.FeatureDiagramFeatureModel(featureModel));
+    public void sendInitialState(User user) {
+        user.send(new Api.FeatureDiagramFeatureModel(featureModel));
     }
 }

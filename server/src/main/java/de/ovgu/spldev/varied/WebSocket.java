@@ -3,44 +3,26 @@ package de.ovgu.spldev.varied;
 import de.ovgu.spldev.varied.messaging.Api;
 import de.ovgu.spldev.varied.messaging.Message;
 import de.ovgu.spldev.varied.messaging.MessageSerializer;
-import me.atrox.haikunator.Haikunator;
-import me.atrox.haikunator.HaikunatorBuilder;
 
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 import java.io.EOFException;
 import java.io.IOException;
 
-/**
- * An endpoint is a client that has a bidirectional connection (session) with the server.
- */
 @ServerEndpoint(
         value = "/websocket",
         encoders = MessageSerializer.MessageEncoder.class,
         decoders = MessageSerializer.MessageDecoder.class)
-public class Endpoint {
-    protected String label;
-    protected Session session;
-
-    private static Haikunator haikunator = new HaikunatorBuilder().setDelimiter(" ").setTokenLength(0).build();
-
-    public static String generateLabel() {
-        return haikunator.haikunate() + " (anonymous)";
-    }
+public class WebSocket {
+    private Session session;
 
     @OnOpen
     public void onOpen(Session session) {
-        EndpointManager endpointManager = EndpointManager.getInstance();
+        this.session = session;
         session.setMaxIdleTimeout(0);
 
-        this.session = session;
-        this.label = generateLabel();
-        while (!endpointManager.isLabelAvailable(this.label))
-            this.label = generateLabel();
-
         try {
-            endpointManager.register(this);
-            CollaborationSession.getInstance().subscribe(this);
+            UserManager.getInstance().register(this);
         } catch (Throwable t) {
             send(new Api.Error(t));
         }
@@ -49,8 +31,7 @@ public class Endpoint {
     @OnClose
     public void onClose() {
         try {
-            CollaborationSession.getInstance().unsubscribe(this);
-            EndpointManager.getInstance().unregister(this);
+            UserManager.getInstance().unregister(this);
         } catch (Throwable t) {
             send(new Api.Error(t));
         }
@@ -59,7 +40,7 @@ public class Endpoint {
     @OnMessage
     public void onMessage(Message message) {
         try {
-            CollaborationSession.getInstance().onMessage(this, message);
+            UserManager.getInstance().onMessage(this, message);
         } catch (Throwable t) {
             send(new Api.Error(t));
         }
@@ -89,13 +70,5 @@ public class Endpoint {
         } catch (IOException | EncodeException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public String getLabel() {
-        return label;
-    }
-
-    public String toString() {
-        return getLabel();
     }
 }

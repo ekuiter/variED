@@ -21,27 +21,27 @@ describe('messageReducer', () => {
         expect(console.warn).lastCalledWith('some error');
     });
 
-    it('subscribes users', () => {
+    it('lets users join', () => {
         const state = messageReducer(initialState,
-            {type: messageTypes.USER_SUBSCRIBE, user: 'some user'});
+            {type: messageTypes.USER_JOINED, user: 'some user'});
         expect(state.users).toContain('some user');
     });
 
-    it('does not subscribe users multiple times', () => {
+    it('does not let users join multiple times', () => {
         let state = messageReducer(initialState,
-            {type: messageTypes.USER_SUBSCRIBE, user: 'some user'});
+            {type: messageTypes.USER_JOINED, user: 'some user'});
         expect(state.users).toHaveLength(1);
         state = messageReducer(state,
-            {type: messageTypes.USER_SUBSCRIBE, user: 'some user'});
+            {type: messageTypes.USER_JOINED, user: 'some user'});
         expect(state.users).toHaveLength(1);
     });
 
-    it('unsubscribes users', () => {
+    it('lets users leave', () => {
         let state = messageReducer(initialState,
-            {type: messageTypes.USER_SUBSCRIBE, user: 'some user'});
+            {type: messageTypes.USER_JOINED, user: 'some user'});
         expect(state.users).toContain('some user');
         state = messageReducer(initialState,
-            {type: messageTypes.USER_UNSUBSCRIBE, user: 'some user'});
+            {type: messageTypes.USER_LEFT, user: 'some user'});
         expect(state.users).not.toContain('some user');
     });
 

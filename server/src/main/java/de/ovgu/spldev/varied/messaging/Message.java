@@ -8,7 +8,7 @@ import de.ovgu.spldev.varied.statechanges.StateChange;
 import java.util.stream.Stream;
 
 /**
- * Messages that can be serialized to be broadcast to all endpoints subscribed to an editing session.
+ * Messages exchanged over web sockets.
  */
 abstract public class Message {
     public static class Type {

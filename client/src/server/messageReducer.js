@@ -7,10 +7,10 @@ const messageTypes = constants.server.messageTypes,
             console.warn(action.error);
             return state;
         },
-        [messageTypes.USER_SUBSCRIBE](state, action) {
+        [messageTypes.USER_JOINED](state, action) {
             return {...state, users: uniqueArrayAdd(state.users, action.user)};
         },
-        [messageTypes.USER_UNSUBSCRIBE](state, action) {
+        [messageTypes.USER_LEFT](state, action) {
             return {...state, users: uniqueArrayRemove(state.users, action.user)};
         },
         [messageTypes.FEATURE_DIAGRAM_FEATURE_MODEL](state, action) {

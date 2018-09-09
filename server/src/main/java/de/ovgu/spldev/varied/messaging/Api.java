@@ -1,8 +1,8 @@
 package de.ovgu.spldev.varied.messaging;
 
 import de.ovgu.featureide.fm.core.base.IFeatureModel;
-import de.ovgu.spldev.varied.Endpoint;
 import de.ovgu.spldev.varied.StateContext;
+import de.ovgu.spldev.varied.User;
 import de.ovgu.spldev.varied.statechanges.StateChange;
 import de.ovgu.spldev.varied.statechanges.featurediagram.*;
 
@@ -35,13 +35,13 @@ public class Api {
          */
         MULTIPLE_MESSAGES,
         /**
-         * a user has subscribed an editing session
+         * a user has joined an editing session
          */
-        USER_SUBSCRIBE,
+        USER_JOINED,
         /**
-         * a user has unsubscribed an editing session
+         * a user has left an editing session
          */
-        USER_UNSUBSCRIBE,
+        USER_LEFT,
         /**
          * a serialized feature model
          */
@@ -157,21 +157,21 @@ public class Api {
         }
     }
 
-    public static class UserSubscribe extends Message implements Message.IEncodable {
+    public static class UserJoined extends Message implements Message.IEncodable {
         private String user;
 
-        public UserSubscribe(Endpoint endpoint) {
-            super(TypeEnum.USER_SUBSCRIBE);
-            this.user = endpoint.getLabel();
+        public UserJoined(User user) {
+            super(TypeEnum.USER_JOINED);
+            this.user = user.getName();
         }
     }
 
-    public static class UserUnsubscribe extends Message implements Message.IEncodable {
+    public static class UserLeft extends Message implements Message.IEncodable {
         private String user;
 
-        public UserUnsubscribe(Endpoint endpoint) {
-            super(TypeEnum.USER_UNSUBSCRIBE);
-            this.user = endpoint.getLabel();
+        public UserLeft(User user) {
+            super(TypeEnum.USER_LEFT);
+            this.user = user.getName();
         }
     }
 

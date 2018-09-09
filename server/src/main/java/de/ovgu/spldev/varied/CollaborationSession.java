@@ -11,12 +11,12 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
- * A collaboration session consists of a set of endpoints that view and edit a feature model together.
+ * A collaboration session consists of a set of users that view and edit a feature model together.
  */
 public class CollaborationSession {
     private static CollaborationSession instance;
     private StateContext stateContext;
-    private Set<Endpoint> endpoints = new HashSet<>();
+    private Set<User> users = new HashSet<>();
 
     private CollaborationSession(StateContext stateContext) {
         this.stateContext = Objects.requireNonNull(stateContext, "no state context given");
@@ -26,35 +26,35 @@ public class CollaborationSession {
         return instance == null ? instance = new CollaborationSession(StateContext.DEFAULT) : instance;
     }
 
-    public void subscribe(Endpoint newEndpoint) {
-        if (!endpoints.add(newEndpoint))
-            throw new RuntimeException("endpoint already subscribed");
-        unicast(newEndpoint, Api.UserSubscribe::new, endpoint -> endpoint != newEndpoint);
-        broadcast(new Api.UserSubscribe(newEndpoint), endpoint -> endpoint != newEndpoint);
-        stateContext.sendInitialState(newEndpoint);
+    public void join(User newUser) {
+        if (!users.add(newUser))
+            throw new RuntimeException("user already joined");
+        unicast(newUser, Api.UserJoined::new, user -> user != newUser);
+        broadcast(new Api.UserJoined(newUser), user -> user != newUser);
+        stateContext.sendInitialState(newUser);
     }
 
-    public void unsubscribe(Endpoint oldEndpoint) {
-        if (endpoints.remove(oldEndpoint))
-            broadcast(new Api.UserUnsubscribe(oldEndpoint));
+    public void leave(User oldUser) {
+        if (users.remove(oldUser))
+            broadcast(new Api.UserLeft(oldUser));
     }
 
-    public void unicast(Endpoint targetEndpoint, Function<Endpoint, Message.IEncodable> messageFunction, Predicate<Endpoint> predicate) {
-        for (Endpoint endpoint : endpoints)
-            if (predicate.test(endpoint))
-                targetEndpoint.send(messageFunction.apply(endpoint));
+    public void unicast(User targetUser, Function<User, Message.IEncodable> messageFunction, Predicate<User> predicate) {
+        users.stream()
+                .filter(predicate)
+                .forEach(user -> targetUser.send(messageFunction.apply(user)));
     }
 
-    public void broadcast(Message.IEncodable message, Predicate<Endpoint> predicate) {
+    public void broadcast(Message.IEncodable message, Predicate<User> predicate) {
         Objects.requireNonNull(message, "no message given");
-        for (Endpoint endpoint : endpoints)
-            if (predicate.test(endpoint))
-                endpoint.send(message);
+        users.stream()
+                .filter(predicate)
+                .forEach(user -> user.send(message));
     }
 
     public void broadcast(Message.IEncodable message) {
         Objects.requireNonNull(message, "no message given");
-        broadcast(message, endpoint -> true);
+        broadcast(message, user -> true);
     }
 
     public void broadcast(Message.IEncodable[] messages) {
@@ -63,7 +63,7 @@ public class CollaborationSession {
             broadcast(message);
     }
 
-    public void onMessage(Endpoint endpoint, Message message) {
+    public void onMessage(Message message) {
         Objects.requireNonNull(message, "no message given");
         Message.IDecodable decodableMessage = (Message.IDecodable) message;
         if (!decodableMessage.isValid(stateContext))
