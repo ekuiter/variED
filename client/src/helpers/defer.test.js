@@ -7,7 +7,7 @@ describe('defer', () => {
         const fn = jest.fn();
         defer(fn)(42);
         expect(fn).not.toBeCalled();
-        jest.runTimersToTime(0); // TODO: now advanceTimersByTime, wait for create-react-app update
+        jest.runTimersToTime(0);
         expect(fn).toBeCalledWith(42);
     });
 });

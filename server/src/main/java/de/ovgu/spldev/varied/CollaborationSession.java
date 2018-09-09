@@ -1,5 +1,7 @@
 package de.ovgu.spldev.varied;
 
+import de.ovgu.spldev.varied.statechanges.StateChange;
+
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;

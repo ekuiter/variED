@@ -2,6 +2,8 @@ package de.ovgu.spldev.varied;
 
 import com.google.gson.typeadapters.RuntimeTypeAdapterFactory;
 import de.ovgu.featureide.fm.core.base.IFeatureModel;
+import de.ovgu.spldev.varied.statechanges.StateChange;
+import de.ovgu.spldev.varied.statechanges.featurediagram.*;
 
 import java.util.LinkedList;
 import java.util.stream.Stream;
@@ -239,7 +241,7 @@ abstract public class Message {
         }
 
         public StateChange getStateChange(StateContext stateContext) {
-            return new StateChange.MultipleMessages(stateContext, getMessages());
+            return new de.ovgu.spldev.varied.statechanges.MultipleMessages(stateContext, getMessages());
         }
     }
 
@@ -279,7 +281,7 @@ abstract public class Message {
         }
 
         public StateChange getStateChange(StateContext stateContext) {
-            return new StateChange.FeatureDiagram.Feature.AddBelow(stateContext.getFeatureModel(), belowFeature);
+            return new FeatureAddBelow(stateContext.getFeatureModel(), belowFeature);
         }
     }
 
@@ -292,7 +294,7 @@ abstract public class Message {
         }
 
         public StateChange getStateChange(StateContext stateContext) {
-            return new StateChange.FeatureDiagram.Feature.AddAbove(stateContext.getFeatureModel(), aboveFeatures);
+            return new FeatureAddAbove(stateContext.getFeatureModel(), aboveFeatures);
         }
     }
 
@@ -305,7 +307,7 @@ abstract public class Message {
         }
 
         public StateChange getStateChange(StateContext stateContext) {
-            return new StateChange.FeatureDiagram.Feature.Remove(stateContext.getFeatureModel(), feature);
+            return new FeatureRemove(stateContext.getFeatureModel(), feature);
         }
     }
 
@@ -318,19 +320,19 @@ abstract public class Message {
         }
 
         public StateChange getStateChange(StateContext stateContext) {
-            return new StateChange.FeatureDiagram.Feature.RemoveBelow(stateContext.getFeatureModel(), feature);
+            return new FeatureRemoveBelow(stateContext.getFeatureModel(), feature);
         }
 
         public StateChange getStateChange(StateContext stateContext, Object multipleContext) {
-            return new StateChange.FeatureDiagram.Feature.RemoveBelow(stateContext.getFeatureModel(), feature, multipleContext);
+            return new FeatureRemoveBelow(stateContext.getFeatureModel(), feature, multipleContext);
         }
 
         public Object createMultipleContext() {
-            return StateChange.FeatureDiagram.Feature.RemoveBelow.createMultipleContext();
+            return FeatureRemoveBelow.createMultipleContext();
         }
 
         public Object nextMultipleContext(StateChange stateChange, Object multipleContext) {
-            return ((StateChange.FeatureDiagram.Feature.RemoveBelow) stateChange).nextMultipleContext(multipleContext);
+            return ((FeatureRemoveBelow) stateChange).nextMultipleContext(multipleContext);
         }
     }
 
@@ -344,7 +346,7 @@ abstract public class Message {
         }
 
         public StateChange getStateChange(StateContext stateContext) {
-            return new StateChange.FeatureDiagram.Feature.Rename(stateContext.getFeatureModel(), oldFeature, newFeature);
+            return new FeatureRename(stateContext.getFeatureModel(), oldFeature, newFeature);
         }
     }
 
@@ -358,7 +360,7 @@ abstract public class Message {
         }
 
         public StateChange getStateChange(StateContext stateContext) {
-            return new StateChange.FeatureDiagram.Feature.SetDescription(stateContext.getFeatureModel(), feature, description);
+            return new FeatureSetDescription(stateContext.getFeatureModel(), feature, description);
         }
     }
 
@@ -373,11 +375,11 @@ abstract public class Message {
         }
 
         public StateChange getStateChange(StateContext stateContext) {
-            return new StateChange.FeatureDiagram.Feature.SetProperty(stateContext.getFeatureModel(), feature, property, value);
+            return new FeatureSetProperty(stateContext.getFeatureModel(), feature, property, value);
         }
 
         public StateChange getStateChange(StateContext stateContext, Object multipleContext) {
-            return new StateChange.FeatureDiagram.Feature.SetProperty(
+            return new FeatureSetProperty(
                     stateContext.getFeatureModel(), feature, property, value, multipleContext);
         }
 

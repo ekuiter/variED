@@ -10,11 +10,6 @@ import i18n from '../i18n';
 /* eslint-disable react/prop-types */
 const CommandBarContainer = props => (
     <CommandBar
-        // Clicking on submenu items throws
-        // "Warning: Can't call setState (or forceUpdate) on an unmounted component".
-        // This is a known issue in Office UI Fabric:
-        // https://github.com/OfficeDev/office-ui-fabric-react/issues/5433
-        // TODO: wait for fix ...
         items={[{
             key: 'file',
             text: i18n.t('commands.file'),

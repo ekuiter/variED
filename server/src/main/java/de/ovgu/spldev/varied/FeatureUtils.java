@@ -35,20 +35,11 @@ public class FeatureUtils {
         return true;
     }
 
-    public static IFeatureModel loadFeatureModel(String source, String fileName) {
-        IPersistentFormat format = FMFormatManager.getInstance().getFormatByContent(source, fileName);
-        if (format == null)
-            throw new RuntimeException("feature model format not recognized");
-        IFeatureModel featureModel = FeatureModelManager.load(source, fileName);
-        if (featureModel == null)
-            throw new RuntimeException("feature model could not be loaded");
-        return featureModel;
-    }
-
     public static void sortSiblingFeatures(LinkedList<IFeature> features) {
         features.sort((o1, o2) -> {
             IFeatureStructure s1 = o1.getStructure(), s2 = o2.getStructure();
             return Integer.compare(s1.getParent().getChildIndex(s1), s2.getParent().getChildIndex(s2));
         });
     }
+
 }
