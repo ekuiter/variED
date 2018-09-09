@@ -1,6 +1,8 @@
 package de.ovgu.spldev.varied;
 
 import de.ovgu.featureide.fm.core.base.IFeatureModel;
+import de.ovgu.spldev.varied.messaging.Api;
+import de.ovgu.spldev.varied.util.FeatureModelUtils;
 
 import java.util.Objects;
 
@@ -26,6 +28,6 @@ public class StateContext {
     }
 
     public void sendInitialState(Endpoint endpoint) {
-        endpoint.send(new Message.FeatureDiagramFeatureModel(featureModel));
+        endpoint.send(new Api.FeatureDiagramFeatureModel(featureModel));
     }
 }

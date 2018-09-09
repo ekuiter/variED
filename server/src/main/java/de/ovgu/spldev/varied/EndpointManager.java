@@ -1,5 +1,7 @@
 package de.ovgu.spldev.varied;
 
+import de.ovgu.spldev.varied.util.StringUtils;
+
 import java.util.HashSet;
 import java.util.Set;
 

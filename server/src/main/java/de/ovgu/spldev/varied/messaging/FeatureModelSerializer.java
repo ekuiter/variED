@@ -1,4 +1,4 @@
-package de.ovgu.spldev.varied;
+package de.ovgu.spldev.varied.messaging;
 
 import com.google.gson.*;
 import de.ovgu.featureide.fm.core.base.FeatureUtils;

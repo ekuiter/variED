@@ -1,6 +1,6 @@
 package de.ovgu.spldev.varied.statechanges;
 
-import de.ovgu.spldev.varied.Message;
+import de.ovgu.spldev.varied.messaging.Message;
 
 import java.util.Iterator;
 import java.util.LinkedList;

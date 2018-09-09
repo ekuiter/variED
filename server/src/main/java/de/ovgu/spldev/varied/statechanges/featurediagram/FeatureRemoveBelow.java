@@ -3,9 +3,9 @@ package de.ovgu.spldev.varied.statechanges.featurediagram;
 import de.ovgu.featureide.fm.core.base.IFeature;
 import de.ovgu.featureide.fm.core.base.IFeatureModel;
 import de.ovgu.featureide.fm.core.base.IFeatureModelElement;
-import de.ovgu.spldev.varied.FeatureModelUtils;
-import de.ovgu.spldev.varied.FeatureUtils;
-import de.ovgu.spldev.varied.Message;
+import de.ovgu.spldev.varied.util.FeatureModelUtils;
+import de.ovgu.spldev.varied.util.FeatureUtils;
+import de.ovgu.spldev.varied.messaging.Message;
 import de.ovgu.spldev.varied.statechanges.MultipleStateChange;
 
 import java.util.LinkedList;

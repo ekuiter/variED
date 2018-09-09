@@ -1,5 +1,8 @@
 package de.ovgu.spldev.varied;
 
+import de.ovgu.spldev.varied.messaging.Api;
+import de.ovgu.spldev.varied.messaging.Message;
+import de.ovgu.spldev.varied.messaging.MessageSerializer;
 import me.atrox.haikunator.Haikunator;
 import me.atrox.haikunator.HaikunatorBuilder;
 
@@ -39,7 +42,7 @@ public class Endpoint {
             endpointManager.register(this);
             CollaborationSession.getInstance().subscribe(this);
         } catch (Throwable t) {
-            send(new Message.Error(t));
+            send(new Api.Error(t));
         }
     }
 
@@ -49,7 +52,7 @@ public class Endpoint {
             CollaborationSession.getInstance().unsubscribe(this);
             EndpointManager.getInstance().unregister(this);
         } catch (Throwable t) {
-            send(new Message.Error(t));
+            send(new Api.Error(t));
         }
     }
 
@@ -58,7 +61,7 @@ public class Endpoint {
         try {
             CollaborationSession.getInstance().onMessage(this, message);
         } catch (Throwable t) {
-            send(new Message.Error(t));
+            send(new Api.Error(t));
         }
     }
 

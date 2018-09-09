@@ -1,5 +1,6 @@
 package de.ovgu.spldev.varied;
 
+import de.ovgu.spldev.varied.messaging.Message;
 import de.ovgu.spldev.varied.statechanges.StateChange;
 import edu.washington.cs.courses.cse143.UndoRedoStack;
 

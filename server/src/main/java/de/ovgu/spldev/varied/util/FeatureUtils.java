@@ -1,11 +1,8 @@
-package de.ovgu.spldev.varied;
+package de.ovgu.spldev.varied.util;
 
 import de.ovgu.featureide.fm.core.base.IFeature;
 import de.ovgu.featureide.fm.core.base.IFeatureModel;
 import de.ovgu.featureide.fm.core.base.IFeatureStructure;
-import de.ovgu.featureide.fm.core.base.impl.FMFormatManager;
-import de.ovgu.featureide.fm.core.io.IPersistentFormat;
-import de.ovgu.featureide.fm.core.io.manager.FeatureModelManager;
 
 import java.util.LinkedList;
 import java.util.stream.Stream;

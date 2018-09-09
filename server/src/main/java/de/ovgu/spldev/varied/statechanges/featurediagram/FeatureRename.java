@@ -1,8 +1,9 @@
 package de.ovgu.spldev.varied.statechanges.featurediagram;
 
 import de.ovgu.featureide.fm.core.base.IFeatureModel;
-import de.ovgu.spldev.varied.FeatureUtils;
-import de.ovgu.spldev.varied.Message;
+import de.ovgu.spldev.varied.messaging.Api;
+import de.ovgu.spldev.varied.util.FeatureUtils;
+import de.ovgu.spldev.varied.messaging.Message;
 import de.ovgu.spldev.varied.statechanges.StateChange;
 
 // adapted from RenameFeatureOperation
@@ -22,8 +23,8 @@ public class FeatureRename extends StateChange {
         if (!featureModel.getRenamingsManager().renameFeature(oldName, newName))
             throw new RuntimeException("invalid renaming operation");
         return new Message.IEncodable[]{
-                new Message.FeatureDiagramFeatureRename(oldName, newName),
-                new Message.FeatureDiagramFeatureModel(featureModel)
+                new Api.FeatureDiagramFeatureRename(oldName, newName),
+                new Api.FeatureDiagramFeatureModel(featureModel)
         };
     }
 
@@ -31,8 +32,8 @@ public class FeatureRename extends StateChange {
         if (!featureModel.getRenamingsManager().renameFeature(newName, oldName))
             throw new RuntimeException("invalid renaming operation");
         return new Message.IEncodable[]{
-                new Message.FeatureDiagramFeatureRename(newName, oldName),
-                new Message.FeatureDiagramFeatureModel(featureModel)
+                new Api.FeatureDiagramFeatureRename(newName, oldName),
+                new Api.FeatureDiagramFeatureModel(featureModel)
         };
     }
 }

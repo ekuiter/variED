@@ -3,10 +3,11 @@ package de.ovgu.spldev.varied.statechanges.featurediagram;
 import de.ovgu.featureide.fm.core.base.IFeature;
 import de.ovgu.featureide.fm.core.base.IFeatureModel;
 import de.ovgu.featureide.fm.core.base.IFeatureStructure;
-import de.ovgu.spldev.varied.FeatureModelUtils;
-import de.ovgu.spldev.varied.Message;
+import de.ovgu.spldev.varied.util.FeatureModelUtils;
+import de.ovgu.spldev.varied.messaging.Message;
 import de.ovgu.spldev.varied.statechanges.StateChange;
-import de.ovgu.spldev.varied.StringUtils;
+import de.ovgu.spldev.varied.util.StringUtils;
+import de.ovgu.spldev.varied.util.FeatureUtils;
 
 import java.util.LinkedList;
 
@@ -25,7 +26,7 @@ public class FeatureSetProperty extends StateChange {
             throw new RuntimeException("can not set different properties in one multiple message");
 
         this.featureModel = featureModel;
-        this.feature = de.ovgu.spldev.varied.FeatureUtils.requireFeature(featureModel, feature);
+        this.feature = FeatureUtils.requireFeature(featureModel, feature);
         this.property = property;
         this.value = value;
         if (!StringUtils.isOneOf(property, new String[]{"abstract", "hidden", "mandatory", "group"}))

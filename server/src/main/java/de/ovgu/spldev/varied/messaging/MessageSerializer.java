@@ -1,4 +1,4 @@
-package de.ovgu.spldev.varied;
+package de.ovgu.spldev.varied.messaging;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
@@ -39,16 +39,13 @@ public class MessageSerializer {
      * instructs Java's WebSocket library to encode messages with JSON
      */
     public static class MessageEncoder implements Encoder.Text<Message> {
-        @Override
         public String encode(Message message) {
             return gson.toJson(message);
         }
 
-        @Override
         public void init(EndpointConfig endpointConfig) {
         }
 
-        @Override
         public void destroy() {
         }
     }
@@ -57,21 +54,17 @@ public class MessageSerializer {
      * decodes message objects from JSON (respecting the polymorphic class hierarchy)
      */
     public static class MessageDecoder implements Decoder.Text<Message> {
-        @Override
         public Message decode(String s) {
             return gson.fromJson(s, typeToken.getType());
         }
 
-        @Override
         public boolean willDecode(String s) {
             return s != null;
         }
 
-        @Override
         public void init(EndpointConfig endpointConfig) {
         }
 
-        @Override
         public void destroy() {
         }
     }
