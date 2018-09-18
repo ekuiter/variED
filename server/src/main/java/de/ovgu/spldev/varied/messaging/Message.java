@@ -1,6 +1,7 @@
 package de.ovgu.spldev.varied.messaging;
 
 import com.google.gson.typeadapters.RuntimeTypeAdapterFactory;
+import de.ovgu.spldev.varied.Artifact;
 import de.ovgu.spldev.varied.StateContext;
 import de.ovgu.spldev.varied.util.StringUtils;
 import de.ovgu.spldev.varied.statechanges.StateChange;
@@ -51,12 +52,27 @@ abstract public class Message {
      */
     private Type type;
 
-    Message(Type type) {
-        this.type = type;
+    /**
+     * every message may carry a path to the concerned artifact
+     */
+    private Artifact.Path artifact;
+
+    public boolean isType(Api.TypeEnum typeEnum) {
+        return type.typeEnum == typeEnum;
     }
 
-    Message(Api.TypeEnum typeEnum) {
+    public Artifact.Path getArtifactPath() {
+        return artifact;
+    }
+
+    Message(Type type, Artifact.Path artifactPath) {
+        this.type = type;
+        this.artifact = artifactPath;
+    }
+
+    Message(Api.TypeEnum typeEnum, Artifact.Path artifactPath) {
         this.type = new Type(typeEnum);
+        this.artifact = artifactPath;
     }
 
     public String toString() {

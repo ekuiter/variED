@@ -25,8 +25,21 @@ build process.
 - `yarn start` inside the `client` directory runs the client on
   `http://localhost:3000`
 - `./gradlew server:run` runs the server on `http://localhost:8080`
+- `CI=true ./gradlew check` runs all unit tests
 - you can deploy to Heroku by simply using the button above or with `heroku
   create && git push heroku master`
+
+### Implementation
+
+The server uses the [FeatureIDE](https://featureide.github.io/) core library to
+perform editing operations and reason about feature models. It communicates with
+clients by sending JSON-encoded messages over a WebSocket connection.
+
+The client makes use of the [React](https://reactjs.org/),
+[Redux](https://redux.js.org/), [Office UI
+Fabric](https://developer.microsoft.com/en-us/fabric) and
+[D3.js](https://d3js.org/) libraries to provide a user interface for feature
+modeling.
 
 ### IDE setup
 

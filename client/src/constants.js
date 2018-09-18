@@ -43,11 +43,11 @@ const constants = {
         },
         messageTypes: { // message type enumeration used by the server
             ERROR: 'ERROR',
+            JOIN: 'JOIN',
+            LEAVE: 'LEAVE',
             UNDO: 'UNDO',
             REDO: 'REDO',
             MULTIPLE_MESSAGES: 'MULTIPLE_MESSAGES',
-            USER_JOINED: 'USER_JOINED',
-            USER_LEFT: 'USER_LEFT',
             FEATURE_DIAGRAM_FEATURE_MODEL: 'FEATURE_DIAGRAM_FEATURE_MODEL',
             FEATURE_DIAGRAM_FEATURE_ADD_BELOW: 'FEATURE_DIAGRAM_FEATURE_ADD_BELOW',
             FEATURE_DIAGRAM_FEATURE_ADD_ABOVE: 'FEATURE_DIAGRAM_FEATURE_ADD_ABOVE',

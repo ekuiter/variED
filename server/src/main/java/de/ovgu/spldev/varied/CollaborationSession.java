@@ -11,60 +11,54 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
- * A collaboration session consists of a set of users that view and edit a feature model together.
+ * A collaboration session consists of a set of users that view and edit a artifact together.
  */
 public class CollaborationSession {
-    private static CollaborationSession instance;
     private StateContext stateContext;
     private Set<User> users = new HashSet<>();
 
-    private CollaborationSession(StateContext stateContext) {
+    CollaborationSession(StateContext stateContext) {
         this.stateContext = Objects.requireNonNull(stateContext, "no state context given");
-    }
-
-    public static CollaborationSession getInstance() {
-        return instance == null ? instance = new CollaborationSession(StateContext.DEFAULT) : instance;
     }
 
     public void join(User newUser) {
         if (!users.add(newUser))
             throw new RuntimeException("user already joined");
-        unicast(newUser, Api.UserJoined::new, user -> user != newUser);
-        broadcast(new Api.UserJoined(newUser), user -> user != newUser);
+        unicast(newUser, artifactPath -> new Api.Join(stateContext.getArtifactPath(), artifactPath), user -> user != newUser);
+        broadcast(new Api.Join(stateContext.getArtifactPath(), newUser), user -> user != newUser);
         stateContext.sendInitialState(newUser);
     }
 
     public void leave(User oldUser) {
         if (users.remove(oldUser))
-            broadcast(new Api.UserLeft(oldUser));
+            broadcast(new Api.Leave(stateContext.getArtifactPath(), oldUser));
     }
 
-    public void unicast(User targetUser, Function<User, Message.IEncodable> messageFunction, Predicate<User> predicate) {
+    private void unicast(User targetUser, Function<User, Message.IEncodable> messageFunction, Predicate<User> predicate) {
         users.stream()
                 .filter(predicate)
                 .forEach(user -> targetUser.send(messageFunction.apply(user)));
     }
 
-    public void broadcast(Message.IEncodable message, Predicate<User> predicate) {
+    private void broadcast(Message.IEncodable message, Predicate<User> predicate) {
         Objects.requireNonNull(message, "no message given");
         users.stream()
                 .filter(predicate)
                 .forEach(user -> user.send(message));
     }
 
-    public void broadcast(Message.IEncodable message) {
+    private void broadcast(Message.IEncodable message) {
         Objects.requireNonNull(message, "no message given");
         broadcast(message, user -> true);
     }
 
-    public void broadcast(Message.IEncodable[] messages) {
+    private void broadcast(Message.IEncodable[] messages) {
         Objects.requireNonNull(messages, "no messages given");
         for (Message.IEncodable message : messages)
             broadcast(message);
     }
 
     public void onMessage(Message message) {
-        Objects.requireNonNull(message, "no message given");
         Message.IDecodable decodableMessage = (Message.IDecodable) message;
         if (!decodableMessage.isValid(stateContext))
             throw new RuntimeException("invalid message " + message);
