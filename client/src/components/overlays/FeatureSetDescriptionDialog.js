@@ -15,6 +15,9 @@ export default class extends FeatureComponent() {
     };
 
     renderIfFeature(feature) {
+        // TODO: warn the user if someone else updated the description (it may happen
+        // that the user is working on a new description which is then replaced by
+        // another users update)
         return (
             <TextFieldDialog
                 {...this.props}

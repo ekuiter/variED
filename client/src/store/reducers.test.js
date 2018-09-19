@@ -10,7 +10,6 @@ describe('reducers', () => {
     const featureModelState = (state = reducers(undefined), featureModel = validFeatureModel) => {
         // TODO: change this when we can load feature models
         state.server.featureModel = undefined;
-        state.server.newFeatureModel = false;
         state = reducers(state, {
             type: constants.server.messageTypes.FEATURE_DIAGRAM_FEATURE_MODEL,
             featureModel: featureModel

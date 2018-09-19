@@ -68,8 +68,6 @@ function finalReducer(state, action) {
         state = removeObsoleteFeaturesFromFeatureList(state, 'selectedFeatureNames');
         // TODO: warn user that overlay was hidden
         state = hideOverlayForObsoleteFeature(state);
-        if (state.server.newFeatureModel)
-            state = {...state, ui: fitToScreen(state, state.ui)};
     }
     if (action.type === constants.server.messageTypes.FEATURE_DIAGRAM_FEATURE_RENAME) {
         state = renameFeatureInFeatureList(state, action, 'collapsedFeatureNames');
