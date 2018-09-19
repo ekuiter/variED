@@ -1,0 +1,38 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AboutPanel renders correctly 1`] = `
+<StyledPanelBase
+  headerText="About"
+  isLightDismiss={true}
+  isOpen={true}
+  onDismissed={[MockFunction]}
+  type={1}
+>
+  <div>
+    <h3>
+      variED: The variability editor
+    </h3>
+    <p>
+      View, edit and analyze feature models in the browser - with support for real-time collaboration.
+    </p>
+    <p>
+      This project is released under the 
+      <StyledLinkBase
+        href="https://github.com/ekuiter/variED/blob/master/LICENSE.txt"
+        target="_blank"
+      >
+        LGPL v3 license
+      </StyledLinkBase>
+      .
+    </p>
+    <p>
+      <StyledLinkBase
+        href="https://github.com/ekuiter/variED"
+        target="_blank"
+      >
+        View source code on GitHub
+      </StyledLinkBase>
+    </p>
+  </div>
+</StyledPanelBase>
+`;

@@ -3,13 +3,13 @@ import reduceReducers from 'reduce-reducers';
 import {handleActions} from 'redux-actions';
 import constants from '../constants';
 import {defaultSettings, getNewSettings} from './settings';
-import {overlayTypes} from '../types';
+import {overlayTypes, isMessageType, MessageType} from '../types';
 import {uniqueArrayAdd, uniqueArrayRemove} from '../helpers/reducers';
 import {getFeatureModel} from './selectors';
 import {getViewportWidth, getViewportHeight} from '../helpers/withDimensions';
 
 function serverReducer(state, action) {
-    if (constants.server.isMessageType(action.type))
+    if (isMessageType(action.type))
         return {...state, server: messageReducer(state.server, action)};
     return state;
 }
@@ -62,14 +62,14 @@ function changeOverlayForRenamedFeature(state, action) {
 }
 
 function finalReducer(state, action) {
-    if (action.type === constants.server.messageTypes.FEATURE_DIAGRAM_FEATURE_MODEL) {
+    if (action.type === MessageType.FEATURE_DIAGRAM_FEATURE_MODEL) {
         state = removeObsoleteFeaturesFromFeatureList(state, 'collapsedFeatureNames');
         // TODO: warn user that selection changed
         state = removeObsoleteFeaturesFromFeatureList(state, 'selectedFeatureNames');
         // TODO: warn user that overlay was hidden
         state = hideOverlayForObsoleteFeature(state);
     }
-    if (action.type === constants.server.messageTypes.FEATURE_DIAGRAM_FEATURE_RENAME) {
+    if (action.type === MessageType.FEATURE_DIAGRAM_FEATURE_RENAME) {
         state = renameFeatureInFeatureList(state, action, 'collapsedFeatureNames');
         state = renameFeatureInFeatureList(state, action, 'selectedFeatureNames');
         state = changeOverlayForRenamedFeature(state, action);

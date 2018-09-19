@@ -1,0 +1,105 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FontComboBox renders correctly 1`] = `
+<CustomizedComboBox
+  allowFreeform={true}
+  autoComplete="on"
+  buttonIconProps={
+    Object {
+      "iconName": "ChevronDown",
+    }
+  }
+  onChange={[Function]}
+  onRenderOption={[Function]}
+  options={
+    Array [
+      Object {
+        "key": "Arial",
+        "text": "Arial",
+      },
+      Object {
+        "key": "Calibri",
+        "text": "Calibri",
+      },
+      Object {
+        "key": "Candara",
+        "text": "Candara",
+      },
+      Object {
+        "key": "Century Gothic",
+        "text": "Century Gothic",
+      },
+      Object {
+        "key": "Courier New",
+        "text": "Courier New",
+      },
+      Object {
+        "key": "Futura",
+        "text": "Futura",
+      },
+      Object {
+        "key": "Garamond",
+        "text": "Garamond",
+      },
+      Object {
+        "key": "Geneva",
+        "text": "Geneva",
+      },
+      Object {
+        "key": "Georgia",
+        "text": "Georgia",
+      },
+      Object {
+        "key": "Helvetica",
+        "text": "Helvetica",
+      },
+      Object {
+        "key": "Helvetica Neue",
+        "text": "Helvetica Neue",
+      },
+      Object {
+        "key": "Lucida Grande",
+        "text": "Lucida Grande",
+      },
+      Object {
+        "key": "Palatino",
+        "text": "Palatino",
+      },
+      Object {
+        "key": "Segoe UI",
+        "text": "Segoe UI",
+      },
+      Object {
+        "key": "Tahoma",
+        "text": "Tahoma",
+      },
+      Object {
+        "key": "Times New Roman",
+        "text": "Times New Roman",
+      },
+      Object {
+        "key": "Trebuchet MS",
+        "text": "Trebuchet MS",
+      },
+      Object {
+        "key": "Verdana",
+        "text": "Verdana",
+      },
+    ]
+  }
+  text="Arial"
+/>
+`;
+
+exports[`FontComboBox renders font options 1`] = `
+<span
+  className="ms-ComboBox-optionText"
+  style={
+    Object {
+      "fontFamily": "'Arial'",
+    }
+  }
+>
+  Arial
+</span>
+`;

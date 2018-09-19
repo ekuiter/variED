@@ -10,7 +10,7 @@ const AboutPanel = props => (
         onDismissed={props.onDismissed}
         isLightDismiss={true}
         headerText={i18n.t('overlays.aboutPanel.title')}>
-        {i18n.t('overlays.aboutPanel.content')}
+        {i18n.getElement('overlays.aboutPanel.content')}
     </Panel>
 );
 

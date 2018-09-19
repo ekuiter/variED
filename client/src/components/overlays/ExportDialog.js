@@ -33,7 +33,7 @@ export default class extends React.Component {
 
     renderFontComboBox = () => (
         <React.Fragment>
-            {i18n.t('overlays.exportDialog.fontNotice')}
+            {i18n.getElement('overlays.exportDialog.fontNotice')}
             <FontComboBox
                 label={i18n.t('overlays.settingsPanel.labels.featureDiagram.font.family')}
                 selectedFont={getSetting(this.props.settings, 'featureDiagram.font.family')}

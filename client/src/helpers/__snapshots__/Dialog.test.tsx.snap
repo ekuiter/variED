@@ -1,0 +1,76 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Dialog DialogContextualMenu renders correctly 1`] = `
+<div
+  className="setting"
+>
+  <CustomizedDefaultButton
+    menuProps={
+      Object {
+        "items": Array [
+          Object {
+            "key": "key",
+            "onClick": [Function],
+            "text": "text",
+          },
+        ],
+      }
+    }
+    text="label"
+  />
+</div>
+`;
+
+exports[`Dialog DialogWrapper renders correctly 1`] = `
+<StyledWithResponsiveMode
+  dialogContentProps={
+    Object {
+      "title": "label",
+    }
+  }
+  hidden={false}
+  onDismiss={[MockFunction]}
+>
+  content
+  <StyledDialogFooterBase>
+    <CustomizedPrimaryButton
+      onClick={[MockFunction]}
+      text="Apply"
+    />
+  </StyledDialogFooterBase>
+</StyledWithResponsiveMode>
+`;
+
+exports[`Dialog TextFieldDialog renders correctly 1`] = `
+<StyledWithResponsiveMode
+  dialogContentProps={
+    Object {
+      "title": "title",
+    }
+  }
+  hidden={false}
+  modalProps={
+    Object {
+      "onLayerDidMount": [Function],
+    }
+  }
+  onDismiss={[MockFunction]}
+>
+  <StyledTextFieldBase
+    componentRef={
+      Object {
+        "current": null,
+      }
+    }
+    onChange={[Function]}
+    onKeyPress={[Function]}
+    value=""
+  />
+  <StyledDialogFooterBase>
+    <CustomizedPrimaryButton
+      onClick={[Function]}
+      text="submitText"
+    />
+  </StyledDialogFooterBase>
+</StyledWithResponsiveMode>
+`;

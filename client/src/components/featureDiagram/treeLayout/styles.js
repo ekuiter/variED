@@ -54,7 +54,7 @@ export default {
             fill: 'none'
         }),
         mandatory: settings => ({ // style applied to a link's circle to distinguish mandatory and optional features
-            property: () => node =>
+            property: node =>
                 node.parent.feature().isGroup ? 'none' : node.feature().getPropertyString('isMandatory'),
             yes: {
                 stroke: getSetting(settings, 'featureDiagram.treeLayout.link.stroke'),

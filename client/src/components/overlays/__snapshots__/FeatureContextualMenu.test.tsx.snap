@@ -1,0 +1,446 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FeatureContextualMenu renders correctly for a selection of features 1`] = `
+<StyledWithResponsiveMode
+  directionalHint={5}
+  gapSpace={10}
+  hidden={false}
+  isBeakVisible={false}
+  items={
+    Array [
+      Object {
+        "disabled": true,
+        "iconProps": Object {
+          "iconName": "Add",
+        },
+        "key": "newAbove",
+        "onClick": [Function],
+        "text": "New feature above",
+      },
+      Object {
+        "disabled": true,
+        "iconOnly": false,
+        "iconProps": Object {
+          "iconName": "Remove",
+        },
+        "key": "removeMenu",
+        "onClick": [Function],
+        "split": true,
+        "subMenuProps": Object {
+          "items": Array [
+            Object {
+              "iconProps": Object {
+                "iconName": "Remove",
+              },
+              "key": "remove",
+              "onClick": [Function],
+              "secondaryText": "⌫",
+              "text": "Remove features",
+            },
+            Object {
+              "disabled": true,
+              "iconProps": Object {
+                "iconName": "Remove",
+              },
+              "key": "removeBelow",
+              "onClick": [Function],
+              "text": "Remove features below",
+            },
+          ],
+        },
+        "text": "Remove",
+      },
+      Object {
+        "disabled": false,
+        "iconOnly": false,
+        "iconProps": Object {
+          "iconName": "CollapseContentSingle",
+        },
+        "key": "collapseMenu",
+        "onClick": [Function],
+        "split": false,
+        "subMenuProps": Object {
+          "items": Array [
+            Object {
+              "iconProps": Object {
+                "iconName": "CollapseContentSingle",
+              },
+              "key": "collapse",
+              "onClick": [Function],
+              "secondaryText": "Ctrl+C",
+              "text": "Collapse features",
+            },
+            Object {
+              "iconProps": Object {
+                "iconName": "ExploreContentSingle",
+              },
+              "key": "expand",
+              "onClick": [Function],
+              "secondaryText": "⇧+Ctrl+C",
+              "text": "Expand features",
+            },
+            Object {
+              "itemType": 1,
+              "key": "divider",
+            },
+            Object {
+              "iconProps": Object {
+                "iconName": "CollapseContent",
+              },
+              "key": "collapseBelow",
+              "onClick": [Function],
+              "text": "Collapse features below",
+            },
+            Object {
+              "iconProps": Object {
+                "iconName": "ExploreContent",
+              },
+              "key": "expandBelow",
+              "onClick": [Function],
+              "text": "Expand features below",
+            },
+          ],
+        },
+        "text": "Collapse",
+      },
+      Object {
+        "itemType": 1,
+        "key": "divider",
+      },
+      Object {
+        "iconProps": Object {
+          "iconName": "FieldNotChanged",
+        },
+        "key": "propertiesMenu",
+        "subMenuProps": Object {
+          "items": Array [
+            Object {
+              "canCheck": true,
+              "disabled": false,
+              "isChecked": false,
+              "key": "abstract",
+              "onClick": [Function],
+              "text": "Abstract",
+            },
+            Object {
+              "canCheck": true,
+              "disabled": true,
+              "isChecked": true,
+              "key": "concrete",
+              "onClick": [Function],
+              "text": "Concrete",
+            },
+            Object {
+              "itemType": 1,
+              "key": "divider",
+            },
+            Object {
+              "canCheck": true,
+              "isChecked": false,
+              "key": "hidden",
+              "onClick": [Function],
+              "text": "Hidden",
+            },
+            Object {
+              "itemType": 1,
+              "key": "divider",
+            },
+            Object {
+              "canCheck": true,
+              "disabled": true,
+              "isChecked": false,
+              "key": "mandatory",
+              "onClick": [Function],
+              "text": "Mandatory",
+            },
+            Object {
+              "canCheck": true,
+              "disabled": true,
+              "isChecked": false,
+              "key": "optional",
+              "onClick": [Function],
+              "text": "Optional",
+            },
+            Object {
+              "itemType": 1,
+              "key": "divider",
+            },
+            Object {
+              "canCheck": true,
+              "disabled": false,
+              "isChecked": false,
+              "key": "and",
+              "onClick": [Function],
+              "text": "And",
+            },
+            Object {
+              "canCheck": true,
+              "disabled": false,
+              "isChecked": false,
+              "key": "or",
+              "onClick": [Function],
+              "text": "Or",
+            },
+            Object {
+              "canCheck": true,
+              "disabled": false,
+              "isChecked": false,
+              "key": "alternative",
+              "onClick": [Function],
+              "text": "Alternative",
+            },
+          ],
+        },
+        "text": "Properties",
+      },
+    ]
+  }
+  onDismiss={[MockFunction]}
+  target="<target element>"
+/>
+`;
+
+exports[`FeatureContextualMenu renders correctly for a single feature 1`] = `
+<StyledWithResponsiveMode
+  directionalHint={5}
+  gapSpace={5}
+  hidden={false}
+  isBeakVisible={true}
+  items={
+    Array [
+      Object {
+        "iconOnly": false,
+        "iconProps": Object {
+          "iconName": "Add",
+        },
+        "key": "newMenu",
+        "onClick": [Function],
+        "split": true,
+        "subMenuProps": Object {
+          "items": Array [
+            Object {
+              "iconProps": Object {
+                "iconName": "Add",
+              },
+              "key": "newBelow",
+              "onClick": [Function],
+              "secondaryText": "Ctrl+N",
+              "text": "New feature below",
+            },
+            Object {
+              "disabled": false,
+              "iconProps": Object {
+                "iconName": "Add",
+              },
+              "key": "newAbove",
+              "onClick": [Function],
+              "text": "New feature above",
+            },
+          ],
+        },
+        "text": "New",
+      },
+      Object {
+        "disabled": false,
+        "iconOnly": false,
+        "iconProps": Object {
+          "iconName": "Remove",
+        },
+        "key": "removeMenu",
+        "onClick": [Function],
+        "split": true,
+        "subMenuProps": Object {
+          "items": Array [
+            Object {
+              "iconProps": Object {
+                "iconName": "Remove",
+              },
+              "key": "remove",
+              "onClick": [Function],
+              "secondaryText": "⌫",
+              "text": "Remove feature",
+            },
+            Object {
+              "disabled": false,
+              "iconProps": Object {
+                "iconName": "Remove",
+              },
+              "key": "removeBelow",
+              "onClick": [Function],
+              "text": "Remove features below",
+            },
+          ],
+        },
+        "text": "Remove",
+      },
+      Object {
+        "disabled": false,
+        "iconOnly": false,
+        "iconProps": Object {
+          "iconName": "CollapseContentSingle",
+        },
+        "key": "collapseMenu",
+        "onClick": [Function],
+        "split": true,
+        "subMenuProps": Object {
+          "items": Array [
+            Object {
+              "iconProps": Object {
+                "iconName": "CollapseContentSingle",
+              },
+              "key": "collapse",
+              "onClick": [Function],
+              "secondaryText": "Ctrl+C",
+              "text": "Collapse feature",
+            },
+            Object {
+              "itemType": 1,
+              "key": "divider",
+            },
+            Object {
+              "iconProps": Object {
+                "iconName": "CollapseContent",
+              },
+              "key": "collapseBelow",
+              "onClick": [Function],
+              "text": "Collapse features below",
+            },
+            Object {
+              "iconProps": Object {
+                "iconName": "ExploreContent",
+              },
+              "key": "expandBelow",
+              "onClick": [Function],
+              "text": "Expand features below",
+            },
+          ],
+        },
+        "text": "Collapse",
+      },
+      Object {
+        "itemType": 1,
+        "key": "divider",
+      },
+      Object {
+        "iconProps": Object {
+          "iconName": "Rename",
+        },
+        "key": "rename",
+        "onClick": [Function],
+        "secondaryText": "F2",
+        "text": "Rename…",
+      },
+      Object {
+        "iconProps": Object {
+          "iconName": "TextDocument",
+        },
+        "key": "setDescription",
+        "onClick": [Function],
+        "text": "Set description…",
+      },
+      Object {
+        "iconProps": Object {
+          "iconName": "FieldNotChanged",
+        },
+        "key": "propertiesMenu",
+        "subMenuProps": Object {
+          "items": Array [
+            Object {
+              "canCheck": true,
+              "disabled": false,
+              "isChecked": false,
+              "key": "abstract",
+              "onClick": [Function],
+              "text": "Abstract",
+            },
+            Object {
+              "canCheck": true,
+              "disabled": true,
+              "isChecked": true,
+              "key": "concrete",
+              "onClick": [Function],
+              "text": "Concrete",
+            },
+            Object {
+              "itemType": 1,
+              "key": "divider",
+            },
+            Object {
+              "canCheck": true,
+              "isChecked": false,
+              "key": "hidden",
+              "onClick": [Function],
+              "text": "Hidden",
+            },
+            Object {
+              "itemType": 1,
+              "key": "divider",
+            },
+            Object {
+              "canCheck": true,
+              "disabled": false,
+              "isChecked": false,
+              "key": "mandatory",
+              "onClick": [Function],
+              "text": "Mandatory",
+            },
+            Object {
+              "canCheck": true,
+              "disabled": true,
+              "isChecked": true,
+              "key": "optional",
+              "onClick": [Function],
+              "text": "Optional",
+            },
+            Object {
+              "itemType": 1,
+              "key": "divider",
+            },
+            Object {
+              "canCheck": true,
+              "disabled": false,
+              "isChecked": false,
+              "key": "and",
+              "onClick": [Function],
+              "text": "And",
+            },
+            Object {
+              "canCheck": true,
+              "disabled": true,
+              "isChecked": true,
+              "key": "or",
+              "onClick": [Function],
+              "text": "Or",
+            },
+            Object {
+              "canCheck": true,
+              "disabled": false,
+              "isChecked": false,
+              "key": "alternative",
+              "onClick": [Function],
+              "text": "Alternative",
+            },
+          ],
+        },
+        "text": "Properties",
+      },
+      Object {
+        "itemType": 1,
+        "key": "divider",
+      },
+      Object {
+        "iconOnly": true,
+        "iconProps": Object {
+          "iconName": "Info",
+        },
+        "key": "details",
+        "onClick": [Function],
+        "secondaryText": "Ctrl+,",
+        "text": "Details…",
+      },
+    ]
+  }
+  onDismiss={[MockFunction]}
+  target="<target element>"
+/>
+`;

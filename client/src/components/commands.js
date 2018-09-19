@@ -152,7 +152,7 @@ const commands = {
                     subMenuProps: {
                         items: [{
                             key: 'remove',
-                            text: i18n.t('commands.featureDiagram.feature.removeMenu.remove')(features),
+                            text: i18n.getFunction('commands.featureDiagram.feature.removeMenu.remove')(features),
                             secondaryText: getShortcutText('featureDiagram.feature.remove'),
                             iconProps: {iconName: 'Remove'},
                             onClick: () => action().then(onClick)
@@ -267,7 +267,7 @@ const commands = {
                 selectedFeatureNames, onDeselectAllFeatures, onCollapseFeatures,
                 onExpandFeatures, onCollapseFeaturesBelow, onExpandFeaturesBelow, featureModel) => ({
                 key: 'selection',
-                text: i18n.t('commands.featureDiagram.feature.selection')(isSelectMultipleFeatures, selectedFeatureNames),
+                text: i18n.getFunction('commands.featureDiagram.feature.selection')(isSelectMultipleFeatures, selectedFeatureNames),
                 onClick: () => onSetSelectMultipleFeatures(!isSelectMultipleFeatures), // TODO: tell the user he can choose features now
                 subMenuProps: isSelectMultipleFeatures
                     ? {items: commands.featureDiagram.feature.selectionItems(selectedFeatureNames, onDeselectAllFeatures,
@@ -302,7 +302,7 @@ const commands = {
                     {disabled, action} = collapseCommand(features, onCollapseFeatures, onExpandFeatures, onClick);
                 return {
                     key: 'collapseMenu',
-                    text: !iconOnly ? i18n.t('commands.featureDiagram.feature.collapseMenu.title')(isCollapsedSingleFeature) : null,
+                    text: !iconOnly ? i18n.getFunction('commands.featureDiagram.feature.collapseMenu.title')(isCollapsedSingleFeature) : null,
                     iconProps: {iconName: isCollapsedSingleFeature ? 'ExploreContentSingle' : 'CollapseContentSingle'},
                     iconOnly,
                     split: isSingleFeature,
@@ -312,7 +312,7 @@ const commands = {
                         items: [
                             ...((isSingleFeature ? [{
                                 key: 'collapse',
-                                text: i18n.t('commands.featureDiagram.feature.collapseMenu.collapse')(features[0].isCollapsed),
+                                text: i18n.getFunction('commands.featureDiagram.feature.collapseMenu.collapse')(features[0].isCollapsed),
                                 secondaryText: features[0].isCollapsed
                                     ? getShortcutText('featureDiagram.feature.expand')
                                     : getShortcutText('featureDiagram.feature.collapse'),

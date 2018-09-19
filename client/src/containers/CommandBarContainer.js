@@ -1,6 +1,6 @@
 import commands, {makeDivider} from '../components/commands';
 import UserFacepile from '../components/UserFacepile';
-import {CommandBar} from '../../node_modules/office-ui-fabric-react/lib/CommandBar';
+import {CommandBar} from 'office-ui-fabric-react/lib/CommandBar';
 import React from 'react';
 import {connect} from 'react-redux';
 import {getFeatureModel} from '../store/selectors';
