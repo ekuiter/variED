@@ -106,7 +106,7 @@ class FeatureModel {
             this._actualNodes = this._hierarchy.descendants();
             this._visibleNodes = [];
 
-            const isVisible = memoize((node: FeatureModelNode): boolean => {
+            const isVisible: (node: FeatureModelNode) => boolean = memoize(node => {
                 if (isRoot(node))
                     return true;
                 if (isCollapsed(node.parent!))

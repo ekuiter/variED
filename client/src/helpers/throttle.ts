@@ -6,5 +6,6 @@ export default function<T extends any[]>(func: (...args: T) => void, wait: numbe
                 func.apply(this, args);
                 timer = undefined;
             }, wait);
+        return undefined;
     };
 }

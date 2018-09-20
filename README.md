@@ -7,8 +7,8 @@ analyzing feature models. It is currently under active development and therefore
 unstable.
 
 variED relies on a client-server architecture where the client is implemented in
-JavaScript and the server in Java. It requires Java 1.8 and can be deployed on
-Java servlet containers such as Apache Tomcat or Jetty.
+JavaScript / TypeScript and the server in Java. It requires Java 1.8 and can be
+deployed on Java servlet containers such as Apache Tomcat or Jetty.
 
 ### Getting started
 
@@ -51,7 +51,7 @@ Open the `client` directory in WebStorm. Add a *npm* run configuration and
 specify the `start` script to run the client from within WebStorm.
 
 Configuration files for Visual Studio Code are included as well. Use of the
-yarn, ESLint and Debugger for Chrome plugins is recommended.
+yarn, ESLint/TSLint and Debugger for Chrome plugins is recommended.
 
 **IntelliJ IDEA**
 

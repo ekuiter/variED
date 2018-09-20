@@ -3,7 +3,7 @@ import memoize from './memoize';
 describe('memoize', () => {
     it('caches function call results for the given arguments', () => {
         const fn = jest.fn((x, y = 0) => x * 2 + y);
-        let memoized = memoize(fn);
+        let memoized: (x: number, y?: number) => number = memoize(fn);
         expect(fn).not.toBeCalled();
 
         expect(memoized(42)).toBe(84);

@@ -25,7 +25,7 @@ baseFonts.forEach(baseFont => {
     body.removeChild(span);
 });
 
-export default memoize(function(font: string): boolean {
+export default <(font: string) => boolean>memoize(function(font) {
     let detected = false;
     baseFonts.forEach(baseFont => {
         span.style.fontFamily = `${font},${baseFont}`;

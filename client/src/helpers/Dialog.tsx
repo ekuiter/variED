@@ -17,7 +17,7 @@ export const largeDialogStyle = {
 };
 
 export const DialogWrapper = ({isOpen, onDismiss, onApply, children, label}:
-    {isOpen: boolean, onDismiss: () => void, onApply: () => void, children: JSX.Element[], label: string}) => (
+    {isOpen: boolean, onDismiss: () => void, onApply: () => void, children: any, label: string}) => (
     <Dialog
         hidden={!isOpen}
         onDismiss={onDismiss}
@@ -33,7 +33,7 @@ interface DialogContextualMenuProps {
     onApply: (option: IContextualMenuItem) => void,
     onRender: (option: IContextualMenuItem) => void,
     options: IContextualMenuItem[],
-    children: JSX.Element[],
+    children: any,
     label: string
     iconProps?: IIconProps
 };
