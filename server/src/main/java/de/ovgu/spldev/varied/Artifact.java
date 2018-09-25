@@ -74,6 +74,10 @@ public abstract class Artifact {
             this(project, name, FeatureModelUtils.loadFeatureModel(source, fileName));
         }
 
+        FeatureModel(Project project, String name, java.nio.file.Path path) {
+            this(project, name, FeatureModelUtils.loadFeatureModel(path));
+        }
+
         FeatureModel(Project project, String name, IFeatureModel featureModel) {
             super(project, name);
             this.featureModel = featureModel;

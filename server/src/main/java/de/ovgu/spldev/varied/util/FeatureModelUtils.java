@@ -8,7 +8,16 @@ import de.ovgu.spldev.varied.StateContext;
 import de.ovgu.spldev.varied.messaging.Api;
 import de.ovgu.spldev.varied.messaging.Message;
 
+import java.nio.file.Path;
+
 public class FeatureModelUtils {
+    public static IFeatureModel loadFeatureModel(Path path) {
+        IFeatureModel featureModel = FeatureModelManager.load(path).getObject();
+        if (featureModel == null)
+            throw new RuntimeException("no valid feature model found at path " + path);
+        return featureModel;
+    }
+
     public static IFeatureModel loadFeatureModel(String source, String fileName) {
         IPersistentFormat format = FMFormatManager.getInstance().getFormatByContent(source, fileName);
         if (format == null)
