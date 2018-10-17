@@ -180,7 +180,7 @@ class FeatureModel {
         return elements.length === 1 ? elements[0] : undefined;
     }
 
-    static getSvg(): SVGElement {
+    static getSvg(): SVGSVGElement {
         // Here we also assume for now that only one SVG is rendered and that is is a feature model.
         const svg = document.querySelectorAll('svg');
         if (svg.length !== 1)

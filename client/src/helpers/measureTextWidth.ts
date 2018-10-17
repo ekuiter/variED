@@ -7,7 +7,7 @@ import memoize from './memoize';
  * @param fontSize   font size to measure in px
  * @param text       the text to measure
  */
-export default <(fontFamily: string, fontSize: string, text: string) => number>memoize((fontFamily, fontSize, text) => {
+export default <(fontFamily: string, fontSize: number, text: string) => number>memoize((fontFamily, fontSize, text) => {
     const context = document.createElement('canvas').getContext('2d')!;
     context.font = `${fontSize}px '${fontFamily}'`;
     return context.measureText(text).width;

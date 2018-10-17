@@ -88,9 +88,19 @@
   version "0.22.9"
   resolved "https://registry.yarnpkg.com/@types/cheerio/-/cheerio-0.22.9.tgz#b5990152604c2ada749b7f88cab3476f21f39d7b"
 
+"@types/d3-color@*":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@types/d3-color/-/d3-color-1.2.1.tgz#26141c3c554e320edd40726b793570a3ae57397e"
+
 "@types/d3-hierarchy@^1.1.4":
   version "1.1.4"
   resolved "https://registry.yarnpkg.com/@types/d3-hierarchy/-/d3-hierarchy-1.1.4.tgz#b04dfcb1f2074da789ada10fe4942d13f0bce421"
+
+"@types/d3-interpolate@*":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@types/d3-interpolate/-/d3-interpolate-1.3.0.tgz#65b9627900bfdd82474875d9b23d574a4388af7c"
+  dependencies:
+    "@types/d3-color" "*"
 
 "@types/d3-selection-multi@^1.0.6":
   version "1.0.6"
@@ -109,6 +119,13 @@
   dependencies:
     "@types/d3-selection" "*"
 
+"@types/d3-zoom@^1.7.2":
+  version "1.7.2"
+  resolved "https://registry.yarnpkg.com/@types/d3-zoom/-/d3-zoom-1.7.2.tgz#ee67f063199c179949d83b6b1e6166207de5f06e"
+  dependencies:
+    "@types/d3-interpolate" "*"
+    "@types/d3-selection" "*"
+
 "@types/enzyme-adapter-react-16@^1.0.3":
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@types/enzyme-adapter-react-16/-/enzyme-adapter-react-16-1.0.3.tgz#0cf7025b036694ca8d596fe38f24162e7117acf1"
@@ -122,9 +139,17 @@
     "@types/cheerio" "*"
     "@types/react" "*"
 
+"@types/file-saver@^1.3.1":
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/@types/file-saver/-/file-saver-1.3.1.tgz#55d76b3c78b5fcc8a7588ead428dce0822464120"
+
 "@types/jest@^23.3.2":
   version "23.3.2"
   resolved "https://registry.yarnpkg.com/@types/jest/-/jest-23.3.2.tgz#07b90f6adf75d42c34230c026a2529e56c249dbb"
+
+"@types/json-stable-stringify@^1.0.32":
+  version "1.0.32"
+  resolved "https://registry.yarnpkg.com/@types/json-stable-stringify/-/json-stable-stringify-1.0.32.tgz#121f6917c4389db3923640b2e68de5fa64dda88e"
 
 "@types/json5@^0.0.29":
   version "0.0.29"
@@ -164,6 +189,10 @@
   dependencies:
     "@types/prop-types" "*"
     csstype "^2.2.0"
+
+"@types/redux-actions@^2.3.1":
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/@types/redux-actions/-/redux-actions-2.3.1.tgz#b574569d76df9a0963c421bf509bcf2d0c6b17d3"
 
 "@uifabric/icons@>=6.1.0 <7.0.0":
   version "6.1.0"

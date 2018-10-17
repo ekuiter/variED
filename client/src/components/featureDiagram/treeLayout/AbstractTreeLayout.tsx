@@ -280,7 +280,7 @@ export default class extends React.Component<AbstractTreeLayoutProps> {
         this.updateSelection();
     }
 
-    updateD3(isResize: boolean) {
+    updateD3(isResize: boolean): void {
         // On following renders, enter new nodes/links at their beginning position.
         // Then merge with updating nodes/links and transition to the final position.
         // Exiting nodes/links are simply removed after a transition.

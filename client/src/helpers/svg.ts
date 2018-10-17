@@ -142,7 +142,7 @@ export function addStyle(selection: D3Selection, ...styleDescriptors: StyleDescr
         if (typeof property !== 'undefined')
             Object.keys(styles).forEach(key =>
                 selection
-                    .filter((node: FeatureModelNode) => node.feature().getPropertyString(property) === key)
+                    .filter((node: FeatureModelNode) => node.feature().getPropertyString(property!) === key)
                     .call(selection => selection.attrs(styles[key])));
         else
             selection.attrs(styleDescriptor);

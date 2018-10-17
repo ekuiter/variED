@@ -2,7 +2,7 @@
  * A component that is associated with a feature.
  */
 
-import React, {ReactNode} from 'react';
+import React from 'react';
 import {getSetting} from '../../store/settings';
 import FeatureModel from '../../server/FeatureModel';
 import {Feature} from '../../types';
@@ -32,11 +32,11 @@ export default ({doUpdate = false} = {}) =>
 
         getFeature = () => this.props.featureModel && this.props.featureModel.getFeature(this.props.featureName);
 
-        renderIfFeature(_feature: Feature): ReactNode {
+        renderIfFeature(_feature: Feature): JSX.Element {
             throw new Error('abstract method not implemented');
         }
 
-        render() {
+        render(): JSX.Element | null {
             let feature = this.getFeature();
             if (typeof feature === 'undefined')
                 return null;

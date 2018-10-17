@@ -7,7 +7,7 @@ import React from 'react';
 import VerticalTreeLayout from './treeLayout/VerticalTreeLayout';
 import HorizontalTreeLayout from './treeLayout/HorizontalTreeLayout';
 import stringify from 'json-stable-stringify';
-import {LayoutType, layoutTypes} from '../../types';
+import {layoutTypes} from '../../types';
 import {getSetting, cloneSettings, traverseSettings} from '../../store/settings';
 
 const layoutMap = {
@@ -15,20 +15,19 @@ const layoutMap = {
     [layoutTypes.horizontalTree]: HorizontalTreeLayout
 };
 
-export default class extends React.Component {
-    static propTypes = {
-        layout: LayoutType.isRequired
-    };
+interface Props {
+    layout: string,
+    settings: object
+};
 
-    layoutRef = React.createRef();
-
-    getKey({settings}) {
+export default class extends React.Component<Props> {
+    getKey({settings}: {settings: object}): string {
         // The key uniquely identifies the layout component instance. If the key changes, the
         // instance is unmounted and a new one is mounted. This is useful for forcing rerenders.
         const clonedFeatureDiagramSettings = cloneSettings(getSetting(settings, 'featureDiagram')),
-            doNotRerenderForPaths = getSetting(settings, 'featureDiagram.doNotRerenderForPaths');
-        traverseSettings(clonedFeatureDiagramSettings, null,
-            function(path, key, _value) {
+            doNotRerenderForPaths: string[] = getSetting(settings, 'featureDiagram.doNotRerenderForPaths');
+        traverseSettings(clonedFeatureDiagramSettings, undefined,
+            function(this: object, path: string, key: string, _value: any) {
                 // filter settings that should not trigger a rerender
                 if (doNotRerenderForPaths.includes(path))
                     this[key] = undefined;
@@ -36,11 +35,11 @@ export default class extends React.Component {
         return stringify(clonedFeatureDiagramSettings);
     }
 
-    render() {
+    render(): JSX.Element {
         const {layout, ...props} = this.props,
             LayoutComponent = layoutMap[layout];
         return (
-            <LayoutComponent key={this.getKey(props)} ref={this.layoutRef} {...props}/>
+            <LayoutComponent key={this.getKey(props)} {...props}/>
         );
     }
 }

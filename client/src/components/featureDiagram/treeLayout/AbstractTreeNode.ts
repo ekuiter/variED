@@ -38,8 +38,8 @@ function makeText(settings: object, selection: D3Selection, isGettingRectInfo: b
         selection.append('text')
             .call(addFontStyle, settings)
             .text('some text used to determine rect y and height')
-            .each(function() {
-                rectInfo = makeRect(settings, (this as SVGGraphicsElement).getBBox());
+            .each(function(this: SVGGraphicsElement) {
+                rectInfo = makeRect(settings, this.getBBox());
             }).remove();
         return rectInfo;
     } else {
@@ -48,8 +48,8 @@ function makeText(settings: object, selection: D3Selection, isGettingRectInfo: b
             .call(addFontStyle, settings)
             .text(d => d.feature().name)
             .call(addStyle, textStyle, styles.node.hidden(settings))
-            .each(function() {
-                bboxes.push((this as SVGGraphicsElement).getBBox());
+            .each(function(this: SVGGraphicsElement) {
+                bboxes.push(this.getBBox());
             });
         return bboxes;
     }
@@ -129,8 +129,8 @@ export default class {
             .call(addStyle, styles.node.collapseText(this.settings))
             .text((d: FeatureModelNode) => d.feature().getNumberOfFeaturesBelow())
             .attr('opacity', 0)
-            .each(function() {
-                bboxes.push((this as SVGGraphicsElement).getBBox());
+            .each(function(this: SVGGraphicsElement) {
+                bboxes.push(this.getBBox());
             })
             .on('dblclick', expandFeature);
 

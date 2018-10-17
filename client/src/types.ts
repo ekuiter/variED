@@ -32,7 +32,7 @@ export function isMessageType(type: string) {
     return Object.values(MessageType).includes(type);
 };
 
-export type FeaturePropertyKey = string | ((node: FeatureModelNode) => string) | undefined;
+export type FeaturePropertyKey = string | ((node: FeatureModelNode) => string);
 
 export type Feature = {
     node: FeatureModelNode,
@@ -64,11 +64,16 @@ export type FeatureModelNode = HierarchyPointNode<Datum> & {
 }
 
 export type Point = {x: number, y: number};
+// essentially the same as a DOMRect/ClientRect
 export type Rect = Point & {width: number, height: number};
+// upper left and lower right point, can be transformed to rect (but the tuple form is also useful)
 export type Bbox = [[number, number], [number, number]];
 export type NodeCoordinateFunction = (node: FeatureModelNode) => number;
 export type NodePointFunction = (node: FeatureModelNode) => Point;
+// Represents any selection. We ignore the generic parameters here for simplicity.
+// (IMO adding them would improve type safety, but decrease overall readability.)
 export type D3Selection = Selection<any, any, any, any>;
+// matches any function - this should be used sparely
 export type Func = (...args: any[]) => any;
 
 export const
