@@ -2,7 +2,7 @@
  * Helpers and wrappers for Fabric dialogs.
  */
 
-import {Dialog, DialogFooter} from 'office-ui-fabric-react/lib/Dialog';
+import {Dialog, DialogFooter, IDialogProps} from 'office-ui-fabric-react/lib/Dialog';
 import {DefaultButton, PrimaryButton} from 'office-ui-fabric-react/lib/Button';
 import i18n from '../i18n';
 import React from 'react';
@@ -38,7 +38,7 @@ interface DialogContextualMenuProps {
     onRender: (option: IContextualMenuItem) => void,
     options: IContextualMenuItem[],
     children: any,
-    label: string
+    label: string,
     iconProps?: IIconProps
 };
 
@@ -91,7 +91,8 @@ interface TextFieldDialogProps {
     defaultValue?: string,
     submitText: string,
     submitOnEnter?: boolean,
-    textFieldProps?: ITextFieldProps
+    textFieldProps?: Partial<ITextFieldProps>,
+    dialogProps?: Partial<IDialogProps>
 };
 
 interface TextFieldDialogState {
@@ -124,15 +125,14 @@ export class TextFieldDialog extends React.Component<TextFieldDialogProps, TextF
     };
 
     render() {
-        const {isOpen, onDismiss, onSubmit: _onSubmit, title, defaultValue: _defaultValue,
-            submitText, submitOnEnter: _submitOnEnter, textFieldProps, ...props} = this.props;
+        const {isOpen, onDismiss, title, submitText, textFieldProps, dialogProps} = this.props;
         return (
             <Dialog
                 hidden={!isOpen}
                 onDismiss={onDismiss}
                 modalProps={{onLayerDidMount: this.onLayerDidMount}}
                 dialogContentProps={{title}}
-                {...props}>
+                {...dialogProps}>
                 <TextField
                     componentRef={this.textFieldRef}
                     value={this.getValue()}

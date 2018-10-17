@@ -3,7 +3,7 @@
  */
 
 import isFontInstalled from './isFontInstalled';
-import {ComboBox, IComboBox, IComboBoxOption} from 'office-ui-fabric-react/lib/ComboBox';
+import {ComboBox, IComboBox, IComboBoxOption, IComboBoxProps} from 'office-ui-fabric-react/lib/ComboBox';
 import React from 'react';
 import i18n from '../i18n';
 import constants from '../constants';
@@ -11,7 +11,8 @@ import constants from '../constants';
 interface Props {
     selectedFont: string,
     fonts?: string[],
-    onChange: (font: string) => void
+    onChange: (font: string) => void,
+    comboBoxProps?: Partial<IComboBoxProps>
 };
 
 interface State {
@@ -34,7 +35,7 @@ export default class extends React.Component<Props, State> {
     };
 
     render() {
-        let {selectedFont, fonts, ...props} = this.props;
+        let {selectedFont, fonts, comboBoxProps} = this.props;
         const options = fonts!
             .filter(isFontInstalled)
             .map(font => ({key: font, text: font}));
@@ -48,7 +49,7 @@ export default class extends React.Component<Props, State> {
                 onRenderOption={(props?: {text: string}) =>
                     <span className="ms-ComboBox-optionText" style={{fontFamily: `'${props!.text}'`}}>{props!.text}</span>}
                 errorMessage={this.state.errorMessage}
-                {...props}
+                {...comboBoxProps}
                 onChange={this.onChange}/>
         );
     }

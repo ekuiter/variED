@@ -4,28 +4,32 @@
 
 import React from 'react';
 import i18n from '../../i18n';
-import PropTypes from 'prop-types';
 import {Dialog, DialogFooter} from 'office-ui-fabric-react/lib/Dialog';
 import {PrimaryButton} from 'office-ui-fabric-react/lib/Button';
 import FontComboBox from '../../helpers/FontComboBox';
 import SpinButton from '../../helpers/SpinButton';
 import {getSetting} from '../../store/settings';
-import {SettingsType, LayoutType, formatTypes, FormatType} from '../../types';
+import {formatTypes} from '../../types';
 import {doExport} from '../featureDiagram/export';
 
-export default class extends React.Component {
-    static propTypes = {
-        onDismiss: PropTypes.func.isRequired,
-        isOpen: PropTypes.bool.isRequired,
-        settings: SettingsType.isRequired,
-        onSetSetting: PropTypes.func.isRequired,
-        featureDiagramLayout: LayoutType.isRequired,
-        format: FormatType.isRequired
-    };
+interface Props {
+    onDismiss: () => void,
+    isOpen: boolean,
+    settings: object,
+    onSetSetting: (path: string, value: any) => void,
+    featureDiagramLayout: string,
+    format: string
+};
 
-    state = {zoom: 100, quality: 80};
-    onZoomChange = zoom => this.setState({zoom});
-    onQualityChange = quality => this.setState({quality});
+interface State {
+    zoom: number,
+    quality: number
+};
+
+export default class extends React.Component<Props, State> {
+    state: State = {zoom: 100, quality: 80};
+    onZoomChange = (zoom: number) => this.setState({zoom});
+    onQualityChange = (quality: number) => this.setState({quality});
 
     onSubmit = () => {
         doExport(this.props.featureDiagramLayout, this.props.format, {
@@ -39,9 +43,9 @@ export default class extends React.Component {
         <React.Fragment>
             {i18n.getElement('overlays.exportDialog.fontNotice')}
             <FontComboBox
-                label={i18n.t('overlays.settingsPanel.labels.featureDiagram.font.family')}
+                comboBoxProps={{label: i18n.t('overlays.settingsPanel.labels.featureDiagram.font.family')}}
                 selectedFont={getSetting(this.props.settings, 'featureDiagram.font.family')}
-                onChange={font => this.props.onSetSetting('featureDiagram.font.family', font)}/>
+                onChange={(font: string) => this.props.onSetSetting('featureDiagram.font.family', font)}/>
         </React.Fragment>
     );
 
