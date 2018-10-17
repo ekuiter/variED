@@ -7,39 +7,69 @@ import React from 'react';
 import {getSetting} from '../../store/settings';
 import i18n from '../../i18n';
 import FontComboBox from '../../helpers/FontComboBox';
-import SpinButton from '../../helpers/SpinButton';
+import SpinButton, { SpinButtonProps } from '../../helpers/SpinButton';
 import {Panel, PanelType} from 'office-ui-fabric-react/lib/Panel';
 import {Toggle} from 'office-ui-fabric-react/lib/Toggle';
 import {ColorPicker} from 'office-ui-fabric-react/lib/ColorPicker';
 import {Slider} from 'office-ui-fabric-react/lib/Slider';
 import {DialogContextualMenu} from '../../helpers/Dialog';
 import {DefaultButton} from 'office-ui-fabric-react/lib/Button';
-import PropTypes from 'prop-types';
-import exact from 'prop-types-exact';
-import {LayoutType, layoutTypes, SettingsType} from '../../types';
+import {layoutTypes} from '../../types';
 import debounce from '../../helpers/debounce';
+import {IContextualMenuItem} from 'office-ui-fabric-react/lib/ContextualMenu';
 
-const getLabel = path => i18n.t('overlays.settingsPanel.labels', path);
+const getLabel = (path: string) => i18n.t('overlays.settingsPanel.labels', path);
+
+interface SettingProps {
+    settings: object,
+    onSetSetting: (path: string, value: any) => void /* TODO */,
+    path: string
+};
+
+interface ColorPickerContextualMenuProps {
+    settings: object,
+    onSetSetting: (path: string, value: any) => void /* TODO */,
+    paths: string[]
+};
+
+interface ColorPickerContextualMenuState {
+    color?: string
+};
+
+type SliderProps = SettingProps & {
+    min: number,
+    max: number,
+    step: number
+};
+
+interface SettingsPanelProps {
+    onDismissed: () => void,
+    isOpen: boolean,
+    settings: object,
+    featureDiagramLayout: string,
+    onSetSetting: (path: string, value: any) => void /* TODO */,
+    onResetSettings: () => void
+};
 
 export const Setting = {
-    Toggle: ({settings, onSetSetting, path}) => (
+    Toggle: ({settings, onSetSetting, path}: SettingProps) => (
         <Toggle
             className="setting"
             label={getLabel(path)}
             checked={getSetting(settings, path)}
             onText={i18n.t('overlays.settingsPanel.toggleOn')}
             offText={i18n.t('overlays.settingsPanel.toggleOn')}
-            onClick={() => onSetSetting(path, bool => !bool)}/>
+            onClick={() => onSetSetting(path, (bool: boolean) => !bool)}/>
     ),
 
-    FontComboBox: ({settings, onSetSetting, path}) => (
+    FontComboBox: ({settings, onSetSetting, path}: SettingProps) => (
         <FontComboBox
             selectedFont={getSetting(settings, path)}
             onChange={font => onSetSetting(path, font)}
             comboBoxProps={{className: 'setting', label: getLabel(path)}}/>
     ),
 
-    SpinButton: ({settings, onSetSetting, path, ...props}) => (
+    SpinButton: ({settings, onSetSetting, path, ...props}: Partial<SpinButtonProps> & SettingProps) => (
         <SpinButton
             className="setting"
             label={getLabel(path)}
@@ -48,17 +78,11 @@ export const Setting = {
             {...props}/>
     ),
     
-    ColorPickerContextualMenu: class extends React.Component {
-        static propTypes = exact({
-            settings: SettingsType.isRequired,
-            onSetSetting: PropTypes.func.isRequired,
-            paths: PropTypes.arrayOf(PropTypes.string).isRequired
-        });
-        
-        state = {color: null};
-        onColorChanged = color => this.setState({color});
-        onApply = option => this.props.onSetSetting(option.key, this.state.color);
-        onRender = option => this.setState({color: getSetting(this.props.settings, option.key)});
+    ColorPickerContextualMenu: class extends React.Component<ColorPickerContextualMenuProps, ColorPickerContextualMenuState> {
+        state: ColorPickerContextualMenuState = {};
+        onColorChanged = (color: string) => this.setState({color});
+        onApply = (option: IContextualMenuItem) => this.props.onSetSetting(option.key, this.state.color);
+        onRender = (option: IContextualMenuItem) => this.setState({color: getSetting(this.props.settings, option.key)});
 
         render() {
             return (
@@ -69,23 +93,14 @@ export const Setting = {
                     onRender={this.onRender}
                     iconProps={{iconName: 'Color'}}>
                     <ColorPicker
-                        color={this.state.color}
+                        color={this.state.color!}
                         onColorChanged={this.onColorChanged}/>
                 </DialogContextualMenu>
             );
         }
     },
 
-    Slider: class extends React.Component {
-        static propTypes = exact({
-            settings: SettingsType.isRequired,
-            onSetSetting: PropTypes.func.isRequired,
-            path: PropTypes.string.isRequired,
-            min: PropTypes.number.isRequired,
-            max: PropTypes.number.isRequired,
-            step: PropTypes.number.isRequired
-        });
-
+    Slider: class extends React.Component<SliderProps> {
         onChange = debounce(value => this.props.onSetSetting(this.props.path, value),
             getSetting(this.props.settings, 'overlays.settingsPanel.debounceUpdate'));
 
@@ -105,39 +120,12 @@ export const Setting = {
     }
 };
 
-Setting.Toggle.propTypes = exact({
-    settings: SettingsType.isRequired,
-    onSetSetting: PropTypes.func.isRequired,
-    path: PropTypes.string.isRequired
-});
-
-Setting.FontComboBox.propTypes = exact({
-    settings: SettingsType.isRequired,
-    onSetSetting: PropTypes.func.isRequired,
-    path: PropTypes.string.isRequired
-});
-
-Setting.SpinButton.propTypes = {
-    settings: SettingsType.isRequired,
-    onSetSetting: PropTypes.func.isRequired,
-    path: PropTypes.string.isRequired
-};
-
-export default class extends React.Component {
-    static propTypes = {
-        onDismissed: PropTypes.func.isRequired,
-        isOpen: PropTypes.bool.isRequired,
-        settings: SettingsType.isRequired,
-        featureDiagramLayout: LayoutType.isRequired,
-        onSetSetting: PropTypes.func.isRequired,
-        onResetSettings: PropTypes.func.isRequired
-    };
-
+export default class extends React.Component<SettingsPanelProps> {
     state = {canReset: false};
 
-    resettableSetSetting = (...args) => {
+    resettableSetSetting = (path: string, value: any) => {
         this.setState({canReset: true});
-        this.props.onSetSetting(...args);
+        this.props.onSetSetting(path, value);
     };
 
     onReset = () => {

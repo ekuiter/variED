@@ -6,7 +6,7 @@ import React from 'react';
 import {SpinButton} from 'office-ui-fabric-react/lib/SpinButton';
 import {IIconProps} from 'office-ui-fabric-react/lib/Icon';
 
-interface Props {
+export interface SpinButtonProps {
     label?: string,
     value: number,
     onChange: (value: number) => void,
@@ -18,8 +18,8 @@ interface Props {
     iconProps?: IIconProps
 };
 
-export default class extends React.Component<Props> {
-    static defaultProps: Partial<Props> = {step: 1, suffix: ''};
+export default class extends React.Component<SpinButtonProps> {
+    static defaultProps: Partial<SpinButtonProps> = {step: 1, suffix: ''};
 
     removeSuffix = (value: string) =>
         this.props.suffix && value.endsWith(this.props.suffix)

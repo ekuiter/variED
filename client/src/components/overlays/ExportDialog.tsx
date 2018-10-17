@@ -16,7 +16,7 @@ interface Props {
     onDismiss: () => void,
     isOpen: boolean,
     settings: object,
-    onSetSetting: (path: string, value: any) => void,
+    onSetSetting: (path: string, value: any) => void, // TODO
     featureDiagramLayout: string,
     format: string
 };
