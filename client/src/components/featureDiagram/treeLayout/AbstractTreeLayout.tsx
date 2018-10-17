@@ -11,38 +11,40 @@ import 'd3-transition';
 import {getSetting} from '../../../store/settings';
 import {updateRect} from '../../../helpers/svg';
 import '../../../stylesheets/treeLayout.css';
-import {OverlayType, overlayTypes, SettingsType} from '../../../types';
-import PropTypes from 'prop-types';
-import exact from 'prop-types-exact';
-import {FeatureModelType} from '../../../server/FeatureModel';
+import {overlayTypes, Func, FeatureModelNode, D3Selection, Bbox} from '../../../types';
+import FeatureModel from '../../../server/FeatureModel';
+import AbstractTreeNode from './AbstractTreeNode';
+import AbstractTreeLink from './AbstractTreeLink';
 
-export default class extends React.Component {
-    static propTypes = exact({
-        featureModel: FeatureModelType.isRequired,
-        width: PropTypes.number,
-        height: PropTypes.number,
-        className: PropTypes.string.isRequired,
-        fitOnResize: PropTypes.bool,
-        settings: SettingsType.isRequired,
-        overlay: OverlayType,
-        overlayProps: PropTypes.object,
-        onShowOverlay: PropTypes.func.isRequired,
-        onHideOverlay: PropTypes.func.isRequired,
-        onSetSelectMultipleFeatures: PropTypes.func.isRequired,
-        onSelectFeature: PropTypes.func.isRequired,
-        onDeselectFeature: PropTypes.func.isRequired,
-        onExpandFeatures: PropTypes.func.isRequired,
-        onDeselectAllFeatures: PropTypes.func.isRequired,
-        isSelectMultipleFeatures: PropTypes.bool.isRequired,
-        selectedFeatureNames: PropTypes.arrayOf(PropTypes.string).isRequired
-    });
+export interface AbstractTreeLayoutProps {
+    featureModel: FeatureModel,
+    width?: number,
+    height?: number,
+    className: string,
+    fitOnResize: boolean,
+    settings: object,
+    overlay?: string, // TODO
+    overlayProps?: object, // TODO
+    isSelectMultipleFeatures: boolean,
+    selectedFeatureNames: string[],
+    onShowOverlay: Func, // TODO
+    onHideOverlay: Func,
+    onSetSelectMultipleFeatures: Func,
+    onSelectFeature: Func,
+    onDeselectFeature: Func,
+    onExpandFeatures: Func,
+    onDeselectAllFeatures: Func
+};
 
-    static defaultProps = {fitOnResize: false};
-    svgRef = React.createRef();
+export default class extends React.Component<AbstractTreeLayoutProps> {
+    static defaultProps: Partial<AbstractTreeLayoutProps> = {fitOnResize: false};
+    svgRef = React.createRef<SVGSVGElement>();
     currentCoordinates = {};
     previousCoordinates = {};
+    treeNode: AbstractTreeNode;
+    treeLink: AbstractTreeLink;
 
-    constructor(props, TreeNode, TreeLink) {
+    constructor(props: AbstractTreeLayoutProps, TreeNode: typeof AbstractTreeNode, TreeLink: typeof AbstractTreeLink) {
         super(props);
         this.treeNode = new TreeNode(
             props.settings,
@@ -58,11 +60,11 @@ export default class extends React.Component {
         this.treeNode.treeLink = this.treeLink;
     }
 
-    componentDidMount() {
+    componentDidMount(): void {
         this.renderD3();
     }
 
-    componentDidUpdate(prevProps) {
+    componentDidUpdate(prevProps: AbstractTreeLayoutProps): void {
         const updateD3OnPropChange = ['featureModel', 'width', 'height', 'fitOnResize', 'settings'];
         this.treeNode.settings = this.treeLink.settings = this.props.settings;
         this.treeNode.isSelectMultipleFeatures = this.props.isSelectMultipleFeatures;
@@ -76,31 +78,32 @@ export default class extends React.Component {
             this.updateSelection();
     }
 
-    render() {
+    render(): JSX.Element {
         return (
             <svg className={'treeLayout' + (this.props.className ? ` ${this.props.className}` : '')}
                 ref={this.svgRef}/>
         );
     }
     
-    getKeyFn(kind) {
+    getKeyFn(kind: string): (d: FeatureModelNode) => string {
         return d => `${kind}_${d.feature().name}`;
     }
 
-    toggleSelectedNode(node) {
+    toggleSelectedNode(node: FeatureModelNode): void {
         if (this.props.selectedFeatureNames.includes(node.feature().name))
             this.props.onDeselectFeature(node.feature().name);
         else
             this.props.onSelectFeature(node.feature().name);
     }
 
-    setActiveNode(overlay, activeNode) {
+    setActiveNode(overlay: string, activeNode: FeatureModelNode): void {
         const featureName = activeNode.feature().name;
         if (this.props.isSelectMultipleFeatures) {
             if (overlay === overlayTypes.featureCallout || overlay === 'select') {
                 this.toggleSelectedNode(activeNode);
                 if (this.props.overlay === overlayTypes.featureContextualMenu &&
-                    this.props.overlayProps.featureName === featureName)
+                    this.props.overlayProps &&
+                    this.props.overlayProps['featureName'] === featureName)
                     this.props.onHideOverlay(overlayTypes.featureContextualMenu);
             }
             else if (overlay === overlayTypes.featureContextualMenu &&
@@ -116,37 +119,38 @@ export default class extends React.Component {
         }
     }
 
-    updateCoordinates(key, nodes) {
+    updateCoordinates(key: string, nodes: FeatureModelNode[]): void {
         this[key] = {};
         nodes.forEach(node => this[key][node.feature().name] = {x: this.treeNode.x(node), y: this.treeNode.y(node)});
     }
 
-    getParentCoordinateFn(key) {
+    getParentCoordinateFn(key: string): (node: FeatureModelNode, axis: string) => number {
         return (node, axis) => {
             if (!node.feature().isRoot) {
-                const coords = this[key][node.parent.feature().name];
+                const coords = this[key][node.parent!.feature().name];
                 return coords ? coords[axis] : this.treeNode[axis](node.parent);
             } else
                 return this.treeNode[axis](node);
         };
     }
 
-    getSeparationFn(_estimateTextWidth) {
+    getSeparationFn(_estimateTextWidth: (node: FeatureModelNode) => number): (a: FeatureModelNode, b: FeatureModelNode) => number {
         throw new Error('abstract method not implemented');
     }
 
-    estimateXOffset(_sgn, _estimatedTextWidth) {
+    estimateXOffset(_sgn: number, _estimatedTextWidth: number): number {
         throw new Error('abstract method not implemented');
     }
 
-    estimateYOffset(_sgn) {
+    estimateYOffset(_sgn: number): number {
         throw new Error('abstract method not implemented');
     }
 
-    createLayoutHook(_nodes) {
+    createLayoutHook(_nodes: FeatureModelNode[]): void {
     }
 
-    createLayout({featureModel, settings}, isSelectionChange) {
+    createLayout({featureModel, settings}: {featureModel: FeatureModel, settings: object}, isSelectionChange: boolean):
+        {nodes: FeatureModelNode[], estimatedBbox?: Bbox} {
         const estimateTextWidth = this.treeNode.estimateTextWidth.bind(this.treeNode),
             hierarchy = featureModel.hierarchy,
             tree = d3Tree()
@@ -160,10 +164,11 @@ export default class extends React.Component {
         tree(hierarchy);
         this.createLayoutHook(nodes);
 
-        const findNode = compareFn => nodes.reduce((acc, d) => compareFn(acc, d) ? acc : d),
-            estimateX = (d, sgn) => this.treeNode.x(d) + this.estimateXOffset(sgn, estimateTextWidth(d)),
-            estimateY = (d, sgn) => this.treeNode.y(d) + this.estimateYOffset(sgn),
-            estimatedBbox = [[
+        const findNode = (compareFn: (a: FeatureModelNode, b: FeatureModelNode) => boolean) =>
+                nodes.reduce((acc, d) => compareFn(acc, d) ? acc : d),
+            estimateX = (d: FeatureModelNode, sgn: number) => this.treeNode.x(d) + this.estimateXOffset(sgn, estimateTextWidth(d)),
+            estimateY = (d: FeatureModelNode, sgn: number) => this.treeNode.y(d) + this.estimateYOffset(sgn),
+            estimatedBbox: Bbox = [[
                 estimateX(findNode((a, b) => estimateX(a, -1) < estimateX(b, -1)), -1),
                 estimateY(findNode((a, b) => estimateY(a, -1) < estimateY(b, -1)), -1)
             ], [
@@ -174,7 +179,8 @@ export default class extends React.Component {
         return {nodes, estimatedBbox};
     }
 
-    getSvgRoot({width, height, fitOnResize, settings}, estimatedBbox, isCreating, isResize, isSelectionChange) {
+    getSvgRoot({width, height, fitOnResize, settings}: {width?: number, height?: number, fitOnResize: boolean, settings: object},
+        estimatedBbox: Bbox, isCreating: boolean, isResize: boolean, isSelectionChange: boolean): D3Selection {
         const svgRoot = d3Select(this.svgRef.current)
                 .call(svgRoot => width && height && svgRoot.attr('style', `width: ${width}; height: ${height};`))
                 .on('click', () => {
@@ -187,7 +193,7 @@ export default class extends React.Component {
             return g;
 
         const rect = isCreating ? g.append('rect') : g.select('rect'),
-            zoom = d3Zoom(),
+            zoom = d3Zoom<SVGSVGElement, any>(),
             estimatedBboxWidth = estimatedBbox[1][0] - estimatedBbox[0][0],
             estimatedBboxHeight = estimatedBbox[1][1] - estimatedBbox[0][1];
 
@@ -216,12 +222,12 @@ export default class extends React.Component {
                     d3Event.preventDefault();
                 }).on('dblclick.zoom', function() {
                     if (d3Event.target.tagName === 'svg')
-                        dblclicked.call(this);
+                        dblclicked!.call(this);
                 });
             });
 
         if (isCreating || (fitOnResize && isResize)) {
-            const svgBbox = this.svgRef.current.getBoundingClientRect();
+            const svgBbox = this.svgRef.current!.getBoundingClientRect();
             svgRoot.call(zoom.scaleTo, Math.min(1,
                 svgBbox.width / estimatedBboxWidth,
                 svgBbox.height / estimatedBboxHeight));
@@ -232,17 +238,18 @@ export default class extends React.Component {
         return g;
     }
 
-    joinNodes(nodes, svgRoot) {
+    joinNodes(nodes: FeatureModelNode[], svgRoot: D3Selection): D3Selection {
         return svgRoot.selectAll('.node').data(nodes, this.getKeyFn('node'));
     }
 
-    joinLinks(nodes, svgRoot) {
+    joinLinks(nodes: FeatureModelNode[], svgRoot: D3Selection): D3Selection {
         return svgRoot.selectAll('.link').data(nodes.slice(1), this.getKeyFn('link'));
     }
 
-    joinData(isCreating, isResize, isSelectionChange) {
+    joinData(isCreating: boolean, isResize = false, isSelectionChange = false):
+        {node: D3Selection, linkInBack: D3Selection, linkInFront: D3Selection, nodes: FeatureModelNode[]} {
         const {nodes, estimatedBbox} = this.createLayout(this.props, isSelectionChange);
-        const svgRoot = this.getSvgRoot(this.props, estimatedBbox, isCreating, isResize, isSelectionChange);
+        const svgRoot = this.getSvgRoot(this.props, estimatedBbox!, isCreating, isResize, isSelectionChange);
         const linkInBack = this.joinLinks(nodes,
             isCreating ? svgRoot.append('g').attr('class', 'linksInBack') : svgRoot.select('g.linksInBack'));
         const node = this.joinNodes(nodes,
@@ -252,13 +259,15 @@ export default class extends React.Component {
         return {node, linkInBack, linkInFront, nodes};
     }
 
-    transition(selection, transitionDuration = getSetting(this.props.settings, 'featureDiagram.treeLayout.transitionDuration')) {
+    transition(selection: D3Selection, transitionDuration: number =
+        getSetting(this.props.settings, 'featureDiagram.treeLayout.transitionDuration')): D3Selection {
         return getSetting(this.props.settings, 'featureDiagram.treeLayout.useTransitions')
-            ? selection.transition().duration(transitionDuration)
+            // transitions _almost_ have the same interface as selections, here we just ignore the differences
+            ? selection.transition().duration(transitionDuration) as any
             : selection;
     }
 
-    renderD3() {
+    renderD3(): void {
         // On initial render, all nodes/links are entering.
         // Thus, make them enter at their beginning position, then update them
         // instantly to their final position, without transitioning.
@@ -268,10 +277,10 @@ export default class extends React.Component {
         this.treeLink.update(this.treeLink.enter(linkInBack.enter(), 'inBack'), 'inBack');
         this.treeLink.update(this.treeLink.enter(linkInFront.enter(), 'inFront'), 'inFront');
         this.updateCoordinates('previousCoordinates', nodes);
-        this.updateSelection(node);
+        this.updateSelection();
     }
 
-    updateD3(isResize) {
+    updateD3(isResize: boolean) {
         // On following renders, enter new nodes/links at their beginning position.
         // Then merge with updating nodes/links and transition to the final position.
         // Exiting nodes/links are simply removed after a transition.
@@ -287,11 +296,11 @@ export default class extends React.Component {
         this.treeLink.exit(this.transition(linkInFront.exit()), 'inFront');
 
         this.updateCoordinates('previousCoordinates', nodes);
-        this.updateSelection(node);
+        this.updateSelection();
     }
 
-    updateSelection(node) {
-        ({node} = this.joinData(false, false, true));
+    updateSelection(): void {
+        const {node} = this.joinData(false, false, true);
         node.filter(d => this.props.selectedFeatureNames.includes(d.feature().name)).attr('class', 'node selected');
         node.filter(d => !this.props.selectedFeatureNames.includes(d.feature().name)).attr('class', 'node');
     }

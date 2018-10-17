@@ -5,14 +5,15 @@
  */
 
 import {getSetting} from '../../../store/settings';
+import {StyleDescriptor} from 'src/helpers/svg';
 
-function getLinkStrokeWidth(settings) {
+function getLinkStrokeWidth(settings: object): string {
     return `${getSetting(settings, 'featureDiagram.treeLayout.link.strokeWidth')}px`;
 }
 
 export default {
     node: {
-        abstract: settings => ({ // style applied to a node's rectangle to distinguish abstract and concrete features
+        abstract: (settings: object) => <StyleDescriptor>({ // style applied to a node's rectangle to distinguish abstract and concrete features
             property: 'isAbstract',
             yes: {
                 fill: getSetting(settings, 'featureDiagram.treeLayout.node.abstractFill'),
@@ -25,27 +26,27 @@ export default {
                 'stroke-width': getSetting(settings, 'featureDiagram.treeLayout.node.strokeWidth')
             }
         }),
-        hidden: settings => ({ // style applied to a node's text to distinguish hidden and visible features
+        hidden: (settings: object) => ({ // style applied to a node's text to distinguish hidden and visible features
             property: 'isHidden',
             yes: {fill: getSetting(settings, 'featureDiagram.treeLayout.node.hiddenFill')},
             no: {fill: getSetting(settings, 'featureDiagram.treeLayout.node.visibleFill')}
         }),
-        arcSegment: settings => ({ // style applied to a node's arc segment (for ALT groups)
+        arcSegment: (settings: object) => <StyleDescriptor>({ // style applied to a node's arc segment (for ALT groups)
             fill: 'none',
             stroke: getSetting(settings, 'featureDiagram.treeLayout.link.stroke'),
             'stroke-width': getLinkStrokeWidth(settings)
         }),
-        arcSlice: settings => ({ // style applied to a node's arc slice (for OR groups)
+        arcSlice: (settings: object) => <StyleDescriptor>({ // style applied to a node's arc slice (for OR groups)
             fill: getSetting(settings, 'featureDiagram.treeLayout.link.stroke')
         }),
-        arcClick: _settings => ({ // style applied to a node's clickable arc
+        arcClick: (_settings: object) => <StyleDescriptor>({ // style applied to a node's clickable arc
             'fill-opacity': 0,
             cursor: 'pointer'
         }),
-        collapseText: settings => ({
+        collapseText: (settings: object) => <StyleDescriptor>({
             'font-size': getSetting(settings, 'featureDiagram.font.size') * 0.8
         }),
-        collapseCircle: settings => ({
+        collapseCircle: (settings: object) => <StyleDescriptor>({
             fill: 'white',
             stroke: getSetting(settings, 'featureDiagram.treeLayout.link.stroke'),
             'stroke-width': getLinkStrokeWidth(settings),
@@ -53,14 +54,14 @@ export default {
         })
     },
     link: {
-        line: settings => ({ // style applied to all links' line paths
+        line: (settings: object) => <StyleDescriptor>({ // style applied to all links' line paths
             stroke: getSetting(settings, 'featureDiagram.treeLayout.link.stroke'),
             'stroke-width': getLinkStrokeWidth(settings),
             fill: 'none'
         }),
-        mandatory: settings => ({ // style applied to a link's circle to distinguish mandatory and optional features
+        mandatory: (settings: object) => <StyleDescriptor>({ // style applied to a link's circle to distinguish mandatory and optional features
             property: node =>
-                node.parent.feature().isGroup ? 'none' : node.feature().getPropertyString('isMandatory'),
+                node.parent!.feature().isGroup ? 'none' : node.feature().getPropertyString('isMandatory'),
             yes: {
                 stroke: getSetting(settings, 'featureDiagram.treeLayout.link.stroke'),
                 'stroke-width': getLinkStrokeWidth(settings),

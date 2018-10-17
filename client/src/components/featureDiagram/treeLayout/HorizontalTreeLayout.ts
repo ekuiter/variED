@@ -2,39 +2,39 @@
  * Horizontal tree layout for feature diagrams.
  */
 
-import AbstractTreeLayout from './AbstractTreeLayout';
+import AbstractTreeLayout, {AbstractTreeLayoutProps} from './AbstractTreeLayout';
 import HorizontalTreeLink from './HorizontalTreeLink';
 import HorizontalTreeNode from './HorizontalTreeNode';
 import {getSetting} from '../../../store/settings';
 import {estimateRectHeight, estimateXOffset, estimateYOffset} from './estimation';
-import {layoutTypes} from '../../../types';
+import {layoutTypes, FeatureModelNode} from '../../../types';
 
 export default class extends AbstractTreeLayout {
     widestTextOnLayer = {};
 
-    constructor(props) {
+    constructor(props: AbstractTreeLayoutProps) {
         super(props, HorizontalTreeNode, HorizontalTreeLink);
         this.treeNode.getWidestTextOnLayer = this.getWidestTextOnLayer.bind(this);
     }
 
-    estimateXOffset(sgn, estimatedTextWidth) {
+    estimateXOffset(sgn: number, estimatedTextWidth: number): number {
         return estimateXOffset(this.props.settings, sgn, estimatedTextWidth, layoutTypes.horizontalTree);
     }
 
-    estimateYOffset(sgn) {
+    estimateYOffset(sgn: number): number {
         return estimateYOffset(this.props.settings, sgn, layoutTypes.horizontalTree);
     }
 
-    getSeparationFn(_estimateTextWidth) {
+    getSeparationFn(_estimateTextWidth: (node: FeatureModelNode) => number): (a: FeatureModelNode, b: FeatureModelNode) => number {
         return () => estimateRectHeight(this.props.settings) +
             getSetting(this.props.settings, 'featureDiagram.treeLayout.horizontal.marginY');
     }
 
-    createLayoutHook(nodes) {
+    createLayoutHook(nodes: FeatureModelNode[]): void {
         this.updateWidestTextOnLayer(nodes);
     }
 
-    getWidestTextOnLayer(node) {
+    getWidestTextOnLayer(node: FeatureModelNode): number {
         // This fixes a bug when removing many nodes at once, and the tree no longer
         // has a node of the specified depth. In that case, we just use the node's
         // estimated width to achieve a smooth transition (this only occurs on node exits).
@@ -43,7 +43,7 @@ export default class extends AbstractTreeLayout {
         return this.widestTextOnLayer[node.depth];
     }
 
-    updateWidestTextOnLayer(nodes) {
+    updateWidestTextOnLayer(nodes: FeatureModelNode[]): void {
         this.widestTextOnLayer = {};
         nodes.forEach(node => {
             const estimatedTextWidth = this.treeNode.estimateTextWidth(node);

@@ -3,16 +3,15 @@
  * Depends on the D3.js library to manipulate elements.
  */
 
-import {Selection} from 'd3-selection';
+import {NodeCoordinateFunction, Point, NodePointFunction, FeaturePropertyKey, FeatureModelNode, D3Selection, Func} from '../types';
 import {ValueMap} from 'd3-selection-multi';
-import {NodeCoordinateFunction, Point, NodePointFunction, FeaturePropertyKey, FeatureModelNode} from '../types';
 
-type D3Selection = Selection<any, any, any, any>;
-type Function = (...args: any[]) => void;
-type Style = ValueMap<any, any>;
-type StyleDescriptor = {
-    property: FeaturePropertyKey
+export type Style = ValueMap<any, any>;
+export type StyleDescriptor = {
+    property?: FeaturePropertyKey,
+    [x: string]: any
 };
+export type ArcPathFunction = (center: Point, radius: number, startAngle: number, endAngle: number, sweepFlag?: boolean) => string;
 
 function toPath(point: Point): string;
 function toPath(x: number, y: number): string;
@@ -38,12 +37,12 @@ export function styleIfPresent(selection: D3Selection, style?: Style): void {
         selection.call(addStyle, style);
 }
 
-export function fnIfPresent(selection: D3Selection, fn?: Function): void {
+export function fnIfPresent(selection: D3Selection, fn?: Func): void {
     if (typeof fn !== 'undefined')
         selection.call(fn);
 }
 
-export function appendCross(selection: D3Selection, style: Style): void {
+export function appendCross(selection: D3Selection, style?: Style): void {
     style = style || {
         fill: 'none',
         stroke: 'red',
@@ -54,7 +53,7 @@ export function appendCross(selection: D3Selection, style: Style): void {
 }
 
 export function updateRect(selection: D3Selection, {x, y, klass, width, height, style, fn}:
-    {x: number, y: number, klass?: string, width: number, height: number, style?: Style, fn?: Function}): void {
+    {x: number, y: number, klass?: string, width: number, height: number, style?: Style, fn?: Func}): void {
     style = style || {
         fill: 'none',
         stroke: 'red',
@@ -76,7 +75,7 @@ export function translateTransform(selection: D3Selection, x: NodeCoordinateFunc
 
 export function drawLine(selection: D3Selection, selector: string | undefined,
     {klass, from, to, style, fn}:
-    {klass?: string, from: NodePointFunction, to: NodePointFunction, style?: Style, fn?: Function}): void {
+    {klass?: string, from: NodePointFunction, to: NodePointFunction, style?: Style, fn?: Func}): void {
     (!selector ? selection.append('path') : selection.select(selector))
         .call(attrIfPresent, 'class', klass)
         .call(styleIfPresent, style)
@@ -86,7 +85,7 @@ export function drawLine(selection: D3Selection, selector: string | undefined,
 
 export function drawCurve(selection: D3Selection, selector: string | undefined,
     {klass, from, to, inset, style, fn}:
-    {klass?: string, from: NodePointFunction, to: NodePointFunction, inset: number, style?: Style, fn?: Function}): void {
+    {klass?: string, from: NodePointFunction, to: NodePointFunction, inset: number, style?: Style, fn?: Func}): void {
     (!selector ? selection.append('path') : selection.select(selector))
         .call(attrIfPresent, 'class', klass)
         .call(styleIfPresent, style)
@@ -103,7 +102,7 @@ export function drawCurve(selection: D3Selection, selector: string | undefined,
 export function drawCircle(selection: D3Selection, selector: string | undefined,
     {klass, center, radius, style, fn}:
     {klass?: string, from: NodePointFunction, to: NodePointFunction, center: NodePointFunction,
-        radius: number, style?: Style, fn?: Function}): void {
+        radius: number, style?: Style, fn?: Func}): void {
     (!selector ? selection.append('circle') : selection.select(selector))
         .call(attrIfPresent, 'class', klass)
         .call(attrIfPresent, 'r', radius)
@@ -140,7 +139,7 @@ export function arcSlicePath(center: Point, radius: number, startAngle: number, 
 export function addStyle(selection: D3Selection, ...styleDescriptors: StyleDescriptor[]): void {
     styleDescriptors.forEach(styleDescriptor => {
         let {property, ...styles} = styleDescriptor;
-        if (property)
+        if (typeof property !== 'undefined')
             Object.keys(styles).forEach(key =>
                 selection
                     .filter((node: FeatureModelNode) => node.feature().getPropertyString(property) === key)

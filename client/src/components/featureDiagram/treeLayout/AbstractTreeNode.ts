@@ -6,17 +6,18 @@ import 'd3-selection-multi';
 import {event as d3Event} from 'd3-selection';
 import {getSetting} from '../../../store/settings';
 import measureTextWidth from '../../../helpers/measureTextWidth';
-import {addStyle, appendCross, drawCircle, translateTransform} from '../../../helpers/svg';
+import {addStyle, appendCross, drawCircle, translateTransform, StyleDescriptor, Style} from '../../../helpers/svg';
 import styles from './styles';
 import {isCommand} from '../../../helpers/withKeys';
-import {overlayTypes} from '../../../types';
+import {overlayTypes, Rect, D3Selection, FeatureModelNode, Func} from '../../../types';
 import actions from '../../../store/actions';
+import AbstractTreeLink from './AbstractTreeLink';
 
-function widenBbox({x, y, width, height}, paddingX, paddingY) {
+function widenBbox({x, y, width, height}: Rect, paddingX: number, paddingY: number): Rect {
     return {x: x - paddingX, y: y - paddingY, width: width + 2 * paddingX, height: height + 2 * paddingY};
 }
 
-function makeRect(settings, textBbox) {
+function makeRect(settings: object, textBbox: Rect): Rect {
     const nodeSettings = getSetting(settings, 'featureDiagram.treeLayout.node');
     return widenBbox(
         textBbox,
@@ -24,80 +25,80 @@ function makeRect(settings, textBbox) {
         nodeSettings.paddingY + nodeSettings.strokeWidth);
 }
 
-function addFontStyle(selection, settings) {
+function addFontStyle(selection: D3Selection, settings: object): void {
     selection.attrs({
         'font-family': getSetting(settings, 'featureDiagram.font.family'),
         'font-size': getSetting(settings, 'featureDiagram.font.size')
     });
 }
 
-function makeText(settings, selection, isGettingRectInfo, textStyle) {
+function makeText(settings: object, selection: D3Selection, isGettingRectInfo: boolean, textStyle: StyleDescriptor): Rect | Rect[] | undefined {
     if (isGettingRectInfo) {
-        let rectInfo = null;
+        let rectInfo = undefined;
         selection.append('text')
             .call(addFontStyle, settings)
             .text('some text used to determine rect y and height')
             .each(function() {
-                rectInfo = makeRect(settings, this.getBBox());
+                rectInfo = makeRect(settings, (this as SVGGraphicsElement).getBBox());
             }).remove();
         return rectInfo;
     } else {
-        const bboxes = [];
+        const bboxes: Rect[] = [];
         selection.append('text')
             .call(addFontStyle, settings)
             .text(d => d.feature().name)
             .call(addStyle, textStyle, styles.node.hidden(settings))
             .each(function() {
-                bboxes.push(this.getBBox());
+                bboxes.push((this as SVGGraphicsElement).getBBox());
             });
         return bboxes;
     }
 }
 
 export default class {
-    constructor(settings, isSelectMultipleFeatures, setActiveNode, onShowOverlay, onExpandFeatures) {
-        this.settings = settings;
-        this.isSelectMultipleFeatures = isSelectMultipleFeatures;
-        this.setActiveNode = setActiveNode;
-        this.onShowOverlay = onShowOverlay;
-        this.onExpandFeatures = onExpandFeatures;
-    }
+    rectInfo: Rect;
+    treeLink: AbstractTreeLink;
+    getWidestTextOnLayer: (node: FeatureModelNode) => number;
 
-    x(_node) {
+    constructor(public settings: object, public isSelectMultipleFeatures: boolean,
+        public setActiveNode: (overlay: string, activeNode: FeatureModelNode) => void,
+        public onShowOverlay: Func, public onExpandFeatures: Func) {}
+
+    x(_node: FeatureModelNode): number {
         throw new Error('abstract method not implemented');
     }
 
-    y(_node) {
+    y(_node: FeatureModelNode): number {
         throw new Error('abstract method not implemented');
     }
 
-    getTextStyle() {
+    getTextStyle(): StyleDescriptor {
         throw new Error('abstract method not implemented');
     }
 
-    createSvgHook(g) {
-        this.rectInfo = makeText(this.settings, g, true, this.getTextStyle());
+    createSvgHook(g: D3Selection): void {
+        this.rectInfo = makeText(this.settings, g, true, this.getTextStyle()) as Rect;
     }
 
-    enter(node) {
+    enter(node: D3Selection): D3Selection {
         const nodeEnter = node.append('g')
                 .attr('class', 'node')
-                .attr('data-feature', d => d.feature().name)
-                .call(translateTransform, d => this.x(d), d => this.y(d))
+                .attr('data-feature', (d: FeatureModelNode) => d.feature().name)
+                .call(translateTransform, (d: FeatureModelNode) => this.x(d), (d: FeatureModelNode) => this.y(d))
                 .attr('opacity', 0),
             rectAndText = nodeEnter.append('g')
                 .attr('class', 'rectAndText')
-                .on('click', d => this.setActiveNode(isCommand(d3Event) ? 'select' : overlayTypes.featureCallout, d))
-                .on('contextmenu', d => {
+                .on('click', (d: FeatureModelNode) => this.setActiveNode(isCommand(d3Event) ? 'select' : overlayTypes.featureCallout, d))
+                .on('contextmenu', (d: FeatureModelNode) => {
                     d3Event.preventDefault();
                     this.setActiveNode(isCommand(d3Event) ? 'select' : overlayTypes.featureContextualMenu, d);
                 })
-                .on('dblclick', d => {
+                .on('dblclick', (d: FeatureModelNode) => {
                     if (!this.isSelectMultipleFeatures)
                         this.onShowOverlay(overlayTypes.featurePanel, {featureName: d.feature().name});
                 });
 
-        let bboxes = makeText(this.settings, rectAndText, false, this.getTextStyle());
+        let bboxes = makeText(this.settings, rectAndText, false, this.getTextStyle()) as Rect[];
 
         let i = 0;
         rectAndText.insert('rect', 'text')
@@ -113,10 +114,10 @@ export default class {
             arcClick = nodeEnter.append('path')
                 .attr('class', 'arcClick')
                 .call(addStyle, styles.node.arcClick(this.settings))
-                .on('dblclick', d => actions.server.featureDiagram.feature.properties.toggleGroup(d.feature()));
+                .on('dblclick', (d: FeatureModelNode) => actions.server.featureDiagram.feature.properties.toggleGroup(d.feature()));
         this.treeLink.drawGroup(arcSegment, arcSlice, arcClick);
 
-        const expandFeature = d => d.feature().isCollapsed && this.onExpandFeatures(d.feature().name);
+        const expandFeature = (d: FeatureModelNode) => d.feature().isCollapsed && this.onExpandFeatures(d.feature().name);
         i = 0;
         bboxes = [];
         nodeEnter.insert('text', 'path.arcClick')
@@ -124,12 +125,12 @@ export default class {
             .attr('fill', getSetting(this.settings, 'featureDiagram.treeLayout.node.visibleFill'))
             .attr('class', 'collapse')
             .attr('text-anchor', 'middle')
-            .attrs(d => this.treeLink.collapseAnchor(d))
+            .attrs((d: FeatureModelNode) => this.treeLink.collapseAnchor(d) as Style)
             .call(addStyle, styles.node.collapseText(this.settings))
-            .text(d => d.feature().getNumberOfFeaturesBelow())
+            .text((d: FeatureModelNode) => d.feature().getNumberOfFeaturesBelow())
             .attr('opacity', 0)
             .each(function() {
-                bboxes.push(this.getBBox());
+                bboxes.push((this as SVGGraphicsElement).getBBox());
             })
             .on('dblclick', expandFeature);
 
@@ -141,7 +142,7 @@ export default class {
             },
             style: styles.node.collapseCircle(this.settings),
             radius: 0,
-            fn: circle => circle.on('dblclick', expandFeature)
+            fn: (circle: D3Selection) => circle.on('dblclick', expandFeature)
         });
 
         if (getSetting(this.settings, 'featureDiagram.treeLayout.debug'))
@@ -150,25 +151,25 @@ export default class {
         return nodeEnter;
     }
 
-    update(node) {
-        node.call(translateTransform, d => this.x(d), d => this.y(d))
+    update(node: D3Selection): void {
+        node.call(translateTransform, (d: FeatureModelNode) => this.x(d), (d: FeatureModelNode) => this.y(d))
             .attr('opacity', 1);
         node.select('g.rectAndText rect').call(addStyle, styles.node.abstract(this.settings));
         node.select('g.rectAndText text').call(addStyle, styles.node.hidden(this.settings));
         node.select('text.collapse')
-            .text(d => d.feature().getNumberOfFeaturesBelow())
-            .attr('cursor', d => d.feature().isCollapsed ? 'pointer' : null)
-            .attr('opacity', d => d.feature().isCollapsed ? 1 : 0);
-        node.select('circle').attr('r', d =>
+            .text((d: FeatureModelNode) => d.feature().getNumberOfFeaturesBelow())
+            .attr('cursor', (d: FeatureModelNode) => d.feature().isCollapsed ? 'pointer' : null)
+            .attr('opacity', (d: FeatureModelNode) => d.feature().isCollapsed ? 1 : 0);
+        node.select('circle').attr('r', (d: FeatureModelNode) =>
             d.feature().isCollapsed ? getSetting(this.settings, 'featureDiagram.font.size') : 0);
         this.treeLink.drawGroup(node.select('path.arcSegment'), node.select('path.arcSlice'), node.select('path.arcClick'));
     }
 
-    exit(node) {
+    exit(node: D3Selection): void {
         node.attr('opacity', 0).remove();
     }
 
-    estimateTextWidth(node) {
+    estimateTextWidth(node: FeatureModelNode): number {
         return measureTextWidth(
             getSetting(this.settings, 'featureDiagram.font.family'),
             getSetting(this.settings, 'featureDiagram.font.size'),

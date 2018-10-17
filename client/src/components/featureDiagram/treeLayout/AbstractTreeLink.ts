@@ -7,77 +7,76 @@ import {
     arcSegmentPath,
     arcSlicePath,
     cartesianToAngle,
-    drawCircle
+    drawCircle,
+    ArcPathFunction,
+    Style
 } from '../../../helpers/svg';
 import constants from '../../../constants';
 import styles from './styles';
 import actions from '../../../store/actions';
+import AbstractTreeNode from './AbstractTreeNode';
+import {Func, FeatureModelNode, Rect, Point, D3Selection, NodePointFunction} from '../../../types';
 
 export default class {
-    constructor(settings, getCurrentParentCoordinate, getPreviousParentCoordinate, treeNode) {
-        this.settings = settings;
-        this.getCurrentParentCoordinate = getCurrentParentCoordinate;
-        this.getPreviousParentCoordinate = getPreviousParentCoordinate;
-        this.treeNode = treeNode;
-    }
+    // TODO
+    constructor(public settings: object, public getCurrentParentCoordinate: Func, public getPreviousParentCoordinate: Func, public treeNode: AbstractTreeNode) {}
 
-    nodeX(node) {
+    nodeX(node: FeatureModelNode): number {
         return this.treeNode.x(node);
     }
 
-    nodeY(node) {
+    nodeY(node: FeatureModelNode): number {
         return this.treeNode.y(node);
     }
 
-    estimateTextWidth(node) {
+    estimateTextWidth(node: FeatureModelNode): number {
         return this.treeNode.estimateTextWidth(node);
     }
 
-    getRectInfo() {
+    getRectInfo(): Rect {
         return this.treeNode.rectInfo;
     }
 
-    groupAnchor(_node) {
+    groupAnchor(_node: FeatureModelNode): Point {
         throw new Error('abstract method not implemented');
     }
 
-    collapseAnchor(_node) {
+    collapseAnchor(_node: FeatureModelNode): Partial<Point> {
         throw new Error('abstract method not implemented');
     }
 
-    groupRadius() {
+    groupRadius(): number {
         throw new Error('abstract method not implemented');
     }
 
-    sweepFlag() {
+    sweepFlag(): boolean {
         throw new Error('abstract method not implemented');
     }
 
-    emptyArcPath(_relativeGroupAnchor, _arcPathFn) {
+    emptyArcPath(_relativeGroupAnchor: Point, _arcPathFn: ArcPathFunction): string {
         throw new Error('abstract method not implemented');
     }
 
-    arcPath(..._args) {
+    arcPath(_arcPathFn: ArcPathFunction, _center: Point, _radius: number, _startAngle: number, _endAngle: number, _sweepFlag?: boolean): string {
         throw new Error('abstract method not implemented');
     }
 
-    drawLink(..._args) {
+    drawLink(_selection: D3Selection, _selector: string | undefined, {klass, from, to, style}: {klass?: string, from: NodePointFunction, to: NodePointFunction, style?: Style}): void {
         throw new Error('abstract method not implemented');
     }
 
-    from(_node, _phase) {
+    from(_node: FeatureModelNode, _phase?: string): Point {
         throw new Error('abstract method not implemented');
     }
 
-    to(_node, _phase) {
+    to(_node: FeatureModelNode, _phase?: string): Point {
         throw new Error('abstract method not implemented');
     }
 
-    drawGroup(arcSegment, arcSlice, arcClick) {
-        const drawArc = (node, arcPathFn, checkType = () => true) =>
-            node
-                .attr('opacity', d => d.feature().isGroup && d.feature().hasChildren && checkType(d) ? 1 : 0)
-                .attr('d', d => {
+    drawGroup(arcSegment: D3Selection, arcSlice: D3Selection, arcClick: D3Selection): void {
+        const drawArc = (node: D3Selection, arcPathFn: ArcPathFunction, checkType = (d: FeatureModelNode): boolean | string => true) =>
+            node.attr('opacity', (d: FeatureModelNode) => d.feature().isGroup && d.feature().hasChildren && checkType(d) ? 1 : 0)
+                .attr('d', (d: FeatureModelNode) => {
                     const relativeGroupAnchor = this.groupAnchor(d),
                         absoluteGroupAnchor = {
                             x: relativeGroupAnchor.x + this.nodeX(d),
@@ -85,8 +84,8 @@ export default class {
                         };
                     if ((checkType(d) !== 'always' && !d.feature().isGroup) || !d.feature().hasChildren || !checkType(d))
                         return this.emptyArcPath(relativeGroupAnchor, arcPathFn);
-                    const firstChild = d.children[0],
-                        lastChild = d.children[d.children.length - 1],
+                    const firstChild = d.children![0],
+                        lastChild = d.children![d.children!.length - 1],
                         startAngle = cartesianToAngle(absoluteGroupAnchor, this.from(firstChild)),
                         endAngle = cartesianToAngle(absoluteGroupAnchor, this.from(lastChild));
                     return this.arcPath(arcPathFn, relativeGroupAnchor, this.groupRadius(),
@@ -97,12 +96,12 @@ export default class {
         drawArc(arcClick, arcSlicePath, () => 'always');
     }
 
-    enter(link, zIndex) {
+    enter(link: D3Selection, zIndex: string): D3Selection {
         const linkEnter = link.append('g')
                 .attr('class', 'link')
                 .attr('opacity', 0),
-            from = d => this.from(d, 'enter'),
-            to = d => this.to(d, 'enter');
+            from = (d: FeatureModelNode) => this.from(d, 'enter'),
+            to = (d: FeatureModelNode) => this.to(d, 'enter');
 
         if (zIndex === 'inBack')
             linkEnter
@@ -113,15 +112,15 @@ export default class {
                 center: from,
                 radius: 0,
                 style: styles.link.mandatory(this.settings),
-                fn: circle => circle.on('dblclick', d => actions.server.featureDiagram.feature.properties.toggleMandatory(d.feature()))
+                fn: (circle: D3Selection) => circle.on('dblclick', d => actions.server.featureDiagram.feature.properties.toggleMandatory(d.feature()))
             });
 
         return linkEnter;
     }
 
-    update(link, zIndex) {
-        const from = d => this.from(d, 'update'),
-            to = d => this.to(d, 'update'),
+    update(link: D3Selection, zIndex: string): void {
+        const from = (d: FeatureModelNode) => this.from(d, 'update'),
+            to = (d: FeatureModelNode) => this.to(d, 'update'),
             radius = getSetting(this.settings, 'featureDiagram.treeLayout.link.circleRadius');
         link.attr('opacity', 1);
 
@@ -132,9 +131,9 @@ export default class {
             link.call(drawCircle, 'circle', {center: from, radius, style: styles.link.mandatory(this.settings)});
     }
 
-    exit(link, zIndex) {
-        const from = d => this.from(d, 'exit'),
-            to = d => this.to(d, 'exit');
+    exit(link: D3Selection, zIndex: string): void {
+        const from = (d: FeatureModelNode) => this.from(d, 'exit'),
+            to = (d: FeatureModelNode) => this.to(d, 'exit');
         link.attr('opacity', 0).remove();
 
         if (zIndex === 'inBack')

@@ -6,7 +6,7 @@ import React from 'react';
 import i18n from '../../i18n';
 import actions from '../../store/actions';
 import {TextFieldDialog, largeDialogStyle} from '../../helpers/Dialog';
-import FeatureComponent, { FeatureComponentProps } from './FeatureComponent';
+import FeatureComponent, {FeatureComponentProps} from './FeatureComponent';
 import {Feature} from '../../types';
 
 type Props = FeatureComponentProps & {

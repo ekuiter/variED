@@ -3,7 +3,8 @@
  */
 
 import PropTypes from 'prop-types';
-import {HierarchyNode} from 'd3-hierarchy';
+import {HierarchyPointNode} from 'd3-hierarchy';
+import {Selection} from 'd3-selection';
 
 export enum MessageType {
     ERROR = 'ERROR',
@@ -31,7 +32,7 @@ export function isMessageType(type: string) {
     return Object.values(MessageType).includes(type);
 };
 
-export type FeaturePropertyKey = string | ((node: FeatureModelNode) => string);
+export type FeaturePropertyKey = string | ((node: FeatureModelNode) => string) | undefined;
 
 export type Feature = {
     node: FeatureModelNode,
@@ -55,7 +56,7 @@ export type Feature = {
 
 type Datum = object; // this is an object per feature sent by the server accessible as node.data below
 
-export type FeatureModelNode = HierarchyNode<Datum> & {
+export type FeatureModelNode = HierarchyPointNode<Datum> & {
     children?: FeatureModelNode[];
     actualChildren?: FeatureModelNode[];
     _feature: Feature;
@@ -63,8 +64,12 @@ export type FeatureModelNode = HierarchyNode<Datum> & {
 }
 
 export type Point = {x: number, y: number};
+export type Rect = Point & {width: number, height: number};
+export type Bbox = [[number, number], [number, number]];
 export type NodeCoordinateFunction = (node: FeatureModelNode) => number;
 export type NodePointFunction = (node: FeatureModelNode) => Point;
+export type D3Selection = Selection<any, any, any, any>;
+export type Func = (...args: any[]) => any;
 
 export const
     layoutTypes = {

@@ -4,17 +4,19 @@
 
 import AbstractTreeNode from './AbstractTreeNode';
 import {getSetting} from '../../../store/settings';
+import {FeatureModelNode} from '../../../types';
+import {StyleDescriptor} from '../../../helpers/svg';
 
 export default class extends AbstractTreeNode {
-    x(node) {
+    x(node: FeatureModelNode): number {
         return node.x;
     }
 
-    y(node) {
+    y(node: FeatureModelNode): number {
         return node.y * getSetting(this.settings, 'featureDiagram.treeLayout.vertical.layerHeight');
     }
 
-    getTextStyle() {
+    getTextStyle(): StyleDescriptor {
         return {'text-anchor': 'middle'};
     }
 }
