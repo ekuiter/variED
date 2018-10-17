@@ -1,3 +1,8 @@
+/**
+ * The feature model is the main artifact shown and edited by this application.
+ * It is a tree-like structure containing features and additional feature and cross-tree constraints.
+ */
+
 import {hierarchy as d3Hierarchy} from 'd3-hierarchy';
 import constants from '../constants';
 import PropTypes from 'prop-types';
@@ -5,7 +10,7 @@ import memoize from '../helpers/memoize';
 import {estimateHierarchySize} from '../components/featureDiagram/treeLayout/estimation';
 import {getSetting} from '../store/settings';
 import {layoutTypes, FeatureModelNode, Feature} from '../types';
-import {notEmpty} from '../helpers/notEmpty';
+import {present} from '../helpers/present';
 
 const serialization = constants.server.featureModel.serialization;
 
@@ -154,13 +159,13 @@ class FeatureModel {
     getNodes(featureNames: string[]): FeatureModelNode[] {
         return featureNames
             .map(featureName => this.getNode(featureName))
-            .filter(notEmpty);
+            .filter(present);
     }
 
     getFeatures(featureNames: string[]): Feature[] {
         return featureNames
             .map(featureName => this.getFeature(featureName))
-            .filter(notEmpty);
+            .filter(present);
     }
 
     getElement(featureName: string): Element | undefined {

@@ -1,4 +1,9 @@
-// adapted from FeatureIDE/plugins/de.ovgu.featureide.fm.ui/src/de/ovgu/featureide/fm/ui/editors/featuremodel/GUIDefaults.java
+/**
+ * Style definitions for the tree layouts.
+ * These definitions are intended to be used with the SVG helper addStyle.
+ * Adapted from FeatureIDE/plugins/de.ovgu.featureide.fm.ui/src/de/ovgu/featureide/fm/ui/editors/featuremodel/GUIDefaults.java.
+ */
+
 import {getSetting} from '../../../store/settings';
 
 function getLinkStrokeWidth(settings) {

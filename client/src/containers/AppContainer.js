@@ -1,3 +1,7 @@
+/**
+ * Manages the root application component.
+ */
+
 import React from 'react';
 import {openWebSocket} from '../server/webSocket';
 import FeatureDiagramContainer from './featureDiagram/FeatureDiagramContainer';

@@ -1,3 +1,7 @@
+/**
+ * A Fabric combo box that allows to choose a font installed on the user's system.
+ */
+
 import isFontInstalled from './isFontInstalled';
 import {ComboBox, IComboBox, IComboBoxOption} from 'office-ui-fabric-react/lib/ComboBox';
 import React from 'react';

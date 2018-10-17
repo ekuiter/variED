@@ -1,3 +1,8 @@
+/**
+ * Internationalization utilities.
+ * This includes a string table to be able to translate the application to other languages.
+ */
+
 import objectPath from 'object-path';
 import React from 'react';
 import constants from './constants';

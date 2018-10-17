@@ -1,3 +1,7 @@
+/**
+ * Definition of common types and enumerations.
+ */
+
 import PropTypes from 'prop-types';
 import {HierarchyNode} from 'd3-hierarchy';
 

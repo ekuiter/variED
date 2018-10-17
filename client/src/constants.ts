@@ -1,3 +1,8 @@
+/**
+ * Constants which can not be adjusted at runtime.
+ * As they may not be updated at runtime, we can just treat these constants as global.
+ */
+
 import {defaultSettings} from './store/settings';
 import {layoutTypes} from './types';
 

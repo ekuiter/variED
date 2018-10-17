@@ -1,3 +1,7 @@
+/**
+ * Nodes for the horizontal tree layout.
+ */
+
 import AbstractTreeNode from './AbstractTreeNode';
 import {estimateRectWidth} from './estimation';
 import {getSetting} from '../../../store/settings';

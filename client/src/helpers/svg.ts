@@ -1,3 +1,8 @@
+/**
+ * Helpers for drawing SVG elements.
+ * Depends on the D3.js library to manipulate elements.
+ */
+
 import {Selection} from 'd3-selection';
 import {ValueMap} from 'd3-selection-multi';
 import {NodeCoordinateFunction, Point, NodePointFunction, FeaturePropertyKey, FeatureModelNode} from '../types';

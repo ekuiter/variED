@@ -1,3 +1,9 @@
+/**
+ * Settings that may be adjusted at runtime.
+ * These settings are stored in Redux and may be passed to components.
+ * Changing a setting then causes all consuming components to rerender.
+ */
+
 import objectPath from 'object-path';
 import objectPathImmutable from 'object-path-immutable';
 

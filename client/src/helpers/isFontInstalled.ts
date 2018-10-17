@@ -1,11 +1,11 @@
-import memoize from './memoize';
-
 /**
  * JavaScript code to detect available availability of a
  * particular font in a browser using JavaScript and CSS.
  * Author : Lalit Patel
  * Website: http://www.lalit.org/lab/javascript-css-font-detect/
  */
+
+import memoize from './memoize';
 
 const baseFonts = ['monospace', 'sans-serif', 'serif'],
     testString = 'mmmmmmmmmmlli',
@@ -25,6 +25,12 @@ baseFonts.forEach(baseFont => {
     body.removeChild(span);
 });
 
+/**
+ * Returns whether a font is installed on the system.
+ * This is an expensive operation, so we memoize its results for further use.
+ * We do not expect the system's installed functions to change while the application is running.
+ * @param font font family to detect, should NOT be a CSS-like list of font families
+ */
 export default <(font: string) => boolean>memoize(function(font) {
     let detected = false;
     baseFonts.forEach(baseFont => {

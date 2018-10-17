@@ -1,3 +1,7 @@
+/**
+ * Message actions define an interface to communicate with the server.
+ */
+
 import {sendMessage} from './webSocket';
 import constants from '../constants';
 import {MessageType} from '../types';

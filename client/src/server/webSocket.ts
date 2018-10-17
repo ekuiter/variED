@@ -1,3 +1,7 @@
+/**
+ * The application uses web sockets to communicate with the server.
+ */
+
 import constants from '../constants';
 import {Message} from '../types';
 

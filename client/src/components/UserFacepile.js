@@ -1,3 +1,7 @@
+/**
+ * Shows a Fabric facepile of users editing the current feature model.
+ */
+
 import * as React from 'react';
 import {Facepile, OverflowButtonType} from 'office-ui-fabric-react/lib/Facepile';
 import {PersonaSize} from 'office-ui-fabric-react/lib/Persona';

@@ -1,3 +1,7 @@
+/**
+ * A Fabric contextual menu for a given feature.
+ */
+
 import React from 'react';
 import {DirectionalHint} from 'office-ui-fabric-react/lib/Callout';
 import {ContextualMenu} from 'office-ui-fabric-react/lib/ContextualMenu';

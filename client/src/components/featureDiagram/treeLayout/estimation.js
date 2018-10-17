@@ -1,3 +1,7 @@
+/**
+ * Helpers to estimate positions and dimensions of elements in a feature diagram.
+ */
+
 import {getSetting} from '../../../store/settings';
 import {layoutTypes} from '../../../types';
 import measureTextWidth from '../../../helpers/measureTextWidth';

@@ -1,3 +1,8 @@
+/**
+ * Abstract tree layout for a feature diagram.
+ * The layout direction (vertical or horizontal) remains unspecified.
+ */
+
 import React from 'react';
 import {tree as d3Tree} from 'd3-hierarchy';
 import {event as d3Event, select as d3Select} from 'd3-selection';

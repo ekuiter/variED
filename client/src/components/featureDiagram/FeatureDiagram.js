@@ -1,3 +1,8 @@
+/**
+ * The feature diagram is the visual representation of a feature model.
+ * There may be different kinds of feature diagrams, referred to as layouts.
+ */
+
 import React from 'react';
 import VerticalTreeLayout from './treeLayout/VerticalTreeLayout';
 import HorizontalTreeLayout from './treeLayout/HorizontalTreeLayout';

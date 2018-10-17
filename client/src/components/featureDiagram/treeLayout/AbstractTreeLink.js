@@ -1,3 +1,7 @@
+/**
+ * Links (or edges) for the abstract tree layout.
+ */
+
 import {getSetting} from '../../../store/settings';
 import {
     arcSegmentPath,

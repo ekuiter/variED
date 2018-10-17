@@ -1,3 +1,9 @@
+/**
+ * Defines commands (actions and metadata) that may be used throughout the application.
+ * Commands are expected to be used in Fabric's contextual menus and command bars
+ * and defined accordingly.
+ */
+
 import i18n from '../i18n';
 import actions from '../store/actions';
 import {layoutTypes, overlayTypes, formatTypes} from '../types';

@@ -1,3 +1,7 @@
+/**
+ * A Fabric dialog for renaming a feature.
+ */
+
 import React from 'react';
 import i18n from '../../i18n';
 import actions from '../../store/actions';

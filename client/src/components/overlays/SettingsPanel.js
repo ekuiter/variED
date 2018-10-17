@@ -1,3 +1,8 @@
+/**
+ * The application's main settings panel.
+ * It exposes context-sensitive settings. Changes are reflected in the application at once.
+ */
+
 import React from 'react';
 import {getSetting} from '../../store/settings';
 import i18n from '../../i18n';

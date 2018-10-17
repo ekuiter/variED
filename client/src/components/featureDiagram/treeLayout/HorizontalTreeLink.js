@@ -1,3 +1,7 @@
+/**
+ * Links (or edges) for the horizontal tree layout.
+ */
+
 import AbstractTreeLink from './AbstractTreeLink';
 import {getSetting} from '../../../store/settings';
 import {attrIfPresent, drawCurve, drawLine} from '../../../helpers/svg';

@@ -1,3 +1,6 @@
+/**
+ * Some fixtures for use in tests.
+ */
 
 export const invalidFeatureModel1 = {};
 

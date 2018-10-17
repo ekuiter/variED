@@ -1,3 +1,7 @@
+/**
+ * Helpers and wrappers for Fabric dialogs.
+ */
+
 import {Dialog, DialogFooter} from 'office-ui-fabric-react/lib/Dialog';
 import {DefaultButton, PrimaryButton} from 'office-ui-fabric-react/lib/Button';
 import i18n from '../i18n';

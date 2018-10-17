@@ -1,3 +1,10 @@
+/**
+ * Higher-order component that listens for key events and calls actions for bound keys.
+ * As a higher-order component, it can be wrapped around any component and handle
+ * keys for that component's lifetime. This way, local key bindings (only available
+ * when certain components are visible) are possible.
+ */
+
 import React from 'react';
 
 export const isCommand = (event: KeyboardEvent): boolean =>

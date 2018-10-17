@@ -1,3 +1,8 @@
+/**
+ * Actions define an interface to update the Redux store.
+ * They are plain objects describing a state change.
+ */
+
 import messageActions from '../server/messageActions';
 import {createActions} from 'redux-actions';
 

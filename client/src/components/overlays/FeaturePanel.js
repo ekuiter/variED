@@ -1,3 +1,7 @@
+/**
+ * A Fabric panel that shows details for a feature and available operations.
+ */
+
 import React from 'react';
 import {Panel, PanelType} from 'office-ui-fabric-react/lib/Panel';
 import i18n from '../../i18n';

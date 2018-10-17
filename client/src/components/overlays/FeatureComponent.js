@@ -1,3 +1,7 @@
+/**
+ * A component that is associated with a feature.
+ */
+
 import React from 'react';
 import {getSetting} from '../../store/settings';
 import PropTypes from 'prop-types';

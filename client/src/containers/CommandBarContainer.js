@@ -1,3 +1,7 @@
+/**
+ * Manages the application's global command bar.
+ */
+
 import commands, {makeDivider} from '../components/commands';
 import UserFacepile from '../components/UserFacepile';
 import {CommandBar} from 'office-ui-fabric-react/lib/CommandBar';

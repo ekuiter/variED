@@ -1,3 +1,11 @@
+/**
+ * Manages all overlays of the application.
+ * An overlay is a modal component that requires the user's attention (e.g., a dialog, panel or
+ * contextual menu), but that is temporary in nature (i.e., it is opened, inspected/acted upon
+ * and finally closed). Only one overlay is allowed to be open at the same time, this is mandated
+ * by the Redux store (an existing overlay is closed when another is opened).
+ */
+
 import React from 'react';
 import {connect} from 'react-redux';
 import SettingsPanel from '../../components/overlays/SettingsPanel';

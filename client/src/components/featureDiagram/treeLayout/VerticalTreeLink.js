@@ -1,3 +1,7 @@
+/**
+ * Links (or edges) for the vertical tree layout.
+ */
+
 import AbstractTreeLink from './AbstractTreeLink';
 import {drawLine} from '../../../helpers/svg';
 import {getSetting} from '../../../store/settings';

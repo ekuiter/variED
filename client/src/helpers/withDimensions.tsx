@@ -1,3 +1,9 @@
+/**
+ * Higher-order component that injects the current viewport's width and height into a component.
+ * This is useful for resizing components spanning the whole viewport that require
+ * absolute width and height values.
+ */
+
 import React from 'react';
 import throttle from './throttle';
 import constants from '../constants';

@@ -1,10 +1,16 @@
+/**
+ * Reducers determine the new state of the Redux store according to some given action.
+ * They are implemented as pure functions only depending on the current application
+ * state and the action to process, to keep state management sane.
+ */
+
 import messageReducer from '../server/messageReducer';
 import reduceReducers from 'reduce-reducers';
 import {handleActions} from 'redux-actions';
 import constants from '../constants';
 import {defaultSettings, getNewSettings} from './settings';
 import {overlayTypes, isMessageType, MessageType} from '../types';
-import {uniqueArrayAdd, uniqueArrayRemove} from '../helpers/reducers';
+import {setAdd, setRemove} from '../helpers/reducers';
 import {getFeatureModel} from './selectors';
 import {getViewportWidth, getViewportHeight} from '../helpers/withDimensions';
 
@@ -43,7 +49,7 @@ function removeObsoleteFeaturesFromFeatureList(state, key) {
 function renameFeatureInFeatureList(state, action, key) {
     if (state.ui[key].includes(action.oldFeature))
         return stateWithNewUi(state, key,
-            uniqueArrayAdd(uniqueArrayRemove(state.ui[key], action.oldFeature), action.newFeature));
+            setAdd(setRemove(state.ui[key], action.oldFeature), action.newFeature));
     return state;
 }
 
@@ -112,9 +118,9 @@ const uiReducer = rootState => handleActions({
                 SET_SELECT_MULTIPLE: (state, {payload: {isSelectMultipleFeatures}}) =>
                     ({...state, isSelectMultipleFeatures, selectedFeatureNames: []}),
                 SELECT: (state, {payload: {featureName}}) =>
-                    ({...state, selectedFeatureNames: uniqueArrayAdd(state.selectedFeatureNames, featureName)}),
+                    ({...state, selectedFeatureNames: setAdd(state.selectedFeatureNames, featureName)}),
                 DESELECT: (state, {payload: {featureName}}) => {
-                    const selectedFeatureNames = uniqueArrayRemove(state.selectedFeatureNames, featureName);
+                    const selectedFeatureNames = setRemove(state.selectedFeatureNames, featureName);
                     return selectedFeatureNames.length > 0
                         ? {...state, selectedFeatureNames}
                         : {...state, selectedFeatureNames, isSelectMultipleFeatures: false};
@@ -131,9 +137,9 @@ const uiReducer = rootState => handleActions({
                     ({...state, selectedFeatureNames: [], isSelectMultipleFeatures: false}),
 
                 COLLAPSE: (state, {payload: {featureNames}}) =>
-                    ({...state, collapsedFeatureNames: uniqueArrayAdd(state.collapsedFeatureNames, featureNames)}),
+                    ({...state, collapsedFeatureNames: setAdd(state.collapsedFeatureNames, featureNames)}),
                 EXPAND: (state, {payload: {featureNames}}) =>
-                    ({...state, collapsedFeatureNames: uniqueArrayRemove(state.collapsedFeatureNames, featureNames)}),
+                    ({...state, collapsedFeatureNames: setRemove(state.collapsedFeatureNames, featureNames)}),
                 COLLAPSE_ALL: state => 
                     rootState.server.featureModel
                         ? {
@@ -146,7 +152,7 @@ const uiReducer = rootState => handleActions({
                     rootState.server.featureModel
                         ? {
                             ...state,
-                            collapsedFeatureNames: uniqueArrayAdd(state.collapsedFeatureNames,
+                            collapsedFeatureNames: setAdd(state.collapsedFeatureNames,
                                 getFeatureNamesBelowWithActualChildren(rootState, featureNames))
                         }
                         : state,
@@ -154,7 +160,7 @@ const uiReducer = rootState => handleActions({
                     rootState.server.featureModel
                         ? {
                             ...state,
-                            collapsedFeatureNames: uniqueArrayRemove(state.collapsedFeatureNames,
+                            collapsedFeatureNames: setRemove(state.collapsedFeatureNames,
                                 getFeatureNamesBelowWithActualChildren(rootState, featureNames))
                         }
                         : state

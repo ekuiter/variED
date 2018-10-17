@@ -1,4 +1,9 @@
-import {uniqueArrayAdd, uniqueArrayRemove} from '../helpers/reducers';
+/**
+ * Incoming server messages are reduced into the Redux store.
+ * This way we use the same mechanism to process actions from the client and server.
+ */
+
+import {setAdd, setRemove} from '../helpers/reducers';
 import {MessageType} from '../types';
 
 const messageReducers = {
@@ -7,10 +12,10 @@ const messageReducers = {
         return state;
     },
     [MessageType.JOIN](state, action) {
-        return {...state, users: uniqueArrayAdd(state.users, action.user)};
+        return {...state, users: setAdd(state.users, action.user)};
     },
     [MessageType.LEAVE](state, action) {
-        return {...state, users: uniqueArrayRemove(state.users, action.user)};
+        return {...state, users: setRemove(state.users, action.user)};
     },
     [MessageType.FEATURE_DIAGRAM_FEATURE_MODEL](state, action) {
         return {...state, featureModel: action.featureModel};

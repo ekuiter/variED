@@ -1,3 +1,7 @@
+/**
+ * Horizontal tree layout for feature diagrams.
+ */
+
 import AbstractTreeLayout from './AbstractTreeLayout';
 import {getSetting} from '../../../store/settings';
 import VerticalTreeLink from './VerticalTreeLink';

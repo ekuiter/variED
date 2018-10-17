@@ -1,3 +1,9 @@
+/**
+ * Implementation of feature diagram export algorithms.
+ * Because these algorithms are only used on-demand (when the user triggers an export) and the
+ * involved libraries have a large footprint, dynamic import() is used for these libraries.
+ */
+
 import {layoutTypes, formatTypes} from '../../types';
 import FeatureModel from '../../server/FeatureModel';
 import {saveAs} from 'file-saver';

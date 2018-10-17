@@ -1,3 +1,7 @@
+/**
+ * Manages the feature diagram of the feature model that is currently edited.
+ */
+
 import React from 'react';
 import FeatureDiagram from '../../components/featureDiagram/FeatureDiagram';
 import {connect} from 'react-redux';

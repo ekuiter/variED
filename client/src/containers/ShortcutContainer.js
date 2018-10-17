@@ -1,3 +1,7 @@
+/**
+ * Manages the application's global shortcuts.
+ */
+
 import withKeys from '../helpers/withKeys';
 import {overlayTypes} from '../types';
 import {getShortcutKeyBinding} from '../shortcuts';

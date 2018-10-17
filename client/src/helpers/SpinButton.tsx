@@ -1,3 +1,7 @@
+/**
+ * A Fabric text field that allows in- and decrementing the contained number value.
+ */
+
 import React from 'react';
 import {SpinButton} from 'office-ui-fabric-react/lib/SpinButton';
 import {IIconProps} from 'office-ui-fabric-react/lib/Icon';

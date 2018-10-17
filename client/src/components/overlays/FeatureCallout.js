@@ -1,3 +1,7 @@
+/**
+ * A Fabric callout that includes information about a feature.
+ */
+
 import React from 'react';
 import {Callout, DirectionalHint} from 'office-ui-fabric-react/lib/Callout';
 import {getSetting} from '../../store/settings';

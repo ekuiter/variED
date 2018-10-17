@@ -1,3 +1,9 @@
+/**
+ * Manages key shortcut definitions.
+ * This file defines the actual shortcuts along with text hints.
+ * Shortcut actions are defined in the ShortcutContainer.
+ */
+
 import objectPath from 'object-path';
 import {KeyBinding, KeyBindingAction} from './helpers/withKeys';
 

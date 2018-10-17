@@ -1,23 +1,23 @@
-import {uniqueArrayAdd, uniqueArrayRemove} from './reducers';
+import {setAdd, setRemove} from './reducers';
 
 describe('reducers', () => {
-    describe('uniqueArrayAdd', () => {
+    describe('setAdd', () => {
         it('adds an element to an array that does not include it', () => {
-            expect(uniqueArrayAdd([1], 2)).toEqual([1, 2]);
+            expect(setAdd([1], 2)).toEqual([1, 2]);
         });
 
         it('does nothing if an array already includes an element', () => {
-            expect(uniqueArrayAdd([1], 1)).toEqual([1]);
+            expect(setAdd([1], 1)).toEqual([1]);
         });
     });
 
-    describe('uniqueArrayRemove', () => {
+    describe('setRemove', () => {
         it('removes an element from an array that includes it', () => {
-            expect(uniqueArrayRemove([1, 2], 2)).toEqual([1]);
+            expect(setRemove([1, 2], 2)).toEqual([1]);
         });
 
         it('does nothing if an array does not include an element', () => {
-            expect(uniqueArrayRemove([1], 2)).toEqual([1]);
+            expect(setRemove([1], 2)).toEqual([1]);
         });
     });
 });

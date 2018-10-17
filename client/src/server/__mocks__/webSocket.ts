@@ -1,3 +1,7 @@
+/**
+ * Simple mock for a web socket, used in testing.
+ */
+
 import {Message} from '../../types';
 
 type HandleMessageFunction = (data: Message) => void;

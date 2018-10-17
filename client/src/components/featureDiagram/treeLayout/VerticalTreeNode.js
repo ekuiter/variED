@@ -1,3 +1,7 @@
+/**
+ * Nodes for the vertical tree layout.
+ */
+
 import AbstractTreeNode from './AbstractTreeNode';
 import {getSetting} from '../../../store/settings';
 

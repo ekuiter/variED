@@ -1,3 +1,7 @@
+/**
+ * Nodes for the abstract tree layout.
+ */
+
 import 'd3-selection-multi';
 import {event as d3Event} from 'd3-selection';
 import {getSetting} from '../../../store/settings';

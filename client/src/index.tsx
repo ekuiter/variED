@@ -1,3 +1,8 @@
+/**
+ * Main application entry point.
+ * This initializes Redux and the React app container.
+ */
+
 import './polyfills';
 import React from 'react';
 import ReactDOM from 'react-dom';
