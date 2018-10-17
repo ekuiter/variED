@@ -6,22 +6,17 @@ import React from 'react';
 import i18n from '../../i18n';
 import actions from '../../store/actions';
 import {TextFieldDialog} from '../../helpers/Dialog';
-import PropTypes from 'prop-types';
-import {FeatureModelType} from '../../server/FeatureModel';
-import FeatureComponent from './FeatureComponent';
+import FeatureComponent, {FeatureComponentProps} from './FeatureComponent';
+import {Feature} from '../../types';
 
-export default class extends FeatureComponent() {
-    static propTypes = {
-        onDismiss: PropTypes.func.isRequired,
-        featureModel: FeatureModelType.isRequired,
-        featureName: PropTypes.string.isRequired,
-        isOpen: PropTypes.bool.isRequired
-    };
+type Props = FeatureComponentProps & {
+    isOpen: boolean
+};
 
-    renderIfFeature(feature) {
+export default class extends FeatureComponent()<Props> {
+    renderIfFeature(feature: Feature) {
         return (
             <TextFieldDialog
-                {...this.props}
                 title={i18n.t('overlays.featureRenameDialog.title')}
                 submitText={i18n.t('overlays.featureRenameDialog.rename')}
                 defaultValue={feature.name}

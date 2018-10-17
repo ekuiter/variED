@@ -5,28 +5,25 @@
 import React from 'react';
 import {Panel, PanelType} from 'office-ui-fabric-react/lib/Panel';
 import i18n from '../../i18n';
-import {CommandBar} from 'office-ui-fabric-react/lib/CommandBar';
+import {CommandBar, ICommandBarItemProps} from 'office-ui-fabric-react/lib/CommandBar';
 import commands from '../commands';
-import PropTypes from 'prop-types';
-import {FeatureModelType} from '../../server/FeatureModel';
-import FeatureComponent from './FeatureComponent';
+import FeatureComponent, {FeatureComponentProps} from './FeatureComponent';
+import {Feature} from '../../types';
+
+type Props = FeatureComponentProps & {
+    onDismissed: () => void,
+    isOpen: boolean,
+    onShowOverlay: (...args: any[]) => void, // TODO
+    onCollapseFeatures: (...args: any[]) => void,
+    onCollapseFeaturesBelow: (...args: any[]) => void,
+    onExpandFeatures: (...args: any[]) => void,
+    onExpandFeaturesBelow: (...args: any[]) => void,
+};
 
 const buttonStyles = {root: {backgroundColor: 'transparent'}},
-    transparentItems = items => items;
+    transparentItems = (items: ICommandBarItemProps[]) => items;
 
-export default class extends FeatureComponent({onDismissProp: 'onDismissed'}) {
-    static propTypes = {
-        onDismissed: PropTypes.func.isRequired,
-        featureModel: FeatureModelType.isRequired,
-        featureName: PropTypes.string.isRequired,
-        isOpen: PropTypes.bool.isRequired,
-        onShowOverlay: PropTypes.func.isRequired,
-        onCollapseFeatures: PropTypes.func.isRequired,
-        onExpandFeatures: PropTypes.func.isRequired,
-        onCollapseFeaturesBelow: PropTypes.func.isRequired,
-        onExpandFeaturesBelow: PropTypes.func.isRequired
-    };
-
+export default class extends FeatureComponent()<Props> {
     onRenderFooterContent = () => (
         <CommandBar
             items={transparentItems([
@@ -45,7 +42,7 @@ export default class extends FeatureComponent({onDismissProp: 'onDismissed'}) {
             styles={{root: {margin: '0 -40px', padding: '0 35px'}}}/>
     );
 
-    renderIfFeature(feature) {
+    renderIfFeature(feature: Feature) {
         return (
             <Panel
                 isOpen={this.props.isOpen}
@@ -55,7 +52,7 @@ export default class extends FeatureComponent({onDismissProp: 'onDismissed'}) {
                 headerText={
                     <span>
                         {i18n.t('overlays.featurePanel.title')}: <strong>{feature.name}</strong>
-                    </span>}
+                    </span> as any}
                 onRenderFooterContent={this.onRenderFooterContent}>
                 <p>{feature.description || <em>{i18n.t('overlays.featurePanel.noDescriptionSet')}</em>}</p>
             </Panel>

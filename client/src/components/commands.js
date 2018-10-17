@@ -110,7 +110,7 @@ const commands = {
         feature: {
             newMenu: (featureName, onClick, iconOnly = false) => ({
                 key: 'newMenu',
-                text: !iconOnly ? i18n.t('commands.featureDiagram.feature.newMenu.title') : null,
+                text: !iconOnly ? i18n.t('commands.featureDiagram.feature.newMenu.title') : undefined,
                 iconProps: {iconName: 'Add'},
                 iconOnly,
                 split: true,
@@ -149,7 +149,7 @@ const commands = {
                 const {disabled, action} = removeCommand(features);
                 return {
                     key: 'removeMenu',
-                    text: !iconOnly ? i18n.t('commands.featureDiagram.feature.removeMenu.title') : null,
+                    text: !iconOnly ? i18n.t('commands.featureDiagram.feature.removeMenu.title') : undefined,
                     iconProps: {iconName: 'Remove'},
                     iconOnly,
                     split: true,
@@ -278,7 +278,7 @@ const commands = {
                 subMenuProps: isSelectMultipleFeatures
                     ? {items: commands.featureDiagram.feature.selectionItems(selectedFeatureNames, onDeselectAllFeatures,
                         onCollapseFeatures, onExpandFeatures, onCollapseFeaturesBelow, onExpandFeaturesBelow, featureModel)}
-                    : null
+                    : undefined
             }),
             selectionItems: (selectedFeatureNames, onDeselectAllFeatures, onCollapseFeatures,
                 onExpandFeatures, onCollapseFeaturesBelow, onExpandFeaturesBelow, featureModel) => [
@@ -308,7 +308,7 @@ const commands = {
                     {disabled, action} = collapseCommand(features, onCollapseFeatures, onExpandFeatures, onClick);
                 return {
                     key: 'collapseMenu',
-                    text: !iconOnly ? i18n.getFunction('commands.featureDiagram.feature.collapseMenu.title')(isCollapsedSingleFeature) : null,
+                    text: !iconOnly ? i18n.getFunction('commands.featureDiagram.feature.collapseMenu.title')(isCollapsedSingleFeature) : undefined,
                     iconProps: {iconName: isCollapsedSingleFeature ? 'ExploreContentSingle' : 'CollapseContentSingle'},
                     iconOnly,
                     split: isSingleFeature,

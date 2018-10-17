@@ -5,6 +5,7 @@ import FeatureModel from '../../server/FeatureModel';
 import {validFeatureModel} from '../../fixtures';
 import {Panel} from 'office-ui-fabric-react/lib/Panel';
 import i18n from '../../i18n';
+import {defaultSettings} from '../../store/settings';
 
 describe('FeaturePanel', () => {
     const featurePanel = (featureName = 'FeatureIDE') => {
@@ -20,7 +21,8 @@ describe('FeaturePanel', () => {
                 onCollapseFeaturesBelow={mock}
                 onExpandFeaturesBelow={mock}
                 featureModel={featureModel}
-                featureName={featureName}/>
+                featureName={featureName}
+                settings={defaultSettings}/>
         );
     };
 

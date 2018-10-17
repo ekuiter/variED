@@ -34,10 +34,9 @@ export const Setting = {
 
     FontComboBox: ({settings, onSetSetting, path}) => (
         <FontComboBox
-            className="setting"
-            label={getLabel(path)}
             selectedFont={getSetting(settings, path)}
-            onChange={font => onSetSetting(path, font)}/>
+            onChange={font => onSetSetting(path, font)}
+            comboBoxProps={{className: 'setting', label: getLabel(path)}}/>
     ),
 
     SpinButton: ({settings, onSetSetting, path, ...props}) => (

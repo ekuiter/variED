@@ -2,19 +2,21 @@
  * A component that is associated with a feature.
  */
 
-import React from 'react';
+import React, {ReactNode} from 'react';
 import {getSetting} from '../../store/settings';
-import PropTypes from 'prop-types';
-import {FeatureModelType} from '../../server/FeatureModel';
-import {SettingsType} from '../../types';
+import FeatureModel from '../../server/FeatureModel';
+import {Feature} from '../../types';
+
+export interface FeatureComponentProps {
+    featureModel: FeatureModel,
+    featureName: string,
+    settings: object
+};
 
 export default ({doUpdate = false} = {}) =>
-    class extends React.Component {
-        static propTypes = {
-            featureModel: FeatureModelType.isRequired,
-            featureName: PropTypes.string.isRequired,
-            settings: SettingsType.isRequired
-        };
+    class <Props extends FeatureComponentProps> extends React.Component<Props> {
+        interval: number;
+        feature: Feature;
 
         componentDidMount() {
             if (doUpdate)
@@ -30,14 +32,14 @@ export default ({doUpdate = false} = {}) =>
 
         getFeature = () => this.props.featureModel && this.props.featureModel.getFeature(this.props.featureName);
 
-        renderIfFeature() {
+        renderIfFeature(_feature: Feature): ReactNode {
             throw new Error('abstract method not implemented');
         }
 
         render() {
-            this.feature = this.getFeature();
-            if (!this.feature)
+            let feature = this.getFeature();
+            if (typeof feature === "undefined")
                 return null;
-            return this.renderIfFeature(this.feature);
+            return this.renderIfFeature(this.feature = feature);
         }
     };

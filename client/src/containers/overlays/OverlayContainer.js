@@ -44,6 +44,7 @@ const OverlayContainer = props => (
             onCollapseFeaturesBelow={props.onCollapseFeaturesBelow}
             onExpandFeaturesBelow={props.onExpandFeaturesBelow}
             featureModel={props.featureModel}
+            settings={props.settings}
             {...props.overlayProps}/>}
 
         {props.overlay === overlayTypes.featureRenameDialog &&

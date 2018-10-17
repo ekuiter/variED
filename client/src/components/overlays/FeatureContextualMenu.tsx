@@ -7,38 +7,32 @@ import {DirectionalHint} from 'office-ui-fabric-react/lib/Callout';
 import {ContextualMenu} from 'office-ui-fabric-react/lib/ContextualMenu';
 import commands, {makeDivider} from '../commands';
 import {getSetting} from '../../store/settings';
-import PropTypes from 'prop-types';
-import {layoutTypes} from '../../types';
-import {LayoutType, SettingsType} from '../../types';
-import {FeatureModelType} from '../../server/FeatureModel';
-import FeatureComponent from './FeatureComponent';
+import {layoutTypes, Feature} from '../../types';
+import FeatureComponent, {FeatureComponentProps} from './FeatureComponent';
 
-export default class extends FeatureComponent({doUpdate: true}) {
-    static propTypes = {
-        onDismiss: PropTypes.func.isRequired,
-        onDeselectAllFeatures: PropTypes.func.isRequired,
-        onCollapseFeatures: PropTypes.func.isRequired,
-        onExpandFeatures: PropTypes.func.isRequired,
-        isSelectMultipleFeatures: PropTypes.bool.isRequired,
-        selectedFeatureNames: PropTypes.arrayOf(PropTypes.string).isRequired,
-        featureModel: FeatureModelType.isRequired,
-        featureName: PropTypes.string.isRequired,
-        isOpen: PropTypes.bool.isRequired,
-        featureDiagramLayout: LayoutType.isRequired,
-        onShowOverlay: PropTypes.func.isRequired,
-        onCollapseFeaturesBelow: PropTypes.func.isRequired,
-        onExpandFeaturesBelow: PropTypes.func.isRequired,
-        settings: SettingsType.isRequired
-    };
+type Props = FeatureComponentProps & {
+    onDismiss: () => void,
+    isOpen: boolean,
+    isSelectMultipleFeatures: boolean,
+    featureDiagramLayout: string,
+    selectedFeatureNames: string[],
+    onShowOverlay: (...args: any[]) => void, // TODO
+    onCollapseFeatures: (...args: any[]) => void,
+    onCollapseFeaturesBelow: (...args: any[]) => void,
+    onExpandFeatures: (...args: any[]) => void,
+    onExpandFeaturesBelow: (...args: any[]) => void,
+    onDeselectAllFeatures: (...args: any[]) => void
+};
 
-    renderIfFeature(feature) {
+export default class extends FeatureComponent({doUpdate: true})<Props> {
+    renderIfFeature(feature: Feature) {
         const {
                 onDismiss, onDeselectAllFeatures, isSelectMultipleFeatures, selectedFeatureNames, featureModel
             } = this.props,
             {gapSpace} = getSetting(this.props.settings, 'featureDiagram.overlay');
         return (
             <ContextualMenu
-                target={featureModel.getElement(feature.name).querySelector('.rectAndText')}
+                target={featureModel.getElement(feature.name)!.querySelector('.rectAndText')}
                 onDismiss={onDismiss}
                 hidden={!this.props.isOpen}
                 isBeakVisible={!isSelectMultipleFeatures}

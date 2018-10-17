@@ -5,6 +5,7 @@ import FeatureModel from '../../server/FeatureModel';
 import {validFeatureModel} from '../../fixtures';
 import {TextFieldDialog} from '../../helpers/Dialog';
 import actions from '../../store/actions';
+import { defaultSettings } from '../../store/settings';
 
 jest.mock('../../store/actions');
 
@@ -17,9 +18,9 @@ describe('FeatureSetDescriptionDialog', () => {
         featureSetDescriptionDialog = (
             <FeatureSetDescriptionDialog
                 isOpen={true}
-                onDismiss={mock}
                 featureModel={featureModel}
-                featureName="FeatureIDE"/>
+                featureName="FeatureIDE"
+                settings={defaultSettings}/>
         );
     });
 
