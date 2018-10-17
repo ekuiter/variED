@@ -36,6 +36,9 @@ public class UserManager {
         if (users.containsKey(newUser.getWebSocket()))
             throw new RuntimeException("web socket is already logged in as another user");
         users.put(newUser.getWebSocket(), newUser);
+
+        // TODO: let the user decide which collaboration session to join
+        CollaborationSession.getInstance().join(newUser);
     }
 
     public void register(WebSocket webSocket) {
@@ -43,7 +46,9 @@ public class UserManager {
     }
 
     public void unregister(User oldUser) {
-        oldUser.leaveAllCollaborationSessions();
+        // TODO: see above
+        CollaborationSession.getInstance().leave(oldUser);
+
         users.remove(oldUser.getWebSocket());
     }
 
@@ -53,10 +58,9 @@ public class UserManager {
             unregister(user);
     }
 
-    void onMessage(WebSocket webSocket, Message message) {
-        // TODO: handle login/logout here
-        User user = users.get(webSocket);
-        if (user != null)
-            user.onMessage(message);
+    public void onMessage(WebSocket webSocket, Message message) {
+        // TODO: dispatch to currect session (by asking the user object)
+        // also handle login/logout here
+        CollaborationSession.getInstance().onMessage(message);
     }
 }

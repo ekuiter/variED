@@ -4,7 +4,6 @@ import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.typeadapters.RuntimeTypeAdapterFactory;
 import de.ovgu.featureide.fm.core.base.IFeatureModel;
-import de.ovgu.spldev.varied.Artifact;
 
 import javax.websocket.Decoder;
 import javax.websocket.Encoder;
@@ -33,7 +32,6 @@ public class MessageSerializer {
     private static Gson gson = new GsonBuilder()
             .registerTypeAdapterFactory(runtimeTypeAdapterFactory)
             .registerTypeAdapter(Message.Type.class, new MessageTypeTypeAdapter())
-            .registerTypeAdapter(Artifact.Path.class, new ArtifactPathTypeAdapter())
             .registerTypeAdapter(IFeatureModel.class, new FeatureModelSerializer())
             .create();
 
@@ -78,16 +76,6 @@ public class MessageSerializer {
 
         public Message.Type deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             return new Message.Type(json.getAsJsonPrimitive().getAsString());
-        }
-    }
-
-    private static class ArtifactPathTypeAdapter implements JsonSerializer<Artifact.Path>, JsonDeserializer<Artifact.Path> {
-        public JsonElement serialize(Artifact.Path src, Type typeOfSrc, JsonSerializationContext context) {
-            return new JsonPrimitive(src.toString());
-        }
-
-        public Artifact.Path deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-            return new Artifact.Path(json.getAsJsonPrimitive().getAsString());
         }
     }
 }

@@ -3,9 +3,7 @@ package de.ovgu.spldev.varied.statechanges.featurediagram;
 import de.ovgu.featureide.fm.core.base.IConstraint;
 import de.ovgu.featureide.fm.core.base.IFeature;
 import de.ovgu.featureide.fm.core.base.IFeatureModel;
-import de.ovgu.featureide.fm.core.base.IFeatureStructure;
 import de.ovgu.featureide.fm.core.functional.Functional;
-import de.ovgu.spldev.varied.StateContext;
 import de.ovgu.spldev.varied.util.FeatureModelUtils;
 import de.ovgu.spldev.varied.util.FeatureUtils;
 import de.ovgu.spldev.varied.messaging.Message;
@@ -15,7 +13,7 @@ import java.util.LinkedList;
 
 // adapted from DeleteFeatureOperation
 public class FeatureRemove extends StateChange {
-    private StateContext.FeatureModel stateContext;
+    private IFeatureModel featureModel;
     private IFeature feature;
     private IFeature oldParent;
     private int oldIndex;
@@ -25,26 +23,25 @@ public class FeatureRemove extends StateChange {
     private boolean alternative = false;
     private final IFeature replacement;
 
-    public FeatureRemove(StateContext.FeatureModel stateContext, String feature) {
-        this(stateContext, FeatureUtils.requireFeature(stateContext.getFeatureModel(), feature));
+    public FeatureRemove(IFeatureModel featureModel, String feature) {
+        this(featureModel, FeatureUtils.requireFeature(featureModel, feature));
     }
 
-    FeatureRemove(StateContext.FeatureModel stateContext, IFeature feature) {
-        this.stateContext = stateContext;
+    FeatureRemove(IFeatureModel featureModel, IFeature feature) {
+        this.featureModel = featureModel;
         this.feature = feature;
         if (this.feature.getStructure().isRoot() && this.feature.getStructure().getChildren().size() != 1)
             throw new RuntimeException("can only delete root feature when it has exactly one child");
         replacement = null;
     }
 
-    public FeatureRemove(StateContext.FeatureModel stateContext, IFeature feature, IFeature replacement) {
-        this.stateContext = stateContext;
+    public FeatureRemove(IFeatureModel featureModel, IFeature feature, IFeature replacement) {
+        this.featureModel = featureModel;
         this.feature = feature;
         this.replacement = replacement;
     }
 
     public Message.IEncodable[] _apply() {
-        IFeatureModel featureModel = stateContext.getFeatureModel();
         feature = featureModel.getFeature(feature.getName());
         oldParent = de.ovgu.featureide.fm.core.base.FeatureUtils.getParent(feature);
         if (oldParent != null) {
@@ -91,11 +88,10 @@ public class FeatureRemove extends StateChange {
             }
         }
 
-        return FeatureModelUtils.toMessage(stateContext);
+        return FeatureModelUtils.toMessage(featureModel);
     }
 
     public Message.IEncodable[] _undo() {
-        IFeatureModel featureModel = stateContext.getFeatureModel();
         if (!deleted) {
             return null;
         }
@@ -141,6 +137,6 @@ public class FeatureRemove extends StateChange {
             oldParent.getStructure().changeToAlternative();
         }
 
-        return FeatureModelUtils.toMessage(stateContext);
+        return FeatureModelUtils.toMessage(featureModel);
     }
 }

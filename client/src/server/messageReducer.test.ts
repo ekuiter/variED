@@ -23,25 +23,25 @@ describe('messageReducer', () => {
 
     it('lets users join', () => {
         const state = messageReducer(initialState,
-            {type: MessageType.JOIN, user: 'some user'});
+            {type: MessageType.USER_JOINED, user: 'some user'});
         expect(state.users).toContain('some user');
     });
 
     it('does not let users join multiple times', () => {
         let state = messageReducer(initialState,
-            {type: MessageType.JOIN, user: 'some user'});
+            {type: MessageType.USER_JOINED, user: 'some user'});
         expect(state.users).toHaveLength(1);
         state = messageReducer(state,
-            {type: MessageType.JOIN, user: 'some user'});
+            {type: MessageType.USER_JOINED, user: 'some user'});
         expect(state.users).toHaveLength(1);
     });
 
     it('lets users leave', () => {
         let state = messageReducer(initialState,
-            {type: MessageType.JOIN, user: 'some user'});
+            {type: MessageType.USER_JOINED, user: 'some user'});
         expect(state.users).toContain('some user');
         state = messageReducer(initialState,
-            {type: MessageType.LEAVE, user: 'some user'});
+            {type: MessageType.USER_LEFT, user: 'some user'});
         expect(state.users).not.toContain('some user');
     });
 

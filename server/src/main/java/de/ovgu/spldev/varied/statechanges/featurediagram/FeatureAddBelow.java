@@ -3,7 +3,6 @@ package de.ovgu.spldev.varied.statechanges.featurediagram;
 import de.ovgu.featureide.fm.core.base.IFeature;
 import de.ovgu.featureide.fm.core.base.IFeatureModel;
 import de.ovgu.featureide.fm.core.base.impl.FMFactoryManager;
-import de.ovgu.spldev.varied.StateContext;
 import de.ovgu.spldev.varied.util.FeatureModelUtils;
 import de.ovgu.spldev.varied.util.FeatureUtils;
 import de.ovgu.spldev.varied.messaging.Message;
@@ -13,17 +12,16 @@ import static de.ovgu.featureide.fm.core.localization.StringTable.DEFAULT_FEATUR
 
 // adapted from CreateFeatureBelowOperation
 public class FeatureAddBelow extends StateChange {
-    private StateContext.FeatureModel stateContext;
+    private IFeatureModel featureModel;
     private IFeature feature;
     private IFeature newFeature;
 
-    public FeatureAddBelow(StateContext.FeatureModel stateContext, String belowFeature) {
-        this.stateContext = stateContext;
-        this.feature = FeatureUtils.requireFeature(stateContext.getFeatureModel(), belowFeature);
+    public FeatureAddBelow(IFeatureModel featureModel, String belowFeature) {
+        this.featureModel = featureModel;
+        this.feature = FeatureUtils.requireFeature(featureModel, belowFeature);
     }
 
     public Message.IEncodable[] _apply() {
-        IFeatureModel featureModel = stateContext.getFeatureModel();
         int number = 1;
 
         while (de.ovgu.featureide.fm.core.base.FeatureUtils.getFeatureNames(featureModel).contains(DEFAULT_FEATURE_LAYER_CAPTION + number)) {
@@ -35,12 +33,12 @@ public class FeatureAddBelow extends StateChange {
         feature = featureModel.getFeature(feature.getName());
         feature.getStructure().addChild(newFeature.getStructure());
 
-        return FeatureModelUtils.toMessage(stateContext);
+        return FeatureModelUtils.toMessage(featureModel);
     }
 
     public Message.IEncodable[] _undo() {
-        newFeature = stateContext.getFeatureModel().getFeature(newFeature.getName());
-        stateContext.getFeatureModel().deleteFeature(newFeature);
-        return FeatureModelUtils.toMessage(stateContext);
+        newFeature = featureModel.getFeature(newFeature.getName());
+        featureModel.deleteFeature(newFeature);
+        return FeatureModelUtils.toMessage(featureModel);
     }
 }

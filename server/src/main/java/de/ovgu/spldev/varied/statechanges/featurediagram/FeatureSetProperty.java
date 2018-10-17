@@ -1,8 +1,8 @@
 package de.ovgu.spldev.varied.statechanges.featurediagram;
 
 import de.ovgu.featureide.fm.core.base.IFeature;
+import de.ovgu.featureide.fm.core.base.IFeatureModel;
 import de.ovgu.featureide.fm.core.base.IFeatureStructure;
-import de.ovgu.spldev.varied.StateContext;
 import de.ovgu.spldev.varied.util.FeatureModelUtils;
 import de.ovgu.spldev.varied.messaging.Message;
 import de.ovgu.spldev.varied.statechanges.StateChange;
@@ -12,21 +12,21 @@ import de.ovgu.spldev.varied.util.FeatureUtils;
 import java.util.LinkedList;
 
 public class FeatureSetProperty extends StateChange {
-    private StateContext.FeatureModel stateContext;
+    private IFeatureModel featureModel;
     private IFeature feature;
     private String property, oldValue, value;
     private LinkedList<IFeatureStructure> oldMandatoryChildren;
 
-    public FeatureSetProperty(StateContext.FeatureModel stateContext, String feature, String property, String value) {
-        this(stateContext, feature, property, value, property);
+    public FeatureSetProperty(IFeatureModel featureModel, String feature, String property, String value) {
+        this(featureModel, feature, property, value, property);
     }
 
-    public FeatureSetProperty(StateContext.FeatureModel stateContext, String feature, String property, String value, Object multipleContext) {
+    public FeatureSetProperty(IFeatureModel featureModel, String feature, String property, String value, Object multipleContext) {
         if (!property.equals(multipleContext))
             throw new RuntimeException("can not set different properties in one multiple message");
 
-        this.stateContext = stateContext;
-        this.feature = FeatureUtils.requireFeature(stateContext.getFeatureModel(), feature);
+        this.featureModel = featureModel;
+        this.feature = FeatureUtils.requireFeature(featureModel, feature);
         this.property = property;
         this.value = value;
         if (!StringUtils.isOneOf(property, new String[]{"abstract", "hidden", "mandatory", "group"}))
@@ -92,7 +92,7 @@ public class FeatureSetProperty extends StateChange {
                     feature.getStructure().changeToAnd();
                 break;
         }
-        return FeatureModelUtils.toMessage(stateContext);
+        return FeatureModelUtils.toMessage(featureModel);
     }
 
     public Message.IEncodable[] _undo() {
@@ -117,6 +117,6 @@ public class FeatureSetProperty extends StateChange {
                 }
                 break;
         }
-        return FeatureModelUtils.toMessage(stateContext);
+        return FeatureModelUtils.toMessage(featureModel);
     }
 }

@@ -11,10 +11,10 @@ const messageReducers = {
         console.warn(action.error);
         return state;
     },
-    [MessageType.JOIN](state, action) {
+    [MessageType.USER_JOINED](state, action) {
         return {...state, users: setAdd(state.users, action.user)};
     },
-    [MessageType.LEAVE](state, action) {
+    [MessageType.USER_LEFT](state, action) {
         return {...state, users: setRemove(state.users, action.user)};
     },
     [MessageType.FEATURE_DIAGRAM_FEATURE_MODEL](state, action) {

@@ -7,8 +7,8 @@ import {HierarchyNode} from 'd3-hierarchy';
 
 export enum MessageType {
     ERROR = 'ERROR',
-    JOIN = 'JOIN',
-    LEAVE = 'LEAVE',
+    USER_JOINED = 'USER_JOINED',
+    USER_LEFT = 'USER_LEFT',
     UNDO = 'UNDO',
     REDO = 'REDO',
     MULTIPLE_MESSAGES = 'MULTIPLE_MESSAGES',

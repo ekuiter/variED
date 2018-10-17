@@ -1,39 +1,39 @@
 package de.ovgu.spldev.varied.statechanges.featurediagram;
 
-import de.ovgu.spldev.varied.StateContext;
+import de.ovgu.featureide.fm.core.base.IFeatureModel;
 import de.ovgu.spldev.varied.messaging.Api;
+import de.ovgu.spldev.varied.util.FeatureUtils;
 import de.ovgu.spldev.varied.messaging.Message;
 import de.ovgu.spldev.varied.statechanges.StateChange;
-import de.ovgu.spldev.varied.util.FeatureUtils;
 
 // adapted from RenameFeatureOperation
 public class FeatureRename extends StateChange {
-    private StateContext.FeatureModel stateContext;
+    private IFeatureModel featureModel;
     private final String oldName;
     private final String newName;
 
-    public FeatureRename(StateContext.FeatureModel stateContext, String oldName, String newName) {
-        this.stateContext = stateContext;
+    public FeatureRename(IFeatureModel featureModel, String oldName, String newName) {
+        this.featureModel = featureModel;
         this.oldName = oldName;
         this.newName = newName;
-        FeatureUtils.requireFeature(stateContext.getFeatureModel(), oldName);
+        FeatureUtils.requireFeature(featureModel, oldName);
     }
 
     public Message.IEncodable[] _apply() {
-        if (!stateContext.getFeatureModel().getRenamingsManager().renameFeature(oldName, newName))
+        if (!featureModel.getRenamingsManager().renameFeature(oldName, newName))
             throw new RuntimeException("invalid renaming operation");
         return new Message.IEncodable[]{
-                new Api.FeatureDiagramFeatureRename(stateContext.getArtifactPath(), oldName, newName),
-                new Api.FeatureDiagramFeatureModel(stateContext.getArtifactPath(), stateContext.getFeatureModel())
+                new Api.FeatureDiagramFeatureRename(oldName, newName),
+                new Api.FeatureDiagramFeatureModel(featureModel)
         };
     }
 
     public Message.IEncodable[] _undo() {
-        if (!stateContext.getFeatureModel().getRenamingsManager().renameFeature(newName, oldName))
+        if (!featureModel.getRenamingsManager().renameFeature(newName, oldName))
             throw new RuntimeException("invalid renaming operation");
         return new Message.IEncodable[]{
-                new Api.FeatureDiagramFeatureRename(stateContext.getArtifactPath(), newName, oldName),
-                new Api.FeatureDiagramFeatureModel(stateContext.getArtifactPath(), stateContext.getFeatureModel())
+                new Api.FeatureDiagramFeatureRename(newName, oldName),
+                new Api.FeatureDiagramFeatureModel(featureModel)
         };
     }
 }
