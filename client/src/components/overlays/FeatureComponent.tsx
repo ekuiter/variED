@@ -38,7 +38,7 @@ export default ({doUpdate = false} = {}) =>
 
         render() {
             let feature = this.getFeature();
-            if (typeof feature === "undefined")
+            if (typeof feature === 'undefined')
                 return null;
             return this.renderIfFeature(this.feature = feature);
         }

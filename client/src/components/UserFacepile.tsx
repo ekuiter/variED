@@ -3,41 +3,47 @@
  */
 
 import * as React from 'react';
-import {Facepile, OverflowButtonType} from 'office-ui-fabric-react/lib/Facepile';
+import {Facepile, OverflowButtonType, IFacepilePersona} from 'office-ui-fabric-react/lib/Facepile';
 import {PersonaSize} from 'office-ui-fabric-react/lib/Persona';
 import {Tooltip} from 'office-ui-fabric-react/lib/Tooltip';
 import {getSetting} from '../store/settings';
 import withDimensions from '../helpers/withDimensions';
-import PropTypes from 'prop-types';
-import exact from 'prop-types-exact';
-import {SettingsType} from '../types';
 
-class UserFacepile extends React.Component {
-    static propTypes = exact({
-        users: PropTypes.arrayOf(PropTypes.string).isRequired,
-        settings: SettingsType.isRequired,
-        width: PropTypes.number.isRequired,
-        height: PropTypes.number.isRequired
-    });
-    
-    state = {tooltipTarget: null, persona: null};
+interface Props {
+    users: string[],
+    settings: object,
+    width: number,
+    height: number
+};
 
-    componentDidUpdate(prevProps) {
+interface State {
+    tooltipTarget?: HTMLElement,
+    persona?: IFacepilePersona
+}
+
+class UserFacepile extends React.Component<Props, State> {
+    state: State = {};
+
+    componentDidUpdate(prevProps: Props) {
         if (prevProps.users !== this.props.users)
-            this.setState({tooltipTarget: null, persona: null});
+            this.setState({tooltipTarget: undefined, persona: undefined});
     }
 
     render() {
         const personas = this.props.users.map(user => ({
                 personaName: user,
-                onMouseMove: (e, persona) => {
-                    const tooltipTarget = e.target && e.target.closest('.ms-Facepile-member');
+                onMouseMove: (e?: React.MouseEvent, persona?: IFacepilePersona) => {
+                    if (typeof e === 'undefined')
+                        return;
+                    const tooltipTarget = e.target && (e.target as HTMLElement).closest('.ms-Facepile-member') as HTMLElement;
                     if (tooltipTarget && this.state.tooltipTarget !== tooltipTarget)
                         this.setState({tooltipTarget, persona});
                 },
-                onMouseOut: e => {
-                    if (e.relatedTarget && !e.relatedTarget.closest('.ms-Facepile-member'))
-                        this.setState({tooltipTarget: null, persona: null});
+                onMouseOut: (e?: React.MouseEvent) => {
+                    if (typeof e === 'undefined')
+                        return;
+                    if (e.relatedTarget && !(e.relatedTarget as HTMLElement).closest('.ms-Facepile-member'))
+                        this.setState({tooltipTarget: undefined, persona: undefined});
                 }
             })),
             {maxDisplayableUsers, overflowBreakpoint, gapSpace} = getSetting(this.props.settings, 'userFacepile'),
@@ -64,7 +70,7 @@ class UserFacepile extends React.Component {
                     personaSize={PersonaSize.size28}
                     getPersonaProps={_persona => ({hidePersonaDetails: true})}
                     styles={{root: {margin: '6px 12px'}}}/>
-                {this.state.tooltipTarget &&
+                {this.state.tooltipTarget && this.state.persona &&
                 <Tooltip
                     targetElement={this.state.tooltipTarget}
                     content={this.state.persona.personaName}
