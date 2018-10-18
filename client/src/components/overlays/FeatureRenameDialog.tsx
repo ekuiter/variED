@@ -22,7 +22,7 @@ export default class extends FeatureComponent()<Props> {
                 defaultValue={feature.name}
                 onSubmit={newFeatureName => {
                     if (newFeatureName && feature.name !== newFeatureName)
-                        actions.server.featureDiagram.feature.rename(feature.name, newFeatureName);
+                        actions.server.featureDiagram.feature.rename({oldFeatureName: feature.name, newFeatureName});
                     else
                         ;//TODO: show error
                 }}/>

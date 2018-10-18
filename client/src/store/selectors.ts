@@ -6,10 +6,11 @@
 
 import {createSelector} from 'reselect';
 import FeatureModel from '../server/FeatureModel';
+import {State} from './types';
 
 export const getFeatureModel = createSelector(
-    (state: any) => state.server.featureModel, // TODO: proper state type
-    (state: any) => state.ui.collapsedFeatureNames,
+    (state: State) => state.server.featureModel,
+    (state: State) => state.ui.featureDiagram.collapsedFeatureNames,
     (featureModel: FeatureModel, collapsedFeatureNames: string[]) =>
         featureModel ? new FeatureModel(featureModel, collapsedFeatureNames) : undefined
 );

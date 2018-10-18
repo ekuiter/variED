@@ -4,90 +4,128 @@
  * state and the action to process, to keep state management sane.
  */
 
-import serverReducer from '../server/reducer';
 // @ts-ignore: the type definitions for reduce-reducers are incorrect
 import reduceReducers from 'reduce-reducers';
-import constants from '../constants';
-import {defaultSettings, getNewSettings, getNewState, getFromState} from './settings';
+import {defaultSettings, getNewSettings} from './settings';
 import {overlayTypes, isMessageType, MessageType, Func} from '../types';
 import {setAdd, setRemove} from '../helpers/reducer';
 import {getFeatureModel} from './selectors';
 import {getViewportWidth, getViewportHeight} from '../helpers/withDimensions';
 import actions, {Action} from './actions';
-import {getType, isActionOf, isOfType, ActionType} from 'typesafe-actions';
-import {SERVER_RECEIVE, ServerReceiveAction} from '../server/actions';
+import {getType, isActionOf, ActionType} from 'typesafe-actions';
+import {State, initialState} from './types';
 
-// TODO: fix state types.
+function getNewState(state: State, ...args: any[]): State {
+    if (args.length % 2 == 1)
+        throw new Error('getNewState expects pairs of path and value');
+    for (let i = 0; i < args.length; i += 2) {
+        if (typeof args[i] !== 'string')
+            throw new Error('string expected for path');
+        state = getNewSettings(state, args[i], args[i + 1]) as State;
+    }
+    return state;
+}
 
-function removeObsoleteFeaturesFromFeatureList(state: object, key: string): object {
-    if (!getFromState(state, 'server.featureModel'))
+function removeObsoleteFeaturesFromFeatureList(state: State, key: string): State {
+    if (!state.server.featureModel)
         return state;
-    const featureList = getFromState(state, 'ui')[key],
+    const featureList = state.ui.featureDiagram[key],
         actualFeatureNames = getFeatureModel(state)!.getActualFeatureNames(),
         obsoleteFeatureNames = featureList.filter((featureName: string) => !actualFeatureNames.includes(featureName));
     return obsoleteFeatureNames.length > 0
-        ? getNewState(state, `ui.${key}`, featureList.filter((featureName: string) => !obsoleteFeatureNames.includes(featureName)))
+        ? getNewState(state, `ui.featureDiagram.${key}`, featureList.filter((featureName: string) => !obsoleteFeatureNames.includes(featureName)))
         : state;
 }
 
-function renameFeatureInFeatureList(state: object, action: ActionType<typeof actions.server.featureDiagram.feature.rename>, key: string): object {
-    const featureList = getFromState(state, 'ui')[key];
+function renameFeatureInFeatureList(state: State, action: ActionType<typeof actions.server.receive>, key: string): State {
+    const featureList = state.ui.featureDiagram[key];
     return featureList.includes(action.payload.oldFeature)
-        ? getNewState(state, `ui.${key}`, setAdd(setRemove(featureList, action.payload.oldFeature), action.payload.newFeature))
+        ? getNewState(state, `ui.featureDiagram.${key}`, setAdd(setRemove(featureList, action.payload.oldFeature), action.payload.newFeature))
         : state;
 }
 
-function hideOverlayForObsoleteFeature(state: object): object {
-    if (!getFromState(state, 'server.featureModel'))
+function hideOverlayForObsoleteFeature(state: State): State {
+    if (!state.server.featureModel)
         return state;
     const visibleFeatureNames = getFeatureModel(state)!.getVisibleFeatureNames();
-    return getFromState(state, 'ui.overlay') && getFromState(state, 'ui.overlayProps') && getFromState(state, 'ui.overlay.overlayProps.featureName') &&
-        !visibleFeatureNames.includes(getFromState(state, 'ui.overlay.overlayProps.featureName'))
+    return state.ui.overlay && state.ui.overlayProps && state.ui.overlayProps['featureName'] &&
+        !visibleFeatureNames.includes(state.ui.overlayProps['featureName'])
         ? updateOverlay(state, undefined, undefined)
         : state;
 }
 
-function changeOverlayForRenamedFeature(state: object, action: ActionType<typeof actions.server.featureDiagram.feature.rename>): object {
-    return getFromState(state, 'ui.overlay') && getFromState(state, 'ui.overlayProps') &&
-        getFromState(state, 'ui.overlay.overlayProps.featureName') === action.payload.oldFeature
+function changeOverlayForRenamedFeature(state: State, action: ActionType<typeof actions.server.receive>): State {
+    return state.ui.overlay && state.ui.overlayProps &&
+        state.ui.overlayProps['featureName'] === action.payload.oldFeature
         ? getNewState(state, 'ui.overlayProps.featureName', action.payload.newFeature)
         : state;
 }
 
-function updateOverlay(state: object, overlay?: string, overlayProps?: object): object {
-    if (!getFromState(state, 'ui.isSelectMultipleFeatures') &&
-        overlayTypes.isFloatingFeature(getFromState(state, 'ui.overlay')) &&
+function updateOverlay(state: State, overlay?: string, overlayProps?: object): State {
+    if (!state.ui.featureDiagram.isSelectMultipleFeatures &&
+        overlayTypes.isFloatingFeature(state.ui.overlay) &&
         !overlayTypes.isFloatingFeature(overlay))
-        return getNewState(state, 'ui.overlay', overlay, 'ui.overlayProps', overlayProps, 'ui.selectedFeatureNames', []);
+        return getNewState(state, 'ui.overlay', overlay, 'ui.overlayProps', overlayProps, 'ui.featureDiagram.selectedFeatureNames', []);
     else
         return getNewState(state, 'ui.overlay', overlay, 'ui.overlayProps', overlayProps);
 }
 
-function getFeatureNamesBelowWithActualChildren(state: object, featureNames: string[]): string[] {
-    if (!getFromState(state, 'server.featureModel'))
+function getFeatureNamesBelowWithActualChildren(state: State, featureNames: string[]): string[] {
+    if (!state.server.featureModel)
         throw new Error('no feature model available');
     return featureNames.map(featureName =>
         getFeatureModel(state)!.getFeatureNamesBelowWithActualChildren(featureName))
         .reduce((acc, children) => acc.concat(children), []);
 }
 
-function serverReceiveReducer(state: object, action: Action): object {
-    return isOfType(SERVER_RECEIVE, action) && isMessageType((action as ServerReceiveAction).payload.type)
-        ? serverReducer(state, action as ServerReceiveAction)
-        : state;
+function serverReducer(state: State, action: Action): State {
+    if (isActionOf(actions.server.receive, action) && isMessageType(action.payload.type)) {
+        switch (action.payload.type) {
+            case MessageType.ERROR:
+                console.warn(action.payload.error);
+                return state;
+
+            case MessageType.USER_JOINED:
+                return getNewState(state, 'server.users', setAdd(state.server.users, action.payload.user));
+
+            case MessageType.USER_LEFT:
+                return getNewState(state, 'server.users', setRemove(state.server.users, action.payload.user));
+
+            case MessageType.FEATURE_DIAGRAM_FEATURE_MODEL:
+                state = getNewState(state, 'server.featureModel', action.payload.featureModel);
+                state = removeObsoleteFeaturesFromFeatureList(state, 'collapsedFeatureNames');
+                // TODO: warn user that selection changed
+                state = removeObsoleteFeaturesFromFeatureList(state, 'selectedFeatureNames');
+                // state: warn user that overlay was hidden
+                state = hideOverlayForObsoleteFeature(state);
+                return state;
+
+            case MessageType.FEATURE_DIAGRAM_FEATURE_RENAME:
+                state = renameFeatureInFeatureList(state, action, 'collapsedFeatureNames');
+                state = renameFeatureInFeatureList(state, action, 'selectedFeatureNames');
+                state = changeOverlayForRenamedFeature(state, action);
+                return state;
+
+            default:
+                console.warn(`no message reducer defined for action type ${action.payload.type}`);
+                return state;
+        }
+    }
+    return state;
 }
 
-function settingsReducer(state: object, action: Action): object {
+function settingsReducer(state: State, action: Action): State {
     switch (action.type) {
         case getType(actions.settings.set):
-            return getNewState(state, 'settings', getNewSettings(getFromState(state, 'settings'), action.payload.path, action.payload.value));
+            return getNewState(state, 'settings', getNewSettings(state.settings, action.payload.path, action.payload.value));
+
         case getType(actions.settings.reset):
             return getNewState(state, 'settings', defaultSettings);
     }
     return state;
 }
 
-function uiReducer(state: object, action: Action): object {
+function uiReducer(state: State, action: Action): State {
     let selectedFeatureNames: string[], setOperation: Func;
 
     switch (action.type) {
@@ -95,72 +133,72 @@ function uiReducer(state: object, action: Action): object {
             return getNewState(state, 'ui.featureDiagram.layout', action.payload.layout);
 
         case getType(actions.ui.featureDiagram.fitToScreen):
-            return getFromState(state, 'server.featureModel')
-                ? getNewState(state, 'ui.collapsedFeatureNames',
-                    getFeatureModel(state)!.getFittingFeatureNames(
-                        getFromState(state, 'settings'), getFromState(state, 'ui.featureDiagram.layout'),
-                        getViewportWidth(), getViewportHeight()))
+            return state.server.featureModel
+                ? getNewState(state,
+                    'ui.featureDiagram.collapsedFeatureNames', getFeatureModel(state)!.getFittingFeatureNames(
+                        state.settings, state.ui.featureDiagram.layout, getViewportWidth(), getViewportHeight()),
+                    'settings', getNewSettings(state.settings, 'featureDiagram.forceRerender', +new Date()))
                 : state;
 
         case getType(actions.ui.featureDiagram.feature.setSelectMultiple):
             return getNewState(state,
-                'ui.isSelectMultipleFeatures', action.payload.isSelectMultipleFeatures,
-                'ui.selectedFeatureNames', []);
+                'ui.featureDiagram.isSelectMultipleFeatures', action.payload.isSelectMultipleFeatures,
+                'ui.featureDiagram.selectedFeatureNames', []);
 
         case getType(actions.ui.featureDiagram.feature.select):
-            return getNewState(state, 'ui.selectedFeatureNames',
-                setAdd(getFromState(state, 'ui.selectedFeatureNames'), action.payload.featureName));
+            return getNewState(state, 'ui.featureDiagram.selectedFeatureNames',
+                setAdd(state.ui.featureDiagram.selectedFeatureNames, action.payload.featureName));
 
         case getType(actions.ui.featureDiagram.feature.deselect):
-            selectedFeatureNames = setRemove(getFromState(state, 'ui.selectedFeatureNames'), action.payload.featureName);
+            selectedFeatureNames = setRemove(state.ui.featureDiagram.selectedFeatureNames, action.payload.featureName);
             return selectedFeatureNames.length > 0
-                ? getNewState(state, 'ui.selectedFeatureNames', selectedFeatureNames)
-                : getNewState(state, 'ui.selectedFeatureNames', selectedFeatureNames, 'ui.isSelectMultipleFeatures', false);
+                ? getNewState(state, 'ui.featureDiagram.selectedFeatureNames', selectedFeatureNames)
+                : getNewState(state, 'ui.featureDiagram.selectedFeatureNames', selectedFeatureNames, 'ui.featureDiagram.isSelectMultipleFeatures', false);
 
         case getType(actions.ui.featureDiagram.feature.selectAll):
-            return getFromState(state, 'server.featureModel')
+            return state.server.featureModel
                 ? getNewState(state,
-                    'ui.selectedFeatureNames', getFeatureModel(state)!.getVisibleFeatureNames(),
-                    'ui.isSelectMultipleFeatures', true)
+                    'ui.featureDiagram.selectedFeatureNames', getFeatureModel(state)!.getVisibleFeatureNames(),
+                    'ui.featureDiagram.isSelectMultipleFeatures', true)
                 : state;
 
         case getType(actions.ui.featureDiagram.feature.deselectAll):
             return getNewState(state,
-                'ui.selectedFeatureNames', [],
-                'ui.isSelectMultipleFeatures', false);
+                'ui.featureDiagram.selectedFeatureNames', [],
+                'ui.featureDiagram.isSelectMultipleFeatures', false);
 
         case getType(actions.ui.featureDiagram.feature.collapse):
         case getType(actions.ui.featureDiagram.feature.expand):
             setOperation = isActionOf(actions.ui.featureDiagram.feature.collapse, action) ? setAdd : setRemove;
-            return getNewState(state, 'ui.collapsedFeatureNames',
-                setOperation(getFromState(state, 'ui.collapsedFeatureNames'), action.payload.featureNames));
+            return getNewState(state, 'ui.featureDiagram.collapsedFeatureNames',
+                setOperation(state.ui.featureDiagram.collapsedFeatureNames, action.payload.featureNames));
 
         case getType(actions.ui.featureDiagram.feature.collapseAll):
-            return getFromState(state, 'server.featureModel')
+            return state.server.featureModel
                 ? getNewState(state,
-                    'ui.collapsedFeatureNames', getFeatureModel(state)!.getFeatureNamesWithActualChildren())
+                    'ui.featureDiagram.collapsedFeatureNames', getFeatureModel(state)!.getFeatureNamesWithActualChildren())
                 : state;
 
         case getType(actions.ui.featureDiagram.feature.expandAll):
-            return getNewState(state, 'ui.collapsedFeatureNames', []);
+            return getNewState(state, 'ui.featureDiagram.collapsedFeatureNames', []);
 
         case getType(actions.ui.featureDiagram.feature.collapseBelow):
         case getType(actions.ui.featureDiagram.feature.expandBelow):
             setOperation = isActionOf(actions.ui.featureDiagram.feature.collapse, action) ? setAdd : setRemove;
-            return getFromState(state, 'server.featureModel')
-                ? getNewState(state, 'ui.collapsedFeatureNames',
-                    setOperation(getFromState(state, 'ui.collapsedFeatureNames'),
+            return state.server.featureModel
+                ? getNewState(state, 'ui.featureDiagram.collapsedFeatureNames',
+                    setOperation(state.ui.featureDiagram.collapsedFeatureNames,
                         getFeatureNamesBelowWithActualChildren(state, action.payload.featureNames)))
                 : state;
 
         case getType(actions.ui.overlay.show):
-            let newState = updateOverlay(state, action.payload.overlay, action.payload.overlayProps);
+            state = updateOverlay(state, action.payload.overlay, action.payload.overlayProps);
             if (action.payload.selectOneFeature)
-                newState = getNewState(newState, 'ui.selectedFeatureNames', [action.payload.selectOneFeature]);
-            return newState;
+                state = getNewState(state, 'ui.featureDiagram.selectedFeatureNames', [action.payload.selectOneFeature]);
+            return state;
 
         case getType(actions.ui.overlay.hide):
-            return getFromState(state, 'ui.overlay') === action.payload.overlay
+            return state.ui.overlay === action.payload.overlay
                 ? updateOverlay(state, undefined, undefined)
                 : state;
     }
@@ -168,30 +206,9 @@ function uiReducer(state: object, action: Action): object {
     return state;
 }
 
-function finalReducer(state: object, action: Action): object {
-    if (isOfType(SERVER_RECEIVE, action)) {
-        const messageType = (action as ServerReceiveAction).payload.type;
-        if (messageType === MessageType.FEATURE_DIAGRAM_FEATURE_MODEL) { // TODO
-            state = removeObsoleteFeaturesFromFeatureList(state, 'collapsedFeatureNames');
-            // TODO: warn user that selection changed
-            state = removeObsoleteFeaturesFromFeatureList(state, 'selectedFeatureNames');
-            // TODO: warn user that overlay was hidden
-            state = hideOverlayForObsoleteFeature(state);
-        }
-        if (messageType === MessageType.FEATURE_DIAGRAM_FEATURE_RENAME) {
-            state = renameFeatureInFeatureList(state, action, 'collapsedFeatureNames');
-            state = renameFeatureInFeatureList(state, action, 'selectedFeatureNames');
-            state = changeOverlayForRenamedFeature(state, action);
-        }
-    }
-    if (isActionOf(actions.ui.featureDiagram.fitToScreen, action))
-        state = getNewState(state, 'settings', getNewSettings(getFromState(state, 'settings'), 'featureDiagram.forceRerender', +new Date()));
-    return state;
-}
-
-export default reduceReducers(
-    serverReceiveReducer,
-    settingsReducer,
-    uiReducer,
-    finalReducer,
-    constants.store.initialState);
+export default <(state?: State, action?: Action) => State>
+    reduceReducers(
+        serverReducer,
+        settingsReducer,
+        uiReducer,
+        initialState);

@@ -3,9 +3,6 @@
  * As they may not be updated at runtime, we can just treat these constants as global.
  */
 
-import {defaultSettings} from './store/settings';
-import {layoutTypes} from './types';
-
 const constants = {
     featureDiagram: {
         fitToScreen: {
@@ -18,25 +15,6 @@ const constants = {
         aboutPanel: {
             githubUri: 'https://github.com/ekuiter/variED',
             licenseUri: 'https://github.com/ekuiter/variED/blob/master/LICENSE.txt'
-        }
-    },
-    store: {
-        initialState: {
-            server: {
-                users: [],
-                featureModel: null
-            },
-            settings: defaultSettings,
-            ui: {
-                featureDiagram: {
-                    layout: layoutTypes.verticalTree
-                },
-                isSelectMultipleFeatures: false,
-                selectedFeatureNames: [],
-                collapsedFeatureNames: [],
-                overlay: null,
-                overlayProps: null
-            }
         }
     },
     server: {

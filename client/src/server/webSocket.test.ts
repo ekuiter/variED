@@ -1,7 +1,7 @@
 import {openWebSocket, sendMessage} from './webSocket';
 import {Server} from 'mock-socket';
 import constants from '../constants';
-import { MessageType } from '../types';
+import {MessageType} from '../types';
 
 const wait = (time = 10) => () => new Promise(resolve => window.setTimeout(resolve, time)),
     close = (mockServer: any) => () => {

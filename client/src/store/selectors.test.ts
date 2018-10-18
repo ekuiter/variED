@@ -1,43 +1,42 @@
 import {getFeatureModel} from './selectors';
 import {validFeatureModel, invalidFeatureModel1} from '../fixtures';
 import FeatureModel from '../server/FeatureModel';
-import constants from '../constants';
+import {initialState} from './types';
 
 describe('selectors', () => {
     describe('getFeatureModel', () => {
         it('gets no feature model from the initial store state', () => {
-            const state = constants.store.initialState;
-            expect(getFeatureModel(state)).toBeUndefined();
+            expect(getFeatureModel(initialState)).toBeUndefined();
         });
 
         it('gets a feature model from a loaded store state', () => {
-            const state = {
+            const state = <any>{
                 server: {featureModel: validFeatureModel},
-                ui: {collapsedFeatureNames: []}
+                ui: {featureDiagram: {collapsedFeatureNames: []}}
             };
             expect(getFeatureModel(state)!.featureModel)
                 .toEqual(new FeatureModel(validFeatureModel, []).featureModel);
         });
 
         it('recomputes when the store state changes', () => {
-            let state: any = {server: {}, ui: {}};
+            let state: any = {server: {}, ui: {featureDiagram: {}}};
             const collapsedFeatureNames = ['test1'];
             getFeatureModel.resetRecomputations();
 
             state.server.featureModel = invalidFeatureModel1;
-            state.ui.collapsedFeatureNames = collapsedFeatureNames;
+            state.ui.featureDiagram.collapsedFeatureNames = collapsedFeatureNames;
             getFeatureModel(state);
             expect(getFeatureModel.recomputations()).toBe(1);
 
-            state = {server: {}, ui: {}};
+            state = {server: {}, ui: {featureDiagram: {}}};
             state.server.featureModel = invalidFeatureModel1;
-            state.ui.collapsedFeatureNames = collapsedFeatureNames;
+            state.ui.featureDiagram.collapsedFeatureNames = collapsedFeatureNames;
             getFeatureModel(state);
             expect(getFeatureModel.recomputations()).toBe(1);
 
-            state = {server: {}, ui: {}};
+            state = {server: {}, ui: {featureDiagram: {}}};
             state.server.featureModel = validFeatureModel;
-            state.ui.collapsedFeatureNames = collapsedFeatureNames;
+            state.ui.featureDiagram.collapsedFeatureNames = collapsedFeatureNames;
             getFeatureModel(state);
             expect(getFeatureModel.recomputations()).toBe(2);
         });

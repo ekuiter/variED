@@ -3,8 +3,14 @@
  * They are plain objects describing a state change.
  */
 
-import serverActions from '../server/actions';
 import {createStandardAction, ActionType} from 'typesafe-actions';
+import constants from '../constants';
+import {Message, MessageType, Feature} from '../types';
+
+const {propertyTypes, groupValueTypes} = constants.server;
+
+export const SERVER_SEND_MESSAGE = 'server/sendMessage';
+const SERVER_RECEIVE_MESSAGE = 'server/receiveMessage';
 
 const actions = {
     settings: {
@@ -35,7 +41,80 @@ const actions = {
             hide: createStandardAction('ui/overlay/hide')<{overlay: string}>()
         }
     },
-    server: serverActions
+    server: {
+        receive: createStandardAction(SERVER_RECEIVE_MESSAGE)<Message>(),
+        undo: createStandardAction(SERVER_SEND_MESSAGE).map(() => ({payload: {type: MessageType.UNDO}})),
+        redo: createStandardAction(SERVER_SEND_MESSAGE).map(() => ({payload: {type: MessageType.REDO}})),
+        featureDiagram: {
+            feature: {
+                addBelow: createStandardAction(SERVER_SEND_MESSAGE).map(({belowFeatureName}: {belowFeatureName: string}) =>
+                    ({payload: {type: MessageType.FEATURE_DIAGRAM_FEATURE_ADD_BELOW, belowFeature: belowFeatureName}})),
+                addAbove: createStandardAction(SERVER_SEND_MESSAGE).map(({aboveFeaturesNames}: {aboveFeaturesNames: string[]}) =>
+                    ({payload: {type: MessageType.FEATURE_DIAGRAM_FEATURE_ADD_ABOVE, aboveFeatures: aboveFeaturesNames}})),
+                remove: createStandardAction(SERVER_SEND_MESSAGE).map(({featureNames}: {featureNames: string[]}) =>
+                    ({payload: featureNames.map(featureName => ({type: MessageType.FEATURE_DIAGRAM_FEATURE_REMOVE, feature: featureName}))})),
+                removeBelow: createStandardAction(SERVER_SEND_MESSAGE).map(({featureNames}: {featureNames: string[]}) =>
+                    ({payload: featureNames.map(featureName => ({type: MessageType.FEATURE_DIAGRAM_FEATURE_REMOVE_BELOW, feature: featureName}))})),
+                rename: createStandardAction(SERVER_SEND_MESSAGE).map(({oldFeatureName, newFeatureName}: {oldFeatureName: string, newFeatureName: string}) =>
+                    ({payload: {type: MessageType.FEATURE_DIAGRAM_FEATURE_RENAME, oldFeature: oldFeatureName, newFeature: newFeatureName}})),
+                setDescription: createStandardAction(SERVER_SEND_MESSAGE).map(({featureName, description}: {featureName: string, description: string}) =>
+                    ({payload: {type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_DESCRIPTION, feature: featureName, description}})),
+                properties: {
+                    setAbstract: createStandardAction(SERVER_SEND_MESSAGE).map(({featureNames, value}: {featureNames: string[], value: boolean}) => ({
+                        payload: featureNames.map(featureName => ({
+                            type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
+                            feature: featureName, property: propertyTypes.abstract, value
+                        }))
+                    })),
+                    setHidden: createStandardAction(SERVER_SEND_MESSAGE).map(({featureNames, value}: {featureNames: string[], value: boolean}) => ({
+                        payload: featureNames.map(featureName => ({
+                            type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
+                            feature: featureName, property: propertyTypes.hidden, value
+                        }))
+                    })),
+                    setMandatory: createStandardAction(SERVER_SEND_MESSAGE).map(({featureNames, value}: {featureNames: string[], value: boolean}) => ({
+                        payload: featureNames.map(featureName => ({
+                            type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
+                            feature: featureName, property: propertyTypes.mandatory, value
+                        }))
+                    })),
+                    toggleMandatory: createStandardAction(SERVER_SEND_MESSAGE).map(({feature}: {feature: Feature}) => ({
+                        payload: {
+                            type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
+                            feature: feature.name, property: propertyTypes.mandatory, value: !feature.isMandatory
+                        }
+                    })),
+                    setAnd: createStandardAction(SERVER_SEND_MESSAGE).map(({featureNames}: {featureNames: string[]}) => ({
+                        payload: featureNames.map(featureName => ({
+                            type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
+                            feature: featureName, property: propertyTypes.group, value: groupValueTypes.and
+                        }))
+                    })),
+                    setOr: createStandardAction(SERVER_SEND_MESSAGE).map(({featureNames}: {featureNames: string[]}) => ({
+                        payload: featureNames.map(featureName => ({
+                            type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
+                            feature: featureName, property: propertyTypes.group, value: groupValueTypes.or
+                        }))
+                    })),
+                    setAlternative: createStandardAction(SERVER_SEND_MESSAGE).map(({featureNames}: {featureNames: string[]}) => ({
+                        payload: featureNames.map(featureName => ({
+                            type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
+                            feature: featureName, property: propertyTypes.group, value: groupValueTypes.alternative
+                        }))
+                    })),
+                    toggleGroup: createStandardAction(SERVER_SEND_MESSAGE).map(({feature}: {feature: Feature}) => ({
+                        payload: {
+                            type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
+                            feature: feature.name, property: propertyTypes.group,
+                            value: feature.isAnd
+                                ? groupValueTypes.or : feature.isOr
+                                    ? groupValueTypes.alternative : groupValueTypes.and
+                        }
+                    }))
+                }
+            }
+        } 
+    }
 };
 
 export default actions;

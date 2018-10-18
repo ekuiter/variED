@@ -9,7 +9,7 @@ import throttle from './throttle';
 import constants from '../constants';
 
 function getViewportDimension(key: string) {
-    return Math.max(document.documentElement[key], 0);
+    return Math.max(document.documentElement![key], 0);
 }
 
 export const getViewportWidth = () => getViewportDimension('clientWidth'),

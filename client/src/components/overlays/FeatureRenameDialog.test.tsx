@@ -13,12 +13,10 @@ describe('FeatureRenameDialog', () => {
     let featureRenameDialog: JSX.Element;
 
     beforeEach(() => {
-        const featureModel = new FeatureModel(validFeatureModel, []),
-            mock = jest.fn();
         featureRenameDialog = (
             <FeatureRenameDialog
                 isOpen={true}
-                featureModel={featureModel}
+                featureModel={new FeatureModel(validFeatureModel, [])}
                 featureName="FeatureIDE"
                 settings={defaultSettings}/>
         );
@@ -31,14 +29,14 @@ describe('FeatureRenameDialog', () => {
 
     it('triggers a rename if a new name is entered', () => {
         const wrapper = shallow(featureRenameDialog);
-        actions.server.featureDiagram.feature.rename.mockClear();
+        (actions.server.featureDiagram.feature.rename as jest.Mock).mockClear();
         wrapper.find(TextFieldDialog).simulate('submit', 'new feature name');
-        expect(actions.server.featureDiagram.feature.rename).lastCalledWith('FeatureIDE', 'new feature name');
+        expect(actions.server.featureDiagram.feature.rename).lastCalledWith({oldFeatureName: 'FeatureIDE', newFeatureName: 'new feature name'});
     });
 
     it('does nothing if the new name is the same as the old name', () => {
         const wrapper = shallow(featureRenameDialog);
-        actions.server.featureDiagram.feature.rename.mockClear();
+        (actions.server.featureDiagram.feature.rename as jest.Mock).mockClear();
         wrapper.find(TextFieldDialog).simulate('submit', 'FeatureIDE');
         expect(actions.server.featureDiagram.feature.rename).not.toBeCalled();
     });

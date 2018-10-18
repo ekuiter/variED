@@ -13,12 +13,10 @@ describe('FeatureSetDescriptionDialog', () => {
     let featureSetDescriptionDialog: JSX.Element;
 
     beforeEach(() => {
-        const featureModel = new FeatureModel(validFeatureModel, []),
-            mock = jest.fn();
         featureSetDescriptionDialog = (
             <FeatureSetDescriptionDialog
                 isOpen={true}
-                featureModel={featureModel}
+                featureModel={new FeatureModel(validFeatureModel, [])}
                 featureName="FeatureIDE"
                 settings={defaultSettings}/>
         );
@@ -31,8 +29,8 @@ describe('FeatureSetDescriptionDialog', () => {
 
     it('triggers a rename if a new name is entered', () => {
         const wrapper = shallow(featureSetDescriptionDialog);
-        actions.server.featureDiagram.feature.setDescription.mockClear();
+        (actions.server.featureDiagram.feature.setDescription as jest.Mock).mockClear();
         wrapper.find(TextFieldDialog).simulate('submit', 'new description');
-        expect(actions.server.featureDiagram.feature.setDescription).lastCalledWith('FeatureIDE', 'new description');
+        expect(actions.server.featureDiagram.feature.setDescription).lastCalledWith({featureName: 'FeatureIDE', description: 'new description'});
     });
 });
