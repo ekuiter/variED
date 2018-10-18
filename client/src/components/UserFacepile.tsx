@@ -80,4 +80,4 @@ class UserFacepile extends React.Component<Props, State> {
     }
 }
 
-export default withDimensions(UserFacepile);
+export default withDimensions<Props>(UserFacepile);

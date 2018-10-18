@@ -10,9 +10,10 @@ import {connect} from 'react-redux';
 import {getFeatureModel} from '../store/selectors';
 import actions from '../store/actions';
 import i18n from '../i18n';
+import {State, StateDerivedProps} from '../store/types';
 
 /* eslint-disable react/prop-types */
-const CommandBarContainer = props => (
+const CommandBarContainer = (props: StateDerivedProps) => (
     <CommandBar
         items={[{
             key: 'file',
@@ -74,33 +75,33 @@ const CommandBarContainer = props => (
                 key: 'userFacepile',
                 onRender: () =>
                     <UserFacepile
-                        users={props.users}
-                        settings={props.settings}/>
+                        users={props.users!}
+                        settings={props.settings!}/>
             }
         ]}/>
 );
 
 export default connect(
-    state => ({
+    (state: State): StateDerivedProps => ({
         featureDiagramLayout: state.ui.featureDiagram.layout,
-        isSelectMultipleFeatures: state.ui.isSelectMultipleFeatures,
-        selectedFeatureNames: state.ui.selectedFeatureNames,
+        isSelectMultipleFeatures: state.ui.featureDiagram.isSelectMultipleFeatures,
+        selectedFeatureNames: state.ui.featureDiagram.selectedFeatureNames,
         users: state.server.users,
         settings: state.settings,
         featureModel: getFeatureModel(state)
     }),
-    dispatch => ({
-        onSetFeatureDiagramLayout: layout => dispatch(actions.ui.featureDiagram.setLayout(layout)),
-        onSetSelectMultipleFeatures: isSelectMultipleFeatures => dispatch(actions.ui.featureDiagram.feature.setSelectMultiple(isSelectMultipleFeatures)),
+    (dispatch): StateDerivedProps => ({
+        onSetFeatureDiagramLayout: payload => dispatch(actions.ui.featureDiagram.setLayout(payload)),
+        onSetSelectMultipleFeatures: payload => dispatch(actions.ui.featureDiagram.feature.setSelectMultiple(payload)),
         onSelectAllFeatures: () => dispatch(actions.ui.featureDiagram.feature.selectAll()),
         onDeselectAllFeatures: () => dispatch(actions.ui.featureDiagram.feature.deselectAll()),
         onCollapseAllFeatures: () => dispatch(actions.ui.featureDiagram.feature.collapseAll()),
         onExpandAllFeatures: () => dispatch(actions.ui.featureDiagram.feature.expandAll()),
-        onCollapseFeatures: featureNames => dispatch(actions.ui.featureDiagram.feature.collapse(featureNames)),
-        onExpandFeatures: featureNames => dispatch(actions.ui.featureDiagram.feature.expand(featureNames)),
-        onCollapseFeaturesBelow: featureNames => dispatch(actions.ui.featureDiagram.feature.collapseBelow(featureNames)),
-        onExpandFeaturesBelow: featureNames => dispatch(actions.ui.featureDiagram.feature.expandBelow(featureNames)),
-        onShowOverlay: (...args) => dispatch(actions.ui.overlay.show(...args)),
+        onCollapseFeatures: payload => dispatch(actions.ui.featureDiagram.feature.collapse(payload)),
+        onExpandFeatures: payload => dispatch(actions.ui.featureDiagram.feature.expand(payload)),
+        onCollapseFeaturesBelow: payload => dispatch(actions.ui.featureDiagram.feature.collapseBelow(payload)),
+        onExpandFeaturesBelow: payload => dispatch(actions.ui.featureDiagram.feature.expandBelow(payload)),
+        onShowOverlay: payload => dispatch(actions.ui.overlay.show(payload)),
         onFitToScreen: () => dispatch(actions.ui.featureDiagram.fitToScreen())
     })
 )(CommandBarContainer);

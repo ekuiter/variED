@@ -11,9 +11,10 @@ import OverlayContainer from './overlays/OverlayContainer';
 import CommandBarContainer from './CommandBarContainer';
 import ShortcutContainer from './ShortcutContainer';
 import actions from '../store/actions';
+import {StateDerivedProps} from '../store/types';
 
 /* eslint-disable react/prop-types */
-class AppContainer extends React.Component {
+class AppContainer extends React.Component<StateDerivedProps> {
     componentDidMount() {
         openWebSocket(this.props.handleMessage);
     }
@@ -34,5 +35,7 @@ class AppContainer extends React.Component {
 
 export default connect(
     null,
-    dispatch => ({handleMessage: message => dispatch(actions.server.receive(message))})
+    (dispatch): StateDerivedProps => ({
+        handleMessage: message => dispatch(actions.server.receive(message))
+    })
 )(AppContainer);

@@ -16,8 +16,9 @@ const layoutMap = {
 };
 
 interface Props {
-    layout: string,
-    settings: object
+    featureDiagramLayout: string,
+    settings: object,
+    [x: string]: any
 };
 
 export default class extends React.Component<Props> {
@@ -36,8 +37,8 @@ export default class extends React.Component<Props> {
     }
 
     render(): JSX.Element {
-        const {layout, ...props} = this.props,
-            LayoutComponent = layoutMap[layout];
+        const {featureDiagramLayout, ...props} = this.props,
+            LayoutComponent = layoutMap[featureDiagramLayout];
         return (
             <LayoutComponent key={this.getKey(props)} {...props}/>
         );
