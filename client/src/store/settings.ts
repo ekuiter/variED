@@ -88,6 +88,19 @@ export function getNewSettings(settings: object, path: string, value: any): obje
         return objectPathImmutable.set(settings, path, value);
 }
 
+export const getFromState = getSetting;
+
+export function getNewState(state: object, ...args: any[]) {
+    if (args.length % 2 == 1)
+        throw new Error('getNewState expects pairs of path and value');
+    for (let i = 0; i < args.length; i += 2) {
+        if (typeof args[i] !== 'string')
+            throw new Error('string expected for path');
+        state = getNewSettings(state, args[i], args[i + 1]);
+    }
+    return state;
+}
+
 export function cloneSettings(settings: object): object {
     return JSON.parse(JSON.stringify(settings));
 }

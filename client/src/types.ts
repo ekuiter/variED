@@ -102,6 +102,6 @@ export const
         exportDialog: 'export',
         featureCallout: 'featureCallout',
         featureContextualMenu: 'featureContextualMenu',
-        isFloatingFeature: (type: string) => type === 'featureCallout' || type === 'featureContextualMenu'
+        isFloatingFeature: (type?: string) => type === 'featureCallout' || type === 'featureContextualMenu'
     },
     OverlayType = PropTypes.oneOf(Object.values(overlayTypes));
