@@ -1,12 +1,11 @@
 /**
  * Implementation of feature diagram export algorithms.
- * Because these algorithms are only used on-demand (when the user triggers an export) and the
- * involved libraries have a large footprint, dynamic import() is used for these libraries.
  */
 
 import {layoutTypes, formatTypes} from '../../types';
 import FeatureModel from '../../server/FeatureModel';
 import {saveAs} from 'file-saver';
+import {importSvg2PdfJs, importJspdfYworks, importCanvg} from '../../imports';
 
 type BlobPromise = Promise<Blob | null>;
 
@@ -34,7 +33,7 @@ function exportSvg(): BlobPromise {
 
 function exportPng({scale = 1}): BlobPromise {
     const canvas = document.createElement('canvas');
-    return import('canvg')
+    return importCanvg()
         .then(canvg => (canvg as any)(canvas, svgData(scale).string))
         .then(() => new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/png')));
 }
@@ -47,7 +46,7 @@ function exportJpg({scale = 1, quality = 0.8}): BlobPromise {
     canvas.setAttribute('height', height.toString());
     ctx.fillStyle = 'white';
     ctx.fillRect(0, 0, width, height);
-    return import('canvg')
+    return importCanvg()
         .then(() => (ctx as any).drawSvg(string, 0, 0, width, height))
         .then(() => new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/jpeg', quality)));
 }
@@ -55,7 +54,7 @@ function exportJpg({scale = 1, quality = 0.8}): BlobPromise {
 function exportPdf({}, fileName: string): BlobPromise {
     const {svg, width, height} = svgData();
     // @ts-ignore: there are no type declarations for these modules
-    Promise.all([import('svg2pdf.js'), import('jspdf-yworks')])
+    Promise.all([importSvg2PdfJs(), importJspdfYworks()])
         .then(([svg2pdf, jsPDF]) => {
             const pdf = new jsPDF({
                 orientation: 'landscape',

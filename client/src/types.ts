@@ -25,7 +25,7 @@ export enum MessageType {
 
 export type Message = {
     type: MessageType,
-    artifact?: string
+    [x: string]: any
 };
 
 export function isMessageType(type: string) {

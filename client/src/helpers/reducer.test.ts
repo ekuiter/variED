@@ -1,6 +1,6 @@
-import {setAdd, setRemove} from './reducers';
+import {setAdd, setRemove} from './reducer';
 
-describe('reducers', () => {
+describe('reducer', () => {
     describe('setAdd', () => {
         it('adds an element to an array that does not include it', () => {
             expect(setAdd([1], 2)).toEqual([1, 2]);

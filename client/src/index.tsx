@@ -9,9 +9,10 @@ import ReactDOM from 'react-dom';
 import AppContainer from './containers/AppContainer';
 import 'normalize.css';
 import './stylesheets/index.css';
-import {createStore} from 'redux';
+import {createStore, applyMiddleware, compose} from 'redux';
 import {Provider} from 'react-redux';
-import reducers from './store/reducers';
+import reducer from './store/reducer';
+import middleware from './server/middleware';
 import {initializeIcons} from 'office-ui-fabric-react/lib/Icons';
 
 if (window.location.protocol !== 'http:')
@@ -19,10 +20,8 @@ if (window.location.protocol !== 'http:')
 
 initializeIcons('/assets/');
 
-const store = createStore(
-    reducers,
-    (window as any).__REDUX_DEVTOOLS_EXTENSION__ && (window as any).__REDUX_DEVTOOLS_EXTENSION__()
-);
+const composeEnhancers = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+const store = createStore(reducer, composeEnhancers(applyMiddleware(middleware)));
 
 ReactDOM.render((
     <Provider store={store}>

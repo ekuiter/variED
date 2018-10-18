@@ -73,7 +73,7 @@ exports[`FeatureCallout renders information for a feature with a description 1`]
                 },
               ],
             },
-            "text": null,
+            "text": undefined,
           },
           Object {
             "disabled": false,
@@ -106,7 +106,7 @@ exports[`FeatureCallout renders information for a feature with a description 1`]
                 },
               ],
             },
-            "text": null,
+            "text": undefined,
           },
           Object {
             "disabled": false,
@@ -150,7 +150,7 @@ exports[`FeatureCallout renders information for a feature with a description 1`]
                 },
               ],
             },
-            "text": null,
+            "text": undefined,
           },
         ]
       }
@@ -228,7 +228,7 @@ exports[`FeatureCallout renders information for a feature without a description 
                 },
               ],
             },
-            "text": null,
+            "text": undefined,
           },
           Object {
             "disabled": false,
@@ -261,7 +261,7 @@ exports[`FeatureCallout renders information for a feature without a description 
                 },
               ],
             },
-            "text": null,
+            "text": undefined,
           },
           Object {
             "disabled": true,
@@ -305,7 +305,7 @@ exports[`FeatureCallout renders information for a feature without a description 
                 },
               ],
             },
-            "text": null,
+            "text": undefined,
           },
         ]
       }

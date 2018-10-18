@@ -1,38 +1,23 @@
 /**
- * Reducers determine the new state of the Redux store according to some given action.
+ * The reducer determines the new state of the Redux store according to some given action.
  * They are implemented as pure functions only depending on the current application
  * state and the action to process, to keep state management sane.
  */
 
-import messageReducer from '../server/messageReducer';
+import serverReducer from '../server/reducer';
 // @ts-ignore: the type definitions for reduce-reducers are incorrect
 import reduceReducers from 'reduce-reducers';
 import constants from '../constants';
 import {defaultSettings, getNewSettings, getNewState, getFromState} from './settings';
 import {overlayTypes, isMessageType, MessageType, Func} from '../types';
-import {setAdd, setRemove} from '../helpers/reducers';
+import {setAdd, setRemove} from '../helpers/reducer';
 import {getFeatureModel} from './selectors';
 import {getViewportWidth, getViewportHeight} from '../helpers/withDimensions';
 import actions, {Action} from './actions';
-import {getType, isActionOf} from 'typesafe-actions';
+import {getType, isActionOf, isOfType, ActionType} from 'typesafe-actions';
+import {SERVER_RECEIVE, ServerReceiveAction} from '../server/actions';
 
 // TODO: fix state types.
-
-function serverReducer(state: object, action: Action): object {
-    return isMessageType(action.type)
-        ? getNewState(state, 'server', messageReducer(state, action))
-        : state;
-}
-
-function settingsReducer(state: object, action: Action): object {
-    switch (action.type) {
-        case getType(actions.settings.set):
-            return getNewState(state, 'settings', getNewSettings(state, action.payload.path, action.payload.value));
-        case getType(actions.settings.reset):
-            return getNewState(state, 'settings', defaultSettings);
-    }
-    return state;
-}
 
 function removeObsoleteFeaturesFromFeatureList(state: object, key: string): object {
     if (!getFromState(state, 'server.featureModel'))
@@ -45,7 +30,7 @@ function removeObsoleteFeaturesFromFeatureList(state: object, key: string): obje
         : state;
 }
 
-function renameFeatureInFeatureList(state: object, action: Action /*TODO*/, key: string): object {
+function renameFeatureInFeatureList(state: object, action: ActionType<typeof actions.server.featureDiagram.feature.rename>, key: string): object {
     const featureList = getFromState(state, 'ui')[key];
     return featureList.includes(action.payload.oldFeature)
         ? getNewState(state, `ui.${key}`, setAdd(setRemove(featureList, action.payload.oldFeature), action.payload.newFeature))
@@ -62,29 +47,11 @@ function hideOverlayForObsoleteFeature(state: object): object {
         : state;
 }
 
-function changeOverlayForRenamedFeature(state: object, action: Action /*TODO*/): object {
+function changeOverlayForRenamedFeature(state: object, action: ActionType<typeof actions.server.featureDiagram.feature.rename>): object {
     return getFromState(state, 'ui.overlay') && getFromState(state, 'ui.overlayProps') &&
         getFromState(state, 'ui.overlay.overlayProps.featureName') === action.payload.oldFeature
-        ? getNewState(state, 'ui.overlayProps.featureName', action.newFeature)
+        ? getNewState(state, 'ui.overlayProps.featureName', action.payload.newFeature)
         : state;
-}
-
-function finalReducer(state: object, action: Action): object {
-    if (action.type === MessageType.FEATURE_DIAGRAM_FEATURE_MODEL) { // TODO
-        state = removeObsoleteFeaturesFromFeatureList(state, 'collapsedFeatureNames');
-        // TODO: warn user that selection changed
-        state = removeObsoleteFeaturesFromFeatureList(state, 'selectedFeatureNames');
-        // TODO: warn user that overlay was hidden
-        state = hideOverlayForObsoleteFeature(state);
-    }
-    if (action.type === MessageType.FEATURE_DIAGRAM_FEATURE_RENAME) {
-        state = renameFeatureInFeatureList(state, action, 'collapsedFeatureNames');
-        state = renameFeatureInFeatureList(state, action, 'selectedFeatureNames');
-        state = changeOverlayForRenamedFeature(state, action);
-    }
-    if (isActionOf(actions.ui.featureDiagram.fitToScreen, action))
-        state = getNewState(state, 'settings', getNewSettings(getFromState(state, 'settings'), 'featureDiagram.forceRerender', +new Date()));
-    return state;
 }
 
 function updateOverlay(state: object, overlay?: string, overlayProps?: object): object {
@@ -102,6 +69,22 @@ function getFeatureNamesBelowWithActualChildren(state: object, featureNames: str
     return featureNames.map(featureName =>
         getFeatureModel(state)!.getFeatureNamesBelowWithActualChildren(featureName))
         .reduce((acc, children) => acc.concat(children), []);
+}
+
+function serverReceiveReducer(state: object, action: Action): object {
+    return isOfType(SERVER_RECEIVE, action) && isMessageType((action as ServerReceiveAction).payload.type)
+        ? serverReducer(state, action as ServerReceiveAction)
+        : state;
+}
+
+function settingsReducer(state: object, action: Action): object {
+    switch (action.type) {
+        case getType(actions.settings.set):
+            return getNewState(state, 'settings', getNewSettings(getFromState(state, 'settings'), action.payload.path, action.payload.value));
+        case getType(actions.settings.reset):
+            return getNewState(state, 'settings', defaultSettings);
+    }
+    return state;
 }
 
 function uiReducer(state: object, action: Action): object {
@@ -185,8 +168,29 @@ function uiReducer(state: object, action: Action): object {
     return state;
 }
 
+function finalReducer(state: object, action: Action): object {
+    if (isOfType(SERVER_RECEIVE, action)) {
+        const messageType = (action as ServerReceiveAction).payload.type;
+        if (messageType === MessageType.FEATURE_DIAGRAM_FEATURE_MODEL) { // TODO
+            state = removeObsoleteFeaturesFromFeatureList(state, 'collapsedFeatureNames');
+            // TODO: warn user that selection changed
+            state = removeObsoleteFeaturesFromFeatureList(state, 'selectedFeatureNames');
+            // TODO: warn user that overlay was hidden
+            state = hideOverlayForObsoleteFeature(state);
+        }
+        if (messageType === MessageType.FEATURE_DIAGRAM_FEATURE_RENAME) {
+            state = renameFeatureInFeatureList(state, action, 'collapsedFeatureNames');
+            state = renameFeatureInFeatureList(state, action, 'selectedFeatureNames');
+            state = changeOverlayForRenamedFeature(state, action);
+        }
+    }
+    if (isActionOf(actions.ui.featureDiagram.fitToScreen, action))
+        state = getNewState(state, 'settings', getNewSettings(getFromState(state, 'settings'), 'featureDiagram.forceRerender', +new Date()));
+    return state;
+}
+
 export default reduceReducers(
-    serverReducer,
+    serverReceiveReducer,
     settingsReducer,
     uiReducer,
     finalReducer,

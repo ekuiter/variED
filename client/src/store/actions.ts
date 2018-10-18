@@ -3,7 +3,7 @@
  * They are plain objects describing a state change.
  */
 
-import messageActions from '../server/messageActions';
+import serverActions from '../server/actions';
 import {createStandardAction, ActionType} from 'typesafe-actions';
 
 const actions = {
@@ -35,7 +35,7 @@ const actions = {
             hide: createStandardAction('ui/overlay/hide')<{overlay: string}>()
         }
     },
-    server: messageActions
+    server: serverActions
 };
 
 export default actions;
