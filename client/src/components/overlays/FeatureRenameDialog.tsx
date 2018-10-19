@@ -4,13 +4,14 @@
 
 import React from 'react';
 import i18n from '../../i18n';
-import actions from '../../store/actions';
 import {TextFieldDialog} from '../../helpers/Dialog';
 import FeatureComponent, {FeatureComponentProps} from './FeatureComponent';
 import {Feature} from '../../types';
+import {OnRenameFeatureFunction} from 'src/store/types';
 
 type Props = FeatureComponentProps & {
-    isOpen: boolean
+    isOpen: boolean,
+    onRenameFeature: OnRenameFeatureFunction
 };
 
 export default class extends FeatureComponent()<Props> {
@@ -22,7 +23,7 @@ export default class extends FeatureComponent()<Props> {
                 defaultValue={feature.name}
                 onSubmit={newFeatureName => {
                     if (newFeatureName && feature.name !== newFeatureName)
-                        actions.server.featureDiagram.feature.rename({oldFeatureName: feature.name, newFeatureName});
+                        this.props.onRenameFeature({oldFeatureName: feature.name, newFeatureName});
                     else
                         ;//TODO: show error
                 }}/>

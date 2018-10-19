@@ -26,7 +26,11 @@ describe('FeatureCallout', () => {
                 onCollapseFeaturesBelow={mock}
                 onExpandFeaturesBelow={mock}
                 featureModel={featureModel}
-                featureName={featureName}/>
+                featureName={featureName}
+                onRemoveFeatures={mock}
+                onAddFeatureAbove={mock}
+                onAddFeatureBelow={mock}
+                onRemoveFeaturesBelow={mock}/>
         );
     };
 

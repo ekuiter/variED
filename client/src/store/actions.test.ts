@@ -1,12 +1,24 @@
 import actions, {SERVER_SEND_MESSAGE} from './actions';
-import {FeatureDiagramLayoutType, OverlayType, MessageType} from '../types';
+import {FeatureDiagramLayoutType, OverlayType, MessageType, Func} from '../types';
 import constants from '../constants';
+import {sendMessage, sendMultipleMessages} from '../server/webSocket';
+
+jest.mock('../server/webSocket');
 
 const {propertyTypes, groupValueTypes} = constants.server;
 
-function expectServerAction(action: any, payload: any) {
-    expect(action).toEqual({type: SERVER_SEND_MESSAGE, payload});
+function expectServerAction(thunk: Func, payload: any, isSendMultiple = false) {
+    const dispatch = jest.fn(action => action);
+    return thunk(dispatch)
+        .then((action: any) => {
+            expect(action).toEqual({type: SERVER_SEND_MESSAGE, payload});
+            expect(dispatch).toBeCalledWith(action);
+            expect(isSendMultiple ? sendMultipleMessages : sendMessage).lastCalledWith(payload);
+        });
 }
+
+const expectMultipleServerAction = (thunk: Func, payload: any) =>
+    expectServerAction(thunk, payload, true);
 
 describe('actions', () => {
     describe('settings', () => {
@@ -116,59 +128,60 @@ describe('actions', () => {
 
     describe('server', () => {
         it('undoes a state change', () => {
-            expectServerAction(actions.server.undo(), {type: MessageType.UNDO});
+            return expectServerAction(actions.server.undo({}), {type: MessageType.UNDO});
         });
     
         it('redoes a state change', () => {
-            expectServerAction(actions.server.redo(), {type: MessageType.REDO});
+            return expectServerAction(actions.server.redo({}), {type: MessageType.REDO});
         });
     
         describe('feature', () => {
             it('adds a feature below', () => {
-                expectServerAction(actions.server.featureDiagram.feature.addBelow({belowFeatureName: 'FeatureIDE'}),
+                return expectServerAction(actions.server.featureDiagram.feature.addBelow({belowFeatureName: 'FeatureIDE'}),
                     {type: MessageType.FEATURE_DIAGRAM_FEATURE_ADD_BELOW, belowFeature: 'FeatureIDE'});
             });
     
             it('removes a feature', () => {
-                expectServerAction(actions.server.featureDiagram.feature.remove({featureNames: ['FeatureIDE']}),
+                return expectMultipleServerAction(actions.server.featureDiagram.feature.remove({featureNames: ['FeatureIDE']}),
                     [{type: MessageType.FEATURE_DIAGRAM_FEATURE_REMOVE, feature: 'FeatureIDE'}]);
             });
     
             it('renames a feature', () => {
-                expectServerAction(actions.server.featureDiagram.feature.rename({oldFeatureName: 'FeatureIDE', newFeatureName: 'new feature name'}),
+                return expectServerAction(actions.server.featureDiagram.feature.rename({oldFeatureName: 'FeatureIDE', newFeatureName: 'new feature name'}),
                     {type: MessageType.FEATURE_DIAGRAM_FEATURE_RENAME, oldFeature: 'FeatureIDE', newFeature: 'new feature name'});
             });
     
             it('sets a feature description', () => {
-                expectServerAction(actions.server.featureDiagram.feature.setDescription({featureName: 'FeatureIDE', description: 'some description'}),
+                return expectServerAction(actions.server.featureDiagram.feature.setDescription({featureName: 'FeatureIDE', description: 'some description'}),
                     {type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_DESCRIPTION, feature: 'FeatureIDE', description: 'some description'});
             });
     
             describe('properties', () => {
                 it('sets the abstract property', () => {
-                    expectServerAction(actions.server.featureDiagram.feature.properties.setAbstract({featureNames: ['FeatureIDE'], value: true}),
+                    return expectMultipleServerAction(actions.server.featureDiagram.feature.properties.setAbstract({featureNames: ['FeatureIDE'], value: true}),
                         [{type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY, feature: 'FeatureIDE', property: propertyTypes.abstract, value: true}]);
                 });
     
                 it('sets the hidden property', () => {
-                    expectServerAction(actions.server.featureDiagram.feature.properties.setHidden({featureNames: ['FeatureIDE'], value: true}),
+                    return expectMultipleServerAction(actions.server.featureDiagram.feature.properties.setHidden({featureNames: ['FeatureIDE'], value: true}),
                         [{type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY, feature: 'FeatureIDE', property: propertyTypes.hidden, value: true}]);
                 });
     
                 it('sets the mandatory property', () => {
-                    expectServerAction(actions.server.featureDiagram.feature.properties.setMandatory({featureNames: ['FeatureIDE'], value: true}),
+                    return expectMultipleServerAction(actions.server.featureDiagram.feature.properties.setMandatory({featureNames: ['FeatureIDE'], value: true}),
                         [{type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY, feature: 'FeatureIDE', property: propertyTypes.mandatory, value: true}]);
                 });
     
                 it('toggles the mandatory property', () => {
-                    expectServerAction(actions.server.featureDiagram.feature.properties.toggleMandatory({feature: <any>{name: 'FeatureIDE', isMandatory: true}}),
-                        {type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY, feature: 'FeatureIDE', property: propertyTypes.mandatory, value: false});
-                    expectServerAction(actions.server.featureDiagram.feature.properties.toggleMandatory({feature: <any>{name: 'FeatureIDE', isMandatory: false}}),
-                        {type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY, feature: 'FeatureIDE', property: propertyTypes.mandatory, value: true});
+                    return expectServerAction(actions.server.featureDiagram.feature.properties.toggleMandatory({feature: <any>{name: 'FeatureIDE', isMandatory: true}}),
+                        {type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY, feature: 'FeatureIDE', property: propertyTypes.mandatory, value: false})
+                        .then(() =>
+                        expectServerAction(actions.server.featureDiagram.feature.properties.toggleMandatory({feature: <any>{name: 'FeatureIDE', isMandatory: false}}),
+                            {type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY, feature: 'FeatureIDE', property: propertyTypes.mandatory, value: true}));
                 });
     
                 it('changes the group type to and', () => {
-                    expectServerAction(actions.server.featureDiagram.feature.properties.setAnd({featureNames: ['FeatureIDE']}), [{
+                    return expectMultipleServerAction(actions.server.featureDiagram.feature.properties.setAnd({featureNames: ['FeatureIDE']}), [{
                         type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
                         feature: 'FeatureIDE',
                         property: propertyTypes.group,
@@ -177,7 +190,7 @@ describe('actions', () => {
                 });
     
                 it('changes the group type to or', () => {
-                    expectServerAction(actions.server.featureDiagram.feature.properties.setOr({featureNames: ['FeatureIDE']}), [{
+                    return expectMultipleServerAction(actions.server.featureDiagram.feature.properties.setOr({featureNames: ['FeatureIDE']}), [{
                         type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
                         feature: 'FeatureIDE',
                         property: propertyTypes.group,
@@ -186,7 +199,7 @@ describe('actions', () => {
                 });
     
                 it('changes the group type to alternative', () => {
-                    expectServerAction(actions.server.featureDiagram.feature.properties.setAlternative({featureNames: ['FeatureIDE']}), [{
+                    return expectMultipleServerAction(actions.server.featureDiagram.feature.properties.setAlternative({featureNames: ['FeatureIDE']}), [{
                         type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
                         feature: 'FeatureIDE',
                         property: propertyTypes.group,
@@ -195,7 +208,7 @@ describe('actions', () => {
                 });
     
                 it('toggles the group type from and to or', () => {
-                    expectServerAction(
+                    return expectServerAction(
                         actions.server.featureDiagram.feature.properties.toggleGroup({
                             feature: <any>{
                                 name: 'FeatureIDE',
@@ -212,7 +225,7 @@ describe('actions', () => {
                 });
     
                 it('toggles the group type from or to alternative', () => {
-                    expectServerAction(
+                    return expectServerAction(
                         actions.server.featureDiagram.feature.properties.toggleGroup({
                             feature: <any>{
                                 name: 'FeatureIDE',
@@ -229,7 +242,7 @@ describe('actions', () => {
                 });
     
                 it('toggles the group type from alternative to and', () => {
-                    expectServerAction(
+                    return expectServerAction(
                         actions.server.featureDiagram.feature.properties.toggleGroup({
                             feature: <any>{
                                 name: 'FeatureIDE',
@@ -249,7 +262,7 @@ describe('actions', () => {
     
         describe('features', () => {
             it('adds a feature above', () => {
-                expectServerAction(actions.server.featureDiagram.feature.addAbove({aboveFeaturesNames: ['FeatureIDE', 'Eclipse']}),
+                return expectServerAction(actions.server.featureDiagram.feature.addAbove({aboveFeaturesNames: ['FeatureIDE', 'Eclipse']}),
                     {type: MessageType.FEATURE_DIAGRAM_FEATURE_ADD_ABOVE, aboveFeatures: ['FeatureIDE', 'Eclipse']});
             });
         });

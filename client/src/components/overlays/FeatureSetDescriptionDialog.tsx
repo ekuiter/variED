@@ -4,13 +4,14 @@
 
 import React from 'react';
 import i18n from '../../i18n';
-import actions from '../../store/actions';
 import {TextFieldDialog, largeDialogStyle} from '../../helpers/Dialog';
 import FeatureComponent, {FeatureComponentProps} from './FeatureComponent';
 import {Feature} from '../../types';
+import {OnSetFeatureDescriptionFunction} from 'src/store/types';
 
 type Props = FeatureComponentProps & {
-    isOpen: boolean
+    isOpen: boolean,
+    onSetFeatureDescription: OnSetFeatureDescriptionFunction
 }
 
 export default class extends FeatureComponent()<Props> {
@@ -23,7 +24,7 @@ export default class extends FeatureComponent()<Props> {
                 title={i18n.t('overlays.featureSetDescriptionDialog.title')}
                 submitText={i18n.t('overlays.featureSetDescriptionDialog.rename')}
                 defaultValue={feature.description}
-                onSubmit={description => actions.server.featureDiagram.feature.setDescription({featureName: feature.name, description})}
+                onSubmit={description => this.props.onSetFeatureDescription({featureName: feature.name, description})}
                 submitOnEnter={false}
                 dialogProps={{styles: largeDialogStyle}}
                 textFieldProps={{multiline: true, rows: 5}}/>

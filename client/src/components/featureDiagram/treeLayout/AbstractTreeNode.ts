@@ -10,9 +10,8 @@ import {addStyle, appendCross, drawCircle, translateTransform, StyleDescriptor, 
 import styles from './styles';
 import {isCommand} from '../../../helpers/withKeys';
 import {OverlayType, Rect, D3Selection, FeatureModelNode} from '../../../types';
-import actions from '../../../store/actions';
 import AbstractTreeLink from './AbstractTreeLink';
-import {OnShowOverlayFunction, OnExpandFeaturesFunction} from '../../../store/types';
+import {OnShowOverlayFunction, OnExpandFeaturesFunction, OnToggleFeatureGroupFunction} from '../../../store/types';
 
 function widenBbox({x, y, width, height}: Rect, paddingX: number, paddingY: number): Rect {
     return {x: x - paddingX, y: y - paddingY, width: width + 2 * paddingX, height: height + 2 * paddingY};
@@ -63,7 +62,8 @@ export default class {
 
     constructor(public settings: Settings, public isSelectMultipleFeatures: boolean,
         public setActiveNode: (overlay: OverlayType | 'select', activeNode: FeatureModelNode) => void,
-        public onShowOverlay: OnShowOverlayFunction, public onExpandFeatures: OnExpandFeaturesFunction) {}
+        public onShowOverlay: OnShowOverlayFunction, public onExpandFeatures: OnExpandFeaturesFunction,
+        public onToggleFeatureGroup: OnToggleFeatureGroupFunction) {}
 
     x(_node: FeatureModelNode): number {
         throw new Error('abstract method not implemented');
@@ -115,7 +115,7 @@ export default class {
             arcClick = nodeEnter.append('path')
                 .attr('class', 'arcClick')
                 .call(addStyle, styles.node.arcClick(this.settings))
-                .on('dblclick', (d: FeatureModelNode) => actions.server.featureDiagram.feature.properties.toggleGroup({feature: d.feature()}));
+                .on('dblclick', (d: FeatureModelNode) => this.onToggleFeatureGroup({feature: d.feature()}));
         this.treeLink.drawGroup(arcSegment, arcSlice, arcClick);
 
         const expandFeature = (d: FeatureModelNode) => d.feature().isCollapsed && this.onExpandFeatures({featureNames: [d.feature().name]});

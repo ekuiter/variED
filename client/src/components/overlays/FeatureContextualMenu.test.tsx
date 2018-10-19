@@ -30,6 +30,16 @@ describe('FeatureContextualMenu', () => {
                 featureModel={featureModel}
                 isSelectMultipleFeatures={selectedFeatureNames.length > 0}
                 selectedFeatureNames={selectedFeatureNames}
+                onAddFeatureAbove={mock}
+                onAddFeatureBelow={mock}
+                onRemoveFeatures={mock}
+                onRemoveFeaturesBelow={mock}
+                onSetFeatureAbstract={mock}
+                onSetFeatureAlternative={mock}
+                onSetFeatureAnd={mock}
+                onSetFeatureHidden={mock}
+                onSetFeatureMandatory={mock}
+                onSetFeatureOr={mock}
                 featureName="FeatureIDE"/>
         );
     };

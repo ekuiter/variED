@@ -9,7 +9,7 @@ import {CommandBar, ICommandBarItemProps} from 'office-ui-fabric-react/lib/Comma
 import commands from '../commands';
 import FeatureComponent, {FeatureComponentProps} from './FeatureComponent';
 import {Feature} from '../../types';
-import {OnShowOverlayFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction} from '../../store/types';
+import {OnShowOverlayFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnRemoveFeaturesFunction, OnAddFeatureBelowFunction, OnAddFeatureAboveFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureMandatoryFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction, OnRemoveFeaturesBelowFunction} from '../../store/types';
 
 type Props = FeatureComponentProps & {
     onDismissed: () => void,
@@ -18,7 +18,17 @@ type Props = FeatureComponentProps & {
     onCollapseFeatures: OnCollapseFeaturesFunction,
     onCollapseFeaturesBelow: OnCollapseFeaturesBelowFunction,
     onExpandFeatures: OnExpandFeaturesFunction,
-    onExpandFeaturesBelow: OnExpandFeaturesBelowFunction
+    onExpandFeaturesBelow: OnExpandFeaturesBelowFunction,
+    onRemoveFeatures: OnRemoveFeaturesFunction,
+    onRemoveFeaturesBelow: OnRemoveFeaturesBelowFunction,
+    onAddFeatureBelow: OnAddFeatureBelowFunction,
+    onAddFeatureAbove: OnAddFeatureAboveFunction,
+    onSetFeatureAbstract: OnSetFeatureAbstractFunction,
+    onSetFeatureHidden: OnSetFeatureHiddenFunction,
+    onSetFeatureMandatory: OnSetFeatureMandatoryFunction,
+    onSetFeatureAnd: OnSetFeatureAndFunction,
+    onSetFeatureOr: OnSetFeatureOrFunction,
+    onSetFeatureAlternative: OnSetFeatureAlternativeFunction
 };
 
 const buttonStyles = {root: {backgroundColor: 'transparent'}},
@@ -28,8 +38,8 @@ export default class extends FeatureComponent()<Props> {
     onRenderFooterContent = () => (
         <CommandBar
             items={transparentItems([
-                commands.featureDiagram.feature.newMenu(this.props.featureName!, this.props.onDismissed, true),
-                commands.featureDiagram.feature.removeMenu([this.feature], this.props.onDismissed, true)
+                commands.featureDiagram.feature.newMenu(this.props.featureName!, this.props.onAddFeatureBelow, this.props.onAddFeatureAbove, this.props.onDismissed, true),
+                commands.featureDiagram.feature.removeMenu([this.feature], this.props.onRemoveFeatures, this.props.onRemoveFeaturesBelow, this.props.onDismissed, true)
             ])}
             overflowItems={[
                 commands.featureDiagram.feature.collapseMenu(
@@ -37,7 +47,9 @@ export default class extends FeatureComponent()<Props> {
                     this.props.onCollapseFeaturesBelow, this.props.onExpandFeaturesBelow, this.props.onDismissed),
                 commands.featureDiagram.feature.rename(this.props.featureName!, this.props.onShowOverlay),
                 commands.featureDiagram.feature.setDescription(this.props.featureName!, this.props.onShowOverlay),
-                commands.featureDiagram.feature.properties([this.feature], this.props.onDismissed)
+                commands.featureDiagram.feature.properties([this.feature], this.props.onSetFeatureAbstract,
+                    this.props.onSetFeatureHidden, this.props.onSetFeatureMandatory, this.props.onSetFeatureAnd,
+                    this.props.onSetFeatureOr, this.props.onSetFeatureAlternative, this.props.onDismissed)
             ]}
             overflowButtonProps={{styles: buttonStyles}}
             styles={{root: {margin: '0 -40px', padding: '0 35px'}}}/>

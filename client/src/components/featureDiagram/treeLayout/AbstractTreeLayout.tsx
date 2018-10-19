@@ -15,7 +15,7 @@ import {FeatureModelNode, D3Selection, Bbox, OverlayType, isFloatingFeatureOverl
 import FeatureModel from '../../../server/FeatureModel';
 import AbstractTreeNode from './AbstractTreeNode';
 import AbstractTreeLink from './AbstractTreeLink';
-import {OnShowOverlayFunction, OnHideOverlayFunction, OnSetSelectMultipleFeaturesFunction, OnSelectFeatureFunction, OnDeselectFeatureFunction, OnExpandFeaturesFunction, OnDeselectAllFeaturesFunction} from '../../../store/types';
+import {OnShowOverlayFunction, OnHideOverlayFunction, OnSetSelectMultipleFeaturesFunction, OnSelectFeatureFunction, OnDeselectFeatureFunction, OnExpandFeaturesFunction, OnDeselectAllFeaturesFunction, OnToggleFeatureGroupFunction, OnToggleFeatureMandatoryFunction} from '../../../store/types';
 
 export interface AbstractTreeLayoutProps {
     featureModel: FeatureModel,
@@ -34,7 +34,9 @@ export interface AbstractTreeLayoutProps {
     onSelectFeature: OnSelectFeatureFunction,
     onDeselectFeature: OnDeselectFeatureFunction,
     onExpandFeatures: OnExpandFeaturesFunction,
-    onDeselectAllFeatures: OnDeselectAllFeaturesFunction
+    onDeselectAllFeatures: OnDeselectAllFeaturesFunction,
+    onToggleFeatureGroup: OnToggleFeatureGroupFunction,
+    onToggleFeatureMandatory: OnToggleFeatureMandatoryFunction
 };
 
 export default class extends React.Component<AbstractTreeLayoutProps> {
@@ -52,12 +54,14 @@ export default class extends React.Component<AbstractTreeLayoutProps> {
             props.isSelectMultipleFeatures,
             this.setActiveNode.bind(this),
             this.props.onShowOverlay,
-            this.props.onExpandFeatures);
+            this.props.onExpandFeatures,
+            this.props.onToggleFeatureGroup);
         this.treeLink = new TreeLink(
             props.settings,
             this.getParentCoordinateFn('currentCoordinates'),
             this.getParentCoordinateFn('previousCoordinates'),
-            this.treeNode);
+            this.treeNode,
+            this.props.onToggleFeatureMandatory);
         this.treeNode.treeLink = this.treeLink;
     }
 

@@ -8,7 +8,7 @@ import commands from '../commands';
 import {CommandBar} from 'office-ui-fabric-react/lib/CommandBar';
 import {Feature, FeatureDiagramLayoutType} from '../../types';
 import FeatureComponent, {FeatureComponentProps} from './FeatureComponent';
-import {OnShowOverlayFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction} from '../../store/types';
+import {OnShowOverlayFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnRemoveFeaturesFunction, OnAddFeatureBelowFunction, OnAddFeatureAboveFunction, OnRemoveFeaturesBelowFunction} from '../../store/types';
 
 type Props = FeatureComponentProps & {
     onDismiss: () => void,
@@ -18,7 +18,11 @@ type Props = FeatureComponentProps & {
     onCollapseFeatures: OnCollapseFeaturesFunction,
     onCollapseFeaturesBelow: OnCollapseFeaturesBelowFunction,
     onExpandFeatures: OnExpandFeaturesFunction,
-    onExpandFeaturesBelow: OnExpandFeaturesBelowFunction
+    onExpandFeaturesBelow: OnExpandFeaturesBelowFunction,
+    onRemoveFeatures: OnRemoveFeaturesFunction,
+    onRemoveFeaturesBelow: OnRemoveFeaturesBelowFunction,
+    onAddFeatureBelow: OnAddFeatureBelowFunction,
+    onAddFeatureAbove: OnAddFeatureAboveFunction
 };
 
 export default class extends FeatureComponent({doUpdate: true})<Props> {
@@ -46,8 +50,8 @@ export default class extends FeatureComponent({doUpdate: true})<Props> {
                         : <div className="inner empty"/>}
                     <CommandBar
                         items={[
-                            commands.featureDiagram.feature.newMenu(feature.name, onDismiss, true),
-                            commands.featureDiagram.feature.removeMenu([feature], onDismiss, true),
+                            commands.featureDiagram.feature.newMenu(feature.name, this.props.onAddFeatureBelow, this.props.onAddFeatureAbove, onDismiss, true),
+                            commands.featureDiagram.feature.removeMenu([feature], this.props.onRemoveFeatures, this.props.onRemoveFeaturesBelow, onDismiss, true),
                             commands.featureDiagram.feature.collapseMenu(
                                 [feature], this.props.onCollapseFeatures, this.props.onExpandFeatures,
                                 this.props.onCollapseFeaturesBelow, this.props.onExpandFeaturesBelow, onDismiss, true),

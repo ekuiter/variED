@@ -27,21 +27,18 @@ const CommandBarContainer = (props: StateDerivedProps) => (
             text: i18n.t('commands.edit'),
             subMenuProps: {
                 items: [
-                    commands.undo(),
-                    commands.redo(),
+                    commands.undo(props.onUndo!),
+                    commands.redo(props.onRedo!),
                     makeDivider(),
                     commands.featureDiagram.feature.selectAll(props.onSelectAllFeatures!),
                     commands.featureDiagram.feature.deselectAll(props.onDeselectAllFeatures!),
                     commands.featureDiagram.feature.selection(
-                        props.isSelectMultipleFeatures!,
-                        props.onSetSelectMultipleFeatures!,
-                        props.selectedFeatureNames!,
-                        props.onDeselectAllFeatures!,
-                        props.onCollapseFeatures!,
-                        props.onExpandFeatures!,
-                        props.onCollapseFeaturesBelow!,
-                        props.onExpandFeaturesBelow!,
-                        props.featureModel!)
+                        props.isSelectMultipleFeatures!, props.onSetSelectMultipleFeatures!, props.selectedFeatureNames!,
+                        props.onDeselectAllFeatures!, props.onCollapseFeatures!, props.onExpandFeatures!,
+                        props.onCollapseFeaturesBelow!, props.onExpandFeaturesBelow!, props.onAddFeatureAbove!,
+                        props.onRemoveFeatures!, props.onRemoveFeaturesBelow!, props.onSetFeatureAbstract!,
+                        props.onSetFeatureHidden!, props.onSetFeatureMandatory!, props.onSetFeatureAnd!,
+                        props.onSetFeatureOr!, props.onSetFeatureAlternative!, props.featureModel!)
                 ]
             }
         }, {
@@ -101,6 +98,17 @@ export default connect(
         onCollapseFeaturesBelow: payload => dispatch(actions.ui.featureDiagram.feature.collapseBelow(payload)),
         onExpandFeaturesBelow: payload => dispatch(actions.ui.featureDiagram.feature.expandBelow(payload)),
         onShowOverlay: payload => dispatch(actions.ui.overlay.show(payload)),
-        onFitToScreen: () => dispatch(actions.ui.featureDiagram.fitToScreen())
+        onFitToScreen: () => dispatch(actions.ui.featureDiagram.fitToScreen()),
+        onUndo: () => dispatch<any>(actions.server.undo({})),
+        onRedo: () => dispatch<any>(actions.server.redo({})),
+        onAddFeatureAbove: payload => dispatch<any>(actions.server.featureDiagram.feature.addAbove(payload)),
+        onRemoveFeatures: payload => dispatch<any>(actions.server.featureDiagram.feature.remove(payload)),
+        onRemoveFeaturesBelow: payload => dispatch<any>(actions.server.featureDiagram.feature.removeBelow(payload)),
+        onSetFeatureAbstract: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setAbstract(payload)),
+        onSetFeatureHidden: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setHidden(payload)),
+        onSetFeatureMandatory: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setMandatory(payload)),
+        onSetFeatureAnd: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setAnd(payload)),
+        onSetFeatureOr: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setOr(payload)),
+        onSetFeatureAlternative: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setAlternative(payload))
     })
 )(CommandBarContainer);

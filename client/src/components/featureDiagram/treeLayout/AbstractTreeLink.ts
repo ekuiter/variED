@@ -12,13 +12,14 @@ import {
     Style
 } from '../../../helpers/svg';
 import styles from './styles';
-import actions from '../../../store/actions';
 import AbstractTreeNode from './AbstractTreeNode';
 import {FeatureModelNode, Rect, Point, D3Selection, NodePointFunction, NodeCoordinateForAxisFunction, FeatureType} from '../../../types';
+import {OnToggleFeatureMandatoryFunction} from 'src/store/types';
 
 export default class {
     constructor(public settings: Settings, public getCurrentParentCoordinate: NodeCoordinateForAxisFunction,
-        public getPreviousParentCoordinate: NodeCoordinateForAxisFunction, public treeNode: AbstractTreeNode) {}
+        public getPreviousParentCoordinate: NodeCoordinateForAxisFunction, public treeNode: AbstractTreeNode,
+        public onToggleFeatureMandatory: OnToggleFeatureMandatoryFunction) {}
 
     nodeX(node: FeatureModelNode): number {
         return this.treeNode.x(node);
@@ -111,7 +112,7 @@ export default class {
                 center: from,
                 radius: 0,
                 style: styles.link.mandatory(this.settings),
-                fn: (circle: D3Selection) => circle.on('dblclick', d => actions.server.featureDiagram.feature.properties.toggleMandatory(d.feature()))
+                fn: (circle: D3Selection) => circle.on('dblclick', d => this.onToggleFeatureMandatory({feature: d.feature()}))
             });
 
         return linkEnter;

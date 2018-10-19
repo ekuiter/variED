@@ -3,14 +3,31 @@
  * They are plain objects describing a state change.
  */
 
-import {createStandardAction, ActionType} from 'typesafe-actions';
+import {createStandardAction, ActionType, action} from 'typesafe-actions';
 import constants from '../constants';
 import {Message, MessageType, Feature, FeatureDiagramLayoutType, OverlayType, OverlayProps} from '../types';
+import {Dispatch, AnyAction, Action as ReduxAction} from 'redux';
+import {sendMessage, sendMultipleMessages} from '../server/webSocket';
+import {ThunkAction} from 'redux-thunk';
 
 const {propertyTypes, groupValueTypes} = constants.server;
 
 export const SERVER_SEND_MESSAGE = 'server/sendMessage';
 const SERVER_RECEIVE_MESSAGE = 'server/receiveMessage';
+
+function createServerAction<P>(fn: (payload: P) => Message | Message[]): (payload: P) => ThunkAction<Promise<ReduxAction>, any, any, any> {
+    return (payload: P) => {
+        return (dispatch: Dispatch<AnyAction>) => {
+            const messageOrMessages = fn(payload);
+            let promise;
+            if (Array.isArray(messageOrMessages))
+                promise = sendMultipleMessages(messageOrMessages);
+            else
+                promise = sendMessage(messageOrMessages);
+            return promise.then(() => dispatch(action(SERVER_SEND_MESSAGE, messageOrMessages)));
+        };
+    };
+}
 
 const actions = {
     settings: {
@@ -42,74 +59,64 @@ const actions = {
     },
     server: {
         receive: createStandardAction(SERVER_RECEIVE_MESSAGE)<Message>(),
-        undo: createStandardAction(SERVER_SEND_MESSAGE).map(() => ({payload: {type: MessageType.UNDO}})),
-        redo: createStandardAction(SERVER_SEND_MESSAGE).map(() => ({payload: {type: MessageType.REDO}})),
+        undo: createServerAction(() => ({type: MessageType.UNDO})),
+        redo: createServerAction(() => ({type: MessageType.REDO})),
         featureDiagram: {
             feature: {
-                addBelow: createStandardAction(SERVER_SEND_MESSAGE).map(({belowFeatureName}: {belowFeatureName: string}) =>
-                    ({payload: {type: MessageType.FEATURE_DIAGRAM_FEATURE_ADD_BELOW, belowFeature: belowFeatureName}})),
-                addAbove: createStandardAction(SERVER_SEND_MESSAGE).map(({aboveFeaturesNames}: {aboveFeaturesNames: string[]}) =>
-                    ({payload: {type: MessageType.FEATURE_DIAGRAM_FEATURE_ADD_ABOVE, aboveFeatures: aboveFeaturesNames}})),
-                remove: createStandardAction(SERVER_SEND_MESSAGE).map(({featureNames}: {featureNames: string[]}) =>
-                    ({payload: featureNames.map(featureName => ({type: MessageType.FEATURE_DIAGRAM_FEATURE_REMOVE, feature: featureName}))})),
-                removeBelow: createStandardAction(SERVER_SEND_MESSAGE).map(({featureNames}: {featureNames: string[]}) =>
-                    ({payload: featureNames.map(featureName => ({type: MessageType.FEATURE_DIAGRAM_FEATURE_REMOVE_BELOW, feature: featureName}))})),
-                rename: createStandardAction(SERVER_SEND_MESSAGE).map(({oldFeatureName, newFeatureName}: {oldFeatureName: string, newFeatureName: string}) =>
-                    ({payload: {type: MessageType.FEATURE_DIAGRAM_FEATURE_RENAME, oldFeature: oldFeatureName, newFeature: newFeatureName}})),
-                setDescription: createStandardAction(SERVER_SEND_MESSAGE).map(({featureName, description}: {featureName: string, description: string}) =>
-                    ({payload: {type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_DESCRIPTION, feature: featureName, description}})),
+                addBelow: createServerAction(({belowFeatureName}: {belowFeatureName: string}) =>
+                    ({type: MessageType.FEATURE_DIAGRAM_FEATURE_ADD_BELOW, belowFeature: belowFeatureName})),
+                addAbove: createServerAction(({aboveFeaturesNames}: {aboveFeaturesNames: string[]}) =>
+                    ({type: MessageType.FEATURE_DIAGRAM_FEATURE_ADD_ABOVE, aboveFeatures: aboveFeaturesNames})),
+                remove: createServerAction(({featureNames}: {featureNames: string[]}) =>
+                    (featureNames.map(featureName => ({type: MessageType.FEATURE_DIAGRAM_FEATURE_REMOVE, feature: featureName})))),
+                removeBelow: createServerAction(({featureNames}: {featureNames: string[]}) =>
+                    (featureNames.map(featureName => ({type: MessageType.FEATURE_DIAGRAM_FEATURE_REMOVE_BELOW, feature: featureName})))),
+                rename: createServerAction(({oldFeatureName, newFeatureName}: {oldFeatureName: string, newFeatureName: string}) =>
+                    ({type: MessageType.FEATURE_DIAGRAM_FEATURE_RENAME, oldFeature: oldFeatureName, newFeature: newFeatureName})),
+                setDescription: createServerAction(({featureName, description}: {featureName: string, description: string}) =>
+                    ({type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_DESCRIPTION, feature: featureName, description})),
                 properties: {
-                    setAbstract: createStandardAction(SERVER_SEND_MESSAGE).map(({featureNames, value}: {featureNames: string[], value: boolean}) => ({
-                        payload: featureNames.map(featureName => ({
+                    setAbstract: createServerAction(({featureNames, value}: {featureNames: string[], value: boolean}) =>
+                        featureNames.map(featureName => ({
                             type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
                             feature: featureName, property: propertyTypes.abstract, value
-                        }))
-                    })),
-                    setHidden: createStandardAction(SERVER_SEND_MESSAGE).map(({featureNames, value}: {featureNames: string[], value: boolean}) => ({
-                        payload: featureNames.map(featureName => ({
+                        }))),
+                    setHidden: createServerAction(({featureNames, value}: {featureNames: string[], value: boolean}) =>
+                        featureNames.map(featureName => ({
                             type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
                             feature: featureName, property: propertyTypes.hidden, value
-                        }))
-                    })),
-                    setMandatory: createStandardAction(SERVER_SEND_MESSAGE).map(({featureNames, value}: {featureNames: string[], value: boolean}) => ({
-                        payload: featureNames.map(featureName => ({
+                        }))),
+                    setMandatory: createServerAction(({featureNames, value}: {featureNames: string[], value: boolean}) =>
+                        featureNames.map(featureName => ({
                             type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
                             feature: featureName, property: propertyTypes.mandatory, value
-                        }))
-                    })),
-                    toggleMandatory: createStandardAction(SERVER_SEND_MESSAGE).map(({feature}: {feature: Feature}) => ({
-                        payload: {
+                        }))),
+                    toggleMandatory: createServerAction(({feature}: {feature: Feature}) => ({
                             type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
                             feature: feature.name, property: propertyTypes.mandatory, value: !feature.isMandatory
-                        }
-                    })),
-                    setAnd: createStandardAction(SERVER_SEND_MESSAGE).map(({featureNames}: {featureNames: string[]}) => ({
-                        payload: featureNames.map(featureName => ({
+                        })),
+                    setAnd: createServerAction(({featureNames}: {featureNames: string[]}) =>
+                        featureNames.map(featureName => ({
                             type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
                             feature: featureName, property: propertyTypes.group, value: groupValueTypes.and
-                        }))
-                    })),
-                    setOr: createStandardAction(SERVER_SEND_MESSAGE).map(({featureNames}: {featureNames: string[]}) => ({
-                        payload: featureNames.map(featureName => ({
+                        }))),
+                    setOr: createServerAction(({featureNames}: {featureNames: string[]}) =>
+                        featureNames.map(featureName => ({
                             type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
                             feature: featureName, property: propertyTypes.group, value: groupValueTypes.or
-                        }))
-                    })),
-                    setAlternative: createStandardAction(SERVER_SEND_MESSAGE).map(({featureNames}: {featureNames: string[]}) => ({
-                        payload: featureNames.map(featureName => ({
+                        }))),
+                    setAlternative: createServerAction(({featureNames}: {featureNames: string[]}) =>
+                        featureNames.map(featureName => ({
                             type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
                             feature: featureName, property: propertyTypes.group, value: groupValueTypes.alternative
-                        }))
-                    })),
-                    toggleGroup: createStandardAction(SERVER_SEND_MESSAGE).map(({feature}: {feature: Feature}) => ({
-                        payload: {
+                        }))),
+                    toggleGroup: createServerAction(({feature}: {feature: Feature}) => ({
                             type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
                             feature: feature.name, property: propertyTypes.group,
                             value: feature.isAnd
                                 ? groupValueTypes.or : feature.isOr
                                     ? groupValueTypes.alternative : groupValueTypes.and
-                        }
-                    }))
+                        }))
                 }
             }
         } 

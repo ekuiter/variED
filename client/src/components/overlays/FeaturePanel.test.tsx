@@ -22,7 +22,17 @@ describe('FeaturePanel', () => {
                 onExpandFeaturesBelow={mock}
                 featureModel={featureModel}
                 featureName={featureName}
-                settings={defaultSettings}/>
+                settings={defaultSettings}
+                onAddFeatureAbove={mock}
+                onAddFeatureBelow={mock}
+                onRemoveFeatures={mock}
+                onRemoveFeaturesBelow={mock}
+                onSetFeatureAbstract={mock}
+                onSetFeatureAlternative={mock}
+                onSetFeatureAnd={mock}
+                onSetFeatureHidden={mock}
+                onSetFeatureMandatory={mock}
+                onSetFeatureOr={mock}/>
         );
     };
 

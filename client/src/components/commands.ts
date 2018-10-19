@@ -5,12 +5,11 @@
  */
 
 import i18n from '../i18n';
-import actions from '../store/actions';
 import {FeatureDiagramLayoutType, OverlayType, FormatType, Feature} from '../types';
 import {ContextualMenuItemType} from 'office-ui-fabric-react/lib/ContextualMenu';
 import {getShortcutText} from '../shortcuts';
 import {canExport} from './featureDiagram/export';
-import {OnShowOverlayFunction, OnCollapseFeaturesFunction, OnExpandFeaturesFunction, OnSetFeatureDiagramLayoutFunction, OnFitToScreenFunction, OnDeselectAllFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesBelowFunction, OnSetSelectMultipleFeaturesFunction, OnSelectAllFeaturesFunction, OnCollapseAllFeaturesFunction, OnExpandAllFeaturesFunction} from '../store/types';
+import {OnShowOverlayFunction, OnCollapseFeaturesFunction, OnExpandFeaturesFunction, OnSetFeatureDiagramLayoutFunction, OnFitToScreenFunction, OnDeselectAllFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesBelowFunction, OnSetSelectMultipleFeaturesFunction, OnSelectAllFeaturesFunction, OnCollapseAllFeaturesFunction, OnExpandAllFeaturesFunction, OnRemoveFeaturesFunction, OnUndoFunction, OnRedoFunction, OnAddFeatureBelowFunction, OnAddFeatureAboveFunction, OnRemoveFeaturesBelowFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureMandatoryFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction} from '../store/types';
 import FeatureModel from '../server/FeatureModel';
 
 const exportFormatItem = (featureDiagramLayout: FeatureDiagramLayoutType,
@@ -26,9 +25,9 @@ const exportFormatItem = (featureDiagramLayout: FeatureDiagramLayoutType,
 export const makeDivider = () =>
     ({key: 'divider', itemType: ContextualMenuItemType.Divider});
 
-export const removeCommand = (features: Feature[]) => ({
+export const removeCommand = (features: Feature[], onRemoveFeatures: OnRemoveFeaturesFunction) => ({
     disabled: features.some(feature => feature.isRoot && (!feature.hasChildren || feature.node.children!.length > 1)),
-    action: () => actions.server.featureDiagram.feature.remove({featureNames: features.map(feature => feature.name)})
+    action: () => onRemoveFeatures({featureNames: features.map(feature => feature.name)})
 });
 
 export const collapseCommand = (features: Feature[], onCollapseFeatures: OnCollapseFeaturesFunction,
@@ -57,19 +56,19 @@ const commands = {
         iconProps: {iconName: 'Info'},
         onClick: () => onShowOverlay({overlay: OverlayType.aboutPanel, overlayProps: {}})
     }),
-    undo: () => ({
+    undo: (onUndo: OnUndoFunction) => ({
         key: 'undo',
         text: i18n.t('commands.undo'),
         iconProps: {iconName: 'Undo'},
         secondaryText: getShortcutText('undo'),
-        onClick: () => actions.server.undo()
+        onClick: onUndo
     }),
-    redo: () => ({
+    redo: (onRedo: OnRedoFunction) => ({
         key: 'redo',
         text: i18n.t('commands.redo'),
         iconProps: {iconName: 'Redo'},
         secondaryText: getShortcutText('redo'),
-        onClick: () => actions.server.redo()
+        onClick: onRedo
     }),
     featureDiagram: {
         export: (featureDiagramLayout: FeatureDiagramLayoutType, onShowOverlay: OnShowOverlayFunction) => ({
@@ -112,13 +111,16 @@ const commands = {
             onClick: onFitToScreen
         }),
         feature: {
-            newMenu: (featureName: string, onClick: () => void, iconOnly = false) => ({
+            newMenu: (featureName: string, onAddFeatureBelow: OnAddFeatureBelowFunction,
+                onAddFeatureAbove: OnAddFeatureAboveFunction, onClick: () => void, iconOnly = false) => ({
                 key: 'newMenu',
                 text: !iconOnly ? i18n.t('commands.featureDiagram.feature.newMenu.title') : undefined,
                 iconProps: {iconName: 'Add'},
                 iconOnly,
                 split: true,
-                onClick: () => actions.server.featureDiagram.feature.addBelow({belowFeatureName: featureName}).then(onClick),
+                onClick: () => {
+                    onAddFeatureBelow({belowFeatureName: featureName}).then(onClick);
+                },
                 subMenuProps: {
                     items: [
                         {
@@ -126,13 +128,16 @@ const commands = {
                             text: i18n.t('commands.featureDiagram.feature.newMenu.newBelow'),
                             secondaryText: getShortcutText('featureDiagram.feature.new'),
                             iconProps: {iconName: 'Add'},
-                            onClick: () => actions.server.featureDiagram.feature.addBelow({belowFeatureName: featureName}).then(onClick)
+                            onClick: () => {
+                                onAddFeatureBelow({belowFeatureName: featureName}).then(onClick);
+                            }
                         },
-                        commands.featureDiagram.feature.newAbove([featureName], onClick)
+                        commands.featureDiagram.feature.newAbove([featureName], onAddFeatureAbove, onClick)
                     ]
                 }
             }),
-            newAbove: (featureNames: string[], onClick: () => void, featureModel?: FeatureModel) => {
+            newAbove: (featureNames: string[], onAddFeatureAbove: OnAddFeatureAboveFunction,
+                onClick: () => void, featureModel?: FeatureModel) => {
                 let disabled = false;
                 if (featureNames.length === 0)
                     disabled = true;
@@ -146,18 +151,23 @@ const commands = {
                     text: i18n.t('commands.featureDiagram.feature.newMenu.newAbove'),
                     iconProps: {iconName: 'Add'},
                     disabled,
-                    onClick: () => actions.server.featureDiagram.feature.addAbove({aboveFeaturesNames: featureNames}).then(onClick)
+                    onClick: () => {
+                        onAddFeatureAbove({aboveFeaturesNames: featureNames}).then(onClick);
+                    }
                 });
             },
-            removeMenu: (features: Feature[], onClick: () => void, iconOnly = false) => {
-                const {disabled, action} = removeCommand(features);
+            removeMenu: (features: Feature[], onRemoveFeatures: OnRemoveFeaturesFunction,
+                onRemoveFeaturesBelow: OnRemoveFeaturesBelowFunction, onClick: () => void, iconOnly = false) => {
+                const {disabled, action} = removeCommand(features, onRemoveFeatures);
                 return {
                     key: 'removeMenu',
                     text: !iconOnly ? i18n.t('commands.featureDiagram.feature.removeMenu.title') : undefined,
                     iconProps: {iconName: 'Remove'},
                     iconOnly,
                     split: true,
-                    onClick: () => action().then(onClick),
+                    onClick: () => {
+                        action().then(onClick);
+                    },
                     disabled,
                     subMenuProps: {
                         items: [{
@@ -165,14 +175,17 @@ const commands = {
                             text: i18n.getFunction('commands.featureDiagram.feature.removeMenu.remove')(features),
                             secondaryText: getShortcutText('featureDiagram.feature.remove'),
                             iconProps: {iconName: 'Remove'},
-                            onClick: () => action().then(onClick)
+                            onClick: () => {
+                                action().then(onClick);
+                            }
                         }, {
                             key: 'removeBelow',
                             text: i18n.t('commands.featureDiagram.feature.removeMenu.removeBelow'),
                             iconProps: {iconName: 'Remove'},
                             disabled: features.some(feature => feature.isRoot),
-                            onClick: () => actions.server.featureDiagram.feature.removeBelow(
-                                {featureNames: features.map(feature => feature.name)}).then(onClick)
+                            onClick: () => {
+                                onRemoveFeaturesBelow({featureNames: features.map(feature => feature.name)}).then(onClick);
+                            }
                         }]
                     }
                 };
@@ -198,7 +211,10 @@ const commands = {
                 iconProps: {iconName: 'TextDocument'},
                 onClick: () => onShowOverlay({overlay: OverlayType.featureSetDescriptionDialog, overlayProps: {featureName}})
             }),
-            properties: (features: Feature[], onClick: () => void) => {
+            properties: (features: Feature[], onSetFeatureAbstract: OnSetFeatureAbstractFunction,
+                onSetFeatureHidden: OnSetFeatureHiddenFunction, onSetFeatureMandatory: OnSetFeatureMandatoryFunction,
+                onSetFeatureAnd: OnSetFeatureAndFunction, onSetFeatureOr: OnSetFeatureOrFunction,
+                onSetFeatureAlternative: OnSetFeatureAlternativeFunction, onClick: () => void) => {
                 const mandatoryDisabled = features.some(feature => feature.isRoot || feature.node.parent!.feature().isGroup),
                     groupDisabled = features.some(feature => !feature.node.children || feature.node.children.length <= 1);
                 return ({
@@ -212,65 +228,79 @@ const commands = {
                             canCheck: true,
                             disabled: features.every(feature => feature.isAbstract),
                             isChecked: features.every(feature => feature.isAbstract),
-                            onClick: () => actions.server.featureDiagram.feature.properties.setAbstract(
-                                {featureNames: features.map(feature => feature.name), value: true}).then(onClick)
+                            onClick: () => {
+                                onSetFeatureAbstract({featureNames: features.map(feature => feature.name), value: true}).then(onClick);
+                            }
                         }, {
                             key: 'concrete',
                             text: i18n.t('commands.featureDiagram.feature.propertiesMenu.concrete'),
                             canCheck: true,
                             disabled: features.every(feature => !feature.isAbstract),
                             isChecked: features.every(feature => !feature.isAbstract),
-                            onClick: () => actions.server.featureDiagram.feature.properties.setAbstract(
-                                {featureNames: features.map(feature => feature.name), value: false}).then(onClick)
+                            onClick: () => {
+                                onSetFeatureAbstract({featureNames: features.map(feature => feature.name), value: false}).then(onClick);
+                            }
                         }, makeDivider(), {
                             key: 'hidden',
                             text: i18n.t('commands.featureDiagram.feature.propertiesMenu.hidden'),
                             canCheck: true,
                             isChecked: features.every(feature => feature.isHidden),
-                            onClick: () => actions.server.featureDiagram.feature.properties.setHidden({
-                                featureNames: features.map(feature => feature.name),
-                                value: !features.every(feature => feature.isHidden)
-                            }).then(onClick)
+                            onClick: () => {
+                                onSetFeatureHidden({
+                                    featureNames: features.map(feature => feature.name),
+                                    value: !features.every(feature => feature.isHidden)
+                                }).then(onClick);
+                            }
                         }, makeDivider(), {
                             key: 'mandatory',
                             text: i18n.t('commands.featureDiagram.feature.propertiesMenu.mandatory'),
                             canCheck: true,
                             disabled: mandatoryDisabled || features.every(feature => feature.isMandatory),
                             isChecked: features.every(feature => feature.isMandatory),
-                            onClick: () => actions.server.featureDiagram.feature.properties.setMandatory(
-                                {featureNames: features.map(feature => feature.name), value: true}).then(onClick)
+                            onClick: () => {
+                                onSetFeatureMandatory(
+                                    {featureNames: features.map(feature => feature.name), value: true}).then(onClick);
+                            }
                         }, {
                             key: 'optional',
                             text: i18n.t('commands.featureDiagram.feature.propertiesMenu.optional'),
                             canCheck: true,
                             disabled: mandatoryDisabled || features.every(feature => !feature.isMandatory),
                             isChecked: features.every(feature => !feature.isMandatory),
-                            onClick: () => actions.server.featureDiagram.feature.properties.setMandatory(
-                                {featureNames: features.map(feature => feature.name), value: false}).then(onClick)
+                            onClick: () => {
+                                onSetFeatureMandatory(
+                                    {featureNames: features.map(feature => feature.name), value: false}).then(onClick);
+                            }
                         }, makeDivider(), {
                             key: 'and',
                             text: i18n.t('commands.featureDiagram.feature.propertiesMenu.and'),
                             canCheck: true,
                             disabled: groupDisabled || features.every(feature => feature.isAnd),
                             isChecked: features.every(feature => feature.isAnd),
-                            onClick: () => actions.server.featureDiagram.feature.properties.setAnd(
-                                {featureNames: features.map(feature => feature.name)}).then(onClick)
+                            onClick: () => {
+                                onSetFeatureAnd(
+                                    {featureNames: features.map(feature => feature.name)}).then(onClick);
+                            }
                         }, {
                             key: 'or',
                             text: i18n.t('commands.featureDiagram.feature.propertiesMenu.or'),
                             canCheck: true,
                             disabled: groupDisabled || features.every(feature => feature.isOr),
                             isChecked: features.every(feature => feature.isOr),
-                            onClick: () => actions.server.featureDiagram.feature.properties.setOr(
-                                {featureNames: features.map(feature => feature.name)}).then(onClick)
+                            onClick: () => {
+                                onSetFeatureOr(
+                                    {featureNames: features.map(feature => feature.name)}).then(onClick);
+                            }
                         }, {
                             key: 'alternative',
                             text: i18n.t('commands.featureDiagram.feature.propertiesMenu.alternative'),
                             canCheck: true,
                             disabled: groupDisabled || features.every(feature => feature.isAlternative),
                             isChecked: features.every(feature => feature.isAlternative),
-                            onClick: () => actions.server.featureDiagram.feature.properties.setAlternative(
-                                {featureNames: features.map(feature => feature.name)}).then(onClick)
+                            onClick: () => {
+                                onSetFeatureAlternative(
+                                    {featureNames: features.map(feature => feature.name)}).then(onClick);
+                            }
                         }]
                     }
                 });
@@ -279,25 +309,37 @@ const commands = {
                 selectedFeatureNames: string[], onDeselectAllFeatures: OnDeselectAllFeaturesFunction,
                 onCollapseFeatures: OnCollapseFeaturesFunction, onExpandFeatures: OnExpandFeaturesFunction,
                 onCollapseFeaturesBelow: OnCollapseFeaturesBelowFunction, onExpandFeaturesBelow: OnExpandFeaturesBelowFunction,
-                featureModel: FeatureModel) => ({
+                onAddFeatureAbove: OnAddFeatureAboveFunction, onRemoveFeatures: OnRemoveFeaturesFunction,
+                onRemoveFeaturesBelow: OnRemoveFeaturesBelowFunction, onSetFeatureAbstract: OnSetFeatureAbstractFunction,
+                onSetFeatureHidden: OnSetFeatureHiddenFunction, onSetFeatureMandatory: OnSetFeatureMandatoryFunction,
+                onSetFeatureAnd: OnSetFeatureAndFunction, onSetFeatureOr: OnSetFeatureOrFunction,
+                onSetFeatureAlternative: OnSetFeatureAlternativeFunction, featureModel: FeatureModel) => ({
                 key: 'selection',
                 text: i18n.getFunction('commands.featureDiagram.feature.selection')(isSelectMultipleFeatures, selectedFeatureNames),
                 onClick: () => onSetSelectMultipleFeatures({isSelectMultipleFeatures: !isSelectMultipleFeatures}), // TODO: tell the user he can choose features now
                 subMenuProps: isSelectMultipleFeatures
                     ? {items: commands.featureDiagram.feature.selectionItems(selectedFeatureNames, onDeselectAllFeatures,
-                        onCollapseFeatures, onExpandFeatures, onCollapseFeaturesBelow, onExpandFeaturesBelow, featureModel)}
+                        onCollapseFeatures, onExpandFeatures, onCollapseFeaturesBelow, onExpandFeaturesBelow, onAddFeatureAbove,
+                        onRemoveFeatures, onRemoveFeaturesBelow, onSetFeatureAbstract, onSetFeatureHidden, onSetFeatureMandatory, onSetFeatureAnd, onSetFeatureOr,
+                        onSetFeatureAlternative, featureModel)}
                     : undefined
             }),
             selectionItems: (selectedFeatureNames: string[], onDeselectAllFeatures: OnDeselectAllFeaturesFunction,
                 onCollapseFeatures: OnCollapseFeaturesFunction, onExpandFeatures: OnExpandFeaturesFunction,
                 onCollapseFeaturesBelow: OnCollapseFeaturesBelowFunction, onExpandFeaturesBelow: OnExpandFeaturesBelowFunction,
-                featureModel: FeatureModel) => [
-                commands.featureDiagram.feature.newAbove(selectedFeatureNames, onDeselectAllFeatures, featureModel),
-                commands.featureDiagram.feature.removeMenu(featureModel.getFeatures(selectedFeatureNames), onDeselectAllFeatures),
+                onAddFeatureAbove: OnAddFeatureAboveFunction, onRemoveFeatures: OnRemoveFeaturesFunction,
+                onRemoveFeaturesBelow: OnRemoveFeaturesBelowFunction, onSetFeatureAbstract: OnSetFeatureAbstractFunction,
+                onSetFeatureHidden: OnSetFeatureHiddenFunction, onSetFeatureMandatory: OnSetFeatureMandatoryFunction,
+                onSetFeatureAnd: OnSetFeatureAndFunction, onSetFeatureOr: OnSetFeatureOrFunction,
+                onSetFeatureAlternative: OnSetFeatureAlternativeFunction, featureModel: FeatureModel) => [
+                commands.featureDiagram.feature.newAbove(selectedFeatureNames, onAddFeatureAbove, onDeselectAllFeatures, featureModel),
+                commands.featureDiagram.feature.removeMenu(featureModel.getFeatures(selectedFeatureNames), onRemoveFeatures, onRemoveFeaturesBelow, onDeselectAllFeatures),
                 commands.featureDiagram.feature.collapseMenu(featureModel.getFeatures(selectedFeatureNames),
                     onCollapseFeatures, onExpandFeatures, onCollapseFeaturesBelow, onExpandFeaturesBelow, onDeselectAllFeatures),
                 makeDivider(),
-                commands.featureDiagram.feature.properties(featureModel.getFeatures(selectedFeatureNames), onDeselectAllFeatures)
+                commands.featureDiagram.feature.properties(featureModel.getFeatures(selectedFeatureNames),
+                onSetFeatureAbstract, onSetFeatureHidden, onSetFeatureMandatory, onSetFeatureAnd, onSetFeatureOr,
+                onSetFeatureAlternative, onDeselectAllFeatures)
             ],
             selectAll: (onSelectAll: OnSelectAllFeaturesFunction) => ({
                 key: 'selectAll',

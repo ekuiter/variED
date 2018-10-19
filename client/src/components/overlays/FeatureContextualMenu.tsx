@@ -8,7 +8,7 @@ import {ContextualMenu} from 'office-ui-fabric-react/lib/ContextualMenu';
 import commands, {makeDivider} from '../commands';
 import {FeatureDiagramLayoutType, Feature} from '../../types';
 import FeatureComponent, {FeatureComponentProps} from './FeatureComponent';
-import {OnShowOverlayFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnDeselectAllFeaturesFunction} from '../../store/types';
+import {OnShowOverlayFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnDeselectAllFeaturesFunction, OnRemoveFeaturesFunction, OnAddFeatureAboveFunction, OnAddFeatureBelowFunction, OnRemoveFeaturesBelowFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureMandatoryFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction} from '../../store/types';
 
 type Props = FeatureComponentProps & {
     onDismiss: () => void,
@@ -21,7 +21,17 @@ type Props = FeatureComponentProps & {
     onCollapseFeaturesBelow: OnCollapseFeaturesBelowFunction,
     onExpandFeatures: OnExpandFeaturesFunction,
     onExpandFeaturesBelow: OnExpandFeaturesBelowFunction,
-    onDeselectAllFeatures: OnDeselectAllFeaturesFunction
+    onDeselectAllFeatures: OnDeselectAllFeaturesFunction,
+    onRemoveFeatures: OnRemoveFeaturesFunction,
+    onRemoveFeaturesBelow: OnRemoveFeaturesBelowFunction,
+    onAddFeatureBelow: OnAddFeatureBelowFunction,
+    onAddFeatureAbove: OnAddFeatureAboveFunction,
+    onSetFeatureAbstract: OnSetFeatureAbstractFunction,
+    onSetFeatureHidden: OnSetFeatureHiddenFunction,
+    onSetFeatureMandatory: OnSetFeatureMandatoryFunction,
+    onSetFeatureAnd: OnSetFeatureAndFunction,
+    onSetFeatureOr: OnSetFeatureOrFunction,
+    onSetFeatureAlternative: OnSetFeatureAlternativeFunction
 };
 
 export default class extends FeatureComponent({doUpdate: true})<Props> {
@@ -44,17 +54,22 @@ export default class extends FeatureComponent({doUpdate: true})<Props> {
                 items={isSelectMultipleFeatures
                     ? commands.featureDiagram.feature.selectionItems(selectedFeatureNames, onDeselectAllFeatures,
                         this.props.onCollapseFeatures, this.props.onExpandFeatures, this.props.onCollapseFeaturesBelow,
-                        this.props.onExpandFeaturesBelow, featureModel!)
+                        this.props.onExpandFeaturesBelow, this.props.onAddFeatureAbove, this.props.onRemoveFeatures,
+                        this.props.onSetFeatureAbstract, this.props.onSetFeatureHidden, this.props.onSetFeatureMandatory,
+                        this.props.onSetFeatureAnd, this.props.onSetFeatureOr, this.props.onSetFeatureAlternative,
+                        this.props.onRemoveFeaturesBelow, featureModel!)
                     : [
-                        commands.featureDiagram.feature.newMenu(feature.name, onDismiss),
-                        commands.featureDiagram.feature.removeMenu([feature], onDismiss),
+                        commands.featureDiagram.feature.newMenu(feature.name, this.props.onAddFeatureBelow, this.props.onAddFeatureAbove, onDismiss),
+                        commands.featureDiagram.feature.removeMenu([feature], this.props.onRemoveFeatures, this.props.onRemoveFeaturesBelow, onDismiss),
                         commands.featureDiagram.feature.collapseMenu(
                             [feature], this.props.onCollapseFeatures, this.props.onExpandFeatures,
                             this.props.onCollapseFeaturesBelow, this.props.onExpandFeaturesBelow, onDismiss),
                         makeDivider(),
                         commands.featureDiagram.feature.rename(feature.name, this.props.onShowOverlay),
                         commands.featureDiagram.feature.setDescription(feature.name, this.props.onShowOverlay),
-                        commands.featureDiagram.feature.properties([feature], onDismiss),
+                        commands.featureDiagram.feature.properties([feature], this.props.onSetFeatureAbstract,
+                            this.props.onSetFeatureHidden, this.props.onSetFeatureMandatory, this.props.onSetFeatureAnd,
+                            this.props.onSetFeatureOr, this.props.onSetFeatureAlternative, onDismiss),
                         makeDivider(),
                         commands.featureDiagram.feature.details(feature.name, this.props.onShowOverlay)
                     ]

@@ -4,21 +4,20 @@ import FeatureSetDescriptionDialog from './FeatureSetDescriptionDialog';
 import FeatureModel from '../../server/FeatureModel';
 import {validFeatureModel} from '../../fixtures';
 import {TextFieldDialog} from '../../helpers/Dialog';
-import actions from '../../store/actions';
 import {defaultSettings} from '../../store/settings';
 
-jest.mock('../../store/actions');
-
 describe('FeatureSetDescriptionDialog', () => {
-    let featureSetDescriptionDialog: JSX.Element;
+    let featureSetDescriptionDialog: JSX.Element, onSetFeatureDescription: jest.Mock;
 
     beforeEach(() => {
+        onSetFeatureDescription = jest.fn();
         featureSetDescriptionDialog = (
             <FeatureSetDescriptionDialog
                 isOpen={true}
                 featureModel={new FeatureModel(validFeatureModel, [])}
                 featureName="FeatureIDE"
-                settings={defaultSettings}/>
+                settings={defaultSettings}
+                onSetFeatureDescription={onSetFeatureDescription}/>
         );
     });
 
@@ -29,8 +28,7 @@ describe('FeatureSetDescriptionDialog', () => {
 
     it('triggers a rename if a new name is entered', () => {
         const wrapper = shallow(featureSetDescriptionDialog);
-        (actions.server.featureDiagram.feature.setDescription as jest.Mock).mockClear();
         wrapper.find(TextFieldDialog).simulate('submit', 'new description');
-        expect(actions.server.featureDiagram.feature.setDescription).lastCalledWith({featureName: 'FeatureIDE', description: 'new description'});
+        expect(onSetFeatureDescription).lastCalledWith({featureName: 'FeatureIDE', description: 'new description'});
     });
 });

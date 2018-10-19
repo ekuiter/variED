@@ -30,13 +30,16 @@ export default connect(
         onExpandAllFeatures: () => dispatch(actions.ui.featureDiagram.feature.expandAll()),
         onCollapseFeatures: payload => dispatch(actions.ui.featureDiagram.feature.collapse(payload)),
         onExpandFeatures: payload => dispatch(actions.ui.featureDiagram.feature.expand(payload)),
+        onAddFeatureBelow: payload => dispatch<any>(actions.server.featureDiagram.feature.addBelow(payload)),
         onShowOverlay: payload => dispatch(actions.ui.overlay.show(payload)),
-        onHideOverlay: payload => dispatch(actions.ui.overlay.hide(payload))
+        onHideOverlay: payload => dispatch(actions.ui.overlay.hide(payload)),
+        onUndo: () => dispatch<any>(actions.server.undo({})),
+        onRedo: () => dispatch<any>(actions.server.redo({}))
     })
 )(withKeys(
-    getShortcutKeyBinding('undo', ifGlobal, actions.server.undo),
-    getShortcutKeyBinding('redo', ifGlobal, actions.server.redo),
-    getShortcutKeyBinding('settings', ifGlobal, ({props}: {props: any}) => props.onShowOverlay({overlay: OverlayType.settingsPanel})),
+    getShortcutKeyBinding('undo', ifGlobal, ({props}: {props: StateDerivedProps}) => props.onUndo!()),
+    getShortcutKeyBinding('redo', ifGlobal, ({props}: {props: StateDerivedProps}) => props.onRedo!()),
+    getShortcutKeyBinding('settings', ifGlobal, ({props}: {props: StateDerivedProps}) => props.onShowOverlay!({overlay: OverlayType.settingsPanel, overlayProps: {}})),
     getShortcutKeyBinding('featureDiagram.feature.selectAll', ifGlobal, ({props}: {props: StateDerivedProps}) => props.onSelectAllFeatures!()),
     getShortcutKeyBinding('featureDiagram.feature.deselectAll', ifGlobal, ({props}: {props: StateDerivedProps}) => props.onDeselectAllFeatures!()),
 
@@ -44,14 +47,14 @@ export default connect(
         'featureDiagram.feature.new',
         ifSingleFloatingFeature,
         ({props}: {props: StateDerivedProps}) =>
-            actions.server.featureDiagram.feature.addBelow({belowFeatureName: props.overlayProps!.featureName!})
+            props.onAddFeatureBelow!({belowFeatureName: props.overlayProps!.featureName!})
                 .then(() => props.onHideOverlay!({overlay: props.overlay!}))),
 
     getShortcutKeyBinding(
         'featureDiagram.feature.remove',
         (props: StateDerivedProps) => props.isSelectMultipleFeatures || ifFloatingFeature(props),
         ({props}: {props: StateDerivedProps}) => {
-            const {disabled, action} = removeCommand(props.featureModel!.getFeatures(props.selectedFeatureNames!));
+            const {disabled, action} = removeCommand(props.featureModel!.getFeatures(props.selectedFeatureNames!), props.onRemoveFeatures!);
             if (!disabled)
                 action().then(() => props.onHideOverlay!({overlay: props.overlay!}));
         }),
