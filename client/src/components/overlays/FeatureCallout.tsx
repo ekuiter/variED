@@ -4,7 +4,6 @@
 
 import React from 'react';
 import {Callout, DirectionalHint} from 'office-ui-fabric-react/lib/Callout';
-import {getSetting} from '../../store/settings';
 import commands from '../commands';
 import {CommandBar} from 'office-ui-fabric-react/lib/CommandBar';
 import {Feature, FeatureDiagramLayoutType} from '../../types';
@@ -25,7 +24,7 @@ type Props = FeatureComponentProps & {
 export default class extends FeatureComponent({doUpdate: true})<Props> {
     renderIfFeature(feature: Feature) {
         const {onDismiss, featureModel} = this.props,
-            {gapSpace, width} = getSetting(this.props.settings, 'featureDiagram.overlay');
+            {gapSpace, width} = this.props.settings.featureDiagram.overlay;
         return (
             <Callout target={featureModel!.getElement(feature.name)!.querySelector('.rectAndText')}
                 onDismiss={onDismiss}

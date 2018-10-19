@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import {getSetting} from '../../store/settings';
+import {Settings, getSetting} from '../../store/settings';
 import i18n from '../../i18n';
 import FontComboBox from '../../helpers/FontComboBox';
 import SpinButton, {SpinButtonProps} from '../../helpers/SpinButton';
@@ -22,13 +22,13 @@ import {OnSetSettingFunction, OnResetSettingsFunction} from 'src/store/types';
 const getLabel = (path: string) => i18n.t('overlays.settingsPanel.labels', path);
 
 interface SettingProps {
-    settings: object,
+    settings: Settings,
     onSetSetting: OnSetSettingFunction,
     path: string
 };
 
 interface ColorPickerContextualMenuProps {
-    settings: object,
+    settings: Settings,
     onSetSetting: OnSetSettingFunction,
     paths: string[]
 };
@@ -46,7 +46,7 @@ type SliderProps = SettingProps & {
 interface SettingsPanelProps {
     onDismissed: () => void,
     isOpen: boolean,
-    settings: object,
+    settings: Settings,
     featureDiagramLayout: FeatureDiagramLayoutType,
     onSetSetting: OnSetSettingFunction,
     onResetSettings: OnResetSettingsFunction
@@ -103,7 +103,7 @@ export const Setting = {
 
     Slider: class extends React.Component<SliderProps> {
         onChange = debounce(value => this.props.onSetSetting({path: this.props.path, value}),
-            getSetting(this.props.settings, 'overlays.settingsPanel.debounceUpdate'));
+            this.props.settings.overlays.settingsPanel.debounceUpdate);
 
         render() {
             return (
@@ -169,7 +169,7 @@ export default class extends React.Component<SettingsPanelProps> {
                     <Setting.Toggle
                         {...props}
                         path="featureDiagram.treeLayout.useTransitions"/>
-                    {getSetting(props.settings, 'featureDiagram.treeLayout.useTransitions') &&
+                    {props.settings.featureDiagram.treeLayout.useTransitions &&
                     <Setting.Slider
                         {...props}
                         path="featureDiagram.treeLayout.transitionDuration"

@@ -2,7 +2,7 @@
  * Links (or edges) for the abstract tree layout.
  */
 
-import {getSetting} from '../../../store/settings';
+import {Settings} from '../../../store/settings';
 import {
     arcSegmentPath,
     arcSlicePath,
@@ -17,7 +17,7 @@ import AbstractTreeNode from './AbstractTreeNode';
 import {FeatureModelNode, Rect, Point, D3Selection, NodePointFunction, NodeCoordinateForAxisFunction, FeatureType} from '../../../types';
 
 export default class {
-    constructor(public settings: object, public getCurrentParentCoordinate: NodeCoordinateForAxisFunction,
+    constructor(public settings: Settings, public getCurrentParentCoordinate: NodeCoordinateForAxisFunction,
         public getPreviousParentCoordinate: NodeCoordinateForAxisFunction, public treeNode: AbstractTreeNode) {}
 
     nodeX(node: FeatureModelNode): number {
@@ -120,7 +120,7 @@ export default class {
     update(link: D3Selection, zIndex: string): void {
         const from = (d: FeatureModelNode) => this.from(d, 'update'),
             to = (d: FeatureModelNode) => this.to(d, 'update'),
-            radius = getSetting(this.settings, 'featureDiagram.treeLayout.link.circleRadius');
+            radius = this.settings.featureDiagram.treeLayout.link.circleRadius;
         link.attr('opacity', 1);
 
         if (zIndex === 'inBack')

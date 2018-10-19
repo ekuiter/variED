@@ -4,7 +4,6 @@
 
 import AbstractTreeLink from './AbstractTreeLink';
 import {drawLine, ArcPathFunction, Style} from '../../../helpers/svg';
-import {getSetting} from '../../../store/settings';
 import {Rect, Point, FeatureModelNode, D3Selection, NodePointFunction} from '../../../types';
 
 function topSide(y: number, rectInfo: Rect): number {
@@ -21,11 +20,11 @@ export default class extends AbstractTreeLink {
     }
 
     collapseAnchor(_node: FeatureModelNode): Partial<Point> {
-        return {y: bottomSide(0, this.getRectInfo()) + getSetting(this.settings, 'featureDiagram.font.size')};
+        return {y: bottomSide(0, this.getRectInfo()) + this.settings.featureDiagram.font.size};
     }
 
     groupRadius(): number {
-        return getSetting(this.settings, 'featureDiagram.treeLayout.vertical.groupRadius');
+        return this.settings.featureDiagram.treeLayout.vertical.groupRadius;
     }
 
     sweepFlag(): boolean {

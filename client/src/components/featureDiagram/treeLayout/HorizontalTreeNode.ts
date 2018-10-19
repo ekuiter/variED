@@ -4,7 +4,6 @@
 
 import AbstractTreeNode from './AbstractTreeNode';
 import {estimateRectWidth} from './estimation';
-import {getSetting} from '../../../store/settings';
 import {FeatureModelNode} from '../../../types';
 import {StyleDescriptor} from '../../../helpers/svg';
 
@@ -13,7 +12,7 @@ export default class extends AbstractTreeNode {
         let x = 0, parent: FeatureModelNode | null = node;
         while ((parent = parent.parent))
             x += estimateRectWidth(this.settings, this.getWidestTextOnLayer(parent)) +
-                getSetting(this.settings, 'featureDiagram.treeLayout.horizontal.layerMargin');
+                this.settings.featureDiagram.treeLayout.horizontal.layerMargin;
         return x;
     }
 

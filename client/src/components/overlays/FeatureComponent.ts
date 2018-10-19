@@ -3,14 +3,14 @@
  */
 
 import React from 'react';
-import {getSetting} from '../../store/settings';
+import {Settings} from '../../store/settings';
 import FeatureModel from '../../server/FeatureModel';
 import {Feature} from '../../types';
 
 export interface FeatureComponentProps {
     featureModel?: FeatureModel,
     featureName?: string,
-    settings: object
+    settings: Settings
 };
 
 export default ({doUpdate = false} = {}) =>
@@ -22,7 +22,7 @@ export default ({doUpdate = false} = {}) =>
             if (doUpdate)
                 this.interval = window.setInterval(
                     () => this.forceUpdate(),
-                    getSetting(this.props.settings, 'featureDiagram.overlay.throttleUpdate'));
+                    this.props.settings.featureDiagram.overlay.throttleUpdate);
         }
 
         componentWillUnmount() {

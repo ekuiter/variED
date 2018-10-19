@@ -3,7 +3,7 @@
  */
 
 import AbstractTreeLink from './AbstractTreeLink';
-import {getSetting} from '../../../store/settings';
+import {Settings} from '../../../store/settings';
 import {attrIfPresent, drawCurve, drawLine, ArcPathFunction, Style} from '../../../helpers/svg';
 import {estimateRectWidth} from './estimation';
 import {Point, D3Selection, NodePointFunction, Rect, FeatureModelNode} from '../../../types';
@@ -12,7 +12,7 @@ function leftSideX(x: number, rectInfo: Rect): number {
     return x + rectInfo.x;
 }
 
-function rightSide(settings: object, x: number, rectInfo: Rect, estimatedTextWidth: number): number {
+function rightSide(settings: Settings, x: number, rectInfo: Rect, estimatedTextWidth: number): number {
     return x + rectInfo.x + estimateRectWidth(settings, estimatedTextWidth);
 }
 
@@ -29,7 +29,7 @@ export default class extends AbstractTreeLink {
     collapseAnchor(node: FeatureModelNode): Partial<Point> {
         return {
             x: rightSide(this.settings, 0, this.getRectInfo(), this.estimateTextWidth(node)) +
-                getSetting(this.settings, 'featureDiagram.font.size') / 2
+                this.settings.featureDiagram.font.size / 2
         };
     }
 
@@ -56,7 +56,7 @@ export default class extends AbstractTreeLink {
             _to = (d: FeatureModelNode) => {
                 const {x, y} = to(d);
                 return {
-                    x: Math.max(x, from(d).x - getSetting(settings, 'featureDiagram.treeLayout.horizontal.layerMargin')),
+                    x: Math.max(x, from(d).x - settings.featureDiagram.treeLayout.horizontal.layerMargin),
                     y
                 };
             };
@@ -66,7 +66,7 @@ export default class extends AbstractTreeLink {
         });
         drawCurve(g, !selector ? undefined : 'path.curve', {
             klass: 'curve', from, to: _to, style,
-            inset: getSetting(this.settings, 'featureDiagram.treeLayout.horizontal.layerMargin') / 2
+            inset: this.settings.featureDiagram.treeLayout.horizontal.layerMargin / 2
         });
     };
 

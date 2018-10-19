@@ -7,7 +7,7 @@ import {hierarchy as d3Hierarchy} from 'd3-hierarchy';
 import constants from '../constants';
 import memoize from '../helpers/memoize';
 import {estimateHierarchySize} from '../components/featureDiagram/treeLayout/estimation';
-import {getSetting} from '../store/settings';
+import {Settings} from '../store/settings';
 import {FeatureDiagramLayoutType, FeatureModelNode, Feature, FeatureType} from '../types';
 import {present} from '../helpers/present';
 
@@ -211,14 +211,14 @@ export default class {
         return parents.every(parent => parent === parents[0]);
     }
 
-    getFittingFeatureNames(settings: object, featureDiagramLayout: FeatureDiagramLayoutType, width: number, height: number) {
-        const fontFamily = getSetting(settings, 'featureDiagram.font.family'),
-            fontSize = getSetting(settings, 'featureDiagram.font.size'),
-            widthPadding = 2 * getSetting(settings, 'featureDiagram.treeLayout.node.paddingX') +
-                2 * getSetting(settings, 'featureDiagram.treeLayout.node.strokeWidth'),
-            rectHeight = getSetting(settings, 'featureDiagram.font.size') +
-                2 * getSetting(settings, 'featureDiagram.treeLayout.node.paddingY') +
-                2 * getSetting(settings, 'featureDiagram.treeLayout.node.strokeWidth');
+    getFittingFeatureNames(settings: Settings, featureDiagramLayout: FeatureDiagramLayoutType, width: number, height: number) {
+        const fontFamily = settings.featureDiagram.font.family,
+            fontSize = settings.featureDiagram.font.size,
+            widthPadding = 2 * settings.featureDiagram.treeLayout.node.paddingX +
+                2 * settings.featureDiagram.treeLayout.node.strokeWidth,
+            rectHeight = settings.featureDiagram.font.size +
+                2 * settings.featureDiagram.treeLayout.node.paddingY +
+                2 * settings.featureDiagram.treeLayout.node.strokeWidth;
         let nodes = this.actualNodes, collapsedFeatureNames: string[] = [];
         width = Math.max(width, constants.featureDiagram.fitToScreen.minWidth);
         height = Math.max(height, constants.featureDiagram.fitToScreen.minHeight);

@@ -1,5 +1,5 @@
 import FeatureModel from '../server/FeatureModel';
-import {defaultSettings} from './settings';
+import {defaultSettings, Settings} from './settings';
 import {Message, FeatureDiagramLayoutType, OverlayType, OverlayProps} from '../types';
 
 export interface State {
@@ -7,7 +7,7 @@ export interface State {
         users: string[],
         featureModel?: FeatureModel
     },
-    settings: object,
+    settings: Settings,
     ui: {
         featureDiagram: {
             layout: FeatureDiagramLayoutType,
@@ -17,6 +17,24 @@ export interface State {
         },
         overlay: OverlayType,
         overlayProps: OverlayProps
+    }
+};
+
+export const initialState: State = {
+    server: {
+        users: [],
+        featureModel: undefined
+    },
+    settings: defaultSettings,
+    ui: {
+        featureDiagram: {
+            layout: FeatureDiagramLayoutType.verticalTree,
+            isSelectMultipleFeatures: false,
+            selectedFeatureNames: [],
+            collapsedFeatureNames: []
+        },
+        overlay: OverlayType.none,
+        overlayProps: {}
     }
 };
 
@@ -43,7 +61,7 @@ export type OnResetSettingsFunction = () => void;
 export type StateDerivedProps = Partial<{
     handleMessage: (message: Message) => void,
     users: string[],
-    settings: object,
+    settings: Settings,
     featureDiagramLayout: FeatureDiagramLayoutType,
     isSelectMultipleFeatures: boolean,
     selectedFeatureNames: string[],
@@ -68,21 +86,3 @@ export type StateDerivedProps = Partial<{
     onSetSetting: OnSetSettingFunction,
     onResetSettings: OnResetSettingsFunction
 }>;
-
-export const initialState: State = {
-    server: {
-        users: [],
-        featureModel: undefined
-    },
-    settings: defaultSettings,
-    ui: {
-        featureDiagram: {
-            layout: FeatureDiagramLayoutType.verticalTree,
-            isSelectMultipleFeatures: false,
-            selectedFeatureNames: [],
-            collapsedFeatureNames: []
-        },
-        overlay: OverlayType.none,
-        overlayProps: {}
-    }
-};

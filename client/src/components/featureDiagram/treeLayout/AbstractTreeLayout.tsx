@@ -8,7 +8,7 @@ import {tree as d3Tree} from 'd3-hierarchy';
 import {event as d3Event, select as d3Select} from 'd3-selection';
 import {zoom as d3Zoom} from 'd3-zoom';
 import 'd3-transition';
-import {getSetting} from '../../../store/settings';
+import {Settings} from '../../../store/settings';
 import {updateRect} from '../../../helpers/svg';
 import '../../../stylesheets/treeLayout.css';
 import {FeatureModelNode, D3Selection, Bbox, OverlayType, isFloatingFeatureOverlay, OverlayProps, NodeCoordinateForAxisFunction} from '../../../types';
@@ -23,7 +23,7 @@ export interface AbstractTreeLayoutProps {
     height?: number,
     className: string,
     fitOnResize: boolean,
-    settings: object,
+    settings: Settings,
     overlay: OverlayType,
     overlayProps: OverlayProps,
     isSelectMultipleFeatures: boolean,
@@ -149,12 +149,12 @@ export default class extends React.Component<AbstractTreeLayoutProps> {
     createLayoutHook(_nodes: FeatureModelNode[]): void {
     }
 
-    createLayout({featureModel, settings}: {featureModel: FeatureModel, settings: object}, isSelectionChange: boolean):
+    createLayout({featureModel, settings}: {featureModel: FeatureModel, settings: Settings}, isSelectionChange: boolean):
         {nodes: FeatureModelNode[], estimatedBbox?: Bbox} {
         const estimateTextWidth = this.treeNode.estimateTextWidth.bind(this.treeNode),
             hierarchy = featureModel.hierarchy,
             tree = d3Tree()
-                .nodeSize(getSetting(settings, 'featureDiagram.treeLayout.node.size'))
+                .nodeSize(settings.featureDiagram.treeLayout.node.size)
                 .separation(this.getSeparationFn(estimateTextWidth)),
             nodes = featureModel.visibleNodes;
 
@@ -179,7 +179,7 @@ export default class extends React.Component<AbstractTreeLayoutProps> {
         return {nodes, estimatedBbox};
     }
 
-    getSvgRoot({width, height, fitOnResize, settings}: {width?: number, height?: number, fitOnResize: boolean, settings: object},
+    getSvgRoot({width, height, fitOnResize, settings}: {width?: number, height?: number, fitOnResize: boolean, settings: Settings},
         estimatedBbox: Bbox, isCreating: boolean, isResize: boolean, isSelectionChange: boolean): D3Selection {
         const svgRoot = d3Select(this.svgRef.current)
                 .call(svgRoot => width && height && svgRoot.attr('style', `width: ${width}; height: ${height};`))
@@ -200,7 +200,7 @@ export default class extends React.Component<AbstractTreeLayoutProps> {
         // bounding box information for export
         svgRoot.attr('data-estimated-bbox', JSON.stringify(estimatedBbox));
 
-        if (getSetting(settings, 'featureDiagram.treeLayout.debug'))
+        if (settings.featureDiagram.treeLayout.debug)
             this.transition(rect)
                 .call(updateRect, {
                     x: estimatedBbox[0][0],
@@ -214,7 +214,7 @@ export default class extends React.Component<AbstractTreeLayoutProps> {
 
         svgRoot.call(zoom
             .translateExtent(estimatedBbox)
-            .scaleExtent(getSetting(settings, 'featureDiagram.treeLayout.scaleExtent'))
+            .scaleExtent(settings.featureDiagram.treeLayout.scaleExtent)
             .on('zoom', () => g.attr('transform', d3Event.transform)))
             .call(svgRoot => {
                 const dblclicked = svgRoot.on('dblclick.zoom');
@@ -260,8 +260,8 @@ export default class extends React.Component<AbstractTreeLayoutProps> {
     }
 
     transition(selection: D3Selection, transitionDuration: number =
-        getSetting(this.props.settings, 'featureDiagram.treeLayout.transitionDuration')): D3Selection {
-        return getSetting(this.props.settings, 'featureDiagram.treeLayout.useTransitions')
+        this.props.settings.featureDiagram.treeLayout.transitionDuration): D3Selection {
+        return this.props.settings.featureDiagram.treeLayout.useTransitions
             // transitions _almost_ have the same interface as selections, here we just ignore the differences
             ? selection.transition().duration(transitionDuration) as any
             : selection;

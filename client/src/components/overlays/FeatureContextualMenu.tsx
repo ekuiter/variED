@@ -6,7 +6,6 @@ import React from 'react';
 import {DirectionalHint} from 'office-ui-fabric-react/lib/Callout';
 import {ContextualMenu} from 'office-ui-fabric-react/lib/ContextualMenu';
 import commands, {makeDivider} from '../commands';
-import {getSetting} from '../../store/settings';
 import {FeatureDiagramLayoutType, Feature} from '../../types';
 import FeatureComponent, {FeatureComponentProps} from './FeatureComponent';
 import {OnShowOverlayFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnDeselectAllFeaturesFunction} from 'src/store/types';
@@ -30,7 +29,7 @@ export default class extends FeatureComponent({doUpdate: true})<Props> {
         const {
                 onDismiss, onDeselectAllFeatures, isSelectMultipleFeatures, selectedFeatureNames, featureModel
             } = this.props,
-            {gapSpace} = getSetting(this.props.settings, 'featureDiagram.overlay');
+            {gapSpace} = this.props.settings.featureDiagram.overlay;
         return (
             <ContextualMenu
                 target={featureModel!.getElement(feature.name)!.querySelector('.rectAndText')}

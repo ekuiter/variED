@@ -14,6 +14,8 @@ import {getViewportWidth, getViewportHeight} from '../helpers/withDimensions';
 import actions, {Action} from './actions';
 import {getType, isActionOf, ActionType} from 'typesafe-actions';
 import {State, initialState} from './types';
+import objectPath from 'object-path';
+import objectPathImmutable from 'object-path-immutable';
 
 function getNewState(state: State, ...args: any[]): State {
     if (args.length % 2 == 1)
@@ -21,7 +23,10 @@ function getNewState(state: State, ...args: any[]): State {
     for (let i = 0; i < args.length; i += 2) {
         if (typeof args[i] !== 'string')
             throw new Error('string expected for path');
-        state = getNewSettings(state, args[i], args[i + 1]) as State;
+
+        if (!objectPath.has(state, args[i]))
+            throw new Error(`path ${args[i]} does not exist`);
+        state = objectPathImmutable.set(state, args[i], args[i + 1]);
     }
     return state;
 }

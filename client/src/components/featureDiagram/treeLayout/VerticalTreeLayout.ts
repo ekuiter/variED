@@ -3,7 +3,6 @@
  */
 
 import AbstractTreeLayout, {AbstractTreeLayoutProps} from './AbstractTreeLayout';
-import {getSetting} from '../../../store/settings';
 import VerticalTreeLink from './VerticalTreeLink';
 import VerticalTreeNode from './VerticalTreeNode';
 import {estimateXOffset, estimateYOffset} from './estimation';
@@ -25,7 +24,7 @@ export default class extends AbstractTreeLayout {
     getSeparationFn(estimateTextWidth: (node: FeatureModelNode) => number): (a: FeatureModelNode, b: FeatureModelNode) => number {
         return (a, b) =>
             (estimateTextWidth(a) + estimateTextWidth(b)) / 2 +
-            2 * getSetting(this.props.settings, 'featureDiagram.treeLayout.node.paddingX') +
-            getSetting(this.props.settings, 'featureDiagram.treeLayout.vertical.marginX');
+            2 * this.props.settings.featureDiagram.treeLayout.node.paddingX +
+            this.props.settings.featureDiagram.treeLayout.vertical.marginX;
     }
 }

@@ -6,12 +6,12 @@ import * as React from 'react';
 import {Facepile, OverflowButtonType, IFacepilePersona} from 'office-ui-fabric-react/lib/Facepile';
 import {PersonaSize} from 'office-ui-fabric-react/lib/Persona';
 import {Tooltip} from 'office-ui-fabric-react/lib/Tooltip';
-import {getSetting} from '../store/settings';
+import {Settings} from '../store/settings';
 import withDimensions from '../helpers/withDimensions';
 
 interface Props {
     users: string[],
-    settings: object,
+    settings: Settings,
     width: number,
     height: number
 };
@@ -46,7 +46,7 @@ class UserFacepile extends React.Component<Props, State> {
                         this.setState({tooltipTarget: undefined, persona: undefined});
                 }
             })),
-            {maxDisplayableUsers, overflowBreakpoint, gapSpace} = getSetting(this.props.settings, 'userFacepile'),
+            {maxDisplayableUsers, overflowBreakpoint, gapSpace} = this.props.settings.userFacepile,
             maxDisplayablePersonas = this.props.width < overflowBreakpoint ? 1 : maxDisplayableUsers;
 
         return (

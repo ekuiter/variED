@@ -1,7 +1,7 @@
 import reducer from './reducer';
 import actions from './actions';
 import {FeatureDiagramLayoutType, OverlayType, MessageType} from '../types';
-import {getSetting, defaultSettings} from './settings';
+import {defaultSettings} from './settings';
 import {validFeatureModel, validFeatureModelWithRemovedFeatures} from '../fixtures';
 import FeatureModel from '../server/FeatureModel';
 import {initialState} from './types';
@@ -24,12 +24,12 @@ describe('reducer', () => {
     describe('settings', () => {
         it('sets a setting', () => {
             const state = reducer(undefined, actions.settings.set({path: 'featureDiagram.font.size', value: 42}));
-            expect(getSetting(state.settings, 'featureDiagram.font.size')).toBe(42);
+            expect(state.settings.featureDiagram.font.size).toBe(42);
         });
 
         it('resets settings to defaults', () => {
             let state = reducer(undefined, actions.settings.set({path: 'featureDiagram.font.size', value: 42}));
-            expect(getSetting(state.settings, 'featureDiagram.font.size')).toBe(42);
+            expect(state.settings.featureDiagram.font.size).toBe(42);
             state = reducer(state, actions.settings.reset());
             expect(state.settings).toEqual(defaultSettings);
         });

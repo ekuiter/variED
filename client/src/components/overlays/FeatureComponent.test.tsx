@@ -2,7 +2,7 @@ import React from 'react';
 import {shallow} from 'enzyme';
 import FeatureModel from '../../server/FeatureModel';
 import {validFeatureModel} from '../../fixtures';
-import {defaultSettings, getSetting} from '../../store/settings';
+import {defaultSettings} from '../../store/settings';
 import getFeatureComponent from './FeatureComponent';
 
 describe('FeatureComponent', () => {
@@ -46,7 +46,7 @@ describe('FeatureComponent', () => {
 
     it('forcibly updates regularly', () => {
         jest.useFakeTimers();
-        const throttleUpdate = getSetting(defaultSettings, 'featureDiagram.overlay.throttleUpdate'),
+        const throttleUpdate = defaultSettings.featureDiagram.overlay.throttleUpdate,
             {wrapper} = featureComponent({featureName: 'FeatureIDE', featureComponent: {doUpdate: true}}),
             forceUpdate = wrapper.instance().forceUpdate = jest.fn();
         expect(typeof (wrapper.instance() as any).interval).toBe('number');

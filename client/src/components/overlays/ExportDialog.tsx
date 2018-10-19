@@ -8,7 +8,7 @@ import {Dialog, DialogFooter} from 'office-ui-fabric-react/lib/Dialog';
 import {PrimaryButton} from 'office-ui-fabric-react/lib/Button';
 import FontComboBox from '../../helpers/FontComboBox';
 import SpinButton from '../../helpers/SpinButton';
-import {getSetting} from '../../store/settings';
+import {Settings} from '../../store/settings';
 import {doExport} from '../featureDiagram/export';
 import {FeatureDiagramLayoutType} from 'src/types';
 import {FormatType} from '../../types';
@@ -17,7 +17,7 @@ import {OnSetSettingFunction} from 'src/store/types';
 interface Props {
     onDismiss: () => void,
     isOpen: boolean,
-    settings: object,
+    settings: Settings,
     onSetSetting: OnSetSettingFunction,
     featureDiagramLayout: FeatureDiagramLayoutType,
     format?: FormatType
@@ -46,7 +46,7 @@ export default class extends React.Component<Props, State> {
             {i18n.getElement('overlays.exportDialog.fontNotice')}
             <FontComboBox
                 comboBoxProps={{label: i18n.t('overlays.settingsPanel.labels.featureDiagram.font.family')}}
-                selectedFont={getSetting(this.props.settings, 'featureDiagram.font.family')}
+                selectedFont={this.props.settings.featureDiagram.font.family}
                 onChange={(font: string) => this.props.onSetSetting({path: 'featureDiagram.font.family', value: font})}/>
         </React.Fragment>
     );

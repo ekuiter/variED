@@ -4,7 +4,7 @@
 
 import 'd3-selection-multi';
 import {event as d3Event} from 'd3-selection';
-import {getSetting} from '../../../store/settings';
+import {Settings} from '../../../store/settings';
 import measureTextWidth from '../../../helpers/measureTextWidth';
 import {addStyle, appendCross, drawCircle, translateTransform, StyleDescriptor, Style} from '../../../helpers/svg';
 import styles from './styles';
@@ -18,22 +18,22 @@ function widenBbox({x, y, width, height}: Rect, paddingX: number, paddingY: numb
     return {x: x - paddingX, y: y - paddingY, width: width + 2 * paddingX, height: height + 2 * paddingY};
 }
 
-function makeRect(settings: object, textBbox: Rect): Rect {
-    const nodeSettings = getSetting(settings, 'featureDiagram.treeLayout.node');
+function makeRect(settings: Settings, textBbox: Rect): Rect {
+    const nodeSettings = settings.featureDiagram.treeLayout.node;
     return widenBbox(
         textBbox,
         nodeSettings.paddingX + nodeSettings.strokeWidth,
         nodeSettings.paddingY + nodeSettings.strokeWidth);
 }
 
-function addFontStyle(selection: D3Selection, settings: object): void {
+function addFontStyle(selection: D3Selection, settings: Settings): void {
     selection.attrs({
-        'font-family': getSetting(settings, 'featureDiagram.font.family'),
-        'font-size': getSetting(settings, 'featureDiagram.font.size')
+        'font-family': settings.featureDiagram.font.family,
+        'font-size': settings.featureDiagram.font.size
     });
 }
 
-function makeText(settings: object, selection: D3Selection, isGettingRectInfo: boolean, textStyle: StyleDescriptor): Rect | Rect[] | undefined {
+function makeText(settings: Settings, selection: D3Selection, isGettingRectInfo: boolean, textStyle: StyleDescriptor): Rect | Rect[] | undefined {
     if (isGettingRectInfo) {
         let rectInfo = undefined;
         selection.append('text')
@@ -61,7 +61,7 @@ export default class {
     treeLink: AbstractTreeLink;
     getWidestTextOnLayer: (node: FeatureModelNode) => number;
 
-    constructor(public settings: object, public isSelectMultipleFeatures: boolean,
+    constructor(public settings: Settings, public isSelectMultipleFeatures: boolean,
         public setActiveNode: (overlay: OverlayType | 'select', activeNode: FeatureModelNode) => void,
         public onShowOverlay: OnShowOverlayFunction, public onExpandFeatures: OnExpandFeaturesFunction) {}
 
@@ -123,7 +123,7 @@ export default class {
         bboxes = [];
         nodeEnter.insert('text', 'path.arcClick')
             .call(addFontStyle, this.settings)
-            .attr('fill', getSetting(this.settings, 'featureDiagram.treeLayout.node.visibleFill'))
+            .attr('fill', this.settings.featureDiagram.treeLayout.node.visibleFill)
             .attr('class', 'collapse')
             .attr('text-anchor', 'middle')
             .attrs((d: FeatureModelNode) => this.treeLink.collapseAnchor(d) as Style)
@@ -146,7 +146,7 @@ export default class {
             fn: (circle: D3Selection) => circle.on('dblclick', expandFeature)
         });
 
-        if (getSetting(this.settings, 'featureDiagram.treeLayout.debug'))
+        if (this.settings.featureDiagram.treeLayout.debug)
             appendCross(nodeEnter);
 
         return nodeEnter;
@@ -162,7 +162,7 @@ export default class {
             .attr('cursor', (d: FeatureModelNode) => d.feature().isCollapsed ? 'pointer' : null)
             .attr('opacity', (d: FeatureModelNode) => d.feature().isCollapsed ? 1 : 0);
         node.select('circle').attr('r', (d: FeatureModelNode) =>
-            d.feature().isCollapsed ? getSetting(this.settings, 'featureDiagram.font.size') : 0);
+            d.feature().isCollapsed ? this.settings.featureDiagram.font.size : 0);
         this.treeLink.drawGroup(node.select('path.arcSegment'), node.select('path.arcSlice'), node.select('path.arcClick'));
     }
 
@@ -172,8 +172,8 @@ export default class {
 
     estimateTextWidth(node: FeatureModelNode): number {
         return measureTextWidth(
-            getSetting(this.settings, 'featureDiagram.font.family'),
-            getSetting(this.settings, 'featureDiagram.font.size'),
+            this.settings.featureDiagram.font.family,
+            this.settings.featureDiagram.font.size,
             node.feature().name);
     }
 }
