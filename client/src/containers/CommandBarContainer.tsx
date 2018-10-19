@@ -19,7 +19,7 @@ const CommandBarContainer = (props: StateDerivedProps) => (
             text: i18n.t('commands.file'),
             subMenuProps: {
                 items: [
-                    commands.featureDiagram.export(props.featureDiagramLayout, props.onShowOverlay)
+                    commands.featureDiagram.export(props.featureDiagramLayout!, props.onShowOverlay!)
                 ]
             }
         }, {
@@ -30,18 +30,18 @@ const CommandBarContainer = (props: StateDerivedProps) => (
                     commands.undo(),
                     commands.redo(),
                     makeDivider(),
-                    commands.featureDiagram.feature.selectAll(props.onSelectAllFeatures),
-                    commands.featureDiagram.feature.deselectAll(props.onDeselectAllFeatures),
+                    commands.featureDiagram.feature.selectAll(props.onSelectAllFeatures!),
+                    commands.featureDiagram.feature.deselectAll(props.onDeselectAllFeatures!),
                     commands.featureDiagram.feature.selection(
-                        props.isSelectMultipleFeatures,
-                        props.onSetSelectMultipleFeatures,
-                        props.selectedFeatureNames,
-                        props.onDeselectAllFeatures,
-                        props.onCollapseFeatures,
-                        props.onExpandFeatures,
-                        props.onCollapseFeaturesBelow,
-                        props.onExpandFeaturesBelow,
-                        props.featureModel)
+                        props.isSelectMultipleFeatures!,
+                        props.onSetSelectMultipleFeatures!,
+                        props.selectedFeatureNames!,
+                        props.onDeselectAllFeatures!,
+                        props.onCollapseFeatures!,
+                        props.onExpandFeatures!,
+                        props.onCollapseFeaturesBelow!,
+                        props.onExpandFeaturesBelow!,
+                        props.featureModel!)
                 ]
             }
         }, {
@@ -50,14 +50,14 @@ const CommandBarContainer = (props: StateDerivedProps) => (
             subMenuProps: {
                 items: [
                     commands.featureDiagram.setLayout(
-                        props.featureDiagramLayout,
-                        props.onSetFeatureDiagramLayout),
+                        props.featureDiagramLayout!,
+                        props.onSetFeatureDiagramLayout!),
                     makeDivider(),
-                    commands.featureDiagram.feature.collapseAll(props.onCollapseAllFeatures),
-                    commands.featureDiagram.feature.expandAll(props.onExpandAllFeatures),
-                    commands.featureDiagram.fitToScreen(props.onFitToScreen),
+                    commands.featureDiagram.feature.collapseAll(props.onCollapseAllFeatures!),
+                    commands.featureDiagram.feature.expandAll(props.onExpandAllFeatures!),
+                    commands.featureDiagram.fitToScreen(props.onFitToScreen!),
                     makeDivider(),
-                    commands.settings(props.onShowOverlay)
+                    commands.settings(props.onShowOverlay!)
                 ]
             }
         }, {
@@ -65,7 +65,7 @@ const CommandBarContainer = (props: StateDerivedProps) => (
             text: i18n.t('commands.help'),
             subMenuProps: {
                 items: [
-                    commands.about(props.onShowOverlay)
+                    commands.about(props.onShowOverlay!)
                 ]
             }
         }]}

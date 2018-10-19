@@ -8,7 +8,7 @@ import {ContextualMenu} from 'office-ui-fabric-react/lib/ContextualMenu';
 import commands, {makeDivider} from '../commands';
 import {FeatureDiagramLayoutType, Feature} from '../../types';
 import FeatureComponent, {FeatureComponentProps} from './FeatureComponent';
-import {OnShowOverlayFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnDeselectAllFeaturesFunction} from 'src/store/types';
+import {OnShowOverlayFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnDeselectAllFeaturesFunction} from '../../store/types';
 
 type Props = FeatureComponentProps & {
     onDismiss: () => void,
@@ -44,7 +44,7 @@ export default class extends FeatureComponent({doUpdate: true})<Props> {
                 items={isSelectMultipleFeatures
                     ? commands.featureDiagram.feature.selectionItems(selectedFeatureNames, onDeselectAllFeatures,
                         this.props.onCollapseFeatures, this.props.onExpandFeatures, this.props.onCollapseFeaturesBelow,
-                        this.props.onExpandFeaturesBelow, featureModel)
+                        this.props.onExpandFeaturesBelow, featureModel!)
                     : [
                         commands.featureDiagram.feature.newMenu(feature.name, onDismiss),
                         commands.featureDiagram.feature.removeMenu([feature], onDismiss),

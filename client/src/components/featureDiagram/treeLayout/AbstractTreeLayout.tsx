@@ -15,7 +15,7 @@ import {FeatureModelNode, D3Selection, Bbox, OverlayType, isFloatingFeatureOverl
 import FeatureModel from '../../../server/FeatureModel';
 import AbstractTreeNode from './AbstractTreeNode';
 import AbstractTreeLink from './AbstractTreeLink';
-import {OnShowOverlayFunction, OnHideOverlayFunction, OnSetSelectMultipleFeaturesFunction, OnSelectFeatureFunction, OnDeselectFeatureFunction, OnExpandFeaturesFunction, OnDeselectAllFeaturesFunction} from 'src/store/types';
+import {OnShowOverlayFunction, OnHideOverlayFunction, OnSetSelectMultipleFeaturesFunction, OnSelectFeatureFunction, OnDeselectFeatureFunction, OnExpandFeaturesFunction, OnDeselectAllFeaturesFunction} from '../../../store/types';
 
 export interface AbstractTreeLayoutProps {
     featureModel: FeatureModel,

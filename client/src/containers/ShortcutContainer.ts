@@ -76,8 +76,8 @@ export default connect(
             }
             const {disabled, action} = collapseCommand(
                 props.featureModel!.getFeatures(props.selectedFeatureNames!),
-                props.onCollapseFeatures, props.onExpandFeatures,
-                !ifGlobal(props) && (() => props.onHideOverlay!({overlay: props.overlay!})));
+                props.onCollapseFeatures!, props.onExpandFeatures!,
+                !ifGlobal(props) ? (() => props.onHideOverlay!({overlay: props.overlay!})) : undefined);
             if (!disabled)
                 action(props.onCollapseFeatures);
         }),
@@ -92,8 +92,8 @@ export default connect(
             }
             const {disabled, action} = collapseCommand(
                 props.featureModel!.getFeatures(props.selectedFeatureNames!),
-                props.onCollapseFeatures, props.onExpandFeatures,
-                !ifGlobal(props) && (() => props.onHideOverlay!({overlay: props.overlay!})));
+                props.onCollapseFeatures!, props.onExpandFeatures!,
+                !ifGlobal(props) ? (() => props.onHideOverlay!({overlay: props.overlay!})) : undefined);
             if (!disabled)
                 action(props.onExpandFeatures);
         })

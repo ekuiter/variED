@@ -3,7 +3,7 @@
  */
 
 import constants from '../constants';
-import {Message} from '../types';
+import {Message, MessageType} from '../types';
 
 type HandleMessageFunction = (data: Message) => void;
 
@@ -56,6 +56,14 @@ export function sendMessage(message: Message): Promise<void> {
         webSocket.send(JSON.stringify(message));
         console.log('sent:', message);
     });
+}
+
+export function sendMultipleMessages(messages: Message[]): Promise<void> {
+    if (!messages || messages.length === 0)
+        return Promise.resolve();
+    if (messages.length === 1)
+        return sendMessage(messages[0]);
+    return sendMessage({type: MessageType.MULTIPLE_MESSAGES, messages});
 }
 
 (window as any).sendMessage = sendMessage; // for debugging purposes

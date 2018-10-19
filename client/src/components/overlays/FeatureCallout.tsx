@@ -8,7 +8,7 @@ import commands from '../commands';
 import {CommandBar} from 'office-ui-fabric-react/lib/CommandBar';
 import {Feature, FeatureDiagramLayoutType} from '../../types';
 import FeatureComponent, {FeatureComponentProps} from './FeatureComponent';
-import {OnShowOverlayFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction} from 'src/store/types';
+import {OnShowOverlayFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction} from '../../store/types';
 
 type Props = FeatureComponentProps & {
     onDismiss: () => void,

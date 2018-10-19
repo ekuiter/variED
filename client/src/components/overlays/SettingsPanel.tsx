@@ -17,7 +17,7 @@ import {DefaultButton} from 'office-ui-fabric-react/lib/Button';
 import {FeatureDiagramLayoutType} from '../../types';
 import debounce from '../../helpers/debounce';
 import {IContextualMenuItem} from 'office-ui-fabric-react/lib/ContextualMenu';
-import {OnSetSettingFunction, OnResetSettingsFunction} from 'src/store/types';
+import {OnSetSettingFunction, OnResetSettingsFunction} from '../../store/types';
 
 const getLabel = (path: string) => i18n.t('overlays.settingsPanel.labels', path);
 

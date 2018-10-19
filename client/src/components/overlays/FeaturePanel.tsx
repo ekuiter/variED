@@ -9,7 +9,7 @@ import {CommandBar, ICommandBarItemProps} from 'office-ui-fabric-react/lib/Comma
 import commands from '../commands';
 import FeatureComponent, {FeatureComponentProps} from './FeatureComponent';
 import {Feature} from '../../types';
-import {OnShowOverlayFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction} from 'src/store/types';
+import {OnShowOverlayFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction} from '../../store/types';
 
 type Props = FeatureComponentProps & {
     onDismissed: () => void,
@@ -28,15 +28,15 @@ export default class extends FeatureComponent()<Props> {
     onRenderFooterContent = () => (
         <CommandBar
             items={transparentItems([
-                commands.featureDiagram.feature.newMenu(this.props.featureName, this.props.onDismissed, true),
+                commands.featureDiagram.feature.newMenu(this.props.featureName!, this.props.onDismissed, true),
                 commands.featureDiagram.feature.removeMenu([this.feature], this.props.onDismissed, true)
             ])}
             overflowItems={[
                 commands.featureDiagram.feature.collapseMenu(
                     [this.feature], this.props.onCollapseFeatures, this.props.onExpandFeatures,
                     this.props.onCollapseFeaturesBelow, this.props.onExpandFeaturesBelow, this.props.onDismissed),
-                commands.featureDiagram.feature.rename(this.props.featureName, this.props.onShowOverlay),
-                commands.featureDiagram.feature.setDescription(this.props.featureName, this.props.onShowOverlay),
+                commands.featureDiagram.feature.rename(this.props.featureName!, this.props.onShowOverlay),
+                commands.featureDiagram.feature.setDescription(this.props.featureName!, this.props.onShowOverlay),
                 commands.featureDiagram.feature.properties([this.feature], this.props.onDismissed)
             ]}
             overflowButtonProps={{styles: buttonStyles}}

@@ -12,7 +12,7 @@ import {isCommand} from '../../../helpers/withKeys';
 import {OverlayType, Rect, D3Selection, FeatureModelNode} from '../../../types';
 import actions from '../../../store/actions';
 import AbstractTreeLink from './AbstractTreeLink';
-import {OnShowOverlayFunction, OnExpandFeaturesFunction} from 'src/store/types';
+import {OnShowOverlayFunction, OnExpandFeaturesFunction} from '../../../store/types';
 
 function widenBbox({x, y, width, height}: Rect, paddingX: number, paddingY: number): Rect {
     return {x: x - paddingX, y: y - paddingY, width: width + 2 * paddingX, height: height + 2 * paddingY};

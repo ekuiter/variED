@@ -10,9 +10,9 @@ import FontComboBox from '../../helpers/FontComboBox';
 import SpinButton from '../../helpers/SpinButton';
 import {Settings} from '../../store/settings';
 import {doExport} from '../featureDiagram/export';
-import {FeatureDiagramLayoutType} from 'src/types';
+import {FeatureDiagramLayoutType} from '../../types';
 import {FormatType} from '../../types';
-import {OnSetSettingFunction} from 'src/store/types';
+import {OnSetSettingFunction} from '../../store/types';
 
 interface Props {
     onDismiss: () => void,
