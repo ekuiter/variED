@@ -18,11 +18,11 @@ type ExtendedKeyboardEvent = KeyboardEvent & {
     isShiftCommand: (key: string) => boolean
 };
 
-export type KeyBindingAction = ({event, props}: {event: ExtendedKeyboardEvent, props: object}) => void;
+export type KeyBindingActionFunction = ({event, props}: {event: ExtendedKeyboardEvent, props: object}) => void;
 
-export type KeyBinding = {
+export interface KeyBinding {
     key: ({event, props}: {event: ExtendedKeyboardEvent, props: object}) => boolean,
-    action: KeyBindingAction
+    action: KeyBindingActionFunction
 };
 
 export default (...keyBindings: KeyBinding[]) =>

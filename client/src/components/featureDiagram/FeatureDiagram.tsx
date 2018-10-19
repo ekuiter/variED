@@ -7,16 +7,16 @@ import React from 'react';
 import VerticalTreeLayout from './treeLayout/VerticalTreeLayout';
 import HorizontalTreeLayout from './treeLayout/HorizontalTreeLayout';
 import stringify from 'json-stable-stringify';
-import {layoutTypes} from '../../types';
 import {getSetting, cloneSettings, traverseSettings} from '../../store/settings';
+import {FeatureDiagramLayoutType} from '../../types';
 
 const layoutMap = {
-    [layoutTypes.verticalTree]: VerticalTreeLayout,
-    [layoutTypes.horizontalTree]: HorizontalTreeLayout
+    [FeatureDiagramLayoutType.verticalTree]: VerticalTreeLayout,
+    [FeatureDiagramLayoutType.horizontalTree]: HorizontalTreeLayout
 };
 
 interface Props {
-    featureDiagramLayout: string,
+    featureDiagramLayout: FeatureDiagramLayoutType,
     settings: object,
     [x: string]: any
 };

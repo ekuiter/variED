@@ -2,7 +2,6 @@
  * Definition of common types and enumerations.
  */
 
-import PropTypes from 'prop-types';
 import {HierarchyPointNode} from 'd3-hierarchy';
 import {Selection} from 'd3-selection';
 
@@ -23,7 +22,45 @@ export enum MessageType {
     FEATURE_DIAGRAM_FEATURE_SET_PROPERTY = 'FEATURE_DIAGRAM_FEATURE_SET_PROPERTY'
 };
 
-export type Message = {
+export enum FeatureDiagramLayoutType {
+    verticalTree = 'verticalTree',
+    horizontalTree = 'horizontalTree'
+};
+
+export enum OverlayType {
+    none = 'none',
+    settingsPanel = 'settingsPanel',
+    aboutPanel = 'aboutPanel',
+    featurePanel = 'featurePanel',
+    featureRenameDialog = 'featureRenameDialog',
+    featureSetDescriptionDialog = 'featureSetDescriptionDialog',
+    exportDialog = 'export',
+    featureCallout = 'featureCallout',
+    featureContextualMenu = 'featureContextualMenu'
+};
+
+export interface OverlayProps {
+    featureName?: string,
+    format?: FormatType
+};
+
+export function isFloatingFeatureOverlay(type: OverlayType): boolean {
+    return type === 'featureCallout' || type === 'featureContextualMenu';
+}
+
+export enum FormatType {
+    svg = 'svg',
+    png = 'png',
+    jpg = 'jpg',
+    pdf = 'pdf'
+};
+
+export interface FormatOptions {
+    scale?: number,
+    quality?: number
+};
+
+export interface Message {
     type: MessageType,
     [x: string]: any
 };
@@ -34,10 +71,17 @@ export function isMessageType(type: string) {
 
 export type FeaturePropertyKey = string | ((node: FeatureModelNode) => string);
 
-export type Feature = {
+export enum FeatureType {
+    feature = 'feature',
+    or = 'or',
+    alt = 'alt',
+    and = 'and'
+};
+
+export interface Feature {
     node: FeatureModelNode,
     name: string,
-    type: string, // TODO: use enum
+    type: FeatureType,
     description: string,
     isRoot: boolean,
     isAbstract: boolean,
@@ -54,7 +98,7 @@ export type Feature = {
     getNumberOfFeaturesBelow: () => number
 };
 
-type Datum = object; // this is an object per feature sent by the server accessible as node.data below
+type Datum = object; // this is an object per feature sent by the server accessible as node.data
 
 export type FeatureModelNode = HierarchyPointNode<Datum> & {
     children?: FeatureModelNode[];
@@ -69,39 +113,10 @@ export type Rect = Point & {width: number, height: number};
 // upper left and lower right point, can be transformed to rect (but the tuple form is also useful)
 export type Bbox = [[number, number], [number, number]];
 export type NodeCoordinateFunction = (node: FeatureModelNode) => number;
+export type NodeCoordinateForAxisFunction = (node: FeatureModelNode, axis: string) => number;
 export type NodePointFunction = (node: FeatureModelNode) => Point;
 // Represents any selection. We ignore the generic parameters here for simplicity.
 // (IMO adding them would improve type safety, but decrease overall readability.)
 export type D3Selection = Selection<any, any, any, any>;
 // matches any function - this should be used sparely
 export type Func = (...args: any[]) => any;
-
-export const
-    layoutTypes = {
-        verticalTree: 'verticalTree',
-        horizontalTree: 'horizontalTree'
-    },
-    LayoutType = PropTypes.oneOf(Object.values(layoutTypes)),
-
-    formatTypes = {
-        svg: 'svg',
-        png: 'png',
-        jpg: 'jpg',
-        pdf: 'pdf'
-    },
-    FormatType = PropTypes.oneOf(Object.values(formatTypes)),
-
-    SettingsType = PropTypes.object,
-
-    overlayTypes = {
-        settingsPanel: 'settingsPanel',
-        aboutPanel: 'aboutPanel',
-        featurePanel: 'featurePanel',
-        featureRenameDialog: 'featureRenameDialog',
-        featureSetDescriptionDialog: 'featureSetDescriptionDialog',
-        exportDialog: 'export',
-        featureCallout: 'featureCallout',
-        featureContextualMenu: 'featureContextualMenu',
-        isFloatingFeature: (type?: string) => type === 'featureCallout' || type === 'featureContextualMenu'
-    },
-    OverlayType = PropTypes.oneOf(Object.values(overlayTypes));

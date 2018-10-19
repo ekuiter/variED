@@ -7,21 +7,22 @@ import {DirectionalHint} from 'office-ui-fabric-react/lib/Callout';
 import {ContextualMenu} from 'office-ui-fabric-react/lib/ContextualMenu';
 import commands, {makeDivider} from '../commands';
 import {getSetting} from '../../store/settings';
-import {layoutTypes, Feature} from '../../types';
+import {FeatureDiagramLayoutType, Feature} from '../../types';
 import FeatureComponent, {FeatureComponentProps} from './FeatureComponent';
+import {OnShowOverlayFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnDeselectAllFeaturesFunction} from 'src/store/types';
 
 type Props = FeatureComponentProps & {
     onDismiss: () => void,
     isOpen: boolean,
     isSelectMultipleFeatures: boolean,
-    featureDiagramLayout: string,
+    featureDiagramLayout: FeatureDiagramLayoutType,
     selectedFeatureNames: string[],
-    onShowOverlay: (...args: any[]) => void, // TODO
-    onCollapseFeatures: (...args: any[]) => void,
-    onCollapseFeaturesBelow: (...args: any[]) => void,
-    onExpandFeatures: (...args: any[]) => void,
-    onExpandFeaturesBelow: (...args: any[]) => void,
-    onDeselectAllFeatures: (...args: any[]) => void
+    onShowOverlay: OnShowOverlayFunction,
+    onCollapseFeatures: OnCollapseFeaturesFunction,
+    onCollapseFeaturesBelow: OnCollapseFeaturesBelowFunction,
+    onExpandFeatures: OnExpandFeaturesFunction,
+    onExpandFeaturesBelow: OnExpandFeaturesBelowFunction,
+    onDeselectAllFeatures: OnDeselectAllFeaturesFunction
 };
 
 export default class extends FeatureComponent({doUpdate: true})<Props> {
@@ -32,13 +33,13 @@ export default class extends FeatureComponent({doUpdate: true})<Props> {
             {gapSpace} = getSetting(this.props.settings, 'featureDiagram.overlay');
         return (
             <ContextualMenu
-                target={featureModel.getElement(feature.name)!.querySelector('.rectAndText')}
+                target={featureModel!.getElement(feature.name)!.querySelector('.rectAndText')}
                 onDismiss={onDismiss}
                 hidden={!this.props.isOpen}
                 isBeakVisible={!isSelectMultipleFeatures}
                 gapSpace={isSelectMultipleFeatures ? 2 * gapSpace : gapSpace}
                 directionalHint={
-                    this.props.featureDiagramLayout === layoutTypes.verticalTree
+                    this.props.featureDiagramLayout === FeatureDiagramLayoutType.verticalTree
                         ? DirectionalHint.bottomCenter
                         : DirectionalHint.rightCenter}
                 items={isSelectMultipleFeatures

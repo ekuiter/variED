@@ -1,6 +1,6 @@
 import reducer from './reducer';
 import actions from './actions';
-import {layoutTypes, overlayTypes, MessageType} from '../types';
+import {FeatureDiagramLayoutType, OverlayType, MessageType} from '../types';
 import {getSetting, defaultSettings} from './settings';
 import {validFeatureModel, validFeatureModelWithRemovedFeatures} from '../fixtures';
 import FeatureModel from '../server/FeatureModel';
@@ -37,10 +37,10 @@ describe('reducer', () => {
 
     describe('user interface', () => {
         it('sets the feature diagram layout', () => {
-            let state = reducer(undefined, actions.ui.featureDiagram.setLayout({layout: layoutTypes.horizontalTree}));
-            expect(state.ui.featureDiagram.layout).toEqual(layoutTypes.horizontalTree);
-            state = reducer(state, actions.ui.featureDiagram.setLayout({layout: layoutTypes.verticalTree}));
-            expect(state.ui.featureDiagram.layout).toEqual(layoutTypes.verticalTree);
+            let state = reducer(undefined, actions.ui.featureDiagram.setLayout({layout: FeatureDiagramLayoutType.horizontalTree}));
+            expect(state.ui.featureDiagram.layout).toEqual(FeatureDiagramLayoutType.horizontalTree);
+            state = reducer(state, actions.ui.featureDiagram.setLayout({layout: FeatureDiagramLayoutType.verticalTree}));
+            expect(state.ui.featureDiagram.layout).toEqual(FeatureDiagramLayoutType.verticalTree);
         });
 
         describe('feature', () => {
@@ -198,22 +198,22 @@ describe('reducer', () => {
         describe('overlay', () => {
             describe('show overlay', () => {
                 it('shows the about panel', () => {
-                    const state = reducer(undefined, actions.ui.overlay.show({overlay: overlayTypes.aboutPanel}));
-                    expect(state.ui.overlay).toBe(overlayTypes.aboutPanel);
-                    expect(state.ui.overlayProps).toBeUndefined();
+                    const state = reducer(undefined, actions.ui.overlay.show({overlay: OverlayType.aboutPanel, overlayProps: {}}));
+                    expect(state.ui.overlay).toBe(OverlayType.aboutPanel);
+                    expect(state.ui.overlayProps).toEqual({});
                 });
     
                 it('shows a feature callout', () => {
-                    let state = reducer(undefined, actions.ui.overlay.show({overlay: overlayTypes.featureCallout, overlayProps: {featureName: 'FeatureIDE'}}));
-                    expect(state.ui.overlay).toBe(overlayTypes.featureCallout);
+                    let state = reducer(undefined, actions.ui.overlay.show({overlay: OverlayType.featureCallout, overlayProps: {featureName: 'FeatureIDE'}}));
+                    expect(state.ui.overlay).toBe(OverlayType.featureCallout);
                     expect(state.ui.overlayProps).toEqual({featureName: 'FeatureIDE'});
                 });
 
                 it('selects a feature if specified', () => {
                     let state = reducer();
                     expect(state.ui.featureDiagram.selectedFeatureNames).not.toContain('FeatureIDE');
-                    state = reducer(state, actions.ui.overlay.show({overlay: overlayTypes.featureCallout, overlayProps: {featureName: 'FeatureIDE'}, selectOneFeature: 'FeatureIDE'}));
-                    expect(state.ui.overlay).toBe(overlayTypes.featureCallout);
+                    state = reducer(state, actions.ui.overlay.show({overlay: OverlayType.featureCallout, overlayProps: {featureName: 'FeatureIDE'}, selectOneFeature: 'FeatureIDE'}));
+                    expect(state.ui.overlay).toBe(OverlayType.featureCallout);
                     expect(state.ui.overlayProps).toEqual({featureName: 'FeatureIDE'});
                     expect(state.ui.featureDiagram.selectedFeatureNames).toContain('FeatureIDE');
                 });
@@ -221,38 +221,38 @@ describe('reducer', () => {
 
             describe('hide overlay', () => {
                 it('hides an overlay after showing it', () => {
-                    let state = reducer(undefined, actions.ui.overlay.show({overlay: overlayTypes.aboutPanel}));
-                    expect(state.ui.overlay).toBe(overlayTypes.aboutPanel);
-                    expect(state.ui.overlayProps).toBeUndefined();
-                    state = reducer(state, actions.ui.overlay.hide({overlay: overlayTypes.aboutPanel}));
-                    expect(state.ui.overlay).toBeUndefined();
-                    expect(state.ui.overlayProps).toBeUndefined();
+                    let state = reducer(undefined, actions.ui.overlay.show({overlay: OverlayType.aboutPanel, overlayProps: {}}));
+                    expect(state.ui.overlay).toBe(OverlayType.aboutPanel);
+                    expect(state.ui.overlayProps).toEqual({});
+                    state = reducer(state, actions.ui.overlay.hide({overlay: OverlayType.aboutPanel}));
+                    expect(state.ui.overlay).toBe(OverlayType.none);
+                    expect(state.ui.overlayProps).toEqual({});
                 });
 
                 it('does nothing if the currently shown overlay is of another type', () => {
-                    let state = reducer(undefined, actions.ui.overlay.show({overlay: overlayTypes.aboutPanel}));
-                    expect(state.ui.overlay).toBe(overlayTypes.aboutPanel);
-                    expect(state.ui.overlayProps).toBeUndefined();
-                    state = reducer(state, actions.ui.overlay.hide({overlay: overlayTypes.featurePanel}));
-                    expect(state.ui.overlay).toBe(overlayTypes.aboutPanel);
-                    expect(state.ui.overlayProps).toBeUndefined();
+                    let state = reducer(undefined, actions.ui.overlay.show({overlay: OverlayType.aboutPanel, overlayProps: {}}));
+                    expect(state.ui.overlay).toBe(OverlayType.aboutPanel);
+                    expect(state.ui.overlayProps).toEqual({});
+                    state = reducer(state, actions.ui.overlay.hide({overlay: OverlayType.featurePanel}));
+                    expect(state.ui.overlay).toBe(OverlayType.aboutPanel);
+                    expect(state.ui.overlayProps).toEqual({});
                 });
 
                 it('deselects a feature when switching from a feature callout or ' +
                     'contextual menu in single feature selection mode', () => {
                     let state = reducer(undefined, actions.ui.featureDiagram.feature.select({featureName: 'FeatureIDE'}));
-                    state = reducer(state, actions.ui.overlay.show({overlay: overlayTypes.featureCallout, overlayProps: {featureName: 'FeatureIDE'}}));
+                    state = reducer(state, actions.ui.overlay.show({overlay: OverlayType.featureCallout, overlayProps: {featureName: 'FeatureIDE'}}));
                     expect(state.ui.featureDiagram.selectedFeatureNames).toContain('FeatureIDE');
-                    state = reducer(state, actions.ui.overlay.hide({overlay: overlayTypes.featureCallout}));
+                    state = reducer(state, actions.ui.overlay.hide({overlay: OverlayType.featureCallout}));
                     expect(state.ui.featureDiagram.selectedFeatureNames).not.toContain('FeatureIDE');
                 });
     
                 it('does not deselect a feature in multiple feature selection mode', () => {
                     let state = reducer(undefined, actions.ui.featureDiagram.feature.setSelectMultiple({isSelectMultipleFeatures: true}));
                     state = reducer(state, actions.ui.featureDiagram.feature.select({featureName: 'FeatureIDE'}));
-                    state = reducer(state, actions.ui.overlay.show({overlay: overlayTypes.featureCallout, overlayProps: {featureName: 'FeatureIDE'}}));
+                    state = reducer(state, actions.ui.overlay.show({overlay: OverlayType.featureCallout, overlayProps: {featureName: 'FeatureIDE'}}));
                     expect(state.ui.featureDiagram.selectedFeatureNames).toContain('FeatureIDE');
-                    state = reducer(state, actions.ui.overlay.hide({overlay: overlayTypes.featureCallout}));
+                    state = reducer(state, actions.ui.overlay.hide({overlay: OverlayType.featureCallout}));
                     expect(state.ui.featureDiagram.selectedFeatureNames).toContain('FeatureIDE');
                 });
             });

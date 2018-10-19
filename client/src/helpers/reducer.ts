@@ -1,3 +1,5 @@
+export type SetOperationFunction<T> = (array: T[], elementOrElements: T | T[]) => T[];
+
 /**
  * Adds an element or an array of elements to a set.
  * @param array a set of elements

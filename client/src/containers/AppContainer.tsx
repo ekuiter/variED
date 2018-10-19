@@ -13,7 +13,6 @@ import ShortcutContainer from './ShortcutContainer';
 import actions from '../store/actions';
 import {StateDerivedProps} from '../store/types';
 
-/* eslint-disable react/prop-types */
 class AppContainer extends React.Component<StateDerivedProps> {
     componentDidMount() {
         openWebSocket(this.props.handleMessage);

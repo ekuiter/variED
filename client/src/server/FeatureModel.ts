@@ -5,11 +5,10 @@
 
 import {hierarchy as d3Hierarchy} from 'd3-hierarchy';
 import constants from '../constants';
-import PropTypes from 'prop-types';
 import memoize from '../helpers/memoize';
 import {estimateHierarchySize} from '../components/featureDiagram/treeLayout/estimation';
 import {getSetting} from '../store/settings';
-import {layoutTypes, FeatureModelNode, Feature} from '../types';
+import {FeatureDiagramLayoutType, FeatureModelNode, Feature, FeatureType} from '../types';
 import {present} from '../helpers/present';
 
 const serialization = constants.server.featureModel.serialization;
@@ -65,12 +64,12 @@ d3Hierarchy.prototype.feature = function(this: FeatureModelNode): Feature {
         isAbstract: !!this.data[serialization.ABSTRACT],
         isHidden: !!this.data[serialization.HIDDEN],
         isMandatory: !!this.data[serialization.MANDATORY],
-        isAnd: this.data[serialization.TYPE] === serialization.AND,
-        isOr: this.data[serialization.TYPE] === serialization.OR,
-        isAlternative: this.data[serialization.TYPE] === serialization.ALT,
+        isAnd: this.data[serialization.TYPE] === FeatureType.and,
+        isOr: this.data[serialization.TYPE] === FeatureType.or,
+        isAlternative: this.data[serialization.TYPE] === FeatureType.alt,
         isGroup:
-            this.data[serialization.TYPE] === serialization.OR ||
-            this.data[serialization.TYPE] === serialization.ALT,
+            this.data[serialization.TYPE] === FeatureType.or ||
+            this.data[serialization.TYPE] === FeatureType.alt,
         isCollapsed: isCollapsed(this),
         hasChildren: hasChildren(this),
         hasActualChildren: hasActualChildren(this),
@@ -90,7 +89,7 @@ d3Hierarchy.prototype.feature = function(this: FeatureModelNode): Feature {
     });
 };
 
-class FeatureModel {
+export default class {
     _hierarchy: FeatureModelNode;
     _actualNodes: FeatureModelNode[];
      _visibleNodes: FeatureModelNode[];
@@ -212,8 +211,7 @@ class FeatureModel {
         return parents.every(parent => parent === parents[0]);
     }
 
-    // TODO: settings and layout type
-    getFittingFeatureNames(settings: object, featureDiagramLayout: string, width: number, height: number) {
+    getFittingFeatureNames(settings: object, featureDiagramLayout: FeatureDiagramLayoutType, width: number, height: number) {
         const fontFamily = getSetting(settings, 'featureDiagram.font.family'),
             fontSize = getSetting(settings, 'featureDiagram.font.size'),
             widthPadding = 2 * getSetting(settings, 'featureDiagram.treeLayout.node.paddingX') +
@@ -225,12 +223,12 @@ class FeatureModel {
         width = Math.max(width, constants.featureDiagram.fitToScreen.minWidth);
         height = Math.max(height, constants.featureDiagram.fitToScreen.minHeight);
 
-        while (true) { // eslint-disable-line no-constant-condition
+        while (true) {
             const {estimatedSize, collapsibleNodes} = estimateHierarchySize(
                 nodes, collapsedFeatureNames, featureDiagramLayout,
                 {fontFamily, fontSize, widthPadding, rectHeight});
     
-            if ((featureDiagramLayout === layoutTypes.verticalTree ? estimatedSize <= width : estimatedSize <= height) ||
+            if ((featureDiagramLayout === FeatureDiagramLayoutType.verticalTree ? estimatedSize <= width : estimatedSize <= height) ||
                 collapsibleNodes.length === 0)
                 return collapsedFeatureNames;
     
@@ -242,7 +240,3 @@ class FeatureModel {
         }
     }
 }
-
-export const FeatureModelType = PropTypes.instanceOf(FeatureModel); // TODO: replace with TypeScript checks
-
-export default FeatureModel;

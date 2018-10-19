@@ -1,12 +1,12 @@
 import React from 'react';
 import {shallow} from 'enzyme';
 import FeatureContextualMenu from './FeatureContextualMenu';
-import {layoutTypes} from '../../types';
 import {defaultSettings} from '../../store/settings';
 import FeatureModel from '../../server/FeatureModel';
 import {validFeatureModel} from '../../fixtures';
 import {ContextualMenu} from 'office-ui-fabric-react/lib/ContextualMenu';
 import {DirectionalHint} from 'office-ui-fabric-react/lib/Callout';
+import {FeatureDiagramLayoutType} from '../../types';
 
 describe('FeatureContextualMenu', () => {
     const featureContextualMenu = (selectedFeatureNames: string[] = []) => {
@@ -19,7 +19,7 @@ describe('FeatureContextualMenu', () => {
             <FeatureContextualMenu
                 isOpen={true}
                 onDismiss={mock}
-                featureDiagramLayout={layoutTypes.verticalTree}
+                featureDiagramLayout={FeatureDiagramLayoutType.verticalTree}
                 settings={defaultSettings}
                 onShowOverlay={mock}
                 onDeselectAllFeatures={mock}
@@ -49,7 +49,7 @@ describe('FeatureContextualMenu', () => {
     it('switches direction depending on the layout', () => {
         const wrapper = featureContextualMenu();
         expect(wrapper.find(ContextualMenu).prop('directionalHint')).toBe(DirectionalHint.bottomCenter);
-        wrapper.setProps({featureDiagramLayout: layoutTypes.horizontalTree});
+        wrapper.setProps({featureDiagramLayout: FeatureDiagramLayoutType.horizontalTree});
         expect(wrapper.find(ContextualMenu).prop('directionalHint')).toBe(DirectionalHint.rightCenter);
     });
 });

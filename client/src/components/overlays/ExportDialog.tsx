@@ -9,16 +9,18 @@ import {PrimaryButton} from 'office-ui-fabric-react/lib/Button';
 import FontComboBox from '../../helpers/FontComboBox';
 import SpinButton from '../../helpers/SpinButton';
 import {getSetting} from '../../store/settings';
-import {formatTypes} from '../../types';
 import {doExport} from '../featureDiagram/export';
+import {FeatureDiagramLayoutType} from 'src/types';
+import {FormatType} from '../../types';
+import {OnSetSettingFunction} from 'src/store/types';
 
 interface Props {
     onDismiss: () => void,
     isOpen: boolean,
     settings: object,
-    onSetSetting: (path: string, value: any) => void, // TODO
-    featureDiagramLayout: string,
-    format: string
+    onSetSetting: OnSetSettingFunction,
+    featureDiagramLayout: FeatureDiagramLayoutType,
+    format?: FormatType
 };
 
 interface State {
@@ -32,7 +34,7 @@ export default class extends React.Component<Props, State> {
     onQualityChange = (quality: number) => this.setState({quality});
 
     onSubmit = () => {
-        doExport(this.props.featureDiagramLayout, this.props.format, {
+        doExport(this.props.featureDiagramLayout, this.props.format!, {
             scale: this.state.zoom / 100,
             quality: this.state.quality / 100
         });
@@ -45,7 +47,7 @@ export default class extends React.Component<Props, State> {
             <FontComboBox
                 comboBoxProps={{label: i18n.t('overlays.settingsPanel.labels.featureDiagram.font.family')}}
                 selectedFont={getSetting(this.props.settings, 'featureDiagram.font.family')}
-                onChange={(font: string) => this.props.onSetSetting('featureDiagram.font.family', font)}/>
+                onChange={(font: string) => this.props.onSetSetting({path: 'featureDiagram.font.family', value: font})}/>
         </React.Fragment>
     );
 
@@ -63,10 +65,10 @@ export default class extends React.Component<Props, State> {
             <Dialog
                 hidden={!this.props.isOpen}
                 onDismiss={this.props.onDismiss}
-                dialogContentProps={{title: i18n.t('overlays.exportDialog', this.props.format, 'title')}}>
-                {this.props.format === formatTypes.svg && this.renderFontComboBox()}
-                {this.props.format === formatTypes.png && this.renderZoomSpinButton()}
-                {this.props.format === formatTypes.jpg &&
+                dialogContentProps={{title: i18n.t('overlays.exportDialog', this.props.format!, 'title')}}>
+                {this.props.format === FormatType.svg && this.renderFontComboBox()}
+                {this.props.format === FormatType.png && this.renderZoomSpinButton()}
+                {this.props.format === FormatType.jpg &&
                 <React.Fragment>
                     {this.renderZoomSpinButton()}
                     <SpinButton
@@ -76,7 +78,7 @@ export default class extends React.Component<Props, State> {
                         value={this.state.quality}
                         min={10} max={100} suffix=" %"/>
                 </React.Fragment>}
-                {this.props.format === formatTypes.pdf && this.renderFontComboBox()}
+                {this.props.format === FormatType.pdf && this.renderFontComboBox()}
                 <DialogFooter>
                     <PrimaryButton onClick={this.onSubmit} text={i18n.t('overlays.exportDialog.export')}/>
                 </DialogFooter>

@@ -1,5 +1,5 @@
 import actions, {SERVER_SEND_MESSAGE} from './actions';
-import {layoutTypes, overlayTypes, MessageType} from '../types';
+import {FeatureDiagramLayoutType, OverlayType, MessageType} from '../types';
 import constants from '../constants';
 
 const {propertyTypes, groupValueTypes} = constants.server;
@@ -22,8 +22,8 @@ describe('actions', () => {
 
     describe('user interface', () => {
         it('sets the feature diagram layout', () => {
-            expect(actions.ui.featureDiagram.setLayout({layout: layoutTypes.verticalTree}))
-                .toEqual({type: 'ui/featureDiagram/setLayout', payload: {layout: layoutTypes.verticalTree}});
+            expect(actions.ui.featureDiagram.setLayout({layout: FeatureDiagramLayoutType.verticalTree}))
+                .toEqual({type: 'ui/featureDiagram/setLayout', payload: {layout: FeatureDiagramLayoutType.verticalTree}});
         });
 
         describe('feature', () => {
@@ -77,19 +77,19 @@ describe('actions', () => {
 
         describe('overlay', () => {
             it('shows the about panel', () => {
-                expect(actions.ui.overlay.show({overlay: overlayTypes.aboutPanel}))
+                expect(actions.ui.overlay.show({overlay: OverlayType.aboutPanel, overlayProps: {}}))
                     .toEqual({
                         type: 'ui/overlay/show', payload: {
-                            overlay: overlayTypes.aboutPanel, overlayProps: undefined, selectFeature: undefined
+                            overlay: OverlayType.aboutPanel, overlayProps: {}, selectOneFeature: undefined
                         }
                     });
             });
 
             it('shows the feature panel', () => {
-                expect(actions.ui.overlay.show({overlay: overlayTypes.featurePanel, overlayProps: {featureName: 'FeatureIDE'}}))
+                expect(actions.ui.overlay.show({overlay: OverlayType.featurePanel, overlayProps: {featureName: 'FeatureIDE'}}))
                     .toEqual({
                         type: 'ui/overlay/show', payload: {
-                            overlay: overlayTypes.featurePanel,
+                            overlay: OverlayType.featurePanel,
                             overlayProps: {featureName: 'FeatureIDE'},
                             selectFeature: undefined
                         }
@@ -97,10 +97,10 @@ describe('actions', () => {
             });
 
             it('shows the feature panel and selects a feature', () => {
-                expect(actions.ui.overlay.show({overlay: overlayTypes.featurePanel, overlayProps: {featureName: 'FeatureIDE'}, selectOneFeature: 'FeatureIDE'}))
+                expect(actions.ui.overlay.show({overlay: OverlayType.featurePanel, overlayProps: {featureName: 'FeatureIDE'}, selectOneFeature: 'FeatureIDE'}))
                     .toEqual({
                         type: 'ui/overlay/show', payload: {
-                            overlay: overlayTypes.featurePanel,
+                            overlay: OverlayType.featurePanel,
                             overlayProps: {featureName: 'FeatureIDE'},
                             selectOneFeature: 'FeatureIDE'
                         }
@@ -108,8 +108,8 @@ describe('actions', () => {
             });
 
             it('hides a panel', () => {
-                expect(actions.ui.overlay.hide({overlay: overlayTypes.aboutPanel}))
-                    .toEqual({type: 'ui/overlay/hide', payload: {overlay: overlayTypes.aboutPanel}});
+                expect(actions.ui.overlay.hide({overlay: OverlayType.aboutPanel}))
+                    .toEqual({type: 'ui/overlay/hide', payload: {overlay: OverlayType.aboutPanel}});
             });
         });
     });

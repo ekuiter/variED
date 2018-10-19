@@ -7,7 +7,7 @@ import HorizontalTreeLink from './HorizontalTreeLink';
 import HorizontalTreeNode from './HorizontalTreeNode';
 import {getSetting} from '../../../store/settings';
 import {estimateRectHeight, estimateXOffset, estimateYOffset} from './estimation';
-import {layoutTypes, FeatureModelNode} from '../../../types';
+import {FeatureModelNode, FeatureDiagramLayoutType} from '../../../types';
 
 export default class extends AbstractTreeLayout {
     widestTextOnLayer = {};
@@ -18,11 +18,11 @@ export default class extends AbstractTreeLayout {
     }
 
     estimateXOffset(sgn: number, estimatedTextWidth: number): number {
-        return estimateXOffset(this.props.settings, sgn, estimatedTextWidth, layoutTypes.horizontalTree);
+        return estimateXOffset(this.props.settings, sgn, estimatedTextWidth, FeatureDiagramLayoutType.horizontalTree);
     }
 
     estimateYOffset(sgn: number): number {
-        return estimateYOffset(this.props.settings, sgn, layoutTypes.horizontalTree);
+        return estimateYOffset(this.props.settings, sgn, FeatureDiagramLayoutType.horizontalTree);
     }
 
     getSeparationFn(_estimateTextWidth: (node: FeatureModelNode) => number): (a: FeatureModelNode, b: FeatureModelNode) => number {

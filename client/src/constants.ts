@@ -18,7 +18,6 @@ const constants = {
         }
     },
     server: {
-        // eslint-disable-next-line no-undef
         webSocket: process.env.REACT_APP_WEBSOCKET || `ws://${window.location.host}/websocket`, // WebSocket URI to connect to
         propertyTypes: {
             abstract: 'abstract',
@@ -40,10 +39,6 @@ const constants = {
                 COMMENTS: 'comments',
                 FEATURE_ORDER: 'featureOrder',
                 TYPE: 'type',
-                FEATURE: 'feature',
-                OR: 'or',
-                ALT: 'alt',
-                AND: 'and',
                 NAME: 'name',
                 DESCRIPTION: 'description',
                 MANDATORY: 'mandatory',

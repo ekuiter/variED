@@ -7,28 +7,29 @@ import React from 'react';
 import {getSetting} from '../../store/settings';
 import i18n from '../../i18n';
 import FontComboBox from '../../helpers/FontComboBox';
-import SpinButton, { SpinButtonProps } from '../../helpers/SpinButton';
+import SpinButton, {SpinButtonProps} from '../../helpers/SpinButton';
 import {Panel, PanelType} from 'office-ui-fabric-react/lib/Panel';
 import {Toggle} from 'office-ui-fabric-react/lib/Toggle';
 import {ColorPicker} from 'office-ui-fabric-react/lib/ColorPicker';
 import {Slider} from 'office-ui-fabric-react/lib/Slider';
 import {DialogContextualMenu} from '../../helpers/Dialog';
 import {DefaultButton} from 'office-ui-fabric-react/lib/Button';
-import {layoutTypes} from '../../types';
+import {FeatureDiagramLayoutType} from '../../types';
 import debounce from '../../helpers/debounce';
 import {IContextualMenuItem} from 'office-ui-fabric-react/lib/ContextualMenu';
+import {OnSetSettingFunction, OnResetSettingsFunction} from 'src/store/types';
 
 const getLabel = (path: string) => i18n.t('overlays.settingsPanel.labels', path);
 
 interface SettingProps {
     settings: object,
-    onSetSetting: (path: string, value: any) => void /* TODO */,
+    onSetSetting: OnSetSettingFunction,
     path: string
 };
 
 interface ColorPickerContextualMenuProps {
     settings: object,
-    onSetSetting: (path: string, value: any) => void /* TODO */,
+    onSetSetting: OnSetSettingFunction,
     paths: string[]
 };
 
@@ -46,9 +47,9 @@ interface SettingsPanelProps {
     onDismissed: () => void,
     isOpen: boolean,
     settings: object,
-    featureDiagramLayout: string,
-    onSetSetting: (path: string, value: any) => void /* TODO */,
-    onResetSettings: () => void
+    featureDiagramLayout: FeatureDiagramLayoutType,
+    onSetSetting: OnSetSettingFunction,
+    onResetSettings: OnResetSettingsFunction
 };
 
 export const Setting = {
@@ -59,13 +60,13 @@ export const Setting = {
             checked={getSetting(settings, path)}
             onText={i18n.t('overlays.settingsPanel.toggleOn')}
             offText={i18n.t('overlays.settingsPanel.toggleOn')}
-            onClick={() => onSetSetting(path, (bool: boolean) => !bool)}/>
+            onClick={() => onSetSetting({path: path, value: (bool: boolean) => !bool})}/>
     ),
 
     FontComboBox: ({settings, onSetSetting, path}: SettingProps) => (
         <FontComboBox
             selectedFont={getSetting(settings, path)}
-            onChange={font => onSetSetting(path, font)}
+            onChange={font => onSetSetting({path, value: font})}
             comboBoxProps={{className: 'setting', label: getLabel(path)}}/>
     ),
 
@@ -74,14 +75,14 @@ export const Setting = {
             className="setting"
             label={getLabel(path)}
             value={getSetting(settings, path)}
-            onChange={value => onSetSetting(path, value)}
+            onChange={value => onSetSetting({path, value})}
             {...props}/>
     ),
     
     ColorPickerContextualMenu: class extends React.Component<ColorPickerContextualMenuProps, ColorPickerContextualMenuState> {
         state: ColorPickerContextualMenuState = {};
         onColorChanged = (color: string) => this.setState({color});
-        onApply = (option: IContextualMenuItem) => this.props.onSetSetting(option.key, this.state.color);
+        onApply = (option: IContextualMenuItem) => this.props.onSetSetting({path: option.key, value: this.state.color});
         onRender = (option: IContextualMenuItem) => this.setState({color: getSetting(this.props.settings, option.key)});
 
         render() {
@@ -101,7 +102,7 @@ export const Setting = {
     },
 
     Slider: class extends React.Component<SliderProps> {
-        onChange = debounce(value => this.props.onSetSetting(this.props.path, value),
+        onChange = debounce(value => this.props.onSetSetting({path: this.props.path, value}),
             getSetting(this.props.settings, 'overlays.settingsPanel.debounceUpdate'));
 
         render() {
@@ -123,9 +124,9 @@ export const Setting = {
 export default class extends React.Component<SettingsPanelProps> {
     state = {canReset: false};
 
-    resettableSetSetting = (path: string, value: any) => {
+    resettableSetSetting: OnSetSettingFunction = payload => {
         this.setState({canReset: true});
-        this.props.onSetSetting(path, value);
+        this.props.onSetSetting(payload);
     };
 
     onReset = () => {
@@ -159,7 +160,8 @@ export default class extends React.Component<SettingsPanelProps> {
                     path="featureDiagram.font.size"
                     min={5} max={50} suffix=" px"/>
 
-                {(featureDiagramLayout === layoutTypes.verticalTree || featureDiagramLayout === layoutTypes.horizontalTree) &&
+                {(featureDiagramLayout === FeatureDiagramLayoutType.verticalTree ||
+                    featureDiagramLayout === FeatureDiagramLayoutType.horizontalTree) &&
                 <React.Fragment>
                     <Setting.Toggle
                         {...props}
@@ -218,7 +220,7 @@ export default class extends React.Component<SettingsPanelProps> {
                         {...props}
                         paths={['featureDiagram.treeLayout.link.stroke']}/>
 
-                    {featureDiagramLayout === layoutTypes.verticalTree
+                    {featureDiagramLayout === FeatureDiagramLayoutType.verticalTree
                         ? <React.Fragment>
                             <h4>{i18n.t('overlays.settingsPanel.headings.verticalTree')}</h4>
                             <Setting.SpinButton

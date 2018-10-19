@@ -2,10 +2,10 @@
  * Implementation of feature diagram export algorithms.
  */
 
-import {layoutTypes, formatTypes} from '../../types';
 import FeatureModel from '../../server/FeatureModel';
 import {saveAs} from 'file-saver';
 import {importSvg2PdfJs, importJspdfYworks, importCanvg} from '../../imports';
+import {FeatureDiagramLayoutType, FormatType, FormatOptions} from '../../types';
 
 type BlobPromise = Promise<Blob | null>;
 
@@ -31,14 +31,14 @@ function exportSvg(): BlobPromise {
     return Promise.resolve(new Blob([svgData().string], {type: 'image/svg+xml;charset=utf-8'}));
 }
 
-function exportPng({scale = 1}): BlobPromise {
+function exportPng({scale = 1}: FormatOptions): BlobPromise {
     const canvas = document.createElement('canvas');
     return importCanvg()
         .then(canvg => (canvg as any)(canvas, svgData(scale).string))
         .then(() => new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/png')));
 }
 
-function exportJpg({scale = 1, quality = 0.8}): BlobPromise {
+function exportJpg({scale = 1, quality = 0.8}: FormatOptions): BlobPromise {
     const canvas = document.createElement('canvas'),
         ctx = canvas.getContext('2d')!,
         {string, width, height} = svgData(scale);
@@ -75,26 +75,30 @@ function exportPdf({}, fileName: string): BlobPromise {
     return Promise.resolve(null);
 }
 
-const exportMap = {
-    [layoutTypes.verticalTree]: {
-        [formatTypes.svg]: exportSvg,
-        [formatTypes.png]: exportPng,
-        [formatTypes.jpg]: exportJpg,
-        [formatTypes.pdf]: exportPdf
+const exportMap: {
+    [x in FeatureDiagramLayoutType]: {
+        [x in FormatType]: (options: FormatOptions, fileName: string) => BlobPromise
+    }
+} = {
+    [FeatureDiagramLayoutType.verticalTree]: {
+        [FormatType.svg]: exportSvg,
+        [FormatType.png]: exportPng,
+        [FormatType.jpg]: exportJpg,
+        [FormatType.pdf]: exportPdf
     },
-    [layoutTypes.horizontalTree]: {
-        [formatTypes.svg]: exportSvg,
-        [formatTypes.png]: exportPng,
-        [formatTypes.jpg]: exportJpg,
-        [formatTypes.pdf]: exportPdf
+    [FeatureDiagramLayoutType.horizontalTree]: {
+        [FormatType.svg]: exportSvg,
+        [FormatType.png]: exportPng,
+        [FormatType.jpg]: exportJpg,
+        [FormatType.pdf]: exportPdf
     }
 };
 
-export function canExport(featureDiagramLayout: string, format: string): boolean {
+export function canExport(featureDiagramLayout: FeatureDiagramLayoutType, format: FormatType): boolean {
     return !!exportMap[featureDiagramLayout][format];
 }
 
-export function doExport(featureDiagramLayout: string, format: string, options: object): void {
+export function doExport(featureDiagramLayout: FeatureDiagramLayoutType, format: FormatType, options: FormatOptions): void {
     const fileName = `featureModel-${new Date().toLocaleDateString()}.${format}`,
         promise: BlobPromise = exportMap[featureDiagramLayout][format](options, fileName);
     promise.then(blob => blob && saveAs(blob, fileName));

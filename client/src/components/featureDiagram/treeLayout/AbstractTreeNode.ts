@@ -9,9 +9,10 @@ import measureTextWidth from '../../../helpers/measureTextWidth';
 import {addStyle, appendCross, drawCircle, translateTransform, StyleDescriptor, Style} from '../../../helpers/svg';
 import styles from './styles';
 import {isCommand} from '../../../helpers/withKeys';
-import {overlayTypes, Rect, D3Selection, FeatureModelNode, Func} from '../../../types';
+import {OverlayType, Rect, D3Selection, FeatureModelNode} from '../../../types';
 import actions from '../../../store/actions';
 import AbstractTreeLink from './AbstractTreeLink';
+import {OnShowOverlayFunction, OnExpandFeaturesFunction} from 'src/store/types';
 
 function widenBbox({x, y, width, height}: Rect, paddingX: number, paddingY: number): Rect {
     return {x: x - paddingX, y: y - paddingY, width: width + 2 * paddingX, height: height + 2 * paddingY};
@@ -61,8 +62,8 @@ export default class {
     getWidestTextOnLayer: (node: FeatureModelNode) => number;
 
     constructor(public settings: object, public isSelectMultipleFeatures: boolean,
-        public setActiveNode: (overlay: string, activeNode: FeatureModelNode) => void,
-        public onShowOverlay: Func, public onExpandFeatures: Func) {}
+        public setActiveNode: (overlay: OverlayType | 'select', activeNode: FeatureModelNode) => void,
+        public onShowOverlay: OnShowOverlayFunction, public onExpandFeatures: OnExpandFeaturesFunction) {}
 
     x(_node: FeatureModelNode): number {
         throw new Error('abstract method not implemented');
@@ -88,14 +89,14 @@ export default class {
                 .attr('opacity', 0),
             rectAndText = nodeEnter.append('g')
                 .attr('class', 'rectAndText')
-                .on('click', (d: FeatureModelNode) => this.setActiveNode(isCommand(d3Event) ? 'select' : overlayTypes.featureCallout, d))
+                .on('click', (d: FeatureModelNode) => this.setActiveNode(isCommand(d3Event) ? 'select' : OverlayType.featureCallout, d))
                 .on('contextmenu', (d: FeatureModelNode) => {
                     d3Event.preventDefault();
-                    this.setActiveNode(isCommand(d3Event) ? 'select' : overlayTypes.featureContextualMenu, d);
+                    this.setActiveNode(isCommand(d3Event) ? 'select' : OverlayType.featureContextualMenu, d);
                 })
                 .on('dblclick', (d: FeatureModelNode) => {
                     if (!this.isSelectMultipleFeatures)
-                        this.onShowOverlay(overlayTypes.featurePanel, {featureName: d.feature().name});
+                        this.onShowOverlay({overlay: OverlayType.featurePanel, overlayProps: {featureName: d.feature().name}});
                 });
 
         let bboxes = makeText(this.settings, rectAndText, false, this.getTextStyle()) as Rect[];
@@ -117,7 +118,7 @@ export default class {
                 .on('dblclick', (d: FeatureModelNode) => actions.server.featureDiagram.feature.properties.toggleGroup({feature: d.feature()}));
         this.treeLink.drawGroup(arcSegment, arcSlice, arcClick);
 
-        const expandFeature = (d: FeatureModelNode) => d.feature().isCollapsed && this.onExpandFeatures(d.feature().name);
+        const expandFeature = (d: FeatureModelNode) => d.feature().isCollapsed && this.onExpandFeatures({featureNames: [d.feature().name]});
         i = 0;
         bboxes = [];
         nodeEnter.insert('text', 'path.arcClick')

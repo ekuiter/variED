@@ -11,15 +11,14 @@ import {
     ArcPathFunction,
     Style
 } from '../../../helpers/svg';
-import constants from '../../../constants';
 import styles from './styles';
 import actions from '../../../store/actions';
 import AbstractTreeNode from './AbstractTreeNode';
-import {Func, FeatureModelNode, Rect, Point, D3Selection, NodePointFunction} from '../../../types';
+import {FeatureModelNode, Rect, Point, D3Selection, NodePointFunction, NodeCoordinateForAxisFunction, FeatureType} from '../../../types';
 
 export default class {
-    // TODO
-    constructor(public settings: object, public getCurrentParentCoordinate: Func, public getPreviousParentCoordinate: Func, public treeNode: AbstractTreeNode) {}
+    constructor(public settings: object, public getCurrentParentCoordinate: NodeCoordinateForAxisFunction,
+        public getPreviousParentCoordinate: NodeCoordinateForAxisFunction, public treeNode: AbstractTreeNode) {}
 
     nodeX(node: FeatureModelNode): number {
         return this.treeNode.x(node);
@@ -92,7 +91,7 @@ export default class {
                         startAngle, endAngle, this.sweepFlag());
                 });
         drawArc(arcSegment, arcSegmentPath);
-        drawArc(arcSlice, arcSlicePath, d => d.feature().type === constants.server.featureModel.serialization.OR);
+        drawArc(arcSlice, arcSlicePath, d => d.feature().type === FeatureType.or);
         drawArc(arcClick, arcSlicePath, () => 'always');
     }
 

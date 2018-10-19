@@ -12,7 +12,6 @@ import actions from '../store/actions';
 import i18n from '../i18n';
 import {State, StateDerivedProps} from '../store/types';
 
-/* eslint-disable react/prop-types */
 const CommandBarContainer = (props: StateDerivedProps) => (
     <CommandBar
         items={[{

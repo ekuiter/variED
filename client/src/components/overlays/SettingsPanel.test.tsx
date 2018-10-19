@@ -2,7 +2,7 @@ import React from 'react';
 import {shallow} from 'enzyme';
 import SettingsPanel, {Setting} from './SettingsPanel';
 import {defaultSettings, getNewSettings, getSetting} from '../../store/settings';
-import {layoutTypes} from '../../types';
+import {FeatureDiagramLayoutType} from '../../types';
 import {Panel} from 'office-ui-fabric-react/lib/Panel';
 import {DefaultButton} from 'office-ui-fabric-react/lib/Button';
 import {ColorPicker} from 'office-ui-fabric-react/lib/ColorPicker';
@@ -13,7 +13,8 @@ describe('Setting', () => {
     // can not use toHaveReturnedWith() until Jest 23
     // TODO: wait for create-react-app update
     let newSetting: any;
-    const onSetSetting = jest.fn((path, value) => newSetting = getSetting(getNewSettings(defaultSettings, path, value), path));
+    const onSetSetting = jest.fn(({path, value}: {path: string, value: any}) =>
+        newSetting = getSetting(getNewSettings(defaultSettings, path, value), path));
     afterEach(() => newSetting = undefined);
 
     describe('Toggle', () => {
@@ -82,8 +83,7 @@ describe('Setting', () => {
 
 describe('SettingsPanel', () => {
     const mock = jest.fn(),
-    // TODO: use enum
-        settingsPanel = (featureDiagramLayout: string) => shallow(
+        settingsPanel = (featureDiagramLayout: FeatureDiagramLayoutType) => shallow(
             <SettingsPanel
                 isOpen={true}
                 onDismissed={mock}
@@ -94,14 +94,14 @@ describe('SettingsPanel', () => {
         );
 
     it('displays different settings depending on the layout', () => {
-        expect(settingsPanel(layoutTypes.verticalTree).find(Panel)
+        expect(settingsPanel(FeatureDiagramLayoutType.verticalTree).find(Panel)
             .contains(i18n.t('overlays.settingsPanel.headings.verticalTree'))).toBe(true);
-        expect(settingsPanel(layoutTypes.horizontalTree).find(Panel)
+        expect(settingsPanel(FeatureDiagramLayoutType.horizontalTree).find(Panel)
             .contains(i18n.t('overlays.settingsPanel.headings.horizontalTree'))).toBe(true);
     });
 
     it('resets settings', () => {
-        const wrapper = settingsPanel(layoutTypes.verticalTree),
+        const wrapper = settingsPanel(FeatureDiagramLayoutType.verticalTree),
             resetButton = (wrapper: any) => wrapper.find(DefaultButton).first();
         expect(resetButton(wrapper).prop('disabled')).toBe(true);
         

@@ -3,7 +3,7 @@
  */
 
 import {getSetting} from '../../../store/settings';
-import {layoutTypes, FeatureModelNode} from '../../../types';
+import {FeatureModelNode, FeatureDiagramLayoutType} from '../../../types';
 import measureTextWidth from '../../../helpers/measureTextWidth';
 import {getName} from '../../../server/FeatureModel';
 import constants from '../../../constants';
@@ -23,9 +23,9 @@ export function estimateRectHeight(settings: object): number {
 }
 
 // estimates the x coordinate of a node's rectangle left or right side
-export function estimateXOffset(settings: object, sgn: number, estimatedTextWidth: number, layout: string): number {
+export function estimateXOffset(settings: object, sgn: number, estimatedTextWidth: number, layout: FeatureDiagramLayoutType): number {
     const nodeSettings = getSetting(settings, 'featureDiagram.treeLayout.node');
-    return sgn * (estimatedTextWidth * (layout === layoutTypes.verticalTree ? 0.5 : sgn === 1 ? 1 : 0) +
+    return sgn * (estimatedTextWidth * (layout === FeatureDiagramLayoutType.verticalTree ? 0.5 : sgn === 1 ? 1 : 0) +
         nodeSettings.paddingX + nodeSettings.strokeWidth + nodeSettings.bboxPadding);
 }
 
@@ -35,7 +35,7 @@ function baselineHeight(settings: object): number {
 }
 
 // estimates the y coordinate of a node's rectangle top or bottom side
-export function estimateYOffset(settings: object, sgn: number, _layout: string): number {
+export function estimateYOffset(settings: object, sgn: number, _layout: FeatureDiagramLayoutType): number {
     const nodeSettings = getSetting(settings, 'featureDiagram.treeLayout.node');
     return sgn === 1
         ? baselineHeight(settings) + nodeSettings.paddingY + nodeSettings.strokeWidth + nodeSettings.bboxPadding
@@ -44,7 +44,7 @@ export function estimateYOffset(settings: object, sgn: number, _layout: string):
 
 // estimates minimum size of the given hierarchy without layouting it
 // and proposes features that can be collapsed to reduce the size
-export function estimateHierarchySize(nodes: FeatureModelNode[], collapsedFeatureNames: string[], featureDiagramLayout: string,
+export function estimateHierarchySize(nodes: FeatureModelNode[], collapsedFeatureNames: string[], featureDiagramLayout: FeatureDiagramLayoutType,
     {fontFamily, fontSize, widthPadding, rectHeight}: {fontFamily: string, fontSize: number, widthPadding: number, rectHeight: number}):
     {estimatedSize: number, collapsibleNodes: FeatureModelNode[]} {
 
@@ -62,7 +62,7 @@ export function estimateHierarchySize(nodes: FeatureModelNode[], collapsedFeatur
             !collapsedFeatureNames.includes(getName(node)))
             collapsibleNodesPerLayer[node.depth].push(node);
         minLayerSizes[node.depth].size +=
-            featureDiagramLayout === layoutTypes.verticalTree
+            featureDiagramLayout === FeatureDiagramLayoutType.verticalTree
                 ? measureTextWidth(fontFamily, fontSize, getName(node)) + widthPadding
                 : rectHeight;
     });

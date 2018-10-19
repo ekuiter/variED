@@ -1,6 +1,6 @@
 import FeatureModel from '../server/FeatureModel';
 import {defaultSettings} from './settings';
-import {layoutTypes, Message} from '../types';
+import {Message, FeatureDiagramLayoutType, OverlayType, OverlayProps} from '../types';
 
 export interface State {
     server: {
@@ -10,15 +10,33 @@ export interface State {
     settings: object,
     ui: {
         featureDiagram: {
-            layout: string,
+            layout: FeatureDiagramLayoutType,
             isSelectMultipleFeatures: boolean,
             selectedFeatureNames: string[],
             collapsedFeatureNames: string[]
         },
-        overlay?: string, // TODO
-        overlayProps?: object // TODO
+        overlay: OverlayType,
+        overlayProps: OverlayProps
     }
 };
+
+export type OnSelectFeatureFunction = (payload: {featureName: string}) => void;
+export type OnDeselectFeatureFunction = (payload: {featureName: string}) => void;
+export type OnSelectAllFeaturesFunction = () => void;
+export type OnDeselectAllFeaturesFunction = () => void;
+export type OnCollapseAllFeaturesFunction = () => void;
+export type OnExpandAllFeaturesFunction = () => void;
+export type OnSetFeatureDiagramLayoutFunction = (payload: {layout: FeatureDiagramLayoutType}) => void;
+export type OnSetSelectMultipleFeaturesFunction = (payload: {isSelectMultipleFeatures: boolean}) => void;
+export type OnCollapseFeaturesFunction = (payload: {featureNames: string[]}) => void;
+export type OnExpandFeaturesFunction = (payload: {featureNames: string[]}) => void;
+export type OnCollapseFeaturesBelowFunction = (payload: {featureNames: string[]}) => void;
+export type OnExpandFeaturesBelowFunction = (payload: {featureNames: string[]}) => void;
+export type OnShowOverlayFunction = (payload: {overlay: OverlayType, overlayProps: OverlayProps, selectOneFeature?: string}) => void;
+export type OnHideOverlayFunction = (payload: {overlay: OverlayType}) => void;
+export type OnFitToScreenFunction = () => void;
+export type OnSetSettingFunction = (payload: {path: string, value: any}) => void;
+export type OnResetSettingsFunction = () => void;
 
 // Props that may derived from the state to use in React components.
 // This enforces the convention that a prop called 'on...' has the same type in all components.
@@ -26,28 +44,29 @@ export type StateDerivedProps = Partial<{
     handleMessage: (message: Message) => void,
     users: string[],
     settings: object,
-    featureDiagramLayout: string,
+    featureDiagramLayout: FeatureDiagramLayoutType,
     isSelectMultipleFeatures: boolean,
     selectedFeatureNames: string[],
     featureModel?: FeatureModel,
-    overlay?: string,
-    overlayProps?: object
-    onSelectFeature: (payload: {featureName: string}) => void,
-    onDeselectFeature: (payload: {featureName: string}) => void,
-    onSelectAllFeatures: () => void,
-    onDeselectAllFeatures: () => void,
-    onCollapseAllFeatures: () => void,
-    onExpandAllFeatures: () => void,
-    onSetFeatureDiagramLayout: (payload: {layout: string}) => void,
-    onSetSelectMultipleFeatures: (payload: {isSelectMultipleFeatures: boolean}) => void,
-    onCollapseFeatures: (payload: {featureNames: string[]}) => void,
-    onExpandFeatures: (payload: {featureNames: string[]}) => void,
-    onCollapseFeaturesBelow: (payload: {featureNames: string[]}) => void,
-    onExpandFeaturesBelow: (payload: {featureNames: string[]}) => void,
-    onShowOverlay: (payload: {overlay: string, overlayProps?: object, selectOneFeature?: string}) => void,
-    onHideOverlay: (payload: {overlay: string}) => void,
-    onHideOverlayFn: (payload: {overlay: string}) => () => void,
-    onFitToScreen: () => void
+    overlay: OverlayType,
+    overlayProps: OverlayProps,
+    onSelectFeature: OnSelectFeatureFunction,
+    onDeselectFeature: OnDeselectFeatureFunction,
+    onSelectAllFeatures: OnSelectAllFeaturesFunction,
+    onDeselectAllFeatures: OnDeselectAllFeaturesFunction,
+    onCollapseAllFeatures: OnCollapseAllFeaturesFunction,
+    onExpandAllFeatures: OnExpandAllFeaturesFunction,
+    onSetFeatureDiagramLayout: OnSetFeatureDiagramLayoutFunction,
+    onSetSelectMultipleFeatures: OnSetSelectMultipleFeaturesFunction,
+    onCollapseFeatures: OnCollapseFeaturesFunction,
+    onExpandFeatures: OnExpandFeaturesFunction,
+    onCollapseFeaturesBelow: OnCollapseFeaturesBelowFunction,
+    onExpandFeaturesBelow: OnExpandFeaturesBelowFunction,
+    onShowOverlay: OnShowOverlayFunction,
+    onHideOverlay: OnHideOverlayFunction,
+    onFitToScreen: OnFitToScreenFunction,
+    onSetSetting: OnSetSettingFunction,
+    onResetSettings: OnResetSettingsFunction
 }>;
 
 export const initialState: State = {
@@ -58,12 +77,12 @@ export const initialState: State = {
     settings: defaultSettings,
     ui: {
         featureDiagram: {
-            layout: layoutTypes.verticalTree,
+            layout: FeatureDiagramLayoutType.verticalTree,
             isSelectMultipleFeatures: false,
             selectedFeatureNames: [],
             collapsedFeatureNames: []
         },
-        overlay: undefined,
-        overlayProps: undefined
+        overlay: OverlayType.none,
+        overlayProps: {}
     }
 };

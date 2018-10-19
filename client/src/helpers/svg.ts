@@ -7,7 +7,7 @@ import {NodeCoordinateFunction, Point, NodePointFunction, FeaturePropertyKey, Fe
 import {ValueMap} from 'd3-selection-multi';
 
 export type Style = ValueMap<any, any>;
-export type StyleDescriptor = {
+export interface StyleDescriptor {
     property?: FeaturePropertyKey,
     [x: string]: any
 };

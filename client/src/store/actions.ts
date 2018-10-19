@@ -5,7 +5,7 @@
 
 import {createStandardAction, ActionType} from 'typesafe-actions';
 import constants from '../constants';
-import {Message, MessageType, Feature} from '../types';
+import {Message, MessageType, Feature, FeatureDiagramLayoutType, OverlayType, OverlayProps} from '../types';
 
 const {propertyTypes, groupValueTypes} = constants.server;
 
@@ -19,7 +19,7 @@ const actions = {
     },
     ui: {
         featureDiagram: {
-            setLayout: createStandardAction('ui/featureDiagram/setLayout')<{layout: string}>(), // TODO
+            setLayout: createStandardAction('ui/featureDiagram/setLayout')<{layout: FeatureDiagramLayoutType}>(),
             fitToScreen: createStandardAction('ui/featureDiagram/fitToScreen')<void>(),
             feature: {
                 setSelectMultiple: createStandardAction('ui/featureDiagram/feature/setSelectMultiple')<{isSelectMultipleFeatures: boolean}>(),
@@ -36,9 +36,8 @@ const actions = {
             }
         },
         overlay: {
-            // TODO: more accurate types
-            show: createStandardAction('ui/overlay/show')<{overlay: string, overlayProps?: object, selectOneFeature?: string}>(),
-            hide: createStandardAction('ui/overlay/hide')<{overlay: string}>()
+            show: createStandardAction('ui/overlay/show')<{overlay: OverlayType, overlayProps: OverlayProps, selectOneFeature?: string}>(),
+            hide: createStandardAction('ui/overlay/hide')<{overlay: OverlayType}>()
         }
     },
     server: {

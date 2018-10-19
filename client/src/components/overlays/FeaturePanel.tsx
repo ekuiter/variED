@@ -9,15 +9,16 @@ import {CommandBar, ICommandBarItemProps} from 'office-ui-fabric-react/lib/Comma
 import commands from '../commands';
 import FeatureComponent, {FeatureComponentProps} from './FeatureComponent';
 import {Feature} from '../../types';
+import {OnShowOverlayFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction} from 'src/store/types';
 
 type Props = FeatureComponentProps & {
     onDismissed: () => void,
     isOpen: boolean,
-    onShowOverlay: (...args: any[]) => void, // TODO
-    onCollapseFeatures: (...args: any[]) => void,
-    onCollapseFeaturesBelow: (...args: any[]) => void,
-    onExpandFeatures: (...args: any[]) => void,
-    onExpandFeaturesBelow: (...args: any[]) => void,
+    onShowOverlay: OnShowOverlayFunction,
+    onCollapseFeatures: OnCollapseFeaturesFunction,
+    onCollapseFeaturesBelow: OnCollapseFeaturesBelowFunction,
+    onExpandFeatures: OnExpandFeaturesFunction,
+    onExpandFeaturesBelow: OnExpandFeaturesBelowFunction
 };
 
 const buttonStyles = {root: {backgroundColor: 'transparent'}},

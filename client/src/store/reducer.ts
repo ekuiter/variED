@@ -7,8 +7,8 @@
 // @ts-ignore: the type definitions for reduce-reducers are incorrect
 import reduceReducers from 'reduce-reducers';
 import {defaultSettings, getNewSettings} from './settings';
-import {overlayTypes, isMessageType, MessageType, Func} from '../types';
-import {setAdd, setRemove} from '../helpers/reducer';
+import {OverlayType, isMessageType, MessageType, isFloatingFeatureOverlay, OverlayProps} from '../types';
+import {setAdd, setRemove, SetOperationFunction} from '../helpers/reducer';
 import {getFeatureModel} from './selectors';
 import {getViewportWidth, getViewportHeight} from '../helpers/withDimensions';
 import actions, {Action} from './actions';
@@ -48,23 +48,22 @@ function hideOverlayForObsoleteFeature(state: State): State {
     if (!state.server.featureModel)
         return state;
     const visibleFeatureNames = getFeatureModel(state)!.getVisibleFeatureNames();
-    return state.ui.overlay && state.ui.overlayProps && state.ui.overlayProps['featureName'] &&
-        !visibleFeatureNames.includes(state.ui.overlayProps['featureName'])
-        ? updateOverlay(state, undefined, undefined)
+    return state.ui.overlay !== OverlayType.none && state.ui.overlayProps.featureName &&
+        !visibleFeatureNames.includes(state.ui.overlayProps.featureName)
+        ? updateOverlay(state, OverlayType.none, {})
         : state;
 }
 
 function changeOverlayForRenamedFeature(state: State, action: ActionType<typeof actions.server.receive>): State {
-    return state.ui.overlay && state.ui.overlayProps &&
-        state.ui.overlayProps['featureName'] === action.payload.oldFeature
+    return state.ui.overlay !== OverlayType.none && state.ui.overlayProps.featureName === action.payload.oldFeature
         ? getNewState(state, 'ui.overlayProps.featureName', action.payload.newFeature)
         : state;
 }
 
-function updateOverlay(state: State, overlay?: string, overlayProps?: object): State {
+function updateOverlay(state: State, overlay: OverlayType, overlayProps: OverlayProps): State {
     if (!state.ui.featureDiagram.isSelectMultipleFeatures &&
-        overlayTypes.isFloatingFeature(state.ui.overlay) &&
-        !overlayTypes.isFloatingFeature(overlay))
+        isFloatingFeatureOverlay(state.ui.overlay) &&
+        !isFloatingFeatureOverlay(overlay))
         return getNewState(state, 'ui.overlay', overlay, 'ui.overlayProps', overlayProps, 'ui.featureDiagram.selectedFeatureNames', []);
     else
         return getNewState(state, 'ui.overlay', overlay, 'ui.overlayProps', overlayProps);
@@ -126,7 +125,7 @@ function settingsReducer(state: State, action: Action): State {
 }
 
 function uiReducer(state: State, action: Action): State {
-    let selectedFeatureNames: string[], setOperation: Func;
+    let selectedFeatureNames: string[], setOperation: SetOperationFunction<string>;
 
     switch (action.type) {
         case getType(actions.ui.featureDiagram.setLayout):
@@ -199,7 +198,7 @@ function uiReducer(state: State, action: Action): State {
 
         case getType(actions.ui.overlay.hide):
             return state.ui.overlay === action.payload.overlay
-                ? updateOverlay(state, undefined, undefined)
+                ? updateOverlay(state, OverlayType.none, {})
                 : state;
     }
 

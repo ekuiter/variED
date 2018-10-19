@@ -5,7 +5,7 @@
  */
 
 import objectPath from 'object-path';
-import {KeyBinding, KeyBindingAction} from './helpers/withKeys';
+import {KeyBinding, KeyBindingActionFunction} from './helpers/withKeys';
 
 const COMMAND = 'COMMAND', SHIFT = 'SHIFT';
 
@@ -24,11 +24,11 @@ function shortcutText(...keys: string[]): string {
     return keys.join(joinWith);
 }
 
-type ShortcutCondition = (props: object) => boolean;
+type ShortcutConditionFunction = (props: object) => boolean;
 
-type Shortcut = {
+interface Shortcut {
     text: string,
-    keyBinding: (conditionFn: ShortcutCondition, action: KeyBindingAction) => KeyBinding
+    keyBinding: (conditionFn: ShortcutConditionFunction, action: KeyBindingActionFunction) => KeyBinding
 };
 
 const shortcut = (key: string): Shortcut => ({
@@ -87,7 +87,7 @@ function getShortcut(...paths: string[]): Shortcut {
     return objectPath.get(shortcuts, path);
 }
 
-export function getShortcutKeyBinding(path: string, conditionFn: ShortcutCondition, action: KeyBindingAction): KeyBinding {
+export function getShortcutKeyBinding(path: string, conditionFn: ShortcutConditionFunction, action: KeyBindingActionFunction): KeyBinding {
     return getShortcut(path).keyBinding(conditionFn, action);
 }
 

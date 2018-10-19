@@ -11,10 +11,11 @@ import 'd3-transition';
 import {getSetting} from '../../../store/settings';
 import {updateRect} from '../../../helpers/svg';
 import '../../../stylesheets/treeLayout.css';
-import {overlayTypes, Func, FeatureModelNode, D3Selection, Bbox} from '../../../types';
+import {FeatureModelNode, D3Selection, Bbox, OverlayType, isFloatingFeatureOverlay, OverlayProps, NodeCoordinateForAxisFunction} from '../../../types';
 import FeatureModel from '../../../server/FeatureModel';
 import AbstractTreeNode from './AbstractTreeNode';
 import AbstractTreeLink from './AbstractTreeLink';
+import {OnShowOverlayFunction, OnHideOverlayFunction, OnSetSelectMultipleFeaturesFunction, OnSelectFeatureFunction, OnDeselectFeatureFunction, OnExpandFeaturesFunction, OnDeselectAllFeaturesFunction} from 'src/store/types';
 
 export interface AbstractTreeLayoutProps {
     featureModel: FeatureModel,
@@ -23,17 +24,17 @@ export interface AbstractTreeLayoutProps {
     className: string,
     fitOnResize: boolean,
     settings: object,
-    overlay?: string, // TODO
-    overlayProps?: object, // TODO
+    overlay: OverlayType,
+    overlayProps: OverlayProps,
     isSelectMultipleFeatures: boolean,
     selectedFeatureNames: string[],
-    onShowOverlay: Func, // TODO
-    onHideOverlay: Func,
-    onSetSelectMultipleFeatures: Func,
-    onSelectFeature: Func,
-    onDeselectFeature: Func,
-    onExpandFeatures: Func,
-    onDeselectAllFeatures: Func
+    onShowOverlay: OnShowOverlayFunction,
+    onHideOverlay: OnHideOverlayFunction,
+    onSetSelectMultipleFeatures: OnSetSelectMultipleFeaturesFunction,
+    onSelectFeature: OnSelectFeatureFunction,
+    onDeselectFeature: OnDeselectFeatureFunction,
+    onExpandFeatures: OnExpandFeaturesFunction,
+    onDeselectAllFeatures: OnDeselectAllFeaturesFunction
 };
 
 export default class extends React.Component<AbstractTreeLayoutProps> {
@@ -91,30 +92,29 @@ export default class extends React.Component<AbstractTreeLayoutProps> {
 
     toggleSelectedNode(node: FeatureModelNode): void {
         if (this.props.selectedFeatureNames.includes(node.feature().name))
-            this.props.onDeselectFeature(node.feature().name);
+            this.props.onDeselectFeature({featureName: node.feature().name});
         else
-            this.props.onSelectFeature(node.feature().name);
+            this.props.onSelectFeature({featureName: node.feature().name});
     }
 
-    setActiveNode(overlay: string, activeNode: FeatureModelNode): void {
+    setActiveNode(overlay: OverlayType | 'select', activeNode: FeatureModelNode): void {
         const featureName = activeNode.feature().name;
         if (this.props.isSelectMultipleFeatures) {
-            if (overlay === overlayTypes.featureCallout || overlay === 'select') {
+            if (overlay === OverlayType.featureCallout || overlay === 'select') {
                 this.toggleSelectedNode(activeNode);
-                if (this.props.overlay === overlayTypes.featureContextualMenu &&
-                    this.props.overlayProps &&
-                    this.props.overlayProps['featureName'] === featureName)
-                    this.props.onHideOverlay(overlayTypes.featureContextualMenu);
+                if (this.props.overlay === OverlayType.featureContextualMenu &&
+                    this.props.overlayProps.featureName === featureName)
+                    this.props.onHideOverlay({overlay: OverlayType.featureContextualMenu});
             }
-            else if (overlay === overlayTypes.featureContextualMenu &&
+            else if (overlay === OverlayType.featureContextualMenu &&
                 this.props.selectedFeatureNames.includes(featureName))
-                this.props.onShowOverlay(overlay, {featureName});
+                this.props.onShowOverlay({overlay, overlayProps: {featureName}});
         } else {
-            if (overlayTypes.isFloatingFeature(overlay))
-                this.props.onShowOverlay(overlay, {featureName}, {selectOneFeature: featureName});
+            if (overlay !== 'select' && isFloatingFeatureOverlay(overlay))
+                this.props.onShowOverlay({overlay, overlayProps: {featureName},selectOneFeature: featureName});
             else if (overlay === 'select') {
-                this.props.onSetSelectMultipleFeatures(true);
-                this.props.onSelectFeature(featureName);
+                this.props.onSetSelectMultipleFeatures({isSelectMultipleFeatures: true});
+                this.props.onSelectFeature({featureName});
             }
         }
     }
@@ -124,7 +124,7 @@ export default class extends React.Component<AbstractTreeLayoutProps> {
         nodes.forEach(node => this[key][node.feature().name] = {x: this.treeNode.x(node), y: this.treeNode.y(node)});
     }
 
-    getParentCoordinateFn(key: string): (node: FeatureModelNode, axis: string) => number {
+    getParentCoordinateFn(key: string): NodeCoordinateForAxisFunction {
         return (node, axis) => {
             if (!node.feature().isRoot) {
                 const coords = this[key][node.parent!.feature().name];

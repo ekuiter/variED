@@ -7,18 +7,19 @@ import {Callout, DirectionalHint} from 'office-ui-fabric-react/lib/Callout';
 import {getSetting} from '../../store/settings';
 import commands from '../commands';
 import {CommandBar} from 'office-ui-fabric-react/lib/CommandBar';
-import {layoutTypes, Feature} from '../../types';
+import {Feature, FeatureDiagramLayoutType} from '../../types';
 import FeatureComponent, {FeatureComponentProps} from './FeatureComponent';
+import {OnShowOverlayFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction} from 'src/store/types';
 
 type Props = FeatureComponentProps & {
     onDismiss: () => void,
     isOpen: boolean,
-    featureDiagramLayout: string,
-    onShowOverlay: (...args: any[]) => void, // TODO
-    onCollapseFeatures: (...args: any[]) => void,
-    onCollapseFeaturesBelow: (...args: any[]) => void,
-    onExpandFeatures: (...args: any[]) => void,
-    onExpandFeaturesBelow: (...args: any[]) => void,
+    featureDiagramLayout: FeatureDiagramLayoutType,
+    onShowOverlay: OnShowOverlayFunction,
+    onCollapseFeatures: OnCollapseFeaturesFunction,
+    onCollapseFeaturesBelow: OnCollapseFeaturesBelowFunction,
+    onExpandFeatures: OnExpandFeaturesFunction,
+    onExpandFeaturesBelow: OnExpandFeaturesBelowFunction
 };
 
 export default class extends FeatureComponent({doUpdate: true})<Props> {
@@ -26,13 +27,13 @@ export default class extends FeatureComponent({doUpdate: true})<Props> {
         const {onDismiss, featureModel} = this.props,
             {gapSpace, width} = getSetting(this.props.settings, 'featureDiagram.overlay');
         return (
-            <Callout target={featureModel.getElement(feature.name)!.querySelector('.rectAndText')}
+            <Callout target={featureModel!.getElement(feature.name)!.querySelector('.rectAndText')}
                 onDismiss={onDismiss}
                 hidden={!this.props.isOpen}
                 gapSpace={gapSpace}
                 calloutWidth={width}
                 directionalHint={
-                    this.props.featureDiagramLayout === layoutTypes.verticalTree
+                    this.props.featureDiagramLayout === FeatureDiagramLayoutType.verticalTree
                         ? DirectionalHint.bottomCenter
                         : DirectionalHint.rightCenter}>
                 <div className="callout">

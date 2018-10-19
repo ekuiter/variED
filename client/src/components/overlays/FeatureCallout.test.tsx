@@ -3,9 +3,9 @@ import {shallow} from 'enzyme';
 import FeatureCallout from './FeatureCallout';
 import FeatureModel from '../../server/FeatureModel';
 import {validFeatureModel} from '../../fixtures';
-import {layoutTypes} from '../../types';
 import {defaultSettings} from '../../store/settings';
 import {Callout, DirectionalHint} from 'office-ui-fabric-react/lib/Callout';
+import {FeatureDiagramLayoutType} from '../../types';
 
 describe('FeatureCallout', () => {
     const featureCallout = (featureName = 'FeatureIDE') => {
@@ -18,7 +18,7 @@ describe('FeatureCallout', () => {
             <FeatureCallout
                 isOpen={true}
                 onDismiss={mock}
-                featureDiagramLayout={layoutTypes.verticalTree}
+                featureDiagramLayout={FeatureDiagramLayoutType.verticalTree}
                 settings={defaultSettings}
                 onShowOverlay={mock}
                 onCollapseFeatures={mock}
@@ -48,7 +48,7 @@ describe('FeatureCallout', () => {
     it('switches direction depending on the layout', () => {
         const wrapper = featureCallout();
         expect(wrapper.find(Callout).prop('directionalHint')).toBe(DirectionalHint.bottomCenter);
-        wrapper.setProps({featureDiagramLayout: layoutTypes.horizontalTree});
+        wrapper.setProps({featureDiagramLayout: FeatureDiagramLayoutType.horizontalTree});
         expect(wrapper.find(Callout).prop('directionalHint')).toBe(DirectionalHint.rightCenter);
     });
 });

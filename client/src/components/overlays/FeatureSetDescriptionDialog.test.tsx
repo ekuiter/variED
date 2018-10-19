@@ -5,7 +5,7 @@ import FeatureModel from '../../server/FeatureModel';
 import {validFeatureModel} from '../../fixtures';
 import {TextFieldDialog} from '../../helpers/Dialog';
 import actions from '../../store/actions';
-import { defaultSettings } from '../../store/settings';
+import {defaultSettings} from '../../store/settings';
 
 jest.mock('../../store/actions');
 

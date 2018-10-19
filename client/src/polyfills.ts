@@ -7,15 +7,13 @@ import 'element-closest';
 import 'blob-polyfill';
 import 'blueimp-canvas-to-blob';
 
-/* eslint-disable no-extend-native */
-
 if (!Object.values)
-    Object.values = function<T>(obj: { [s: string]: T } |  ArrayLike<T>) {
+    Object.values = function<T>(obj: {[s: string]: T} |  ArrayLike<T>) {
         return Object.keys(obj).map(key => obj[key]);
     };
 
 if (!Object.entries)
-    Object.entries = function<T>(obj: { [s: string]: T } | ArrayLike<T>) {
+    Object.entries = function<T>(obj: {[s: string]: T} | ArrayLike<T>) {
         var ownProps = Object.keys(obj),
             i = ownProps.length,
             resArray = new Array(i);
@@ -112,8 +110,8 @@ if (!Array.from)
         };
         var toInteger = function(value: any) {
             var number = Number(value);
-            if (isNaN(number)) { return 0; }
-            if (number === 0 || !isFinite(number)) { return number; }
+            if (isNaN(number)) return 0;
+            if (number === 0 || !isFinite(number)) return number;
             return (number > 0 ? 1 : -1) * Math.floor(Math.abs(number));
         };
         var maxSafeInteger = Math.pow(2, 53) - 1;
