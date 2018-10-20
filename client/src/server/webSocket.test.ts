@@ -18,10 +18,8 @@ describe('webSocket', () => {
         const mockServer = new Server(constants.server.webSocket),
             connectionMock = jest.fn();
         mockServer.on('connection', connectionMock);
-        expect(logger.log).not.toBeCalled();
         expect(connectionMock).not.toBeCalled();
         await openWebSocket();
-        expect(logger.log).toBeCalledWith('opened WebSocket');
         expect(connectionMock).toBeCalled();
         await close(mockServer);
     });
@@ -39,21 +37,18 @@ describe('webSocket', () => {
     });
 
     it('closes a web socket', async () => {
-        (logger.warn as any).mockReset();
         const mockServer = new Server(constants.server.webSocket);
-        expect(logger.warn).not.toBeCalled();
         await openWebSocket();
         await close(mockServer);
-        expect((logger.warn as jest.Mock).mock.calls[0]).toContain('closed WebSocket with code');
     });
 
     it('reports errors', async () => {
-        (logger.warn as any).mockReset();
+        (logger.warnTagged as any).mockReset();
         const mockServer: any = new Server(constants.server.webSocket);
-        expect(logger.warn).not.toBeCalled();
+        expect(logger.warnTagged).not.toBeCalled();
         await openWebSocket();
         mockServer.emit('error');
-        expect((logger.warn as jest.Mock).mock.calls[0]).toContain('WebSocket error:');
+        expect(logger.warnTagged).toBeCalled();
         await close(mockServer);
     });
 

@@ -20,6 +20,7 @@ import FeatureContextualMenu from '../../components/overlays/FeatureContextualMe
 import ExportDialog from '../../components/overlays/ExportDialog';
 import {OverlayType} from '../../types';
 import {State, StateDerivedProps} from '../../store/types';
+import logger from '../../helpers/logger';
 
 const OverlayContainer = (props: StateDerivedProps) => (
     <React.Fragment>
@@ -129,7 +130,7 @@ const OverlayContainer = (props: StateDerivedProps) => (
 );
 
 export default connect(
-    (state: State): StateDerivedProps => ({
+    logger.mapStateToProps('OverlayContainer', (state: State): StateDerivedProps => ({
     overlay: state.ui.overlay,
         overlayProps: state.ui.overlayProps,
         featureDiagramLayout: state.ui.featureDiagram.layout,
@@ -137,7 +138,7 @@ export default connect(
         selectedFeatureNames: state.ui.featureDiagram.selectedFeatureNames,
         settings: state.settings,
         featureModel: getFeatureModel(state)
-    }),
+    })),
     (dispatch): StateDerivedProps => ({
         onHideOverlay: payload => dispatch(actions.ui.overlay.hide(payload)),
         onShowOverlay: payload => dispatch(actions.ui.overlay.show(payload)),

@@ -10,19 +10,20 @@ import {connect} from 'react-redux';
 import {getFeatureModel} from '../store/selectors';
 import actions from '../store/actions';
 import {State, StateDerivedProps} from '../store/types';
+import logger from '../helpers/logger';
 
 const ifGlobal = (props: StateDerivedProps) => !props.overlay,
     ifFloatingFeature = (props: StateDerivedProps) => isFloatingFeatureOverlay(props.overlay!),
     ifSingleFloatingFeature = (props: StateDerivedProps) => ifFloatingFeature(props) && !props.isSelectMultipleFeatures;
 
 export default connect(
-    (state: State): StateDerivedProps => ({
+    logger.mapStateToProps('ShortcutContainer', (state: State): StateDerivedProps => ({
         isSelectMultipleFeatures: state.ui.featureDiagram.isSelectMultipleFeatures,
         selectedFeatureNames: state.ui.featureDiagram.selectedFeatureNames,
         featureModel: getFeatureModel(state),
         overlay: state.ui.overlay,
         overlayProps: state.ui.overlayProps
-    }),
+    })),
     (dispatch): StateDerivedProps => ({
         onSelectAllFeatures: () => dispatch(actions.ui.featureDiagram.feature.selectAll()),
         onDeselectAllFeatures: () => dispatch(actions.ui.featureDiagram.feature.deselectAll()),

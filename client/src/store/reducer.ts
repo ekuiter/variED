@@ -87,7 +87,7 @@ function serverReducer(state: State, action: Action): State {
     if (isActionOf(actions.server.receive, action) && isMessageType(action.payload.type)) {
         switch (action.payload.type) {
             case MessageType.ERROR:
-                logger.warn(action.payload.error);
+                logger.warnTagged({tag: 'server'}, action.payload.error);
                 return state;
 
             case MessageType.USER_JOINED:
@@ -189,7 +189,7 @@ function uiReducer(state: State, action: Action): State {
 
         case getType(actions.ui.featureDiagram.feature.collapseBelow):
         case getType(actions.ui.featureDiagram.feature.expandBelow):
-            setOperation = isActionOf(actions.ui.featureDiagram.feature.collapse, action) ? setAdd : setRemove;
+            setOperation = isActionOf(actions.ui.featureDiagram.feature.collapseBelow, action) ? setAdd : setRemove;
             return state.server.featureModel
                 ? getNewState(state, 'ui.featureDiagram.collapsedFeatureNames',
                     setOperation(state.ui.featureDiagram.collapsedFeatureNames,

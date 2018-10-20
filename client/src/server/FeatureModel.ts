@@ -239,4 +239,8 @@ export default class {
             nodes = nodes.filter(node => !invisibleNodes.includes(node));
         }
     }
+
+    toString() {
+        return `FeatureModel [${this.getVisibleFeatureNames().join(', ')}]`;
+    }
 }

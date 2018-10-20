@@ -11,6 +11,7 @@ import {getFeatureModel} from '../store/selectors';
 import actions from '../store/actions';
 import i18n from '../i18n';
 import {State, StateDerivedProps} from '../store/types';
+import logger from '../helpers/logger';
 
 const CommandBarContainer = (props: StateDerivedProps) => (
     <CommandBar
@@ -78,14 +79,14 @@ const CommandBarContainer = (props: StateDerivedProps) => (
 );
 
 export default connect(
-    (state: State): StateDerivedProps => ({
+    logger.mapStateToProps('CommandBarContainer', (state: State): StateDerivedProps => ({
         featureDiagramLayout: state.ui.featureDiagram.layout,
         isSelectMultipleFeatures: state.ui.featureDiagram.isSelectMultipleFeatures,
         selectedFeatureNames: state.ui.featureDiagram.selectedFeatureNames,
         users: state.server.users,
         settings: state.settings,
         featureModel: getFeatureModel(state)
-    }),
+    })),
     (dispatch): StateDerivedProps => ({
         onSetFeatureDiagramLayout: payload => dispatch(actions.ui.featureDiagram.setLayout(payload)),
         onSetSelectMultipleFeatures: payload => dispatch(actions.ui.featureDiagram.feature.setSelectMultiple(payload)),

@@ -18,24 +18,24 @@ const getWebSocket = ((): () => Promise<WebSocket> => {
             webSocket = new WebSocket(constants.server.webSocket);
             
             webSocket.onopen = () => {
-                logger.log('opened WebSocket');
+                logger.logTagged({tag: 'socket'}, 'open');
                 resolve(webSocket);
             };
             
             webSocket.onclose = e => {
-                logger.warn('closed WebSocket with code', e.code, 'and reason', e.reason);
+                logger.warnTagged({tag: 'socket'}, 'closed with code', e.code, 'and reason', e.reason);
                 // TODO: notify user that WebSocket was closed (with button to reopen)
             };
             
             webSocket.onerror = e => {
-                logger.warn('WebSocket error:', e);
+                logger.warnTagged({tag: 'socket'}, e);
                 // TODO: notify user of error (and IF WebSocket is closed now, a button to reopen it)
                 reject(e);
             };
             
             webSocket.onmessage = message => {
                 let data = JSON.parse(message.data);
-                logger.log('received:', data);
+                logger.logTagged({tag: 'receive'}, data);
                 handleMessage && handleMessage(data);
             };
         });
@@ -56,7 +56,7 @@ export async function openWebSocket(_handleMessage?: HandleMessageFunction): Pro
 export async function sendMessage(message: Message): Promise<void> {
     const webSocket = await getWebSocket();
     webSocket.send(JSON.stringify(message));
-    logger.log('sent:', message);
+    logger.logTagged({tag: 'send'}, message);
 }
 
 export async function sendMultipleMessages(messages: Message[]): Promise<void> {
@@ -68,4 +68,6 @@ export async function sendMultipleMessages(messages: Message[]): Promise<void> {
         await sendMessage({type: MessageType.MULTIPLE_MESSAGES, messages});
 }
 
-(window as any).sendMessage = sendMessage; // for debugging purposes
+declare var window: any;
+window.app = window.app || {};
+window.app.sendMessage = sendMessage; // for debugging purposes

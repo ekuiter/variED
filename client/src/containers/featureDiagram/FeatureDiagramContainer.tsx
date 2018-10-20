@@ -9,9 +9,10 @@ import {Spinner, SpinnerSize} from 'office-ui-fabric-react/lib/Spinner';
 import {getFeatureModel} from '../../store/selectors';
 import actions from '../../store/actions';
 import {State, StateDerivedProps} from '../../store/types';
+import logger from '../../helpers/logger';
 
 export default connect(
-    (state: State): StateDerivedProps => ({
+    logger.mapStateToProps('FeatureDiagramContainer', (state: State): StateDerivedProps => ({
         settings: state.settings,
         featureDiagramLayout: state.ui.featureDiagram.layout,
         isSelectMultipleFeatures: state.ui.featureDiagram.isSelectMultipleFeatures,
@@ -19,7 +20,7 @@ export default connect(
         featureModel: getFeatureModel(state),
         overlay: state.ui.overlay,
         overlayProps: state.ui.overlayProps
-    }),
+    })),
     (dispatch): StateDerivedProps => ({
         onShowOverlay: payload => dispatch(actions.ui.overlay.show(payload)),
         onHideOverlay: payload => dispatch(actions.ui.overlay.hide(payload)),

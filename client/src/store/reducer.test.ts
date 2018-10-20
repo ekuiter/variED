@@ -268,8 +268,10 @@ describe('reducer', () => {
         });
     
         it('warns on errors', () => {
+            (logger.warnTagged as any).mockReset();
+            expect(logger.warnTagged).not.toBeCalled();
             expect(reducer(initialState, actions.server.receive({type: MessageType.ERROR,error: 'some error'}))).toBe(initialState);
-            expect(logger.warn).lastCalledWith('some error');
+            expect(logger.warnTagged).toBeCalled();
         });
     
         it('lets users join', () => {
