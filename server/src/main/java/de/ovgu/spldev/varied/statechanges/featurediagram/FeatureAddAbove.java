@@ -4,6 +4,7 @@ import de.ovgu.featureide.fm.core.base.IFeature;
 import de.ovgu.featureide.fm.core.base.IFeatureModel;
 import de.ovgu.featureide.fm.core.base.IFeatureStructure;
 import de.ovgu.featureide.fm.core.base.impl.FMFactoryManager;
+import de.ovgu.spldev.varied.StateContext;
 import de.ovgu.spldev.varied.util.FeatureModelUtils;
 import de.ovgu.spldev.varied.util.FeatureUtils;
 import de.ovgu.spldev.varied.messaging.Message;
@@ -17,7 +18,7 @@ import static de.ovgu.featureide.fm.core.localization.StringTable.DEFAULT_FEATUR
 
 // adapted from CreateFeatureAboveOperation
 public class FeatureAddAbove extends StateChange {
-    private IFeatureModel featureModel;
+    private StateContext.FeatureModel stateContext;
     private IFeature newCompound;
     private IFeature child;
     private LinkedList<IFeature> selectedFeatures;
@@ -25,19 +26,19 @@ public class FeatureAddAbove extends StateChange {
     private boolean parentOr = false;
     private boolean parentAlternative = false;
 
-    public FeatureAddAbove(IFeatureModel featureModel, String[] aboveFeatures) {
+    public FeatureAddAbove(StateContext.FeatureModel stateContext, String[] aboveFeatures) {
         if (aboveFeatures.length == 0)
             throw new RuntimeException("no features given");
-        this.featureModel = featureModel;
-        this.selectedFeatures = FeatureUtils.requireFeatures(featureModel, aboveFeatures);
-        FeatureUtils.requireSiblings(featureModel, aboveFeatures);
+        this.stateContext = stateContext;
+        this.selectedFeatures = FeatureUtils.requireFeatures(stateContext.getFeatureModel(), aboveFeatures);
+        FeatureUtils.requireSiblings(stateContext.getFeatureModel(), aboveFeatures);
         FeatureUtils.sortSiblingFeatures(this.selectedFeatures);
         child = selectedFeatures.get(0);
         int number = 0;
-        while (de.ovgu.featureide.fm.core.base.FeatureUtils.getFeatureNames(featureModel).contains(DEFAULT_FEATURE_LAYER_CAPTION + ++number)) {
+        while (de.ovgu.featureide.fm.core.base.FeatureUtils.getFeatureNames(stateContext.getFeatureModel()).contains(DEFAULT_FEATURE_LAYER_CAPTION + ++number)) {
         }
 
-        newCompound = FMFactoryManager.getFactory(featureModel).createFeature(featureModel, DEFAULT_FEATURE_LAYER_CAPTION + number);
+        newCompound = FMFactoryManager.getFactory(stateContext.getFeatureModel()).createFeature(stateContext.getFeatureModel(), DEFAULT_FEATURE_LAYER_CAPTION + number);
     }
 
     public Message.IEncodable[] _apply() {
@@ -67,21 +68,21 @@ public class FeatureAddAbove extends StateChange {
                 newCompound.getStructure().changeToAnd();
             }
             parent.changeToAnd();
-            featureModel.addFeature(newCompound);
+            stateContext.getFeatureModel().addFeature(newCompound);
         } else {
             newCompound.getStructure().addChild(child.getStructure());
-            featureModel.addFeature(newCompound);
-            featureModel.getStructure().setRoot(newCompound.getStructure());
+            stateContext.getFeatureModel().addFeature(newCompound);
+            stateContext.getFeatureModel().getStructure().setRoot(newCompound.getStructure());
         }
 
-        return FeatureModelUtils.toMessage(featureModel);
+        return FeatureModelUtils.toMessage(stateContext);
     }
 
     public Message.IEncodable[] _undo() {
         final IFeatureStructure parent = newCompound.getStructure().getParent();
         if (parent != null) {
             newCompound.getStructure().setChildren(Collections.emptyList());
-            featureModel.deleteFeature(newCompound);
+            stateContext.getFeatureModel().deleteFeature(newCompound);
             for (final Integer position : children.keySet()) {
                 parent.addChildAtPosition(position, children.get(position).getStructure());
             }
@@ -94,10 +95,10 @@ public class FeatureAddAbove extends StateChange {
                 parent.changeToAnd();
             }
         } else {
-            featureModel.getStructure().replaceRoot(child.getStructure());
+            stateContext.getFeatureModel().getStructure().replaceRoot(child.getStructure());
             newCompound.getStructure().removeChild(child.getStructure());
         }
 
-        return FeatureModelUtils.toMessage(featureModel);
+        return FeatureModelUtils.toMessage(stateContext);
     }
 }

@@ -7,8 +7,8 @@ import {Selection} from 'd3-selection';
 
 export enum MessageType {
     ERROR = 'ERROR',
-    USER_JOINED = 'USER_JOINED',
-    USER_LEFT = 'USER_LEFT',
+    JOIN = 'JOIN',
+    LEAVE = 'LEAVE',
     UNDO = 'UNDO',
     REDO = 'REDO',
     MULTIPLE_MESSAGES = 'MULTIPLE_MESSAGES',

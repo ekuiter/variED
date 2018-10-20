@@ -275,21 +275,21 @@ describe('reducer', () => {
         });
     
         it('lets users join', () => {
-            const state = reducer(initialState, actions.server.receive({type: MessageType.USER_JOINED, user: 'some user'}));
+            const state = reducer(initialState, actions.server.receive({type: MessageType.JOIN, user: 'some user'}));
             expect(state.server.users).toContain('some user');
         });
     
         it('does not let users join multiple times', () => {
-            let state = reducer(initialState, actions.server.receive({type: MessageType.USER_JOINED, user: 'some user'}));
+            let state = reducer(initialState, actions.server.receive({type: MessageType.JOIN, user: 'some user'}));
             expect(state.server.users).toHaveLength(1);
-            state = reducer(state, actions.server.receive({type: MessageType.USER_JOINED, user: 'some user'}));
+            state = reducer(state, actions.server.receive({type: MessageType.JOIN, user: 'some user'}));
             expect(state.server.users).toHaveLength(1);
         });
     
         it('lets users leave', () => {
-            let state = reducer(initialState, actions.server.receive({type: MessageType.USER_JOINED, user: 'some user'}));
+            let state = reducer(initialState, actions.server.receive({type: MessageType.JOIN, user: 'some user'}));
             expect(state.server.users).toContain('some user');
-            state = reducer(initialState, actions.server.receive({type: MessageType.USER_LEFT, user: 'some user'}));
+            state = reducer(initialState, actions.server.receive({type: MessageType.LEAVE, user: 'some user'}));
             expect(state.server.users).not.toContain('some user');
         });
     

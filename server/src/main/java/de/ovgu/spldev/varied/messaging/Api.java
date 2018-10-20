@@ -1,6 +1,7 @@
 package de.ovgu.spldev.varied.messaging;
 
 import de.ovgu.featureide.fm.core.base.IFeatureModel;
+import de.ovgu.spldev.varied.Artifact;
 import de.ovgu.spldev.varied.StateContext;
 import de.ovgu.spldev.varied.User;
 import de.ovgu.spldev.varied.statechanges.StateChange;
@@ -22,6 +23,14 @@ public class Api {
          */
         ERROR,
         /**
+         * join a collaboration session
+         */
+        JOIN,
+        /**
+         * leave a collaboration session
+         */
+        LEAVE,
+        /**
          * undo the last state change
          */
         UNDO,
@@ -34,14 +43,6 @@ public class Api {
          * only the last message's response message is returned to the client
          */
         MULTIPLE_MESSAGES,
-        /**
-         * a user has joined an editing session
-         */
-        USER_JOINED,
-        /**
-         * a user has left an editing session
-         */
-        USER_LEFT,
         /**
          * a serialized feature model
          */
@@ -80,15 +81,15 @@ public class Api {
         String error;
 
         public Error(Throwable throwable) {
-            super(TypeEnum.ERROR);
+            super(TypeEnum.ERROR, null);
             this.error = throwable.toString();
             throwable.printStackTrace();
         }
     }
 
     public static class Undo extends Message implements Message.IApplicable {
-        Undo() {
-            super(TypeEnum.UNDO);
+        Undo(Artifact.Path artifactPath) {
+            super(TypeEnum.UNDO, artifactPath);
         }
 
         public boolean isValid(StateContext stateContext) {
@@ -103,8 +104,8 @@ public class Api {
     }
 
     public static class Redo extends Message implements Message.IApplicable {
-        Redo() {
-            super(TypeEnum.REDO);
+        Redo(Artifact.Path artifactPath) {
+            super(TypeEnum.REDO, artifactPath);
         }
 
         public boolean isValid(StateContext stateContext) {
@@ -121,8 +122,8 @@ public class Api {
     public static class MultipleMessages extends Message implements Message.IUndoable {
         private Message[] messages;
 
-        public MultipleMessages(Message[] messages) {
-            super(TypeEnum.MULTIPLE_MESSAGES);
+        public MultipleMessages(Artifact.Path artifactPath, Message[] messages) {
+            super(TypeEnum.MULTIPLE_MESSAGES, artifactPath);
             this.messages = messages;
         }
 
@@ -157,20 +158,20 @@ public class Api {
         }
     }
 
-    public static class UserJoined extends Message implements Message.IEncodable {
+    public static class Join extends Message implements Message.IEncodable, Message.IDecodable {
         private String user;
 
-        public UserJoined(User user) {
-            super(TypeEnum.USER_JOINED);
+        public Join(Artifact.Path artifactPath, User user) {
+            super(TypeEnum.JOIN, artifactPath);
             this.user = user.getName();
         }
     }
 
-    public static class UserLeft extends Message implements Message.IEncodable {
+    public static class Leave extends Message implements Message.IEncodable, Message.IDecodable {
         private String user;
 
-        public UserLeft(User user) {
-            super(TypeEnum.USER_LEFT);
+        public Leave(Artifact.Path artifactPath, User user) {
+            super(TypeEnum.LEAVE, artifactPath);
             this.user = user.getName();
         }
     }
@@ -178,8 +179,8 @@ public class Api {
     public static class FeatureDiagramFeatureModel extends Message implements Message.IEncodable {
         private IFeatureModel featureModel;
 
-        public FeatureDiagramFeatureModel(IFeatureModel featureModel) {
-            super(TypeEnum.FEATURE_DIAGRAM_FEATURE_MODEL);
+        public FeatureDiagramFeatureModel(Artifact.Path artifactPath, IFeatureModel featureModel) {
+            super(TypeEnum.FEATURE_DIAGRAM_FEATURE_MODEL, artifactPath);
             this.featureModel = featureModel;
         }
     }
@@ -187,56 +188,56 @@ public class Api {
     public static class FeatureDiagramFeatureAddBelow extends Message implements Message.IUndoable {
         private String belowFeature;
 
-        public FeatureDiagramFeatureAddBelow(String belowFeature) {
-            super(TypeEnum.FEATURE_DIAGRAM_FEATURE_ADD_BELOW);
+        public FeatureDiagramFeatureAddBelow(Artifact.Path artifactPath, String belowFeature) {
+            super(TypeEnum.FEATURE_DIAGRAM_FEATURE_ADD_BELOW, artifactPath);
             this.belowFeature = belowFeature;
         }
 
         public StateChange getStateChange(StateContext stateContext) {
-            return new FeatureAddBelow(stateContext.getFeatureModel(), belowFeature);
+            return new FeatureAddBelow((StateContext.FeatureModel) stateContext, belowFeature);
         }
     }
 
     public static class FeatureDiagramFeatureAddAbove extends Message implements Message.IUndoable {
         private String[] aboveFeatures;
 
-        public FeatureDiagramFeatureAddAbove(String[] aboveFeatures) {
-            super(TypeEnum.FEATURE_DIAGRAM_FEATURE_ADD_ABOVE);
+        public FeatureDiagramFeatureAddAbove(Artifact.Path artifactPath, String[] aboveFeatures) {
+            super(TypeEnum.FEATURE_DIAGRAM_FEATURE_ADD_ABOVE, artifactPath);
             this.aboveFeatures = aboveFeatures;
         }
 
         public StateChange getStateChange(StateContext stateContext) {
-            return new FeatureAddAbove(stateContext.getFeatureModel(), aboveFeatures);
+            return new FeatureAddAbove((StateContext.FeatureModel) stateContext, aboveFeatures);
         }
     }
 
     public static class FeatureDiagramFeatureRemove extends Message implements Message.IMultipleUndoable {
         private String feature;
 
-        public FeatureDiagramFeatureRemove(String feature) {
-            super(TypeEnum.FEATURE_DIAGRAM_FEATURE_REMOVE);
+        public FeatureDiagramFeatureRemove(Artifact.Path artifactPath, String feature) {
+            super(TypeEnum.FEATURE_DIAGRAM_FEATURE_REMOVE, artifactPath);
             this.feature = feature;
         }
 
         public StateChange getStateChange(StateContext stateContext) {
-            return new FeatureRemove(stateContext.getFeatureModel(), feature);
+            return new FeatureRemove((StateContext.FeatureModel) stateContext, feature);
         }
     }
 
     public static class FeatureDiagramFeatureRemoveBelow extends Message implements Message.IMultipleUndoable {
         private String feature;
 
-        public FeatureDiagramFeatureRemoveBelow(String feature) {
-            super(TypeEnum.FEATURE_DIAGRAM_FEATURE_REMOVE_BELOW);
+        public FeatureDiagramFeatureRemoveBelow(Artifact.Path artifactPath, String feature) {
+            super(TypeEnum.FEATURE_DIAGRAM_FEATURE_REMOVE_BELOW, artifactPath);
             this.feature = feature;
         }
 
         public StateChange getStateChange(StateContext stateContext) {
-            return new FeatureRemoveBelow(stateContext.getFeatureModel(), feature);
+            return new FeatureRemoveBelow((StateContext.FeatureModel) stateContext, feature);
         }
 
         public StateChange getStateChange(StateContext stateContext, Object multipleContext) {
-            return new FeatureRemoveBelow(stateContext.getFeatureModel(), feature, multipleContext);
+            return new FeatureRemoveBelow((StateContext.FeatureModel) stateContext, feature, multipleContext);
         }
 
         public Object createMultipleContext() {
@@ -251,48 +252,47 @@ public class Api {
     public static class FeatureDiagramFeatureRename extends Message implements Message.IEncodable, Message.IUndoable {
         private String oldFeature, newFeature;
 
-        public FeatureDiagramFeatureRename(String oldFeature, String newFeature) {
-            super(TypeEnum.FEATURE_DIAGRAM_FEATURE_RENAME);
+        public FeatureDiagramFeatureRename(Artifact.Path artifactPath, String oldFeature, String newFeature) {
+            super(TypeEnum.FEATURE_DIAGRAM_FEATURE_RENAME, artifactPath);
             this.oldFeature = oldFeature;
             this.newFeature = newFeature;
         }
 
         public StateChange getStateChange(StateContext stateContext) {
-            return new FeatureRename(stateContext.getFeatureModel(), oldFeature, newFeature);
+            return new FeatureRename((StateContext.FeatureModel) stateContext, oldFeature, newFeature);
         }
     }
 
     public static class FeatureDiagramFeatureSetDescription extends Message implements Message.IUndoable {
         private String feature, description;
 
-        public FeatureDiagramFeatureSetDescription(String feature, String description) {
-            super(TypeEnum.FEATURE_DIAGRAM_FEATURE_SET_DESCRIPTION);
+        public FeatureDiagramFeatureSetDescription(Artifact.Path artifactPath, String feature, String description) {
+            super(TypeEnum.FEATURE_DIAGRAM_FEATURE_SET_DESCRIPTION, artifactPath);
             this.feature = feature;
             this.description = description;
         }
 
         public StateChange getStateChange(StateContext stateContext) {
-            return new FeatureSetDescription(stateContext.getFeatureModel(), feature, description);
+            return new FeatureSetDescription((StateContext.FeatureModel) stateContext, feature, description);
         }
     }
 
     public static class FeatureDiagramFeatureSetProperty extends Message implements Message.IMultipleUndoable {
         private String feature, property, value;
 
-        public FeatureDiagramFeatureSetProperty(String feature, String property, String value) {
-            super(TypeEnum.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY);
+        public FeatureDiagramFeatureSetProperty(Artifact.Path artifactPath, String feature, String property, String value) {
+            super(TypeEnum.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY, artifactPath);
             this.feature = feature;
             this.property = property;
             this.value = value;
         }
 
         public StateChange getStateChange(StateContext stateContext) {
-            return new FeatureSetProperty(stateContext.getFeatureModel(), feature, property, value);
+            return new FeatureSetProperty((StateContext.FeatureModel) stateContext, feature, property, value);
         }
 
         public StateChange getStateChange(StateContext stateContext, Object multipleContext) {
-            return new FeatureSetProperty(
-                    stateContext.getFeatureModel(), feature, property, value, multipleContext);
+            return new FeatureSetProperty((StateContext.FeatureModel) stateContext, feature, property, value, multipleContext);
         }
 
         public Object createMultipleContext() {

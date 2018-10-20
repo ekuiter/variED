@@ -90,10 +90,10 @@ function serverReducer(state: State, action: Action): State {
                 logger.warnTagged({tag: 'server'}, action.payload.error);
                 return state;
 
-            case MessageType.USER_JOINED:
+            case MessageType.JOIN:
                 return getNewState(state, 'server.users', setAdd(state.server.users, action.payload.user));
 
-            case MessageType.USER_LEFT:
+            case MessageType.LEAVE:
                 return getNewState(state, 'server.users', setRemove(state.server.users, action.payload.user));
 
             case MessageType.FEATURE_DIAGRAM_FEATURE_MODEL:
