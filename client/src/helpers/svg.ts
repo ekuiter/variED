@@ -5,6 +5,7 @@
 
 import {NodeCoordinateFunction, Point, NodePointFunction, FeaturePropertyKey, FeatureModelNode, D3Selection, Func} from '../types';
 import {ValueMap} from 'd3-selection-multi';
+import logger from './logger';
 
 export type Style = ValueMap<any, any>;
 export interface StyleDescriptor {
@@ -93,7 +94,7 @@ export function drawCurve(selection: D3Selection, selector: string | undefined,
         .attr('d', (d: FeatureModelNode) => {
             const _from = from(d), _to = to(d);
             if (_from.x - inset < _to.x)
-                console.warn('too much inset or wrong order of points');
+                logger.warn('too much inset or wrong order of points');
             return toD(MOVE, toPath(_to),
                 CURVE, toPath(_from.x - inset, _to.y), toPath(_from.x - inset, _from.y), toPath(_from));
         });

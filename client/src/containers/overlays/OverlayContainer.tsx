@@ -139,7 +139,7 @@ export default connect(
         featureModel: getFeatureModel(state)
     }),
     (dispatch): StateDerivedProps => ({
-        onHideOverlay: payload => () => dispatch(actions.ui.overlay.hide(payload)),
+        onHideOverlay: payload => dispatch(actions.ui.overlay.hide(payload)),
         onShowOverlay: payload => dispatch(actions.ui.overlay.show(payload)),
         onDeselectAllFeatures: () => dispatch(actions.ui.featureDiagram.feature.deselectAll()),
         onSetSetting: payload => dispatch(actions.settings.set(payload)),

@@ -2,6 +2,9 @@ import {openWebSocket, sendMessage} from './webSocket';
 import {Server} from 'mock-socket';
 import constants from '../constants';
 import {MessageType} from '../types';
+import logger from '../helpers/logger';
+
+jest.mock('../helpers/logger');
 
 const wait = (time = 10) => new Promise(resolve => window.setTimeout(resolve, time)),
     close = (mockServer: any) => {
@@ -11,26 +14,14 @@ const wait = (time = 10) => new Promise(resolve => window.setTimeout(resolve, ti
     };
 
 describe('webSocket', () => {
-    let consoleLog = console.log, consoleWarn = console.warn;
-    
-    beforeEach(() => {
-        console.log = jest.fn();
-        console.warn = jest.fn();
-    });
-
-    afterEach(() => {
-        console.log = consoleLog;
-        console.warn = consoleWarn;
-    });
-
     it('opens a web socket', async () => {
         const mockServer = new Server(constants.server.webSocket),
             connectionMock = jest.fn();
         mockServer.on('connection', connectionMock);
-        expect(console.log).not.toBeCalled();
+        expect(logger.log).not.toBeCalled();
         expect(connectionMock).not.toBeCalled();
         await openWebSocket();
-        expect(console.log).toBeCalledWith('opened WebSocket');
+        expect(logger.log).toBeCalledWith('opened WebSocket');
         expect(connectionMock).toBeCalled();
         await close(mockServer);
     });
@@ -48,19 +39,21 @@ describe('webSocket', () => {
     });
 
     it('closes a web socket', async () => {
+        (logger.warn as any).mockReset();
         const mockServer = new Server(constants.server.webSocket);
-        expect(console.warn).not.toBeCalled();
+        expect(logger.warn).not.toBeCalled();
         await openWebSocket();
         await close(mockServer);
-        expect((console.warn as jest.Mock).mock.calls[0]).toContain('closed WebSocket with code');
+        expect((logger.warn as jest.Mock).mock.calls[0]).toContain('closed WebSocket with code');
     });
 
     it('reports errors', async () => {
+        (logger.warn as any).mockReset();
         const mockServer: any = new Server(constants.server.webSocket);
-        expect(console.warn).not.toBeCalled();
+        expect(logger.warn).not.toBeCalled();
         await openWebSocket();
         mockServer.emit('error');
-        expect((console.warn as jest.Mock).mock.calls[0]).toContain('WebSocket error:');
+        expect((logger.warn as jest.Mock).mock.calls[0]).toContain('WebSocket error:');
         await close(mockServer);
     });
 

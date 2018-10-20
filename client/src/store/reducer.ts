@@ -16,6 +16,7 @@ import {getType, isActionOf, ActionType} from 'typesafe-actions';
 import {State, initialState} from './types';
 import objectPath from 'object-path';
 import objectPathImmutable from 'object-path-immutable';
+import logger from '../helpers/logger';
 
 function getNewState(state: State, ...args: any[]): State {
     if (args.length % 2 == 1)
@@ -86,7 +87,7 @@ function serverReducer(state: State, action: Action): State {
     if (isActionOf(actions.server.receive, action) && isMessageType(action.payload.type)) {
         switch (action.payload.type) {
             case MessageType.ERROR:
-                console.warn(action.payload.error);
+                logger.warn(action.payload.error);
                 return state;
 
             case MessageType.USER_JOINED:
@@ -111,7 +112,7 @@ function serverReducer(state: State, action: Action): State {
                 return state;
 
             default:
-                console.warn(`no message reducer defined for action type ${action.payload.type}`);
+                logger.warn(`no message reducer defined for action type ${action.payload.type}`);
                 return state;
         }
     }

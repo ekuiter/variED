@@ -2,6 +2,9 @@ import * as svg from './svg';
 import {select as d3Select} from 'd3-selection';
 import 'd3-selection-multi';
 import {FeaturePropertyKey} from '../types';
+import logger from './logger';
+
+jest.mock('./logger');
 
 const point = (x: number, y: number) => ({x, y}),
     pointFn = (x: number, y: number) => () => point(x, y);
@@ -64,12 +67,9 @@ describe('svg', () => {
         });
 
         it('warns when drawing a curve with invalid inset or point order', () => {
-            const consoleWarn = console.warn;
-            console.warn = jest.fn();
             const selection = createSvg();
             selection.call(svg.drawCurve, null, {from: pointFn(0, 0), to: pointFn(10, 10), inset: 5});
-            expect(console.warn).toBeCalledWith('too much inset or wrong order of points');
-            console.warn = consoleWarn;
+            expect(logger.warn).toBeCalledWith('too much inset or wrong order of points');
         });
 
         it('draws a circle', () => {

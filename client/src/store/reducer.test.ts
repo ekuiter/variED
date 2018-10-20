@@ -5,6 +5,9 @@ import {defaultSettings} from './settings';
 import {validFeatureModel, validFeatureModelWithRemovedFeatures} from '../fixtures';
 import FeatureModel from '../server/FeatureModel';
 import {initialState} from './types';
+import logger from '../helpers/logger';
+
+jest.mock('../helpers/logger');
 
 describe('reducer', () => {
     const featureModelState = (state = reducer(), featureModel = validFeatureModel) => {
@@ -260,17 +263,13 @@ describe('reducer', () => {
     });
 
     describe('server', () => {
-        let consoleWarn = console.warn;
-        beforeEach(() => console.warn = jest.fn());
-        afterEach(() => console.warn = consoleWarn);
-    
         it('does not process messages with invalid type', () => {
             expect(reducer(initialState, actions.server.receive({type: 'invalid message type'} as any))).toBe(initialState);
         });
     
         it('warns on errors', () => {
             expect(reducer(initialState, actions.server.receive({type: MessageType.ERROR,error: 'some error'}))).toBe(initialState);
-            expect(console.warn).lastCalledWith('some error');
+            expect(logger.warn).lastCalledWith('some error');
         });
     
         it('lets users join', () => {

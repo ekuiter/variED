@@ -6,6 +6,7 @@ import FeatureModel from '../../server/FeatureModel';
 import {saveAs} from 'file-saver';
 import {importSvg2PdfJs, importJspdfYworks, importCanvg} from '../../imports';
 import {FeatureDiagramLayoutType, FormatType, FormatOptions} from '../../types';
+import logger from '../../helpers/logger';
 
 type BlobPromise = Promise<Blob | null>;
 const BlobPromise = Promise; // see https://github.com/Microsoft/TypeScript/issues/12776
@@ -69,7 +70,7 @@ async function exportPdf({}, fileName: string): BlobPromise {
         });
         pdf.save(fileName);
     } catch (e) {
-        console.warn('PDF export failed - choose Arial as font and try again');
+        logger.warn('PDF export failed - choose Arial as font and try again');
     }
     return null;
 }
