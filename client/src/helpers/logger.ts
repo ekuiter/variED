@@ -1,4 +1,8 @@
-let detailedLogs = false;
+enum LogLevel {none, warn, log, info};
+const defaultLogLevel = LogLevel.log;
+let logLevel = defaultLogLevel;
+type LogEntry = () => any;
+type ConsoleFunction = (...args: any[]) => void;
 
 const mapStateToPropsCache = {},
     
@@ -14,43 +18,59 @@ const mapStateToPropsCache = {},
     stringify = (value: any): string =>
         truncate(shouldSerialize(value) ? JSON.stringify(value) : String(value)),
 
-    tagged = (logFn: (...args: any[]) => void) => ({tag, color = 'white', backgroundColor = 'slategrey'}:
-        {tag: string, color?: string, backgroundColor?: string}, ...args: any[]): void =>
-        logFn(`%c${tag.toUpperCase()}`,
-            `color: ${color}; background-color: ${backgroundColor}; padding: 2px 5px; font-weight: bold`,
-            ...args),
+    taggedWrapper = (consoleFn: ConsoleFunction, minimumLogLevel: LogLevel) => ({tag, color = 'white', backgroundColor = 'slategrey'}:
+        {tag: string, color?: string, backgroundColor?: string}, logEntry: LogEntry): void => {
+        if (logLevel >= minimumLogLevel && logEntry)
+            consoleFn(`%c${tag.toUpperCase()}`,
+                `color: ${color}; background-color: ${backgroundColor}; padding: 2px 5px; font-weight: bold`,
+                logEntry());
+    },
 
-    colored = (logFn: (...args: any[]) => void) => ({color = 'inherit', backgroundColor = 'inherit'}:
-        {color?: string, backgroundColor?: string}, ...args: any[]): void =>
-        logFn(`%c${args.join(' ')}`, `color: ${color}; background-color: ${backgroundColor}; padding: 1px 3px`),
+    coloredWrapper = (consoleFn: ConsoleFunction, minimumLogLevel: LogLevel) => ({color = 'inherit', backgroundColor = 'inherit'}:
+        {color?: string, backgroundColor?: string}, logEntry: LogEntry): void => {
+        if (logLevel >= minimumLogLevel && logEntry)
+            consoleFn(`%c${logEntry()}`, `color: ${color}; background-color: ${backgroundColor}; padding: 1px 3px`);
+    },
 
-    log = console.log.bind(console),
-    warn = console.warn.bind(console);
+    wrapper = (consoleFn: ConsoleFunction, minimumLogLevel: LogLevel) => (logEntry?: LogEntry): void => {
+        if (logLevel >= minimumLogLevel)
+            consoleFn(logEntry ? logEntry() : undefined);
+    },
+
+    consoleWarn = console.warn.bind(console),
+    consoleLog = console.log.bind(console),
+    consoleInfo = console.info.bind(console);
 
 const logger = {
-    log,
-    warn,
-    logTagged: tagged(log),
-    warnTagged: tagged(warn),
-    logColored: colored(log),
-    warnColored: colored(warn),
+    warn: wrapper(consoleWarn, LogLevel.warn),
+    log: wrapper(consoleLog, LogLevel.log),
+    info: wrapper(consoleInfo, LogLevel.info),
+    infoBegin: wrapper(console.group.bind(console), LogLevel.info),
+    infoBeginCollapsed: wrapper(console.groupCollapsed.bind(console), LogLevel.info),
+    infoEnd: wrapper(console.groupEnd.bind(console), LogLevel.info),
+    warnTagged: taggedWrapper(consoleWarn, LogLevel.warn),
+    logTagged: taggedWrapper(consoleLog, LogLevel.log),
+    infoTagged: taggedWrapper(consoleInfo, LogLevel.info),
+    warnColored: coloredWrapper(consoleWarn, LogLevel.warn),
+    logColored: coloredWrapper(consoleLog, LogLevel.log),
+    infoColored: coloredWrapper(consoleInfo, LogLevel.info),
 
     mapStateToProps(containerName: string, mapStateToProps: (state: object) => object) {
         return (state: object): object => {
             const newProps = mapStateToProps(state);
-            if (detailedLogs && mapStateToPropsCache[containerName] &&
+            if (logLevel >= LogLevel.info && mapStateToPropsCache[containerName] &&
                 Object.entries(newProps).some(([key, value]) => value !== mapStateToPropsCache[containerName][key])) {
-                console.group(containerName);
+                logger.infoBegin(() => `[mapStateToProps] props changed for ${containerName}`);
                 Object.entries(newProps).forEach(([key, value]) => {
                     const oldValue = mapStateToPropsCache[containerName][key];
                     if (value !== oldValue) {
-                        console.groupCollapsed(key);
-                        logger.logColored({color: 'black', backgroundColor: '#faa'}, stringify(oldValue));
-                        logger.logColored({color: 'black', backgroundColor: '#afa'}, stringify(value));
-                        console.groupEnd();
+                        logger.infoBeginCollapsed(() => key);
+                        logger.logColored({color: 'black', backgroundColor: '#faa'}, () => stringify(oldValue));
+                        logger.logColored({color: 'black', backgroundColor: '#afa'}, () => stringify(value));
+                        logger.infoEnd();
                     }
                 });
-                console.groupEnd();
+                logger.infoEnd();
             }
             return mapStateToPropsCache[containerName] = newProps;
         };
@@ -59,6 +79,7 @@ const logger = {
 
 declare var window: any;
 window.app = window.app || {};
-window.app.toggleDetailedLogs = () => detailedLogs = !detailedLogs;
+window.app.setLogLevel = (_logLevel = defaultLogLevel) => logLevel = _logLevel;
+window.app.LogLevel = LogLevel;
 
 export default logger;

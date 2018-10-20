@@ -94,7 +94,7 @@ export function drawCurve(selection: D3Selection, selector: string | undefined,
         .attr('d', (d: FeatureModelNode) => {
             const _from = from(d), _to = to(d);
             if (_from.x - inset < _to.x)
-                logger.warn('too much inset or wrong order of points');
+                logger.warn(() => 'too much inset or wrong order of points');
             return toD(MOVE, toPath(_to),
                 CURVE, toPath(_from.x - inset, _to.y), toPath(_from.x - inset, _from.y), toPath(_from));
         });

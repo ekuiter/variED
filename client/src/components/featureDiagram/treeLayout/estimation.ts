@@ -7,6 +7,7 @@ import {FeatureModelNode, FeatureDiagramLayoutType} from '../../../types';
 import measureTextWidth from '../../../helpers/measureTextWidth';
 import {getName} from '../../../server/FeatureModel';
 import constants from '../../../constants';
+import logger from '../../../helpers/logger';
 
 // estimates the width of a node's rectangle
 export function estimateRectWidth(settings: Settings, estimatedTextWidth: number): number {
@@ -51,9 +52,14 @@ export function estimateHierarchySize(nodes: FeatureModelNode[], collapsedFeatur
     const maxCollapsibleNodes = constants.featureDiagram.fitToScreen.maxCollapsibleNodes(nodes),
         minLayerSizes: {depth: number, size: number}[] = [], collapsibleNodesPerLayer: FeatureModelNode[][] = [];
     let layerNum = -1;
+    logger.infoBeginCollapsed(() => `estimating size for ${nodes.length} feature(s) (${collapsedFeatureNames.length} collapsed), ` +
+        `may collapse up to ${maxCollapsibleNodes} feature(s)`);
+    const logLayer = (layerNum: number) => layerNum >= 0 && logger.info(() => `layer ${minLayerSizes[layerNum].depth} ` +
+        `has estimated size ${minLayerSizes[layerNum].size.toFixed(0)}px, may collapse ${JSON.stringify(collapsibleNodesPerLayer[layerNum].map(getName))}`);
     
     nodes.forEach(node => {
         if (node.depth > layerNum) {
+            logLayer(layerNum);
             layerNum = node.depth;
             minLayerSizes.push({depth: node.depth, size: 0});
             collapsibleNodesPerLayer.push([]);
@@ -67,6 +73,7 @@ export function estimateHierarchySize(nodes: FeatureModelNode[], collapsedFeatur
                 : rectHeight;
     });
     
+    logLayer(layerNum);
     layerNum++;
     minLayerSizes.sort((a, b) => b.size - a.size);
     let collapsibleNodes: FeatureModelNode[] = [];
@@ -74,8 +81,11 @@ export function estimateHierarchySize(nodes: FeatureModelNode[], collapsedFeatur
         if (minLayerSizes[i].depth === 0)
             continue;
         collapsibleNodes = collapsibleNodes.concat(collapsibleNodesPerLayer[minLayerSizes[i].depth - 1]);
+        logger.info(() => `maximum size ${minLayerSizes[i].size.toFixed(0)}px estimated for layer ${minLayerSizes[i].depth}, ` +
+            `suggest to collapse ${JSON.stringify(collapsibleNodes.map(getName))}`);
         break;
     }
 
+    logger.infoEnd();
     return {estimatedSize: minLayerSizes[0].size, collapsibleNodes};
 }

@@ -70,7 +70,7 @@ async function exportPdf({}, fileName: string): BlobPromise {
         });
         pdf.save(fileName);
     } catch (e) {
-        logger.warn('PDF export failed - choose Arial as font and try again');
+        logger.warn(() => 'PDF export failed - choose Arial as font and try again');
     }
     return null;
 }

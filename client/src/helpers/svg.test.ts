@@ -67,9 +67,11 @@ describe('svg', () => {
         });
 
         it('warns when drawing a curve with invalid inset or point order', () => {
+            (logger.warn as any).mockReset();
             const selection = createSvg();
+            expect(logger.warn).not.toBeCalled();
             selection.call(svg.drawCurve, null, {from: pointFn(0, 0), to: pointFn(10, 10), inset: 5});
-            expect(logger.warn).toBeCalledWith('too much inset or wrong order of points');
+            expect(logger.warn).toBeCalled();
         });
 
         it('draws a circle', () => {

@@ -87,7 +87,7 @@ function serverReducer(state: State, action: Action): State {
     if (isActionOf(actions.server.receive, action) && isMessageType(action.payload.type)) {
         switch (action.payload.type) {
             case MessageType.ERROR:
-                logger.warnTagged({tag: 'server'}, action.payload.error);
+                logger.warnTagged({tag: 'server'}, () => action.payload.error);
                 return state;
 
             case MessageType.JOIN:
@@ -112,7 +112,7 @@ function serverReducer(state: State, action: Action): State {
                 return state;
 
             default:
-                logger.warn(`no message reducer defined for action type ${action.payload.type}`);
+                logger.warn(() => `no message reducer defined for action type ${action.payload.type}`);
                 return state;
         }
     }

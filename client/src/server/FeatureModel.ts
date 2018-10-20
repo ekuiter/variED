@@ -10,6 +10,7 @@ import {estimateHierarchySize} from '../components/featureDiagram/treeLayout/est
 import {Settings} from '../store/settings';
 import {FeatureDiagramLayoutType, FeatureModelNode, Feature, FeatureType} from '../types';
 import {present} from '../helpers/present';
+import logger from '../helpers/logger';
 
 const serialization = constants.server.featureModel.serialization;
 
@@ -218,21 +219,29 @@ export default class {
                 2 * settings.featureDiagram.treeLayout.node.strokeWidth,
             rectHeight = settings.featureDiagram.font.size +
                 2 * settings.featureDiagram.treeLayout.node.paddingY +
-                2 * settings.featureDiagram.treeLayout.node.strokeWidth;
+                2 * settings.featureDiagram.treeLayout.node.strokeWidth,
+            estimatedDimension = featureDiagramLayout === FeatureDiagramLayoutType.verticalTree ? 'width' : 'height';
         let nodes = this.actualNodes, collapsedFeatureNames: string[] = [];
         width = Math.max(width, constants.featureDiagram.fitToScreen.minWidth);
         height = Math.max(height, constants.featureDiagram.fitToScreen.minHeight);
+        logger.infoBegin(() => `[fit to screen] fitting feature model to ${estimatedDimension} ${FeatureDiagramLayoutType.verticalTree ? width : height}px`);
 
         while (true) {
             const {estimatedSize, collapsibleNodes} = estimateHierarchySize(
                 nodes, collapsedFeatureNames, featureDiagramLayout,
                 {fontFamily, fontSize, widthPadding, rectHeight});
+            logger.info(() => `estimated ${estimatedDimension} ${Math.round(estimatedSize)}px when collapsing ${JSON.stringify(collapsedFeatureNames)}`);
     
             if ((featureDiagramLayout === FeatureDiagramLayoutType.verticalTree ? estimatedSize <= width : estimatedSize <= height) ||
-                collapsibleNodes.length === 0)
+                collapsibleNodes.length === 0) {
+                logger.info(() => `feature model fitted by collapsing ${collapsedFeatureNames.length} feature(s)`);
+                logger.infoEnd();
                 return collapsedFeatureNames;
+            }
     
-            collapsedFeatureNames = collapsedFeatureNames.concat(collapsibleNodes.map(getName));
+            const collapsibleNodeNames = collapsibleNodes.map(getName);
+            logger.info(() => `collapsing ${JSON.stringify(collapsibleNodeNames)}`);
+            collapsedFeatureNames = collapsedFeatureNames.concat(collapsibleNodeNames);
             const invisibleNodes = collapsibleNodes
                 .map(node => getNodesBelow(node).slice(1))
                 .reduce((acc, children) => acc.concat(children), []);
@@ -241,6 +250,6 @@ export default class {
     }
 
     toString() {
-        return `FeatureModel [${this.getVisibleFeatureNames().join(', ')}]`;
+        return `FeatureModel ${JSON.stringify(this.getVisibleFeatureNames())}`;
     }
 }

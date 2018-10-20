@@ -18,24 +18,24 @@ const getWebSocket = ((): () => Promise<WebSocket> => {
             webSocket = new WebSocket(constants.server.webSocket);
             
             webSocket.onopen = () => {
-                logger.logTagged({tag: 'socket'}, 'open');
+                logger.logTagged({tag: 'socket'}, () => 'open');
                 resolve(webSocket);
             };
             
             webSocket.onclose = e => {
-                logger.warnTagged({tag: 'socket'}, 'closed with code', e.code, 'and reason', e.reason);
+                logger.warnTagged({tag: 'socket'}, () => `closed with code ${e.code} and reason ${e.reason}`);
                 // TODO: notify user that WebSocket was closed (with button to reopen)
             };
             
             webSocket.onerror = e => {
-                logger.warnTagged({tag: 'socket'}, e);
+                logger.warnTagged({tag: 'socket'}, () => e);
                 // TODO: notify user of error (and IF WebSocket is closed now, a button to reopen it)
                 reject(e);
             };
             
             webSocket.onmessage = message => {
                 let data = JSON.parse(message.data);
-                logger.logTagged({tag: 'receive'}, data);
+                logger.logTagged({tag: 'receive'}, () => data);
                 handleMessage && handleMessage(data);
             };
         });
@@ -56,7 +56,7 @@ export async function openWebSocket(_handleMessage?: HandleMessageFunction): Pro
 export async function sendMessage(message: Message): Promise<void> {
     const webSocket = await getWebSocket();
     webSocket.send(JSON.stringify(message));
-    logger.logTagged({tag: 'send'}, message);
+    logger.logTagged({tag: 'send'}, () => message);
 }
 
 export async function sendMultipleMessages(messages: Message[]): Promise<void> {
