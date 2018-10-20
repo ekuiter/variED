@@ -8,16 +8,16 @@
 
 import React from 'react';
 import {connect} from 'react-redux';
-import SettingsPanel from '../../components/overlays/SettingsPanel';
-import AboutPanel from '../../components/overlays/AboutPanel';
-import FeaturePanel from '../../components/overlays/FeaturePanel';
+import SettingsPanel from './SettingsPanel';
+import AboutPanel from './AboutPanel';
+import FeaturePanel from './FeaturePanel';
 import actions from '../../store/actions';
 import {getFeatureModel} from '../../store/selectors';
-import FeatureRenameDialog from '../../components/overlays/FeatureRenameDialog';
-import FeatureSetDescriptionDialog from '../../components/overlays/FeatureSetDescriptionDialog';
-import FeatureCallout from '../../components/overlays/FeatureCallout';
-import FeatureContextualMenu from '../../components/overlays/FeatureContextualMenu';
-import ExportDialog from '../../components/overlays/ExportDialog';
+import FeatureRenameDialog from './FeatureRenameDialog';
+import FeatureSetDescriptionDialog from './FeatureSetDescriptionDialog';
+import FeatureCallout from './FeatureCallout';
+import FeatureContextualMenu from './FeatureContextualMenu';
+import ExportDialog from './ExportDialog';
 import {OverlayType} from '../../types';
 import {State, StateDerivedProps} from '../../store/types';
 import logger from '../../helpers/logger';

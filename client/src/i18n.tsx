@@ -47,12 +47,12 @@ const translationMap = {
                 newMenu: {
                     title: 'New',
                     newBelow: 'New feature below',
-                    newAbove: 'New feature above',
+                    newAbove: 'New feature above'
                 },
                 removeMenu: {
                     title: 'Remove',
                     remove: (features: any[]) => features.length === 1 ? 'Remove feature' : 'Remove features',
-                    removeBelow: 'Remove features below',
+                    removeBelow: 'Remove features below'
                 },
                 details: 'Details…',
                 rename: 'Rename…',

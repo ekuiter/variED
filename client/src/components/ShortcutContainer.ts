@@ -5,7 +5,7 @@
 import withKeys from '../helpers/withKeys';
 import {OverlayType, isFloatingFeatureOverlay} from '../types';
 import {getShortcutKeyBinding} from '../shortcuts';
-import {removeCommand, collapseCommand} from '../components/commands';
+import {removeCommand, collapseCommand} from './commands';
 import {connect} from 'react-redux';
 import {getFeatureModel} from '../store/selectors';
 import actions from '../store/actions';

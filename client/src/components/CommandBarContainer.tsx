@@ -2,8 +2,8 @@
  * Manages the application's global command bar.
  */
 
-import commands, {makeDivider} from '../components/commands';
-import UserFacepile from '../components/UserFacepile';
+import commands, {makeDivider} from './commands';
+import UserFacepile from './UserFacepile';
 import {CommandBar} from 'office-ui-fabric-react/lib/CommandBar';
 import React from 'react';
 import {connect} from 'react-redux';

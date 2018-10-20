@@ -6,7 +6,7 @@
 import './polyfills';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import AppContainer from './containers/AppContainer';
+import AppContainer from './components/AppContainer';
 import 'normalize.css';
 import './stylesheets/index.css';
 import {createStore, applyMiddleware, compose} from 'redux';
