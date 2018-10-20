@@ -14,7 +14,7 @@ import {
 import styles from './styles';
 import AbstractTreeNode from './AbstractTreeNode';
 import {FeatureModelNode, Rect, Point, D3Selection, NodePointFunction, NodeCoordinateForAxisFunction, FeatureType} from '../../../types';
-import {OnToggleFeatureMandatoryFunction} from 'src/store/types';
+import {OnToggleFeatureMandatoryFunction} from '../../../store/types';
 
 export default class {
     constructor(public settings: Settings, public getCurrentParentCoordinate: NodeCoordinateForAxisFunction,

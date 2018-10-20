@@ -38,8 +38,8 @@ export default (...keyBindings: KeyBinding[]) =>
 
             handleKey = (event: ExtendedKeyboardEvent) => {
                 const props = this.props;
-                event.isCommand = key => isCommand(event) && (key ? event.key === key : true);
-                event.isShiftCommand = key => isShiftCommand(event) && (key ? event.key === key : true);
+                event.isCommand = key => isCommand(event) && (key ? event.key.toLowerCase() === key.toLowerCase() : true);
+                event.isShiftCommand = key => isShiftCommand(event) && (key ? event.key.toLowerCase() === key.toLowerCase() : true);
 
                 for (let i = 0; i < keyBindings.length; i++) {
                     const {key, action} = keyBindings[i];

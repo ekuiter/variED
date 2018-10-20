@@ -45,7 +45,7 @@ export interface OverlayProps {
 };
 
 export function isFloatingFeatureOverlay(type: OverlayType): boolean {
-    return type === 'featureCallout' || type === 'featureContextualMenu';
+    return type === OverlayType.featureCallout || type === OverlayType.featureContextualMenu;
 }
 
 export enum FormatType {

@@ -55,9 +55,9 @@ export default class extends FeatureComponent({doUpdate: true})<Props> {
                     ? commands.featureDiagram.feature.selectionItems(selectedFeatureNames, onDeselectAllFeatures,
                         this.props.onCollapseFeatures, this.props.onExpandFeatures, this.props.onCollapseFeaturesBelow,
                         this.props.onExpandFeaturesBelow, this.props.onAddFeatureAbove, this.props.onRemoveFeatures,
-                        this.props.onSetFeatureAbstract, this.props.onSetFeatureHidden, this.props.onSetFeatureMandatory,
-                        this.props.onSetFeatureAnd, this.props.onSetFeatureOr, this.props.onSetFeatureAlternative,
-                        this.props.onRemoveFeaturesBelow, featureModel!)
+                        this.props.onRemoveFeaturesBelow, this.props.onSetFeatureAbstract, this.props.onSetFeatureHidden,
+                        this.props.onSetFeatureMandatory, this.props.onSetFeatureAnd, this.props.onSetFeatureOr,
+                        this.props.onSetFeatureAlternative, featureModel!)
                     : [
                         commands.featureDiagram.feature.newMenu(feature.name, this.props.onAddFeatureBelow, this.props.onAddFeatureAbove, onDismiss),
                         commands.featureDiagram.feature.removeMenu([feature], this.props.onRemoveFeatures, this.props.onRemoveFeaturesBelow, onDismiss),

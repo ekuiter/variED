@@ -62,6 +62,7 @@ const OverlayContainer = (props: StateDerivedProps) => (
         {props.overlay === OverlayType.featureRenameDialog &&
         <FeatureRenameDialog
             isOpen={true}
+            onDismiss={() => props.onHideOverlay!({overlay: OverlayType.featureRenameDialog})}
             featureModel={props.featureModel}
             settings={props.settings!}
             onRenameFeature={props.onRenameFeature!}
@@ -69,6 +70,7 @@ const OverlayContainer = (props: StateDerivedProps) => (
         {props.overlay === OverlayType.featureSetDescriptionDialog &&
         <FeatureSetDescriptionDialog
             isOpen={true}
+            onDismiss={() => props.onHideOverlay!({overlay: OverlayType.featureSetDescriptionDialog})}
             featureModel={props.featureModel}
             settings={props.settings!}
             onSetFeatureDescription={props.onSetFeatureDescription!}

@@ -12,7 +12,7 @@ import actions from '../store/actions';
 import {State, StateDerivedProps} from '../store/types';
 import logger from '../helpers/logger';
 
-const ifGlobal = (props: StateDerivedProps) => !props.overlay,
+const ifGlobal = (props: StateDerivedProps) => props.overlay === OverlayType.none,
     ifFloatingFeature = (props: StateDerivedProps) => isFloatingFeatureOverlay(props.overlay!),
     ifSingleFloatingFeature = (props: StateDerivedProps) => ifFloatingFeature(props) && !props.isSelectMultipleFeatures;
 
@@ -32,6 +32,7 @@ export default connect(
         onCollapseFeatures: payload => dispatch(actions.ui.featureDiagram.feature.collapse(payload)),
         onExpandFeatures: payload => dispatch(actions.ui.featureDiagram.feature.expand(payload)),
         onAddFeatureBelow: payload => dispatch<any>(actions.server.featureDiagram.feature.addBelow(payload)),
+        onRemoveFeatures: payload => dispatch<any>(actions.server.featureDiagram.feature.remove(payload)),
         onShowOverlay: payload => dispatch(actions.ui.overlay.show(payload)),
         onHideOverlay: payload => dispatch(actions.ui.overlay.hide(payload)),
         onUndo: () => dispatch<any>(actions.server.undo({})),

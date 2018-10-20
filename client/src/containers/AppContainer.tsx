@@ -33,7 +33,7 @@ class AppContainer extends React.Component<StateDerivedProps> {
 }
 
 export default connect(
-    null,
+    undefined,
     (dispatch): StateDerivedProps => ({
         handleMessage: message => dispatch(actions.server.receive(message))
     })

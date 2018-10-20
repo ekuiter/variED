@@ -7,10 +7,11 @@ import i18n from '../../i18n';
 import {TextFieldDialog} from '../../helpers/Dialog';
 import FeatureComponent, {FeatureComponentProps} from './FeatureComponent';
 import {Feature} from '../../types';
-import {OnRenameFeatureFunction} from 'src/store/types';
+import {OnRenameFeatureFunction} from '../../store/types';
 
 type Props = FeatureComponentProps & {
     isOpen: boolean,
+    onDismiss: () => void,
     onRenameFeature: OnRenameFeatureFunction
 };
 
@@ -18,6 +19,8 @@ export default class extends FeatureComponent()<Props> {
     renderIfFeature(feature: Feature) {
         return (
             <TextFieldDialog
+                isOpen={this.props.isOpen}
+                onDismiss={this.props.onDismiss}
                 title={i18n.t('overlays.featureRenameDialog.title')}
                 submitText={i18n.t('overlays.featureRenameDialog.rename')}
                 defaultValue={feature.name}

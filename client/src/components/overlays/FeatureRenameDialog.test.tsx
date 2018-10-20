@@ -10,10 +10,12 @@ describe('FeatureRenameDialog', () => {
     let featureRenameDialog: JSX.Element, onRenameFeature: jest.Mock;
 
     beforeEach(() => {
+        const mock = jest.fn();
         onRenameFeature = jest.fn();
         featureRenameDialog = (
             <FeatureRenameDialog
                 isOpen={true}
+                onDismiss={mock}
                 featureModel={new FeatureModel(validFeatureModel, [])}
                 featureName="FeatureIDE"
                 settings={defaultSettings}

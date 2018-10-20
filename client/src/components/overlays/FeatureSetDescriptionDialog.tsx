@@ -7,10 +7,11 @@ import i18n from '../../i18n';
 import {TextFieldDialog, largeDialogStyle} from '../../helpers/Dialog';
 import FeatureComponent, {FeatureComponentProps} from './FeatureComponent';
 import {Feature} from '../../types';
-import {OnSetFeatureDescriptionFunction} from 'src/store/types';
+import {OnSetFeatureDescriptionFunction} from '../../store/types';
 
 type Props = FeatureComponentProps & {
     isOpen: boolean,
+    onDismiss: () => void,
     onSetFeatureDescription: OnSetFeatureDescriptionFunction
 }
 
@@ -21,6 +22,8 @@ export default class extends FeatureComponent()<Props> {
         // another users update)
         return (
             <TextFieldDialog
+                isOpen={this.props.isOpen}
+                onDismiss={this.props.onDismiss}
                 title={i18n.t('overlays.featureSetDescriptionDialog.title')}
                 submitText={i18n.t('overlays.featureSetDescriptionDialog.rename')}
                 defaultValue={feature.description}

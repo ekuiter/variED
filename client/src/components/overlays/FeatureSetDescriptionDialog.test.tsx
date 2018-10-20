@@ -10,10 +10,12 @@ describe('FeatureSetDescriptionDialog', () => {
     let featureSetDescriptionDialog: JSX.Element, onSetFeatureDescription: jest.Mock;
 
     beforeEach(() => {
+        const mock = jest.fn();
         onSetFeatureDescription = jest.fn();
         featureSetDescriptionDialog = (
             <FeatureSetDescriptionDialog
                 isOpen={true}
+                onDismiss={mock}
                 featureModel={new FeatureModel(validFeatureModel, [])}
                 featureName="FeatureIDE"
                 settings={defaultSettings}
