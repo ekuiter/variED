@@ -45,25 +45,26 @@ const getWebSocket = ((): () => Promise<WebSocket> => {
         : connect();
 })();
 
-export function openWebSocket(_handleMessage?: HandleMessageFunction): Promise<void> {
+export async function openWebSocket(_handleMessage?: HandleMessageFunction): Promise<void> {
     if (typeof _handleMessage === 'function')
         handleMessage = _handleMessage;
-    return getWebSocket().then(() => {}); // do not expose WebSocket object
+    await getWebSocket();
+    // return nothing to not expose WebSocket object
 }
 
-export function sendMessage(message: Message): Promise<void> {
-    return getWebSocket().then(webSocket => {
-        webSocket.send(JSON.stringify(message));
-        console.log('sent:', message);
-    });
+export async function sendMessage(message: Message): Promise<void> {
+    const webSocket = await getWebSocket();
+    webSocket.send(JSON.stringify(message));
+    console.log('sent:', message);
 }
 
-export function sendMultipleMessages(messages: Message[]): Promise<void> {
+export async function sendMultipleMessages(messages: Message[]): Promise<void> {
     if (!messages || messages.length === 0)
-        return Promise.resolve();
+        return;
     if (messages.length === 1)
-        return sendMessage(messages[0]);
-    return sendMessage({type: MessageType.MULTIPLE_MESSAGES, messages});
+        await sendMessage(messages[0]);
+    else
+        await sendMessage({type: MessageType.MULTIPLE_MESSAGES, messages});
 }
 
 (window as any).sendMessage = sendMessage; // for debugging purposes

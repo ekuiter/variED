@@ -8,6 +8,7 @@ import {importSvg2PdfJs, importJspdfYworks, importCanvg} from '../../imports';
 import {FeatureDiagramLayoutType, FormatType, FormatOptions} from '../../types';
 
 type BlobPromise = Promise<Blob | null>;
+const BlobPromise = Promise; // see https://github.com/Microsoft/TypeScript/issues/12776
 
 function svgData(scale = 1): {svg: SVGElement, string: string, width: number, height: number} {
     const svg = FeatureModel.getSvg().cloneNode(true) as SVGElement,
@@ -27,18 +28,18 @@ function svgData(scale = 1): {svg: SVGElement, string: string, width: number, he
     };
 }
 
-function exportSvg(): BlobPromise {
-    return Promise.resolve(new Blob([svgData().string], {type: 'image/svg+xml;charset=utf-8'}));
+async function exportSvg(): BlobPromise {
+    return new Blob([svgData().string], {type: 'image/svg+xml;charset=utf-8'});
 }
 
-function exportPng({scale = 1}: FormatOptions): BlobPromise {
+async function exportPng({scale = 1}: FormatOptions): BlobPromise {
     const canvas = document.createElement('canvas');
-    return importCanvg()
-        .then(canvg => (canvg as any)(canvas, svgData(scale).string))
-        .then(() => new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/png')));
+    const canvg = await importCanvg();
+    (canvg as any)(canvas, svgData(scale).string);
+    return new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/png'));
 }
 
-function exportJpg({scale = 1, quality = 0.8}: FormatOptions): BlobPromise {
+async function exportJpg({scale = 1, quality = 0.8}: FormatOptions): BlobPromise {
     const canvas = document.createElement('canvas'),
         ctx = canvas.getContext('2d')!,
         {string, width, height} = svgData(scale);
@@ -46,33 +47,31 @@ function exportJpg({scale = 1, quality = 0.8}: FormatOptions): BlobPromise {
     canvas.setAttribute('height', height.toString());
     ctx.fillStyle = 'white';
     ctx.fillRect(0, 0, width, height);
-    return importCanvg()
-        .then(() => (ctx as any).drawSvg(string, 0, 0, width, height))
-        .then(() => new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/jpeg', quality)));
+    await importCanvg();
+    (ctx as any).drawSvg(string, 0, 0, width, height);
+    return new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/jpeg', quality));
 }
 
-function exportPdf({}, fileName: string): BlobPromise {
+async function exportPdf({}, fileName: string): BlobPromise {
     const {svg, width, height} = svgData();
     // @ts-ignore: there are no type declarations for these modules
-    Promise.all([importSvg2PdfJs(), importJspdfYworks()])
-        .then(([svg2pdf, jsPDF]) => {
-            const pdf = new jsPDF({
-                orientation: 'landscape',
-                unit: 'pt',
-                format: [width, height]
-            });
-            try {
-                svg2pdf(svg, pdf, {
-                    xOffset: 0,
-                    yOffset: 0,
-                    scale: 1
-                });
-                pdf.save(fileName);
-            } catch (e) {
-                console.warn('PDF export failed - choose Arial as font and try again');
-            }
+    const [svg2pdf, jsPDF] = await Promise.all([importSvg2PdfJs(), importJspdfYworks()]);
+    const pdf = new jsPDF({
+        orientation: 'landscape',
+        unit: 'pt',
+        format: [width, height]
+    });
+    try {
+        svg2pdf(svg, pdf, {
+            xOffset: 0,
+            yOffset: 0,
+            scale: 1
         });
-    return Promise.resolve(null);
+        pdf.save(fileName);
+    } catch (e) {
+        console.warn('PDF export failed - choose Arial as font and try again');
+    }
+    return null;
 }
 
 const exportMap: {

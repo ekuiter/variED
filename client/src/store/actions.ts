@@ -17,14 +17,13 @@ const SERVER_RECEIVE_MESSAGE = 'server/receiveMessage';
 
 function createServerAction<P>(fn: (payload: P) => Message | Message[]): (payload: P) => ThunkAction<Promise<ReduxAction>, any, any, any> {
     return (payload: P) => {
-        return (dispatch: Dispatch<AnyAction>) => {
+        return async (dispatch: Dispatch<AnyAction>) => {
             const messageOrMessages = fn(payload);
-            let promise;
             if (Array.isArray(messageOrMessages))
-                promise = sendMultipleMessages(messageOrMessages);
+                await sendMultipleMessages(messageOrMessages);
             else
-                promise = sendMessage(messageOrMessages);
-            return promise.then(() => dispatch(action(SERVER_SEND_MESSAGE, messageOrMessages)));
+                await sendMessage(messageOrMessages);
+            return dispatch(action(SERVER_SEND_MESSAGE, messageOrMessages));
         };
     };
 }

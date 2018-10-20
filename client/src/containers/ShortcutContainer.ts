@@ -46,17 +46,20 @@ export default connect(
     getShortcutKeyBinding(
         'featureDiagram.feature.new',
         ifSingleFloatingFeature,
-        ({props}: {props: StateDerivedProps}) =>
-            props.onAddFeatureBelow!({belowFeatureName: props.overlayProps!.featureName!})
-                .then(() => props.onHideOverlay!({overlay: props.overlay!}))),
+        async ({props}: {props: StateDerivedProps}) => {
+            await props.onAddFeatureBelow!({belowFeatureName: props.overlayProps!.featureName!});
+            props.onHideOverlay!({overlay: props.overlay!});
+        }),
 
     getShortcutKeyBinding(
         'featureDiagram.feature.remove',
         (props: StateDerivedProps) => props.isSelectMultipleFeatures || ifFloatingFeature(props),
-        ({props}: {props: StateDerivedProps}) => {
+        async ({props}: {props: StateDerivedProps}) => {
             const {disabled, action} = removeCommand(props.featureModel!.getFeatures(props.selectedFeatureNames!), props.onRemoveFeatures!);
-            if (!disabled)
-                action().then(() => props.onHideOverlay!({overlay: props.overlay!}));
+            if (!disabled) {
+                await action();
+                props.onHideOverlay!({overlay: props.overlay!});
+            }
         }),
 
     getShortcutKeyBinding(
