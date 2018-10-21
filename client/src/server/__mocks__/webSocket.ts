@@ -14,6 +14,6 @@ export const sendMessage = jest.fn((_message: Message): Promise<void> => {
     return Promise.resolve();
 });
 
-export const sendMultipleMessages = jest.fn((_messages: Message[]): Promise<void> => {
+export const sendBatchMessage = jest.fn((_messages: Message[]): Promise<void> => {
     return Promise.resolve();
 });

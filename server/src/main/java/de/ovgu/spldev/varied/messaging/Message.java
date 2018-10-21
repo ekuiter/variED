@@ -101,17 +101,17 @@ abstract public class Message {
     }
 
     // may be received, applied, undone and redone as a single message,
-    // but also as part of a multiple message
-    public interface IMultipleUndoable extends IUndoable {
-        default StateChange getStateChange(StateContext stateContext, Object multipleContext) {
+    // but also as part of a batch message
+    public interface IBatchUndoable extends IUndoable {
+        default StateChange getStateChange(StateContext stateContext, Object batchContext) {
             return getStateChange(stateContext);
         }
 
-        default Object createMultipleContext() {
+        default Object createBatchContext() {
             return null;
         }
 
-        default Object nextMultipleContext(StateChange stateChange, Object multipleContext) {
+        default Object nextBatchContext(StateChange stateChange, Object batchContext) {
             return null;
         }
     }

@@ -1,21 +1,21 @@
 import actions, {SERVER_SEND_MESSAGE} from './actions';
 import {FeatureDiagramLayoutType, OverlayType, MessageType, Func} from '../types';
 import constants from '../constants';
-import {sendMessage, sendMultipleMessages} from '../server/webSocket';
+import {sendMessage, sendBatchMessage} from '../server/webSocket';
 
 jest.mock('../server/webSocket');
 
 const {propertyTypes, groupValueTypes} = constants.server;
 
-async function expectServerAction(thunk: Func, payload: any, isSendMultiple = false): Promise<void> {
+async function expectServerAction(thunk: Func, payload: any, isSendBatch = false): Promise<void> {
     const dispatch = jest.fn(action => action);
     const action = await thunk(dispatch);
     expect(action).toEqual({type: SERVER_SEND_MESSAGE, payload});
     expect(dispatch).toBeCalledWith(action);
-    expect(isSendMultiple ? sendMultipleMessages : sendMessage).lastCalledWith(payload);
+    expect(isSendBatch ? sendBatchMessage : sendMessage).lastCalledWith(payload);
 }
 
-const expectMultipleServerAction = (thunk: Func, payload: any) =>
+const expectBatchServerAction = (thunk: Func, payload: any) =>
     expectServerAction(thunk, payload, true);
 
 describe('actions', () => {
@@ -140,7 +140,7 @@ describe('actions', () => {
             });
     
             it('removes a feature', () => {
-                return expectMultipleServerAction(actions.server.featureDiagram.feature.remove({featureNames: ['FeatureIDE']}),
+                return expectBatchServerAction(actions.server.featureDiagram.feature.remove({featureNames: ['FeatureIDE']}),
                     [{type: MessageType.FEATURE_DIAGRAM_FEATURE_REMOVE, feature: 'FeatureIDE'}]);
             });
     
@@ -156,15 +156,15 @@ describe('actions', () => {
     
             describe('properties', () => {
                 it('sets the abstract property', () =>
-                    expectMultipleServerAction(actions.server.featureDiagram.feature.properties.setAbstract({featureNames: ['FeatureIDE'], value: true}),
+                    expectBatchServerAction(actions.server.featureDiagram.feature.properties.setAbstract({featureNames: ['FeatureIDE'], value: true}),
                         [{type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY, feature: 'FeatureIDE', property: propertyTypes.abstract, value: true}]));
     
                 it('sets the hidden property', () =>
-                    expectMultipleServerAction(actions.server.featureDiagram.feature.properties.setHidden({featureNames: ['FeatureIDE'], value: true}),
+                    expectBatchServerAction(actions.server.featureDiagram.feature.properties.setHidden({featureNames: ['FeatureIDE'], value: true}),
                         [{type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY, feature: 'FeatureIDE', property: propertyTypes.hidden, value: true}]));
     
                 it('sets the mandatory property', () =>
-                    expectMultipleServerAction(actions.server.featureDiagram.feature.properties.setMandatory({featureNames: ['FeatureIDE'], value: true}),
+                    expectBatchServerAction(actions.server.featureDiagram.feature.properties.setMandatory({featureNames: ['FeatureIDE'], value: true}),
                         [{type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY, feature: 'FeatureIDE', property: propertyTypes.mandatory, value: true}]));
     
                 it('toggles the mandatory property', async () => {
@@ -175,7 +175,7 @@ describe('actions', () => {
                 });
     
                 it('changes the group type to and', () =>
-                    expectMultipleServerAction(actions.server.featureDiagram.feature.properties.setAnd({featureNames: ['FeatureIDE']}), [{
+                    expectBatchServerAction(actions.server.featureDiagram.feature.properties.setAnd({featureNames: ['FeatureIDE']}), [{
                         type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
                         feature: 'FeatureIDE',
                         property: propertyTypes.group,
@@ -183,7 +183,7 @@ describe('actions', () => {
                     }]));
     
                 it('changes the group type to or', () =>
-                    expectMultipleServerAction(actions.server.featureDiagram.feature.properties.setOr({featureNames: ['FeatureIDE']}), [{
+                    expectBatchServerAction(actions.server.featureDiagram.feature.properties.setOr({featureNames: ['FeatureIDE']}), [{
                         type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
                         feature: 'FeatureIDE',
                         property: propertyTypes.group,
@@ -191,7 +191,7 @@ describe('actions', () => {
                     }]));
     
                 it('changes the group type to alternative', () =>
-                    expectMultipleServerAction(actions.server.featureDiagram.feature.properties.setAlternative({featureNames: ['FeatureIDE']}), [{
+                    expectBatchServerAction(actions.server.featureDiagram.feature.properties.setAlternative({featureNames: ['FeatureIDE']}), [{
                         type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
                         feature: 'FeatureIDE',
                         property: propertyTypes.group,

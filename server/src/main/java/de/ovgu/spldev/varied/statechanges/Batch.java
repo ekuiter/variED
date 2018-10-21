@@ -7,13 +7,13 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 // adapted from MultiFeatureModelOperation
-public class MultipleMessages extends MultipleStateChange {
+public class Batch extends BatchStateChange {
     private StateContext stateContext;
-    private Iterator<Message.IMultipleUndoable> messageIterator;
+    private Iterator<Message.IBatchUndoable> messageIterator;
     private boolean atStart = true;
-    private Object multipleContext;
+    private Object batchContext;
 
-    public MultipleMessages(StateContext stateContext, LinkedList<Message.IMultipleUndoable> messages) {
+    public Batch(StateContext stateContext, LinkedList<Message.IBatchUndoable> messages) {
         this.stateContext = stateContext;
         this.messageIterator = messages.iterator();
     }
@@ -23,13 +23,13 @@ public class MultipleMessages extends MultipleStateChange {
     }
 
     StateChange _nextStateChange() {
-        Message.IMultipleUndoable message = messageIterator.next();
+        Message.IBatchUndoable message = messageIterator.next();
         if (atStart) {
-            multipleContext = message.createMultipleContext();
+            batchContext = message.createBatchContext();
             atStart = false;
         }
-        StateChange stateChange = message.getStateChange(stateContext, multipleContext);
-        multipleContext = message.nextMultipleContext(stateChange, multipleContext);
+        StateChange stateChange = message.getStateChange(stateContext, batchContext);
+        batchContext = message.nextBatchContext(stateChange, batchContext);
         return stateChange;
     }
 }

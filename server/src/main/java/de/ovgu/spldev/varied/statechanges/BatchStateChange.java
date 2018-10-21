@@ -5,7 +5,7 @@ import de.ovgu.spldev.varied.messaging.Message;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-public abstract class MultipleStateChange extends StateChange {
+public abstract class BatchStateChange extends StateChange {
     private LinkedList<StateChange> stateChanges = new LinkedList<>();
     private Iterator<StateChange> stateChangeIterator;
 

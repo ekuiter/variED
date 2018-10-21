@@ -7,14 +7,14 @@ import de.ovgu.spldev.varied.StateContext;
 import de.ovgu.spldev.varied.util.FeatureModelUtils;
 import de.ovgu.spldev.varied.util.FeatureUtils;
 import de.ovgu.spldev.varied.messaging.Message;
-import de.ovgu.spldev.varied.statechanges.MultipleStateChange;
+import de.ovgu.spldev.varied.statechanges.BatchStateChange;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 // adapted from FeatureTreeDeleteOperation
-public class FeatureRemoveBelow extends MultipleStateChange {
+public class FeatureRemoveBelow extends BatchStateChange {
     private StateContext.FeatureModel stateContext;
     private LinkedList<IFeature> featureList = new LinkedList<>();
     private LinkedList<IFeature> containedFeatureList = new LinkedList<>();
@@ -26,12 +26,12 @@ public class FeatureRemoveBelow extends MultipleStateChange {
         this(stateContext, feature, null);
     }
 
-    public FeatureRemoveBelow(StateContext.FeatureModel stateContext, String feature, Object multipleContext) {
+    public FeatureRemoveBelow(StateContext.FeatureModel stateContext, String feature, Object batchContext) {
         this.stateContext = stateContext;
 
-        // do nothing if the feature has already been removed by another state change in a multiple message
-        if (stateContext.getFeatureModel().getFeature(feature) == null && multipleContext != null &&
-                ((LinkedList<String>) multipleContext).contains(feature))
+        // do nothing if the feature has already been removed by another state change in a batch message
+        if (stateContext.getFeatureModel().getFeature(feature) == null && batchContext != null &&
+                ((LinkedList<String>) batchContext).contains(feature))
             return;
 
         IFeature _feature = FeatureUtils.requireFeature(stateContext.getFeatureModel(), feature);
@@ -59,12 +59,12 @@ public class FeatureRemoveBelow extends MultipleStateChange {
         }
     }
 
-    public static Object createMultipleContext() {
+    public static Object createBatchContext() {
         return new LinkedList<String>();
     }
 
-    public Object nextMultipleContext(Object multipleContext) {
-        LinkedList<String> featuresToDelete = (LinkedList<String>) multipleContext;
+    public Object nextBatchContext(Object batchContext) {
+        LinkedList<String> featuresToDelete = (LinkedList<String>) batchContext;
         featuresToDelete.addAll(featureList.stream().map(IFeatureModelElement::getName).collect(Collectors.toList()));
         return featuresToDelete;
     }

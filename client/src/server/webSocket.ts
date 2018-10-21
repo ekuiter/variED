@@ -59,13 +59,13 @@ export async function sendMessage(message: Message): Promise<void> {
     logger.logTagged({tag: 'send'}, () => message);
 }
 
-export async function sendMultipleMessages(messages: Message[]): Promise<void> {
+export async function sendBatchMessage(messages: Message[]): Promise<void> {
     if (!messages || messages.length === 0)
         return;
     if (messages.length === 1)
         await sendMessage(messages[0]);
     else
-        await sendMessage({type: MessageType.MULTIPLE_MESSAGES, messages});
+        await sendMessage({type: MessageType.BATCH, messages});
 }
 
 declare var window: any;

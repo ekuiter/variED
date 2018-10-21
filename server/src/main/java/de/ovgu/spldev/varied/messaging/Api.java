@@ -42,7 +42,7 @@ public class Api {
          * contains multiple undoable messages of the same type
          * only the last message's response message is returned to the client
          */
-        MULTIPLE_MESSAGES,
+        BATCH,
         /**
          * a serialized feature model
          */
@@ -119,21 +119,21 @@ public class Api {
         }
     }
 
-    public static class MultipleMessages extends Message implements Message.IUndoable {
+    public static class Batch extends Message implements Message.IUndoable {
         private Message[] messages;
 
-        public MultipleMessages(Artifact.Path artifactPath, Message[] messages) {
-            super(TypeEnum.MULTIPLE_MESSAGES, artifactPath);
+        public Batch(Artifact.Path artifactPath, Message[] messages) {
+            super(TypeEnum.BATCH, artifactPath);
             this.messages = messages;
         }
 
-        public LinkedList<IMultipleUndoable> getMessages() {
-            LinkedList<IMultipleUndoable> messages = new LinkedList<>();
+        public LinkedList<IBatchUndoable> getMessages() {
+            LinkedList<IBatchUndoable> messages = new LinkedList<>();
             for (Message message : this.messages) {
-                if (!(message instanceof IMultipleUndoable))
-                    throw new RuntimeException("expected multiple undoable message, got type " +
+                if (!(message instanceof IBatchUndoable))
+                    throw new RuntimeException("expected batch undoable message, got type " +
                             message.getClass().getName());
-                messages.add((IMultipleUndoable) message);
+                messages.add((IBatchUndoable) message);
             }
             return messages;
         }
@@ -148,13 +148,13 @@ public class Api {
                             messageClass.getName() + ", got type " + message.getClass().getName());
 
             boolean valid = true;
-            for (IMultipleUndoable message : getMessages())
+            for (IBatchUndoable message : getMessages())
                 valid = message.isValid(stateContext) && valid;
             return valid;
         }
 
         public StateChange getStateChange(StateContext stateContext) {
-            return new de.ovgu.spldev.varied.statechanges.MultipleMessages(stateContext, getMessages());
+            return new de.ovgu.spldev.varied.statechanges.Batch(stateContext, getMessages());
         }
     }
 
@@ -211,7 +211,7 @@ public class Api {
         }
     }
 
-    public static class FeatureDiagramFeatureRemove extends Message implements Message.IMultipleUndoable {
+    public static class FeatureDiagramFeatureRemove extends Message implements Message.IBatchUndoable {
         private String feature;
 
         public FeatureDiagramFeatureRemove(Artifact.Path artifactPath, String feature) {
@@ -224,7 +224,7 @@ public class Api {
         }
     }
 
-    public static class FeatureDiagramFeatureRemoveBelow extends Message implements Message.IMultipleUndoable {
+    public static class FeatureDiagramFeatureRemoveBelow extends Message implements Message.IBatchUndoable {
         private String feature;
 
         public FeatureDiagramFeatureRemoveBelow(Artifact.Path artifactPath, String feature) {
@@ -236,16 +236,16 @@ public class Api {
             return new FeatureRemoveBelow((StateContext.FeatureModel) stateContext, feature);
         }
 
-        public StateChange getStateChange(StateContext stateContext, Object multipleContext) {
-            return new FeatureRemoveBelow((StateContext.FeatureModel) stateContext, feature, multipleContext);
+        public StateChange getStateChange(StateContext stateContext, Object batchContext) {
+            return new FeatureRemoveBelow((StateContext.FeatureModel) stateContext, feature, batchContext);
         }
 
-        public Object createMultipleContext() {
-            return FeatureRemoveBelow.createMultipleContext();
+        public Object createBatchContext() {
+            return FeatureRemoveBelow.createBatchContext();
         }
 
-        public Object nextMultipleContext(StateChange stateChange, Object multipleContext) {
-            return ((FeatureRemoveBelow) stateChange).nextMultipleContext(multipleContext);
+        public Object nextBatchContext(StateChange stateChange, Object batchContext) {
+            return ((FeatureRemoveBelow) stateChange).nextBatchContext(batchContext);
         }
     }
 
@@ -277,7 +277,7 @@ public class Api {
         }
     }
 
-    public static class FeatureDiagramFeatureSetProperty extends Message implements Message.IMultipleUndoable {
+    public static class FeatureDiagramFeatureSetProperty extends Message implements Message.IBatchUndoable {
         private String feature, property, value;
 
         public FeatureDiagramFeatureSetProperty(Artifact.Path artifactPath, String feature, String property, String value) {
@@ -291,16 +291,16 @@ public class Api {
             return new FeatureSetProperty((StateContext.FeatureModel) stateContext, feature, property, value);
         }
 
-        public StateChange getStateChange(StateContext stateContext, Object multipleContext) {
-            return new FeatureSetProperty((StateContext.FeatureModel) stateContext, feature, property, value, multipleContext);
+        public StateChange getStateChange(StateContext stateContext, Object batchContext) {
+            return new FeatureSetProperty((StateContext.FeatureModel) stateContext, feature, property, value, batchContext);
         }
 
-        public Object createMultipleContext() {
-            return property; // only allow the same property for all messages in the multiple message
+        public Object createBatchContext() {
+            return property; // only allow the same property for all messages in the batch message
         }
 
-        public Object nextMultipleContext(StateChange stateChange, Object multipleContext) {
-            return property;
+        public Object nextBatchContext(StateChange stateChange, Object batchContext) {
+            return property; // return the current property, it should equal the next message's property
         }
     }
 }

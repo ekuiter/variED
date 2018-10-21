@@ -7,7 +7,7 @@ import {createStandardAction, ActionType, action} from 'typesafe-actions';
 import constants from '../constants';
 import {Message, MessageType, Feature, FeatureDiagramLayoutType, OverlayType, OverlayProps} from '../types';
 import {Dispatch, AnyAction, Action as ReduxAction} from 'redux';
-import {sendMessage, sendMultipleMessages} from '../server/webSocket';
+import {sendMessage, sendBatchMessage} from '../server/webSocket';
 import {ThunkAction} from 'redux-thunk';
 
 const {propertyTypes, groupValueTypes} = constants.server;
@@ -20,7 +20,7 @@ function createServerAction<P>(fn: (payload: P) => Message | Message[]): (payloa
         return async (dispatch: Dispatch<AnyAction>) => {
             const messageOrMessages = fn(payload);
             if (Array.isArray(messageOrMessages))
-                await sendMultipleMessages(messageOrMessages);
+                await sendBatchMessage(messageOrMessages);
             else
                 await sendMessage(messageOrMessages);
             return dispatch(action(SERVER_SEND_MESSAGE, messageOrMessages));
