@@ -6,7 +6,7 @@ exports[`FeatureCallout renders information for a feature with a description 1`]
   directionalHint={5}
   gapSpace={5}
   hidden={false}
-  onDismiss={[MockFunction]}
+  onDismiss={[Function]}
   target="<target element>"
 >
   <div
@@ -165,7 +165,7 @@ exports[`FeatureCallout renders information for a feature without a description 
   directionalHint={5}
   gapSpace={5}
   hidden={false}
-  onDismiss={[MockFunction]}
+  onDismiss={[Function]}
   target="<target element>"
 >
   <div

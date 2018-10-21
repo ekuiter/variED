@@ -3,10 +3,10 @@
 exports[`svg drawLine adds styles 1`] = `
 <svg>
   <g
-    shouldalsobeyes="yes"
-    shouldbeno="no"
-    shouldbeyes="yes"
     width="100"
+    shouldbeyes="yes"
+    shouldbeno="no"
+    shouldalsobeyes="yes"
   />
 </svg>
 `;
@@ -17,18 +17,18 @@ Selection {
     Array [
       <svg>
         <path
-          d="M -4 -4 L 4 4"
-          fill="none"
-          stroke="red"
-          stroke-width="1.5px"
+                d="M -4 -4 L 4 4"
+                fill="none"
+                stroke="red"
+                stroke-width="1.5px"
         />
         <path
-          d="M -4 4 L 4 -4"
-          fill="none"
-          stroke="red"
-          stroke-width="1.5px"
+                d="M -4 4 L 4 -4"
+                fill="none"
+                stroke="red"
+                stroke-width="1.5px"
         />
-      </svg>,
+</svg>,
     ],
   ],
   "_parents": Array [
@@ -43,9 +43,9 @@ Selection {
     Array [
       <svg>
         <circle
-          r="5"
+                r="5"
         />
-      </svg>,
+</svg>,
     ],
   ],
   "_parents": Array [
@@ -60,10 +60,10 @@ Selection {
     Array [
       <svg>
         <circle
-          r="5"
-          transform="translate(10,10)"
+                r="5"
+                transform="translate(10,10)"
         />
-      </svg>,
+</svg>,
     ],
   ],
   "_parents": Array [
@@ -78,9 +78,9 @@ Selection {
     Array [
       <svg>
         <path
-          d="M 0,0 C 5,0 5,10 10,10"
+                d="M 0,0 C 5,0 5,10 10,10"
         />
-      </svg>,
+</svg>,
     ],
   ],
   "_parents": Array [
@@ -95,9 +95,9 @@ Selection {
     Array [
       <svg>
         <path
-          d="M 0,0 L 10,10"
+                d="M 0,0 L 10,10"
         />
-      </svg>,
+</svg>,
     ],
   ],
   "_parents": Array [
@@ -112,10 +112,10 @@ Selection {
     Array [
       <svg>
         <circle
-          r="5"
-          transform="translate(10,10)"
+                r="5"
+                transform="translate(10,10)"
         />
-      </svg>,
+</svg>,
     ],
   ],
   "_parents": Array [
@@ -130,9 +130,9 @@ Selection {
     Array [
       <svg>
         <path
-          d="M 0,0 C 5,0 5,10 10,10"
+                d="M 0,0 C 5,0 5,10 10,10"
         />
-      </svg>,
+</svg>,
     ],
   ],
   "_parents": Array [
@@ -147,9 +147,9 @@ Selection {
     Array [
       <svg>
         <path
-          d="M 0,0 L 10,10"
+                d="M 0,0 L 10,10"
         />
-      </svg>,
+</svg>,
     ],
   ],
   "_parents": Array [
@@ -164,13 +164,13 @@ Selection {
     Array [
       <svg
         fill="none"
-        height="50"
         stroke="red"
         stroke-dasharray="4,4"
         width="100"
+        height="50"
         x="10"
         y="10"
-      />,
+/>,
     ],
   ],
   "_parents": Array [

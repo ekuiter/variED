@@ -13,7 +13,7 @@ exports[`FeaturePanel renders information for a feature with a description 1`] =
   }
   isLightDismiss={true}
   isOpen={true}
-  onDismissed={[MockFunction]}
+  onDismissed={[Function]}
   onRenderFooterContent={[Function]}
   type={1}
 >
@@ -36,7 +36,7 @@ exports[`FeaturePanel renders information for a feature without a description 1`
   }
   isLightDismiss={true}
   isOpen={true}
-  onDismissed={[MockFunction]}
+  onDismissed={[Function]}
   onRenderFooterContent={[Function]}
   type={1}
 >

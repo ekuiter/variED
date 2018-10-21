@@ -5,7 +5,7 @@ exports[`AboutPanel renders correctly 1`] = `
   headerText="About"
   isLightDismiss={true}
   isOpen={true}
-  onDismissed={[MockFunction]}
+  onDismissed={[Function]}
   type={1}
 >
   <div>

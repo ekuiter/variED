@@ -195,7 +195,7 @@ exports[`FeatureContextualMenu renders correctly for a selection of features 1`]
       },
     ]
   }
-  onDismiss={[MockFunction]}
+  onDismiss={[Function]}
   target="<target element>"
 />
 `;
@@ -440,7 +440,7 @@ exports[`FeatureContextualMenu renders correctly for a single feature 1`] = `
       },
     ]
   }
-  onDismiss={[MockFunction]}
+  onDismiss={[Function]}
   target="<target element>"
 />
 `;
