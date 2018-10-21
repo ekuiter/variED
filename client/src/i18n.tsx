@@ -117,13 +117,13 @@ const translationMap = {
                 horizontalTree: 'Horizontal tree'
             },
             labels: {
+                debug: 'Show developer information',
                 featureDiagram: {
                     font: {
                         family: 'Font family',
                         size: 'Font size'
                     },
                     treeLayout: {
-                        debug: 'Show developer information',
                         useTransitions: 'Animate feature model changes',
                         transitionDuration: 'Animation duration in ms',
                         node: {

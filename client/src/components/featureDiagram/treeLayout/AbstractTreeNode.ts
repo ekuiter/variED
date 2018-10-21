@@ -60,7 +60,7 @@ export default class {
     treeLink: AbstractTreeLink;
     getWidestTextOnLayer: (node: FeatureModelNode) => number;
 
-    constructor(public settings: Settings, public isSelectMultipleFeatures: boolean,
+    constructor(public settings: Settings, public isSelectMultipleFeatures: boolean, public debug: boolean,
         public setActiveNode: (overlay: OverlayType | 'select', activeNode: FeatureModelNode) => void,
         public onShowOverlay: OnShowOverlayFunction, public onExpandFeatures: OnExpandFeaturesFunction,
         public onToggleFeatureGroup: OnToggleFeatureGroupFunction) {}
@@ -146,7 +146,7 @@ export default class {
             fn: (circle: D3Selection) => circle.on('dblclick', expandFeature)
         });
 
-        if (this.settings.featureDiagram.treeLayout.debug)
+        if (this.debug)
             appendCross(nodeEnter);
 
         return nodeEnter;

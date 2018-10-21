@@ -1,5 +1,5 @@
-enum LogLevel {none, warn, log, info};
-const defaultLogLevel = LogLevel.log;
+export enum LogLevel {none, warn, log, info};
+export const defaultLogLevel = LogLevel.log;
 let logLevel = defaultLogLevel;
 type LogEntry = () => any;
 type ConsoleFunction = (...args: any[]) => void;
@@ -79,9 +79,16 @@ const logger = {
     }
 };
 
+export const setLogLevel = (_logLevel = defaultLogLevel) => {
+    if (!LogLevel[_logLevel])
+        throw new Error(`invalid log level ${_logLevel}`);
+    logLevel = _logLevel;
+    logger.logTagged({tag: 'logger'}, () => `set log level to ${LogLevel[logLevel]}`);
+};
+
 declare var window: any;
 window.app = window.app || {};
-window.app.setLogLevel = (_logLevel = defaultLogLevel) => logLevel = _logLevel;
+window.app.setLogLevel = setLogLevel;
 window.app.LogLevel = LogLevel;
 
 export default logger;

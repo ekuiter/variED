@@ -8,6 +8,7 @@ import objectPath from 'object-path';
 import objectPathImmutable from 'object-path-immutable';
 
 export interface Settings {
+    debug: false, // whether to show detailed logs and the estimated bounding box and node anchors for feature diagrams
     featureDiagram: {
         // settings paths that should NOT trigger a rerender of the feature diagram
         doNotRerenderForPaths: string[],
@@ -17,7 +18,6 @@ export interface Settings {
             size: number // main font size for feature names
         },
         treeLayout: {
-            debug: false, // whether to show the estimated bounding box and node anchors
             scaleExtent: [number, number], // currently fixed, specifies how far the user can zoom in and out
             useTransitions: boolean, // whether to animate feature diagram updates
             transitionDuration: number, // animation duration in ms
@@ -71,6 +71,7 @@ export interface Settings {
 };
 
 export const defaultSettings: Settings = {
+    debug: false,
     featureDiagram: {
         doNotRerenderForPaths: ['treeLayout.useTransitions', 'treeLayout.transitionDuration'],
         forceRerender: +new Date(),
@@ -79,7 +80,6 @@ export const defaultSettings: Settings = {
             size: 16
         },
         treeLayout: {
-            debug: false,
             scaleExtent: [0.1, 4],
             useTransitions: true,
             transitionDuration: 300,

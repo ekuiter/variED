@@ -22,7 +22,7 @@ describe('Setting', () => {
             const wrapper = shallow(<Setting.Toggle
                     settings={defaultSettings}
                     onSetSetting={onSetSetting}
-                    path="featureDiagram.treeLayout.debug"/>),
+                    path="debug"/>),
                 oldValue = wrapper.prop('checked');
             wrapper.simulate('click');
             expect(newSetting).toBe(!oldValue);

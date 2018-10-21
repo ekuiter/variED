@@ -33,6 +33,9 @@ export default class extends React.Component<Props> {
                 if (doNotRerenderForPaths.includes(path))
                     this[key] = undefined;
             });
+        // add debug flag to key (as it is managed outside of the featureDiagram settings,
+        // but should also trigger a rerender)
+        (clonedFeatureDiagramSettings as any).debug = settings.debug;
         return stringify(clonedFeatureDiagramSettings);
     }
 
@@ -40,7 +43,7 @@ export default class extends React.Component<Props> {
         const {featureDiagramLayout, ...props} = this.props,
             LayoutComponent = layoutMap[featureDiagramLayout];
         return (
-            <LayoutComponent key={this.getKey(props)} {...props}/>
+            <LayoutComponent key={this.getKey(props)} debug={props.settings.debug} {...props}/>
         );
     }
 }

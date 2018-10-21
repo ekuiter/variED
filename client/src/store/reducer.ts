@@ -16,7 +16,7 @@ import {getType, isActionOf, ActionType} from 'typesafe-actions';
 import {State, initialState} from './types';
 import objectPath from 'object-path';
 import objectPathImmutable from 'object-path-immutable';
-import logger from '../helpers/logger';
+import logger, {setLogLevel, LogLevel, defaultLogLevel} from '../helpers/logger';
 
 function getNewState(state: State, ...args: any[]): State {
     if (args.length % 2 == 1)
@@ -122,6 +122,12 @@ function serverReducer(state: State, action: Action): State {
 function settingsReducer(state: State, action: Action): State {
     switch (action.type) {
         case getType(actions.settings.set):
+            if (action.payload.path === 'debug') {
+                // just for once, we allow side-effects in a reducer: when the debug flag is set or cleared,
+                // the log level is adjusted accordingly.
+                const newDebug = typeof action.payload.value === 'function' ? action.payload.value(state.settings.debug) : action.payload.value;
+                setLogLevel(newDebug ? LogLevel.info : defaultLogLevel);
+            }
             return getNewState(state, 'settings', getNewSettings(state.settings, action.payload.path, action.payload.value));
 
         case getType(actions.settings.reset):

@@ -22,6 +22,7 @@ const tag = 'feature diagram';
 
 export interface AbstractTreeLayoutProps {
     featureModel: FeatureModel,
+    debug: boolean,
     width?: number,
     height?: number,
     className: string,
@@ -55,6 +56,7 @@ export default class extends React.Component<AbstractTreeLayoutProps> {
         this.treeNode = new TreeNode(
             props.settings,
             props.isSelectMultipleFeatures,
+            props.debug,
             this.setActiveNode.bind(this),
             this.props.onShowOverlay,
             this.props.onExpandFeatures,
@@ -76,6 +78,7 @@ export default class extends React.Component<AbstractTreeLayoutProps> {
         const updateD3OnPropChange = ['featureModel', 'width', 'height', 'fitOnResize', 'settings'];
         this.treeNode.settings = this.treeLink.settings = this.props.settings;
         this.treeNode.isSelectMultipleFeatures = this.props.isSelectMultipleFeatures;
+        this.treeNode.debug = this.props.debug;
 
         if (updateD3OnPropChange.find(prop => this.props[prop] !== prevProps[prop]))
             this.updateD3(
@@ -186,7 +189,7 @@ export default class extends React.Component<AbstractTreeLayoutProps> {
         return {nodes, estimatedBbox};
     }
 
-    getSvgRoot({width, height, fitOnResize, settings}: {width?: number, height?: number, fitOnResize: boolean, settings: Settings},
+    getSvgRoot({width, height, fitOnResize, settings, debug}: {width?: number, height?: number, fitOnResize: boolean, settings: Settings, debug: boolean},
         estimatedBbox: Bbox, isCreating: boolean, isResize: boolean, isSelectionChange: boolean): D3Selection {
         const svgRoot = d3Select(this.svgRef.current)
                 .call(svgRoot => width && height && svgRoot.attr('style', `width: ${width}; height: ${height};`))
@@ -207,7 +210,7 @@ export default class extends React.Component<AbstractTreeLayoutProps> {
         // bounding box information for export
         svgRoot.attr('data-estimated-bbox', JSON.stringify(estimatedBbox));
 
-        if (settings.featureDiagram.treeLayout.debug)
+        if (debug)
             this.transition(rect)
                 .call(updateRect, {
                     x: estimatedBbox[0][0],
