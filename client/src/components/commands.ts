@@ -43,6 +43,12 @@ export const collapseCommand = (features: Feature[], onCollapseFeatures: OnColla
 });
 
 const commands = {
+    commandPalette: (onShowOverlay: OnShowOverlayFunction) => ({
+        key: 'commandPalette',
+        text: i18n.t('commands.commandPalette'),
+        secondaryText: getShortcutText('commandPalette'),
+        onClick: () => onShowOverlay({overlay: OverlayType.commandPalette, overlayProps: {}})
+    }),
     settings: (onShowOverlay: OnShowOverlayFunction) => ({
         key: 'settings',
         text: i18n.t('commands.settings'),

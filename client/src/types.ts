@@ -29,6 +29,7 @@ export enum FeatureDiagramLayoutType {
 
 export enum OverlayType {
     none = 'none',
+    commandPalette = 'commandPalette',
     settingsPanel = 'settingsPanel',
     aboutPanel = 'aboutPanel',
     featurePanel = 'featurePanel',

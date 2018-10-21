@@ -39,6 +39,7 @@ export default connect(
         onRedo: () => dispatch<any>(actions.server.redo({}))
     })
 )(withKeys(
+    getShortcutKeyBinding('commandPalette', ifGlobal, ({props}: {props: StateDerivedProps}) => props.onShowOverlay!({overlay: OverlayType.commandPalette, overlayProps: {}})),
     getShortcutKeyBinding('undo', ifGlobal, ({props}: {props: StateDerivedProps}) => props.onUndo!()),
     getShortcutKeyBinding('redo', ifGlobal, ({props}: {props: StateDerivedProps}) => props.onRedo!()),
     getShortcutKeyBinding('settings', ifGlobal, ({props}: {props: StateDerivedProps}) => props.onShowOverlay!({overlay: OverlayType.settingsPanel, overlayProps: {}})),

@@ -28,7 +28,8 @@ const translationMap = {
         file: 'File',
         edit: 'Edit',
         view: 'View',
-        help: 'Help',
+        more: 'More',
+        commandPalette: 'Command Palette…',
         settings: 'Settings…',
         about: 'About…',
         undo: 'Undo',
@@ -88,6 +89,9 @@ const translationMap = {
         }
     },
     overlays: {
+        commandPalette: {
+            notFound: 'No command found.'
+        },
         aboutPanel: {
             title: 'About',
             content: (

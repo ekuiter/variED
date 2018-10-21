@@ -53,16 +53,16 @@ const CommandBarContainer = (props: StateDerivedProps) => (
                     makeDivider(),
                     commands.featureDiagram.feature.collapseAll(props.onCollapseAllFeatures!),
                     commands.featureDiagram.feature.expandAll(props.onExpandAllFeatures!),
-                    commands.featureDiagram.fitToScreen(props.onFitToScreen!),
-                    makeDivider(),
-                    commands.settings(props.onShowOverlay!)
+                    commands.featureDiagram.fitToScreen(props.onFitToScreen!)
                 ]
             }
         }, {
-            key: 'help',
-            text: i18n.t('commands.help'),
+            key: 'more',
+            text: i18n.t('commands.more'),
             subMenuProps: {
                 items: [
+                    commands.commandPalette(props.onShowOverlay!),
+                    commands.settings(props.onShowOverlay!),
                     commands.about(props.onShowOverlay!)
                 ]
             }

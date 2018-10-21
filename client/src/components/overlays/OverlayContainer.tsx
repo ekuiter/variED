@@ -21,9 +21,17 @@ import ExportDialog from './ExportDialog';
 import {OverlayType} from '../../types';
 import {State, StateDerivedProps} from '../../store/types';
 import logger from '../../helpers/logger';
+import CommandPalette from './CommandPalette';
 
 const OverlayContainer = (props: StateDerivedProps) => (
     <React.Fragment>
+        <CommandPalette
+            isOpen={props.overlay === OverlayType.commandPalette}
+            onDismiss={() => props.onHideOverlay!({overlay: OverlayType.commandPalette})}
+            onShowOverlay={props.onShowOverlay!}
+            onUndo={props.onUndo!}
+            onRedo={props.onRedo!}/>
+
         <SettingsPanel
             isOpen={props.overlay === OverlayType.settingsPanel}
             onDismissed={() => props.onHideOverlay!({overlay: OverlayType.settingsPanel})}
@@ -142,6 +150,8 @@ export default connect(
         featureModel: getFeatureModel(state)
     })),
     (dispatch): StateDerivedProps => ({
+        onUndo: () => dispatch<any>(actions.server.undo({})),
+        onRedo: () => dispatch<any>(actions.server.redo({})),
         onHideOverlay: payload => dispatch(actions.ui.overlay.hide(payload)),
         onShowOverlay: payload => dispatch(actions.ui.overlay.show(payload)),
         onDeselectAllFeatures: () => dispatch(actions.ui.featureDiagram.feature.deselectAll()),
