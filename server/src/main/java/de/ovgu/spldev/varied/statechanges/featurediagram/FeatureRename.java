@@ -5,6 +5,7 @@ import de.ovgu.spldev.varied.messaging.Api;
 import de.ovgu.spldev.varied.messaging.Message;
 import de.ovgu.spldev.varied.statechanges.StateChange;
 import de.ovgu.spldev.varied.util.FeatureUtils;
+import de.ovgu.spldev.varied.util.StringUtils;
 
 // adapted from RenameFeatureOperation
 public class FeatureRename extends StateChange {
@@ -14,6 +15,8 @@ public class FeatureRename extends StateChange {
 
     public FeatureRename(StateContext.FeatureModel stateContext, String oldName, String newName) {
         this.stateContext = stateContext;
+        if (!StringUtils.isPresent(newName))
+            throw new RuntimeException("no new feature name given");
         this.oldName = oldName;
         this.newName = newName;
         FeatureUtils.requireFeature(stateContext.getFeatureModel(), oldName);

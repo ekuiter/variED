@@ -10,6 +10,7 @@ import de.ovgu.spldev.varied.util.StringUtils;
 import de.ovgu.spldev.varied.util.FeatureUtils;
 
 import java.util.LinkedList;
+import java.util.Objects;
 
 public class FeatureSetProperty extends StateChange {
     private StateContext.FeatureModel stateContext;
@@ -21,9 +22,9 @@ public class FeatureSetProperty extends StateChange {
         this(stateContext, feature, property, value, property);
     }
 
-    public FeatureSetProperty(StateContext.FeatureModel stateContext, String feature, String property, String value, Object multipleContext) {
-        if (!property.equals(multipleContext))
-            throw new RuntimeException("can not set different properties in one multiple message");
+    public FeatureSetProperty(StateContext.FeatureModel stateContext, String feature, String property, String value, Object batchContext) {
+        if (!Objects.equals(property, batchContext))
+            throw new RuntimeException("can not set different properties in one batch message");
 
         this.stateContext = stateContext;
         this.feature = FeatureUtils.requireFeature(stateContext.getFeatureModel(), feature);
