@@ -13,7 +13,7 @@ public class User {
     private String name;
     private WebSocket webSocket;
     private static Haikunator haikunator = new HaikunatorBuilder().setDelimiter(" ").setTokenLength(0).build();
-    private ArrayList<CollaborationSession> collaborationSessions = new ArrayList<>();
+    private ArrayList<CollaborativeSession> collaborativeSessions = new ArrayList<>();
 
     private static String generateName() {
         Supplier<String> generator = () -> haikunator.haikunate() + " (anonymous)";
@@ -58,38 +58,38 @@ public class User {
         Artifact artifact = ProjectManager.getInstance().getArtifact(message.getArtifactPath());
         if (artifact == null)
             throw new RuntimeException("no artifact found for given path");
-        CollaborationSession collaborationSession = artifact.getCollaborationSession();
+        CollaborativeSession collaborativeSession = artifact.getCollaborativeSession();
 
         if (message.isType(Api.TypeEnum.JOIN) || message.isType(Api.TypeEnum.LEAVE)) {
             if (message.isType(Api.TypeEnum.JOIN))
-                joinCollaborationSession(collaborationSession);
+                joinCollaborativeSession(collaborativeSession);
             if (message.isType(Api.TypeEnum.LEAVE))
-                leaveCollaborationSession(collaborationSession);
+                leaveCollaborativeSession(collaborativeSession);
             return;
         }
 
-        for (CollaborationSession _collaborationSession : collaborationSessions)
-            if (_collaborationSession == collaborationSession) {
-                collaborationSession.onMessage(message);
+        for (CollaborativeSession _collaborativeSession : collaborativeSessions)
+            if (_collaborativeSession == collaborativeSession) {
+                collaborativeSession.onMessage(message);
                 return;
             }
 
-        throw new RuntimeException("did not join collaboration session for given artifact path");
+        throw new RuntimeException("did not join collaborative session for given artifact path");
     }
 
-    public void joinCollaborationSession(CollaborationSession collaborationSession) {
-        collaborationSession.join(this);
-        collaborationSessions.add(collaborationSession);
+    public void joinCollaborativeSession(CollaborativeSession collaborativeSession) {
+        collaborativeSession.join(this);
+        collaborativeSessions.add(collaborativeSession);
     }
 
-    public void leaveCollaborationSession(CollaborationSession collaborationSession) {
-        collaborationSession.leave(this);
-        collaborationSessions.remove(collaborationSession);
+    public void leaveCollaborativeSession(CollaborativeSession collaborativeSession) {
+        collaborativeSession.leave(this);
+        collaborativeSessions.remove(collaborativeSession);
     }
 
-    public void leaveAllCollaborationSessions() {
-        for (CollaborationSession collaborationSession : collaborationSessions)
-            collaborationSession.leave(this);
-        collaborationSessions.clear();
+    public void leaveAllCollaborativeSessions() {
+        for (CollaborativeSession collaborativeSession : collaborativeSessions)
+            collaborativeSession.leave(this);
+        collaborativeSessions.clear();
     }
 }

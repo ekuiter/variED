@@ -43,7 +43,7 @@ public class UserManager {
     }
 
     public void unregister(User oldUser) {
-        oldUser.leaveAllCollaborationSessions();
+        oldUser.leaveAllCollaborativeSessions();
         users.remove(oldUser.getWebSocket());
     }
 

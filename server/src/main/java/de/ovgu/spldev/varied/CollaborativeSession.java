@@ -11,13 +11,13 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
- * A collaboration session consists of a set of users that view and edit a artifact together.
+ * A collaborative session consists of a set of users that view and edit a artifact together.
  */
-public class CollaborationSession {
+public class CollaborativeSession {
     private StateContext stateContext;
     private Set<User> users = new HashSet<>();
 
-    CollaborationSession(StateContext stateContext) {
+    CollaborativeSession(StateContext stateContext) {
         this.stateContext = Objects.requireNonNull(stateContext, "no state context given");
     }
 

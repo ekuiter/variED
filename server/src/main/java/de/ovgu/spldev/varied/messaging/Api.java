@@ -23,11 +23,11 @@ public class Api {
          */
         ERROR,
         /**
-         * join a collaboration session
+         * join a collaborative session
          */
         JOIN,
         /**
-         * leave a collaboration session
+         * leave a collaborative session
          */
         LEAVE,
         /**

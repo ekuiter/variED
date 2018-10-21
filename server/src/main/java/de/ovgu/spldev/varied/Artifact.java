@@ -29,7 +29,7 @@ public abstract class Artifact {
         return new Path(project.getName(), name);
     }
 
-    abstract public CollaborationSession getCollaborationSession();
+    abstract public CollaborativeSession getCollaborativeSession();
 
     public static class Path {
         static String SEPARATOR = "::";
@@ -64,7 +64,7 @@ public abstract class Artifact {
 
     public static class FeatureModel extends Artifact {
         private IFeatureModel featureModel;
-        private CollaborationSession collaborationSession;
+        private CollaborativeSession collaborativeSession;
 
         FeatureModel(Project project, String name, String source) {
             this(project, name, source, name + ".xml");
@@ -83,10 +83,10 @@ public abstract class Artifact {
             this.featureModel = featureModel;
         }
 
-        public CollaborationSession getCollaborationSession() {
-            if (this.collaborationSession == null)
-                this.collaborationSession = new CollaborationSession(new StateContext.FeatureModel(getPath(), featureModel));
-            return collaborationSession;
+        public CollaborativeSession getCollaborativeSession() {
+            if (this.collaborativeSession == null)
+                this.collaborativeSession = new CollaborativeSession(new StateContext.FeatureModel(getPath(), featureModel));
+            return collaborativeSession;
         }
     }
 }
