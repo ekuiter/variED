@@ -42,7 +42,7 @@ textarea {
 }
 
 .commandPalette {
-    align-items: flex-start;
+    align-items: flex-start !important;
 }
 
 .commandPalette .ms-Dialog-main {
