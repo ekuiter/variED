@@ -7,10 +7,13 @@
 import {createSelector} from 'reselect';
 import FeatureModel from '../server/FeatureModel';
 import {State} from './types';
+import logger from '../helpers/logger';
 
 export const getFeatureModel = createSelector(
     (state: State) => state.server.featureModel,
     (state: State) => state.ui.featureDiagram.collapsedFeatureNames,
-    (featureModel: FeatureModel, collapsedFeatureNames: string[]) =>
-        featureModel ? new FeatureModel(featureModel, collapsedFeatureNames) : undefined
+    (featureModel: FeatureModel, collapsedFeatureNames: string[]) => {
+        logger.infoTagged({tag: 'redux'}, () => 'updating feature model selector');
+        return featureModel ? new FeatureModel(featureModel, collapsedFeatureNames) : undefined;
+    }
 );

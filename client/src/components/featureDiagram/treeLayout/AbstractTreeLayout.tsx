@@ -16,6 +16,9 @@ import FeatureModel from '../../../server/FeatureModel';
 import AbstractTreeNode from './AbstractTreeNode';
 import AbstractTreeLink from './AbstractTreeLink';
 import {OnShowOverlayFunction, OnHideOverlayFunction, OnSetSelectMultipleFeaturesFunction, OnSelectFeatureFunction, OnDeselectFeatureFunction, OnExpandFeaturesFunction, OnDeselectAllFeaturesFunction, OnToggleFeatureGroupFunction, OnToggleFeatureMandatoryFunction} from '../../../store/types';
+import logger from '../../../helpers/logger';
+
+const tag = 'feature diagram';
 
 export interface AbstractTreeLayoutProps {
     featureModel: FeatureModel,
@@ -253,6 +256,9 @@ export default class extends React.Component<AbstractTreeLayoutProps> {
     joinData(isCreating: boolean, isResize = false, isSelectionChange = false):
         {node: D3Selection, linkInBack: D3Selection, linkInFront: D3Selection, nodes: FeatureModelNode[]} {
         const {nodes, estimatedBbox} = this.createLayout(this.props, isSelectionChange);
+        if (!isSelectionChange)
+            logger.infoTagged({tag}, () => 'estimated bounding box ' +
+                JSON.stringify(estimatedBbox, (k, v) => typeof v === 'number' ? parseInt(v.toFixed(0)) : v));
         const svgRoot = this.getSvgRoot(this.props, estimatedBbox!, isCreating, isResize, isSelectionChange);
         const linkInBack = this.joinLinks(nodes,
             isCreating ? svgRoot.append('g').attr('class', 'linksInBack') : svgRoot.select('g.linksInBack'));
@@ -275,6 +281,7 @@ export default class extends React.Component<AbstractTreeLayoutProps> {
         // On initial render, all nodes/links are entering.
         // Thus, make them enter at their beginning position, then update them
         // instantly to their final position, without transitioning.
+        logger.infoTagged({tag}, () => `rendering initial feature model`);
         const {node, linkInBack, linkInFront, nodes} = this.joinData(true);
         this.updateCoordinates('currentCoordinates', nodes);
         this.treeNode.update(this.treeNode.enter(node.enter()));
@@ -288,6 +295,7 @@ export default class extends React.Component<AbstractTreeLayoutProps> {
         // On following renders, enter new nodes/links at their beginning position.
         // Then merge with updating nodes/links and transition to the final position.
         // Exiting nodes/links are simply removed after a transition.
+        logger.infoTagged({tag}, () => `rendering updated feature model`);
         const {node, linkInBack, linkInFront, nodes} = this.joinData(false, isResize);
         this.updateCoordinates('currentCoordinates', nodes);
 

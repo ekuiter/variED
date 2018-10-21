@@ -224,7 +224,7 @@ export default class {
         let nodes = this.actualNodes, collapsedFeatureNames: string[] = [];
         width = Math.max(width, constants.featureDiagram.fitToScreen.minWidth);
         height = Math.max(height, constants.featureDiagram.fitToScreen.minHeight);
-        logger.infoBegin(() => `[fit to screen] fitting feature model to ${estimatedDimension} ${FeatureDiagramLayoutType.verticalTree ? width : height}px`);
+        logger.infoBeginCollapsed(() => `[fit to screen] fitting feature model to ${estimatedDimension} ${FeatureDiagramLayoutType.verticalTree ? width : height}px`);
 
         while (true) {
             const {estimatedSize, collapsibleNodes} = estimateHierarchySize(

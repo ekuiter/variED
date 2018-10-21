@@ -11,11 +11,13 @@ const mapStateToPropsCache = {},
     
     shouldSerialize = (value: any): boolean =>
         value && (
-            value !== Object(value) ||
-            value.constructor.name === 'Object' ||
+            value !== Object(value) || // may serialize primitive types
+            value.constructor.name === 'Object' || // may serialize simple objects (no class instances)
+            // may serialize array (if its elements should also be serialized)
             (Array.isArray(value) && value.reduce((acc, val) => acc && shouldSerialize(val), true))),
 
     stringify = (value: any): string =>
+        // stringifies a value by serializing it or calling .toString() for complex (e.g., circular) objects
         truncate(shouldSerialize(value) ? JSON.stringify(value) : String(value)),
 
     taggedWrapper = (consoleFn: ConsoleFunction, minimumLogLevel: LogLevel) => ({tag, color = 'white', backgroundColor = 'slategrey'}:
@@ -60,13 +62,13 @@ const logger = {
             const newProps = mapStateToProps(state);
             if (logLevel >= LogLevel.info && mapStateToPropsCache[containerName] &&
                 Object.entries(newProps).some(([key, value]) => value !== mapStateToPropsCache[containerName][key])) {
-                logger.infoBegin(() => `[mapStateToProps] props changed for ${containerName}`);
+                logger.infoBeginCollapsed(() => `[mapStateToProps] props changed for ${containerName}`);
                 Object.entries(newProps).forEach(([key, value]) => {
                     const oldValue = mapStateToPropsCache[containerName][key];
                     if (value !== oldValue) {
                         logger.infoBeginCollapsed(() => key);
-                        logger.logColored({color: 'black', backgroundColor: '#faa'}, () => stringify(oldValue));
-                        logger.logColored({color: 'black', backgroundColor: '#afa'}, () => stringify(value));
+                        logger.infoColored({color: 'black', backgroundColor: '#faa'}, () => stringify(oldValue));
+                        logger.infoColored({color: 'black', backgroundColor: '#afa'}, () => stringify(value));
                         logger.infoEnd();
                     }
                 });

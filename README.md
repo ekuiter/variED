@@ -7,8 +7,8 @@ analyzing feature models. It is currently under active development and therefore
 unstable.
 
 variED relies on a client-server architecture where the client is implemented in
-JavaScript / TypeScript and the server in Java. It requires Java 1.8 and can be
-deployed on Java servlet containers such as Apache Tomcat or Jetty.
+TypeScript and the server in Java. It requires Java 1.8 and can be deployed on
+Java servlet containers such as Apache Tomcat or Jetty.
 
 ### Getting started
 

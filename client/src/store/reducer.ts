@@ -213,6 +213,10 @@ function uiReducer(state: State, action: Action): State {
 
 export default <(state?: State, action?: Action) => State>
     reduceReducers(
+        (state: State, action: Action) => {
+            logger.infoTagged({tag: 'redux'}, () => action);
+            return state;
+        },
         serverReducer,
         settingsReducer,
         uiReducer,
