@@ -89,8 +89,8 @@ const translationMap = {
         }
     },
     overlays: {
-        commandPalette: {
-            notFound: 'No command found.'
+        palette: {
+            notFound: 'Nothing found.'
         },
         aboutPanel: {
             title: 'About',

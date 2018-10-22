@@ -41,43 +41,43 @@ textarea {
     line-height: 1.5em !important;
 }
 
-.commandPalette {
+.palette {
     align-items: flex-start !important;
 }
 
-.commandPalette .ms-Dialog-main {
+.palette .ms-Dialog-main {
     top: 10%;
     max-height: 80%;
     width: 400px;
     max-width: 90%;
 }
 
-.commandPalette ul {
+.palette ul {
     list-style-type: none;
     padding: 0;
     margin: 0;
 }
 
-.commandPalette ul li {
+.palette ul li {
     padding: 8px 12px;
     cursor: pointer;
 }
 
-.commandPalette ul li.notFound {
+.palette ul li.notFound {
     cursor: default;
 }
 
-.commandPalette ul li:not(.notFound):hover {
+.palette ul li:not(.notFound):hover {
     background-color: #eee;
 }
 
-.commandPalette ul li i {
+.palette ul li i {
     float: left;
     color: rgb(0, 120, 212);
     width: 24px;
 }
 
-.commandPalette ul li span {
+.palette ul li span {
     color: rgb(102, 102, 102);
     padding-left: 20px;
     float: right;
