@@ -20,9 +20,10 @@ interface State {
 };
 
 type PaletteItemDescriptor = Omit<PaletteItem, 'action'>;
+type PaletteItemsFunction = ((...args: string[]) => PaletteItemDescriptor[] | Promise<PaletteItemDescriptor[]>);
 
 interface ArgumentDescriptor {
-    items?: PaletteItemDescriptor[],
+    items?: PaletteItemsFunction,
     allowFreeform?: boolean
 };
 
@@ -41,22 +42,31 @@ export default class extends React.Component<Props, State> {
         };
     };
 
-    actionWithArguments = (args: (ArgumentDescriptor | PaletteItemDescriptor[])[], action: PaletteAction): PaletteAction => {
+    actionWithArguments = (args: (ArgumentDescriptor | PaletteItemsFunction)[], action: PaletteAction): PaletteAction => {
         if (args.length === 0)
             return this.action(action);
 
         return () => {
-            const firstArgument = args[0],
-                argumentDescriptor: ArgumentDescriptor = Array.isArray(firstArgument) ? {items: firstArgument} : firstArgument,
+            const toArgumentDescriptor = (argument: ArgumentDescriptor | PaletteItemsFunction) =>
+                    typeof argument === 'function' ? {items: argument} : argument,
+                    toPaletteItemsFunction = (items?: PaletteItemsFunction) => items || (() => []),
+                argumentDescriptor: ArgumentDescriptor = toArgumentDescriptor(args[0]),
                 // bind current argument and recurse (until all arguments are bound)
-                recurse = (value: string) => this.actionWithArguments(args.slice(1), action.bind(undefined, value));
-            this.setState({
-                rerenderPalette: +new Date(),
-                argumentItems: (argumentDescriptor.items || []).map(item => ({
-                    ...item, action: recurse(item.text)
-                })),
-                allowFreeform: !!argumentDescriptor.allowFreeform ? recurse : undefined
-            });
+                recurse = (value: string) =>
+                    this.actionWithArguments(
+                        args.slice(1).map(toArgumentDescriptor).map(argument => ({
+                            ...argument, items: toPaletteItemsFunction(argument.items).bind(undefined, value)
+                        })),
+                        action.bind(undefined, value));
+
+            Promise.resolve(toPaletteItemsFunction(argumentDescriptor.items)()).then(items =>
+                this.setState({
+                    rerenderPalette: +new Date(),
+                    argumentItems: items.map(item => ({
+                        ...item, action: recurse(item.text)
+                    })),
+                    allowFreeform: !!argumentDescriptor.allowFreeform ? recurse : undefined
+                }));
         };
     };
 
@@ -64,8 +74,8 @@ export default class extends React.Component<Props, State> {
         {
             text: 'Join',
             action: this.actionWithArguments([
-                    [{text: 'FeatureModeling'}],
-                    [{text: 'CTV'}, {text: 'FeatureIDE'}, {text: 'Automotive'}]
+                    () => [{text: 'FeatureModeling'}],
+                    () => [{text: 'CTV'}, {text: 'FeatureIDE'}, {text: 'Automotive'}]
                 ],
                 (project, artifact) => // TODO
                     (window as any).app.sendMessage({type: MessageType.JOIN, artifact: `${project}::${artifact}`}))
