@@ -5,9 +5,11 @@ import i18n from '../i18n';
 import {Icon} from 'office-ui-fabric-react/lib/Icon';
 import defer from './defer';
 
+export type PaletteAction = (...args: string[]) => void;
+
 export interface PaletteItem {
     text: string,
-    action: () => void,
+    action: PaletteAction,
     icon?: string,
     shortcut?: string
 };
@@ -39,14 +41,13 @@ export default class extends React.Component<Props, State> {
         if (event.key === 'Enter') {
             const results = this.getSearchResults(this.state.value);
             if (results.length > 0)
-            this.onSubmit(results[0]);
+                this.onSubmit(results[0]);
         }
     };
 
     onClick = (item: PaletteItem) => () => this.onSubmit(item);
 
     onSubmit(item: PaletteItem) {
-        this.props.onDismiss();
         item.action();
         defer(() => this.itemUsage[item.text] = +new Date())();
     }

@@ -7,6 +7,7 @@
 import React from 'react';
 import throttle from './throttle';
 import constants from '../constants';
+import {Omit} from '../types';
 
 function getViewportDimension(key: string) {
     return Math.max(document.documentElement![key], 0);
@@ -20,7 +21,6 @@ interface State {
     height: number
 };
 
-type Omit<T, K> = Pick<T, Exclude<keyof T, K>>; // omits a property from a type
 type WithoutDimensions<T> = Omit<Omit<T, 'width'>, 'height'>; // omits width and height from a type (because we provide them below)
 
 export default function<T>(WrappedComponent: React.ComponentClass<State>): React.ComponentClass<WithoutDimensions<T>, State> {

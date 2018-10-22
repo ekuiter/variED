@@ -121,3 +121,5 @@ export type NodePointFunction = (node: FeatureModelNode) => Point;
 export type D3Selection = Selection<any, any, any, any>;
 // matches any function - this should be used sparely
 export type Func = (...args: any[]) => any;
+// omits a property from a type
+export type Omit<T, K> = Pick<T, Exclude<keyof T, K>>;
