@@ -4,7 +4,6 @@ import {OnShowOverlayFunction, OnUndoFunction, OnRedoFunction} from '../../store
 import {getShortcutText} from '../../shortcuts';
 import {OverlayType, Omit, MessageType} from '../../types';
 import Palette, {PaletteItem, PaletteAction} from 'src/helpers/Palette';
-import stringify from 'json-stable-stringify';
 
 interface Props {
     isOpen: boolean,
@@ -15,15 +14,24 @@ interface Props {
 };
 
 interface State {
-    argumentItems?: PaletteItem[]
+    rerenderPalette: number,
+    argumentItems?: PaletteItem[],
+    allowFreeform?: (value: string) => PaletteAction
+};
+
+type PaletteItemDescriptor = Omit<PaletteItem, 'action'>;
+
+interface ArgumentDescriptor {
+    items?: PaletteItemDescriptor[],
+    allowFreeform?: boolean
 };
 
 export default class extends React.Component<Props, State> {
-    state: State = {};
+    state: State = {rerenderPalette: +new Date()};
 
     componentDidUpdate(prevProps: Props) {
         if (!prevProps.isOpen && this.props.isOpen)
-            this.setState({argumentItems: undefined});
+            this.setState({argumentItems: undefined, allowFreeform: undefined});
     }
 
     action = (action: PaletteAction): PaletteAction => {
@@ -33,15 +41,22 @@ export default class extends React.Component<Props, State> {
         };
     };
 
-    actionWithArguments = (args: Omit<PaletteItem, 'action'>[][], action: PaletteAction): PaletteAction => {
+    actionWithArguments = (args: (ArgumentDescriptor | PaletteItemDescriptor[])[], action: PaletteAction): PaletteAction => {
         if (args.length === 0)
             return this.action(action);
 
         return () => {
-            this.setState({argumentItems: args[0].map(item => ({
+            const firstArgument = args[0],
+                argumentDescriptor: ArgumentDescriptor = Array.isArray(firstArgument) ? {items: firstArgument} : firstArgument,
                 // bind current argument and recurse (until all arguments are bound)
-                ...item, action: this.actionWithArguments(args.slice(1), action.bind(undefined, item.text))
-            }))});
+                recurse = (value: string) => this.actionWithArguments(args.slice(1), action.bind(undefined, value));
+            this.setState({
+                rerenderPalette: +new Date(),
+                argumentItems: (argumentDescriptor.items || []).map(item => ({
+                    ...item, action: recurse(item.text)
+                })),
+                allowFreeform: !!argumentDescriptor.allowFreeform ? recurse : undefined
+            });
         };
     };
 
@@ -80,10 +95,11 @@ export default class extends React.Component<Props, State> {
         const items = this.state.argumentItems || this.commands;
         return (
             <Palette
-                key={stringify(items)}
+                key={this.state.rerenderPalette}
                 isOpen={this.props.isOpen}
                 items={items}
-                onDismiss={this.props.onDismiss}/>
+                onDismiss={this.props.onDismiss}
+                allowFreeform={this.state.allowFreeform}/>
         );
     }
 };

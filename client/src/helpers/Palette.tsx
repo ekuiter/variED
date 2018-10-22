@@ -17,7 +17,8 @@ export interface PaletteItem {
 interface Props {
     isOpen: boolean,
     items: PaletteItem[],
-    onDismiss: () => void
+    onDismiss: () => void,
+    allowFreeform?: (value: string) => PaletteAction
 };
 
 interface State {
@@ -60,10 +61,13 @@ export default class extends React.Component<Props, State> {
     }
 
     getSearchResults(search?: string): PaletteItem[] {
-        return this.sortItems(search
+        const searchResults = this.sortItems(search
             ? this.props.items.filter(item =>
                 item.text.toLowerCase().includes(this.state.value!.toLowerCase()))
             : this.props.items);
+        return this.props.allowFreeform && this.state.value
+            ? [{text: this.state.value, action: this.props.allowFreeform(this.state.value)}, ...searchResults]
+            : searchResults;
     }
 
     render() {
@@ -87,7 +91,7 @@ export default class extends React.Component<Props, State> {
                         }}/>
                 </div>
                 <ul>
-                    {results.length > 0
+                    {results.length > 0 && this.props.items.length > 0
                     ? results.map(item =>
                         <li key={item.text} onClick={this.onClick(item)}>
                             {showIcons &&
@@ -98,7 +102,9 @@ export default class extends React.Component<Props, State> {
                             {showShortcuts &&
                             <span>{item.shortcut}</span>}
                         </li>)
-                    : <li className="notFound">{i18n.t('overlays.palette.notFound')}</li>}
+                    : !this.props.allowFreeform
+                        ? <li className="notFound">{i18n.t('overlays.palette.notFound')}</li>
+                        : null}
                 </ul>
             </Modal>
         );
