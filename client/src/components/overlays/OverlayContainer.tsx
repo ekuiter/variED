@@ -27,10 +27,30 @@ const OverlayContainer = (props: StateDerivedProps) => (
     <React.Fragment>
         <CommandPalette
             isOpen={props.overlay === OverlayType.commandPalette}
+            featureDiagramLayout={props.featureDiagramLayout!}
+            featureModel={props.featureModel}
             onDismiss={() => props.onHideOverlay!({overlay: OverlayType.commandPalette})}
             onShowOverlay={props.onShowOverlay!}
             onUndo={props.onUndo!}
-            onRedo={props.onRedo!}/>
+            onRedo={props.onRedo!}
+            onFitToScreen={props.onFitToScreen!}
+            onCollapseFeatures={props.onCollapseFeatures!}
+            onExpandFeatures={props.onExpandFeatures!}
+            onCollapseAllFeatures={props.onCollapseAllFeatures!}
+            onExpandAllFeatures={props.onExpandAllFeatures!}
+            onCollapseFeaturesBelow={props.onCollapseFeaturesBelow!}
+            onExpandFeaturesBelow={props.onExpandFeaturesBelow!}
+            onAddFeatureAbove={props.onAddFeatureAbove!}
+            onAddFeatureBelow={props.onAddFeatureBelow!}
+            onSetFeatureDiagramLayout={props.onSetFeatureDiagramLayout!}
+            onRemoveFeatures={props.onRemoveFeatures!}
+            onRemoveFeaturesBelow={props.onRemoveFeaturesBelow!}
+            onSetFeatureAbstract={props.onSetFeatureAbstract!}
+            onSetFeatureHidden={props.onSetFeatureHidden!}
+            onSetFeatureMandatory={props.onSetFeatureMandatory!}
+            onSetFeatureAnd={props.onSetFeatureAnd!}
+            onSetFeatureOr={props.onSetFeatureOr!}
+            onSetFeatureAlternative={props.onSetFeatureAlternative!}/>
 
         <SettingsPanel
             isOpen={props.overlay === OverlayType.settingsPanel}
@@ -150,6 +170,8 @@ export default connect(
         featureModel: getFeatureModel(state)
     })),
     (dispatch): StateDerivedProps => ({
+        onFitToScreen: () => dispatch(actions.ui.featureDiagram.fitToScreen()),
+        onSetFeatureDiagramLayout: payload => dispatch(actions.ui.featureDiagram.setLayout(payload)),
         onUndo: () => dispatch<any>(actions.server.undo({})),
         onRedo: () => dispatch<any>(actions.server.redo({})),
         onHideOverlay: payload => dispatch(actions.ui.overlay.hide(payload)),
@@ -157,6 +179,8 @@ export default connect(
         onDeselectAllFeatures: () => dispatch(actions.ui.featureDiagram.feature.deselectAll()),
         onSetSetting: payload => dispatch(actions.settings.set(payload)),
         onResetSettings: () => dispatch(actions.settings.reset()),
+        onCollapseAllFeatures: () => dispatch(actions.ui.featureDiagram.feature.collapseAll()),
+        onExpandAllFeatures: () => dispatch(actions.ui.featureDiagram.feature.expandAll()),
         onCollapseFeatures: payload => dispatch(actions.ui.featureDiagram.feature.collapse(payload)),
         onExpandFeatures: payload => dispatch(actions.ui.featureDiagram.feature.expand(payload)),
         onCollapseFeaturesBelow: payload => dispatch(actions.ui.featureDiagram.feature.collapseBelow(payload)),

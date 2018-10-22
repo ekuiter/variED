@@ -64,8 +64,8 @@ const actions = {
             feature: {
                 addBelow: createServerAction(({belowFeatureName}: {belowFeatureName: string}) =>
                     ({type: MessageType.FEATURE_DIAGRAM_FEATURE_ADD_BELOW, belowFeature: belowFeatureName})),
-                addAbove: createServerAction(({aboveFeaturesNames}: {aboveFeaturesNames: string[]}) =>
-                    ({type: MessageType.FEATURE_DIAGRAM_FEATURE_ADD_ABOVE, aboveFeatures: aboveFeaturesNames})),
+                addAbove: createServerAction(({aboveFeatureNames}: {aboveFeatureNames: string[]}) =>
+                    ({type: MessageType.FEATURE_DIAGRAM_FEATURE_ADD_ABOVE, aboveFeatures: aboveFeatureNames})),
                 remove: createServerAction(({featureNames}: {featureNames: string[]}) =>
                     (featureNames.map(featureName => ({type: MessageType.FEATURE_DIAGRAM_FEATURE_REMOVE, feature: featureName})))),
                 removeBelow: createServerAction(({featureNames}: {featureNames: string[]}) =>

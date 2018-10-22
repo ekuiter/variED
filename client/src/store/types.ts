@@ -58,7 +58,7 @@ export type OnResetSettingsFunction = () => void;
 export type OnUndoFunction = () => Promise<void>;
 export type OnRedoFunction = () => Promise<void>;
 export type OnAddFeatureBelowFunction = (payload: {belowFeatureName: string}) => Promise<void>;
-export type OnAddFeatureAboveFunction = (payload: {aboveFeaturesNames: string[]}) => Promise<void>;
+export type OnAddFeatureAboveFunction = (payload: {aboveFeatureNames: string[]}) => Promise<void>;
 export type OnRemoveFeaturesFunction = (payload: {featureNames: string[]}) => Promise<void>;
 export type OnRemoveFeaturesBelowFunction = (payload: {featureNames: string[]}) => Promise<void>;
 export type OnRenameFeatureFunction = (payload: {oldFeatureName: string, newFeatureName: string}) => Promise<void>;

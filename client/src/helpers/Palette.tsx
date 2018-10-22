@@ -10,8 +10,10 @@ export type PaletteAction = (...args: string[]) => void;
 export interface PaletteItem {
     text: string,
     action: PaletteAction,
+    key?: string,
     icon?: string,
-    shortcut?: string
+    shortcut?: string,
+    disabled?: () => boolean
 };
 
 interface Props {
@@ -24,6 +26,8 @@ interface Props {
 interface State {
     value?: string
 };
+
+const getKey = (item: PaletteItem) => item.key || item.text;
 
 export default class extends React.Component<Props, State> {
     state: State = {};
@@ -50,21 +54,22 @@ export default class extends React.Component<Props, State> {
 
     onSubmit(item: PaletteItem) {
         item.action();
-        defer(() => this.itemUsage[item.text] = +new Date())();
+        defer(() => this.itemUsage[getKey(item)] = +new Date())();
     }
 
     sortItems(items: PaletteItem[]): PaletteItem[] {
-        const usedItems = items.filter(item => typeof this.itemUsage[item.text] !== 'undefined'),
+        const usedItems = items.filter(item => typeof this.itemUsage[getKey(item)] !== 'undefined'),
             unusedItems = items.filter(item => !usedItems.includes(item));
-        usedItems.sort((a, b) => this.itemUsage[b.text] - this.itemUsage[a.text]);
+        usedItems.sort((a, b) => this.itemUsage[getKey(b)] - this.itemUsage[getKey(a)]);
         return [...usedItems, ...unusedItems];
     }
 
     getSearchResults(search?: string): PaletteItem[] {
-        const searchResults = this.sortItems(search
-            ? this.props.items.filter(item =>
-                item.text.toLowerCase().includes(this.state.value!.toLowerCase()))
-            : this.props.items);
+        const searchResults = this.sortItems(
+            (search
+                ? this.props.items.filter(item =>
+                    item.text.toLowerCase().includes(this.state.value!.toLowerCase()))
+                : this.props.items).filter(item => item.disabled ? !item.disabled() : true));
         return this.props.allowFreeform && this.state.value
             ? [{text: this.state.value, action: this.props.allowFreeform(this.state.value)}, ...searchResults]
             : searchResults;
@@ -73,7 +78,8 @@ export default class extends React.Component<Props, State> {
     render() {
         const results = this.getSearchResults(this.state.value),
             showIcons = this.props.items.some(item => typeof item.icon !== 'undefined'),
-            showShortcuts = this.props.items.some(item => typeof item.shortcut !== 'undefined');
+            showShortcuts = this.props.items.some(item => typeof item.shortcut !== 'undefined'),
+            showBeak = this.props.items.some(item => item.action['isActionWithArguments']);
 
         return (
             <Modal
@@ -93,12 +99,16 @@ export default class extends React.Component<Props, State> {
                 <ul>
                     {results.length > 0 && this.props.items.length > 0
                     ? results.map(item =>
-                        <li key={item.text} onClick={this.onClick(item)}>
+                        <li key={getKey(item)} onClick={this.onClick(item)}>
                             {showIcons &&
                             (item.icon
                                 ? <Icon iconName={item.icon} />
                                 : <i>&nbsp;</i>)}
                             {item.text}
+                            {showBeak &&
+                            (item.action['isActionWithArguments']
+                                ? <span>&gt;</span>
+                                : <span>&nbsp;</span>)}
                             {showShortcuts &&
                             <span>{item.shortcut}</span>}
                         </li>)

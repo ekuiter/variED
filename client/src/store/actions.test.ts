@@ -250,7 +250,7 @@ describe('actions', () => {
     
         describe('features', () => {
             it('adds a feature above', () =>
-                expectServerAction(actions.server.featureDiagram.feature.addAbove({aboveFeaturesNames: ['FeatureIDE', 'Eclipse']}),
+                expectServerAction(actions.server.featureDiagram.feature.addAbove({aboveFeatureNames: ['FeatureIDE', 'Eclipse']}),
                     {type: MessageType.FEATURE_DIAGRAM_FEATURE_ADD_ABOVE, aboveFeatures: ['FeatureIDE', 'Eclipse']}));
         });
     });

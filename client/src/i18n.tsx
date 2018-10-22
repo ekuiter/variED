@@ -88,6 +88,35 @@ const translationMap = {
             }
         }
     },
+    commandPalette: {
+        join: 'Join collaborative session',
+        settings: 'Settings',
+        about: 'About',
+        featureDiagram: {
+            export: 'Export feature model',
+            svg: 'SVG',
+            png: 'PNG',
+            jpg: 'JPEG',
+            pdf: 'PDF',
+            setLayout: 'Feature model layout',
+            fitToScreen: 'Fit feature model to screen',
+            feature: {
+                details: 'Feature details',
+                rename: 'Rename feature',
+                setDescription: 'Set feature description',
+                propertiesMenu: {
+                    abstract: 'Set feature to abstract',
+                    concrete: 'Set feature to concrete',
+                    hidden: 'Toggle feature visibility',
+                    mandatory: 'Set feature to mandatory',
+                    optional: 'Set feature to optional',
+                    and: 'Change feature group to and',
+                    or: 'Change feature group to or',
+                    alternative: 'Change feature group to alternative'
+                }
+            }
+        }
+    },
     overlays: {
         palette: {
             notFound: 'Nothing found.'

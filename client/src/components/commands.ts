@@ -158,7 +158,7 @@ const commands = {
                     iconProps: {iconName: 'Add'},
                     disabled,
                     onClick: () => {
-                        onAddFeatureAbove({aboveFeaturesNames: featureNames}).then(onClick);
+                        onAddFeatureAbove({aboveFeatureNames: featureNames}).then(onClick);
                     }
                 });
             },
