@@ -41,6 +41,8 @@ Fabric](https://developer.microsoft.com/en-us/fabric) and
 [D3.js](https://d3js.org/) libraries to provide a user interface for feature
 modeling.
 
+The client-server interface is described in [API.md](API.md).
+
 ### IDE setup
 
 These are some notes if you want to set up development.

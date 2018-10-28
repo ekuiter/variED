@@ -87,6 +87,24 @@ public class Api {
         }
     }
 
+    public static class Join extends Message implements Message.IEncodable, Message.IDecodable {
+        private String user;
+
+        public Join(Artifact.Path artifactPath, User user) {
+            super(TypeEnum.JOIN, artifactPath);
+            this.user = user.getName();
+        }
+    }
+
+    public static class Leave extends Message implements Message.IEncodable, Message.IDecodable {
+        private String user;
+
+        public Leave(Artifact.Path artifactPath, User user) {
+            super(TypeEnum.LEAVE, artifactPath);
+            this.user = user.getName();
+        }
+    }
+
     public static class Undo extends Message implements Message.IApplicable {
         Undo(Artifact.Path artifactPath) {
             super(TypeEnum.UNDO, artifactPath);
@@ -155,24 +173,6 @@ public class Api {
 
         public StateChange getStateChange(StateContext stateContext) {
             return new de.ovgu.spldev.varied.statechanges.Batch(stateContext, getMessages());
-        }
-    }
-
-    public static class Join extends Message implements Message.IEncodable, Message.IDecodable {
-        private String user;
-
-        public Join(Artifact.Path artifactPath, User user) {
-            super(TypeEnum.JOIN, artifactPath);
-            this.user = user.getName();
-        }
-    }
-
-    public static class Leave extends Message implements Message.IEncodable, Message.IDecodable {
-        private String user;
-
-        public Leave(Artifact.Path artifactPath, User user) {
-            super(TypeEnum.LEAVE, artifactPath);
-            this.user = user.getName();
         }
     }
 
