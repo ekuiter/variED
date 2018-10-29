@@ -7,8 +7,9 @@ import objectPath from 'object-path';
 import React from 'react';
 import constants from './constants';
 import {Link} from 'office-ui-fabric-react/lib/Link';
+import {getShortcutText} from './shortcuts';
 
-type TranslationFunction = (...args: any[]) => string;
+type TranslationFunction = (...args: any[]) => any;
 type Translation = string | JSX.Element | TranslationFunction;
 
 function isString(translation: Translation): translation is string {
@@ -24,6 +25,15 @@ function isTranslationFunction(translation: Translation): translation is Transla
 }
 
 const translationMap = {
+    noCollaborativeSessions: (onShowCommandPalette: () => void) => (
+        <div className="standout">
+            <div>
+                <p>You are not participating in any collaborative session yet.</p>
+                <p>Open the <Link onClick={onShowCommandPalette}><strong>command palette</strong></Link> <strong>(
+                {getShortcutText('commandPalette')})</strong> to join a collaborative session.</p>
+            </div>
+        </div>
+    ),
     commands: {
         file: 'File',
         edit: 'Edit',

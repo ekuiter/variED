@@ -3,10 +3,11 @@ import i18n from '../../i18n';
 import {OnShowOverlayFunction, OnUndoFunction, OnRedoFunction, OnSetFeatureDiagramLayoutFunction, OnFitToScreenFunction, OnAddFeatureAboveFunction, OnAddFeatureBelowFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnRemoveFeaturesFunction, OnRemoveFeaturesBelowFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureMandatoryFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction, OnExpandAllFeaturesFunction, OnCollapseAllFeaturesFunction, OnJoinFunction, OnLeaveFunction, CollaborativeSession, OnSetCurrentArtifactPathFunction} from '../../store/types';
 import {getShortcutText} from '../../shortcuts';
 import {OverlayType, Omit, FeatureDiagramLayoutType, FormatType, isArtifactPathEqual} from '../../types';
-import Palette, {PaletteItem, PaletteAction} from '../../helpers/Palette';
+import Palette, {PaletteItem, PaletteAction, getKey} from '../../helpers/Palette';
 import {canExport} from '../featureDiagram/export';
 import FeatureModel from '../../server/FeatureModel';
-import {arrayUnique} from 'src/helpers/array';
+import {arrayUnique} from '../../helpers/array';
+import defer from '../../helpers/defer';
 
 interface Props {
     collaborativeSessions: CollaborativeSession[],
@@ -57,6 +58,9 @@ interface ArgumentDescriptor {
 
 export default class extends React.Component<Props, State> {
     state: State = {rerenderPalette: +new Date()};
+    commandUsage: {
+        [x: string]: number
+    } = {};
 
     componentDidUpdate(prevProps: Props, prevState: State) {
         if (!prevProps.isOpen && this.props.isOpen)
@@ -67,6 +71,10 @@ export default class extends React.Component<Props, State> {
                 prevProps.featureModel !== this.props.featureModel))
             this.state.getArgumentItems()
                 .then(argumentItems => this.setState({argumentItems}));
+    }
+
+    onSubmit = (command: PaletteItem) => {
+        defer(() => this.commandUsage[getKey(command)] = +new Date())();
     }
 
     action = (action: PaletteAction): PaletteAction => {
@@ -126,7 +134,7 @@ export default class extends React.Component<Props, State> {
             action: this.actionWithArguments(
                 [
                     () => ['FeatureModeling', 'Isolated Project'],  // TODO
-                    () => ['CTV', 'FeatureIDE', 'Automotive', 'Empty feature model']
+                    project => project === 'FeatureModeling' ? ['CTV', 'FeatureIDE', 'Automotive'] : ['Empty feature model']
                 ],
                 (project, artifact) => {
                     if (this.props.collaborativeSessions.find(collaborativeSession =>
@@ -310,7 +318,9 @@ export default class extends React.Component<Props, State> {
                 isOpen={this.props.isOpen}
                 items={items}
                 onDismiss={this.props.onDismiss}
-                allowFreeform={this.state.allowFreeform}/>
+                allowFreeform={this.state.allowFreeform}
+                onSubmit={this.onSubmit}
+                itemUsage={this.state.argumentItems ? undefined : this.commandUsage}/>
         );
     }
 };

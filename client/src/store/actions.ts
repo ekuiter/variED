@@ -22,12 +22,9 @@ function createServerAction<P>(fn: (payload: P) => Message | Message[]): (payloa
             const messageOrMessages = fn(payload),
                 artifactPath = getState().currentArtifactPath;
             if (Array.isArray(messageOrMessages))
-                await sendBatchMessage(messageOrMessages.map(message =>
-                    artifactPath || message.artifactPath ? {artifactPath, ...message} : message));
+                await sendBatchMessage(messageOrMessages, artifactPath);
             else
-                await sendMessage(artifactPath || messageOrMessages.artifactPath
-                    ? {artifactPath, ...messageOrMessages}
-                    : messageOrMessages);
+                await sendMessage(messageOrMessages, artifactPath);
             return dispatch(action(SERVER_SEND_MESSAGE, messageOrMessages));
         };
     };

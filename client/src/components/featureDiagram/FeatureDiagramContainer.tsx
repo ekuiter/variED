@@ -5,11 +5,12 @@
 import React from 'react';
 import FeatureDiagram from './FeatureDiagram';
 import {connect} from 'react-redux';
-import {Spinner, SpinnerSize} from 'office-ui-fabric-react/lib/Spinner';
 import {getCurrentCollaborativeSession, isFeatureDiagramCollaborativeSession, getCurrentFeatureModel} from '../../store/selectors';
 import actions from '../../store/actions';
 import {State, StateDerivedProps} from '../../store/types';
 import logger from '../../helpers/logger';
+import i18n from '../../i18n';
+import {OverlayType} from 'src/types';
 
 export default connect(
     logger.mapStateToProps('FeatureDiagramContainer', (state: State): StateDerivedProps => {
@@ -41,6 +42,6 @@ export default connect(
         onToggleFeatureMandatory: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.toggleMandatory(payload)),
     })
 )((props: StateDerivedProps & {className: string}) =>
-    props.featureModel
+    props.featureModel // TODO: distinguish between "not editing a feature model" and "editing a feature model which is being loaded"
         ? <FeatureDiagram featureDiagramLayout={props.featureDiagramLayout!} settings={props.settings!} {...props}/>
-        : <Spinner size={SpinnerSize.large}/>);
+        : i18n.getFunction('noCollaborativeSessions')(() => props.onShowOverlay!({overlay: OverlayType.commandPalette, overlayProps: {}})));

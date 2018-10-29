@@ -3,7 +3,6 @@ import {Modal} from 'office-ui-fabric-react/lib/Modal';
 import {TextField} from 'office-ui-fabric-react/lib/TextField';
 import i18n from '../i18n';
 import {Icon} from 'office-ui-fabric-react/lib/Icon';
-import defer from './defer';
 
 export type PaletteAction = (...args: string[]) => void;
 
@@ -20,20 +19,22 @@ interface Props {
     isOpen: boolean,
     items: PaletteItem[],
     onDismiss: () => void,
-    allowFreeform?: (value: string) => PaletteAction
+    onSubmit: (item: PaletteItem) => void,
+    allowFreeform?: (value: string) => PaletteAction,
+    itemUsage: {
+        [x: string]: number
+    }
 };
 
 interface State {
     value?: string
 };
 
-const getKey = (item: PaletteItem) => item.key || item.text;
+export const getKey = (item: PaletteItem) => item.key || item.text;
 
 export default class extends React.Component<Props, State> {
+    static defaultProps: Partial<Props> = {onSubmit: () => {}, itemUsage: {}};
     state: State = {};
-    itemUsage: {
-        [x: string]: number
-    } = {};
 
     componentDidUpdate(prevProps: Props) {
         if (!prevProps.isOpen && this.props.isOpen)
@@ -54,13 +55,13 @@ export default class extends React.Component<Props, State> {
 
     onSubmit(item: PaletteItem) {
         item.action();
-        defer(() => this.itemUsage[getKey(item)] = +new Date())();
+        this.props.onSubmit(item);
     }
 
     sortItems(items: PaletteItem[]): PaletteItem[] {
-        const usedItems = items.filter(item => typeof this.itemUsage[getKey(item)] !== 'undefined'),
+        const usedItems = items.filter(item => typeof this.props.itemUsage[getKey(item)] !== 'undefined'),
             unusedItems = items.filter(item => !usedItems.includes(item));
-        usedItems.sort((a, b) => this.itemUsage[getKey(b)] - this.itemUsage[getKey(a)]);
+        usedItems.sort((a, b) => this.props.itemUsage[getKey(b)] - this.props.itemUsage[getKey(a)]);
         return [...usedItems, ...unusedItems];
     }
 

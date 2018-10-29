@@ -13,7 +13,7 @@ async function expectServerAction(thunk: Func, payload: any, isSendBatch = false
         action = await thunk(dispatch, getState);
     expect(action).toEqual({type: SERVER_SEND_MESSAGE, payload});
     expect(dispatch).toBeCalledWith(action);
-    expect(isSendBatch ? sendBatchMessage : sendMessage).lastCalledWith(payload);
+    expect(isSendBatch ? sendBatchMessage : sendMessage).lastCalledWith(payload, undefined);
 }
 
 const expectBatchServerAction = (thunk: Func, payload: any) =>

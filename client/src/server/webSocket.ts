@@ -3,7 +3,7 @@
  */
 
 import constants from '../constants';
-import {Message, MessageType} from '../types';
+import {Message, MessageType, ArtifactPath} from '../types';
 import logger from '../helpers/logger';
 
 type HandleMessageFunction = (data: Message) => void;
@@ -53,17 +53,19 @@ export async function openWebSocket(_handleMessage?: HandleMessageFunction): Pro
     // return nothing to not expose WebSocket object
 }
 
-export async function sendMessage(message: Message): Promise<void> {
+export async function sendMessage(message: Message, artifactPath?: ArtifactPath): Promise<void> {
     const webSocket = await getWebSocket();
+    if (artifactPath)
+        message = {artifactPath, ...message};
     webSocket.send(JSON.stringify(message));
     logger.logTagged({tag: 'send'}, () => message);
 }
 
-export async function sendBatchMessage(messages: Message[]): Promise<void> {
+export async function sendBatchMessage(messages: Message[], artifactPath?: ArtifactPath): Promise<void> {
     if (!messages || messages.length === 0)
         return;
     if (messages.length === 1)
-        await sendMessage(messages[0]);
+        await sendMessage(messages[0], artifactPath);
     else
-        await sendMessage({type: MessageType.BATCH, messages});
+        await sendMessage({type: MessageType.BATCH, messages}, artifactPath);
 }

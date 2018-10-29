@@ -2,7 +2,7 @@
  * Simple mock for a web socket, used in testing.
  */
 
-import {Message} from '../../types';
+import {Message, ArtifactPath} from '../../types';
 
 type HandleMessageFunction = (data: Message) => void;
 
@@ -10,10 +10,10 @@ export function openWebSocket(_handleMessage?: HandleMessageFunction): Promise<v
     return Promise.resolve();
 }
 
-export const sendMessage = jest.fn((_message: Message): Promise<void> => {
+export const sendMessage = jest.fn((_message: Message, artifactPath?: ArtifactPath): Promise<void> => {
     return Promise.resolve();
 });
 
-export const sendBatchMessage = jest.fn((_messages: Message[]): Promise<void> => {
+export const sendBatchMessage = jest.fn((_messages: Message[], artifactPath?: ArtifactPath): Promise<void> => {
     return Promise.resolve();
 });

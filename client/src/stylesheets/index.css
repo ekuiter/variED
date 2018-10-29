@@ -83,3 +83,20 @@ textarea {
     float: right;
     min-width: 12px;
 }
+
+.standout {
+    display: block;
+    line-height: calc(100vh - 40px);
+    text-align: center;
+}
+
+.standout div {
+    display: inline-block;
+    vertical-align: middle;
+    line-height: normal;
+    background-color: #eee;
+    margin: 10px;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 1.2em;
+}
