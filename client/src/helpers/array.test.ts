@@ -1,4 +1,4 @@
-import {setAdd, setRemove} from './reducer';
+import {setAdd, setRemove} from './array';
 
 describe('reducer', () => {
     describe('setAdd', () => {

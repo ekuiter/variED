@@ -1,13 +1,15 @@
 import React from 'react';
 import i18n from '../../i18n';
-import {OnShowOverlayFunction, OnUndoFunction, OnRedoFunction, OnSetFeatureDiagramLayoutFunction, OnFitToScreenFunction, OnAddFeatureAboveFunction, OnAddFeatureBelowFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnRemoveFeaturesFunction, OnRemoveFeaturesBelowFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureMandatoryFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction, OnExpandAllFeaturesFunction, OnCollapseAllFeaturesFunction, OnJoinFunction, OnLeaveFunction} from '../../store/types';
+import {OnShowOverlayFunction, OnUndoFunction, OnRedoFunction, OnSetFeatureDiagramLayoutFunction, OnFitToScreenFunction, OnAddFeatureAboveFunction, OnAddFeatureBelowFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnRemoveFeaturesFunction, OnRemoveFeaturesBelowFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureMandatoryFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction, OnExpandAllFeaturesFunction, OnCollapseAllFeaturesFunction, OnJoinFunction, OnLeaveFunction, CollaborativeSession, OnSetCurrentArtifactPathFunction} from '../../store/types';
 import {getShortcutText} from '../../shortcuts';
-import {OverlayType, Omit, FeatureDiagramLayoutType, FormatType} from '../../types';
+import {OverlayType, Omit, FeatureDiagramLayoutType, FormatType, isArtifactPathEqual} from '../../types';
 import Palette, {PaletteItem, PaletteAction} from '../../helpers/Palette';
 import {canExport} from '../featureDiagram/export';
 import FeatureModel from '../../server/FeatureModel';
+import {arrayUnique} from 'src/helpers/array';
 
 interface Props {
+    collaborativeSessions: CollaborativeSession[],
     isOpen: boolean,
     featureDiagramLayout?: FeatureDiagramLayoutType,
     featureModel?: FeatureModel,
@@ -34,7 +36,8 @@ interface Props {
     onSetFeatureAnd: OnSetFeatureAndFunction,
     onSetFeatureOr: OnSetFeatureOrFunction,
     onSetFeatureAlternative: OnSetFeatureAlternativeFunction
-    onSetFeatureDiagramLayout: OnSetFeatureDiagramLayoutFunction
+    onSetFeatureDiagramLayout: OnSetFeatureDiagramLayoutFunction,
+    onSetCurrentArtifactPath: OnSetCurrentArtifactPathFunction
 };
 
 interface State {
@@ -124,9 +127,28 @@ export default class extends React.Component<Props, State> {
                     () => ['FeatureModeling'],  // TODO
                     () => ['CTV', 'FeatureIDE', 'Automotive']
                 ],
-                (project, artifact) => this.props.onJoin({artifactPath: {project, artifact}}))
+                (project, artifact) => {
+                    if (this.props.collaborativeSessions.find(collaborativeSession =>
+                        isArtifactPathEqual(collaborativeSession.artifactPath, {project, artifact})))
+                        this.props.onSetCurrentArtifactPath({artifactPath: {project, artifact}});
+                    else
+                        this.props.onJoin({artifactPath: {project, artifact}});
+                })
         },
-        // TODO: leave
+        {
+            text: i18n.t('commandPalette.leave'),
+            action: this.actionWithArguments(
+                [
+                    () => arrayUnique(
+                        this.props.collaborativeSessions
+                            .map(collaborativeSession => collaborativeSession.artifactPath.project)),
+                    (project: string) =>
+                        this.props.collaborativeSessions
+                            .filter(collaborativeSession => collaborativeSession.artifactPath.project === project)
+                            .map(collaborativeSession => collaborativeSession.artifactPath.artifact)
+                ],
+                (project, artifact) => this.props.onLeave({artifactPath: {project, artifact}}))
+        },
         {
             text: i18n.t('commandPalette.settings'),
             icon: 'Settings',

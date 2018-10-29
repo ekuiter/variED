@@ -20,13 +20,14 @@ const ifFeatureModel = (props: StateDerivedProps) => !!props.featureModel,
 export default connect(
     logger.mapStateToProps('ShortcutContainer', (state: State): StateDerivedProps => {
         const collaborativeSession = getCurrentCollaborativeSession(state),
-            props = {
+            props: StateDerivedProps = {
                 overlay: state.overlay,
                 overlayProps: state.overlayProps
             };
         if (!collaborativeSession || !isFeatureDiagramCollaborativeSession(collaborativeSession))
             return props;
         return {
+            ...props,
             isSelectMultipleFeatures: collaborativeSession.isSelectMultipleFeatures,
             selectedFeatureNames: collaborativeSession.selectedFeatureNames,
             featureModel: getCurrentFeatureModel(state)

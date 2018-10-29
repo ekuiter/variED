@@ -90,6 +90,7 @@ const translationMap = {
     },
     commandPalette: {
         join: 'Join collaborative session',
+        leave: 'Leave collaborative session',
         settings: 'Settings',
         about: 'About',
         featureDiagram: {

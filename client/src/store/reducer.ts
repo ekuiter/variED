@@ -8,7 +8,7 @@
 import reduceReducers from 'reduce-reducers';
 import {defaultSettings, getNewSettings} from './settings';
 import {OverlayType, isMessageType, MessageType, isFloatingFeatureOverlay, OverlayProps, isArtifactPathEqual, ArtifactPath, Message} from '../types';
-import {setAdd, setRemove, SetOperationFunction, arrayReplace} from '../helpers/reducer';
+import {setAdd, setRemove, SetOperationFunction, arrayReplace} from '../helpers/array';
 import {getFeatureModel, isEditingFeatureModel, getCollaborativeSession, getCurrentFeatureModel, getCurrentCollaborativeSession, isFeatureDiagramCollaborativeSession} from './selectors';
 import {getViewportWidth, getViewportHeight} from '../helpers/withDimensions';
 import actions, {Action, SERVER_SEND_MESSAGE} from './actions';
@@ -35,6 +35,7 @@ function getNewState(state: State, ...args: any[]): State {
 
 function getNewCollaborativeSessions(state: State, artifactPath: ArtifactPath,
     replacementFn: (collaborativeSession: CollaborativeSession) => CollaborativeSession): CollaborativeSession[] {
+    getCollaborativeSession(state, artifactPath);
     return arrayReplace(state.collaborativeSessions,
         collaborativeSession => isArtifactPathEqual(collaborativeSession.artifactPath, artifactPath),
         replacementFn);
@@ -105,9 +106,14 @@ function serverSendReducer(state: State, action: AnyAction): State {
                     // TODO: we just assume that leaving succeeds here. It would be better to wait for the server's
                     // acknowledgement (and use promises in actions.ts to dispatch this update), see issue #9.
                     // Also right now, when the server kicks us from a session, we do not handle this.
-                    return getNewState(state, 'collaborativeSessions',
-                        state.collaborativeSessions.filter(collaborativeSession =>
-                            !isArtifactPathEqual(collaborativeSession.artifactPath, message.artifactPath)));
+                    return getNewState(state,
+                        'collaborativeSessions',
+                            state.collaborativeSessions.filter(collaborativeSession =>
+                                !isArtifactPathEqual(collaborativeSession.artifactPath, message.artifactPath)),
+                        'currentArtifactPath',
+                            isArtifactPathEqual(state.currentArtifactPath, action.payload.artifactPath!)
+                            ? undefined
+                            : state.currentArtifactPath);
 
                 default:
                     return state;
@@ -135,14 +141,17 @@ function serverReceiveReducer(state: State, action: Action): State {
                         ({...collaborativeSession, users: setRemove(collaborativeSession.users, action.payload.user)})));
 
             case MessageType.FEATURE_DIAGRAM_FEATURE_MODEL:
-                state = getNewState(state, 'collaborativeSessions',
-                    state.collaborativeSessions.find(collaborativeSession =>
-                        isArtifactPathEqual(collaborativeSession.artifactPath, action.payload.artifactPath!))
-                        ? getNewCollaborativeSessions(state, action.payload.artifactPath!,
+                if (state.collaborativeSessions.find(collaborativeSession =>
+                    isArtifactPathEqual(collaborativeSession.artifactPath, action.payload.artifactPath!)))
+                    state = getNewState(state, 'collaborativeSessions',
+                        getNewCollaborativeSessions(state, action.payload.artifactPath!,
                             (collaborativeSession: CollaborativeSession) =>
-                                ({...collaborativeSession, featureModel: action.payload.featureModel}))
-                        : [...state.collaborativeSessions,
-                            initialFeatureDiagramCollaborativeSessionState(action.payload.artifactPath!, action.payload.featureModel)]);
+                                ({...collaborativeSession, featureModel: action.payload.featureModel})));
+                else
+                    state = getNewState(state,
+                        'collaborativeSessions', [...state.collaborativeSessions,
+                            initialFeatureDiagramCollaborativeSessionState(action.payload.artifactPath!, action.payload.featureModel)],
+                        'currentArtifactPath', action.payload.artifactPath!);
                 state = removeObsoleteFeaturesFromFeatureList(state, action.payload.artifactPath!, 'collapsedFeatureNames');
                 // TODO: warn user that selection change
                 state = removeObsoleteFeaturesFromFeatureList(state, action.payload.artifactPath!, 'selectedFeatureNames');
@@ -185,6 +194,9 @@ function uiReducer(state: State, action: Action): State {
     let setOperation: SetOperationFunction<string>;
 
     switch (action.type) {
+        case getType(actions.ui.setCurrentArtifactPath):
+            return getNewState(state, 'currentArtifactPath', action.payload.artifactPath);
+
         case getType(actions.ui.featureDiagram.setLayout):
             return isEditingFeatureModel(state)
                 ? getNewState(state, 'collaborativeSessions',

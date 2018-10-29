@@ -39,6 +39,7 @@ const actions = {
         reset: createStandardAction('settings/reset')<void>()
     },
     ui: {
+        setCurrentArtifactPath: createStandardAction('ui/setCurrentArtifactPath')<{artifactPath?: ArtifactPath}>(),
         featureDiagram: {
             setLayout: createStandardAction('ui/featureDiagram/setLayout')<{layout: FeatureDiagramLayoutType}>(),
             fitToScreen: createStandardAction('ui/featureDiagram/fitToScreen')<void>(),

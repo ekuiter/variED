@@ -26,6 +26,7 @@ import CommandPalette from './CommandPalette';
 const OverlayContainer = (props: StateDerivedProps) => (
     <React.Fragment>
         <CommandPalette
+            collaborativeSessions={props.collaborativeSessions!}
             isOpen={props.overlay === OverlayType.commandPalette}
             featureDiagramLayout={props.featureDiagramLayout}
             featureModel={props.featureModel}
@@ -52,7 +53,8 @@ const OverlayContainer = (props: StateDerivedProps) => (
             onSetFeatureMandatory={props.onSetFeatureMandatory!}
             onSetFeatureAnd={props.onSetFeatureAnd!}
             onSetFeatureOr={props.onSetFeatureOr!}
-            onSetFeatureAlternative={props.onSetFeatureAlternative!}/>
+            onSetFeatureAlternative={props.onSetFeatureAlternative!}
+            onSetCurrentArtifactPath={props.onSetCurrentArtifactPath!}/>
 
         <SettingsPanel
             isOpen={props.overlay === OverlayType.settingsPanel}
@@ -168,10 +170,11 @@ const OverlayContainer = (props: StateDerivedProps) => (
 export default connect(
     logger.mapStateToProps('OverlayContainer', (state: State): StateDerivedProps => {
         const collaborativeSession = getCurrentCollaborativeSession(state),
-            props = {
+            props: StateDerivedProps = {
                 settings: state.settings,
                 overlay: state.overlay,
-                overlayProps: state.overlayProps
+                overlayProps: state.overlayProps,
+                collaborativeSessions: state.collaborativeSessions
             };
         if (!collaborativeSession || !isFeatureDiagramCollaborativeSession(collaborativeSession))
             return props;
@@ -195,6 +198,7 @@ export default connect(
         onDeselectAllFeatures: () => dispatch(actions.ui.featureDiagram.feature.deselectAll()),
         onSetSetting: payload => dispatch(actions.settings.set(payload)),
         onResetSettings: () => dispatch(actions.settings.reset()),
+        onSetCurrentArtifactPath: payload => dispatch(actions.ui.setCurrentArtifactPath(payload)),
         onCollapseAllFeatures: () => dispatch(actions.ui.featureDiagram.feature.collapseAll()),
         onExpandAllFeatures: () => dispatch(actions.ui.featureDiagram.feature.expandAll()),
         onCollapseFeatures: payload => dispatch(actions.ui.featureDiagram.feature.collapse(payload)),

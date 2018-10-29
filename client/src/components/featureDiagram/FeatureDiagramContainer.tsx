@@ -13,17 +13,20 @@ import logger from '../../helpers/logger';
 
 export default connect(
     logger.mapStateToProps('FeatureDiagramContainer', (state: State): StateDerivedProps => {
-        const collaborativeSession = getCurrentCollaborativeSession(state);
+        const collaborativeSession = getCurrentCollaborativeSession(state),
+            props: StateDerivedProps = {
+                settings: state.settings,
+                overlay: state.overlay,
+                overlayProps: state.overlayProps
+            };
         if (!collaborativeSession || !isFeatureDiagramCollaborativeSession(collaborativeSession))
-            return {};
+            return props;
         return {
-            settings: state.settings,
+            ...props,
             featureDiagramLayout: collaborativeSession.layout,
             isSelectMultipleFeatures: collaborativeSession.isSelectMultipleFeatures,
             selectedFeatureNames: collaborativeSession.selectedFeatureNames,
-            featureModel: getCurrentFeatureModel(state),
-            overlay: state.overlay,
-            overlayProps: state.overlayProps
+            featureModel: getCurrentFeatureModel(state)
         };
     }),
     (dispatch): StateDerivedProps => ({

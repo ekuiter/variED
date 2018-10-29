@@ -1,19 +1,29 @@
 export type SetOperationFunction<T> = (array: T[], elementOrElements: T | T[]) => T[];
 
 /**
+ * Converts an array into a set by strict equality comparison.
+ * @param array an array of elements
+ */
+export function arrayUnique<T>(array: T[]) {
+    return array.filter((element, idx) => array.indexOf(element) === idx);
+}
+
+/**
  * Adds an element or an array of elements to a set.
+ * Elements are kept unique with strict equality comparison.
  * @param set a set of elements
  * @param elementOrElements an element or an array of elements to be added
  */
 export function setAdd<T>(set: T[], elementOrElements: T | T[]): T[] {
     let elements: T[];
     elements = Array.isArray(elementOrElements) ? elementOrElements : [elementOrElements];
-    elements = elements.filter((element, idx, array) => array.indexOf(element) === idx);
+    elements = arrayUnique(elements);
     return set.filter(element => !elements.includes(element)).concat(elements);
 }
 
 /**
  * Removes an element or an array of elements from a set.
+ * Elements are kept unique with strict equality comparison.
  * @param set a set of elements
  * @param elementOrElements an element or an array of elements to be removed
  */

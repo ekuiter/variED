@@ -93,10 +93,11 @@ const CommandBarContainer = (props: StateDerivedProps) => (
 export default connect(
     logger.mapStateToProps('CommandBarContainer', (state: State): StateDerivedProps => {
         const collaborativeSession = getCurrentCollaborativeSession(state),
-            props = {settings: state.settings};
+            props: StateDerivedProps = {settings: state.settings};
         if (!collaborativeSession || !isFeatureDiagramCollaborativeSession(collaborativeSession))
             return props;
         return {
+            ...props,
             featureDiagramLayout: collaborativeSession.layout,
             isSelectMultipleFeatures: collaborativeSession.isSelectMultipleFeatures,
             selectedFeatureNames: collaborativeSession.selectedFeatureNames,

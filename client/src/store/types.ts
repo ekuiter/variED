@@ -68,6 +68,8 @@ export type OnHideOverlayFunction = (payload: {overlay: OverlayType}) => void;
 export type OnFitToScreenFunction = () => void;
 export type OnSetSettingFunction = (payload: {path: string, value: any}) => void;
 export type OnResetSettingsFunction = () => void;
+export type OnSetCurrentArtifactPathFunction = (payload: {artifactPath?: ArtifactPath}) => void;
+
 export type OnJoinFunction = (payload: {artifactPath: ArtifactPath}) => Promise<void>;
 export type OnLeaveFunction = (payload: {artifactPath: ArtifactPath}) => Promise<void>;
 export type OnUndoFunction = () => Promise<void>;
@@ -91,6 +93,7 @@ export type OnToggleFeatureGroupFunction = (payload: {feature: Feature}) => Prom
 // This enforces the convention that a prop called 'on...' has the same type in all components.
 export type StateDerivedProps = Partial<{
     handleMessage: (message: Message) => void,
+    collaborativeSessions: CollaborativeSession[],
     users: User[],
     settings: Settings,
     featureDiagramLayout: FeatureDiagramLayoutType,
@@ -99,6 +102,7 @@ export type StateDerivedProps = Partial<{
     featureModel: FeatureModel,
     overlay: OverlayType,
     overlayProps: OverlayProps,
+
     onSelectFeature: OnSelectFeatureFunction,
     onDeselectFeature: OnDeselectFeatureFunction,
     onSelectAllFeatures: OnSelectAllFeaturesFunction,
@@ -116,6 +120,8 @@ export type StateDerivedProps = Partial<{
     onFitToScreen: OnFitToScreenFunction,
     onSetSetting: OnSetSettingFunction,
     onResetSettings: OnResetSettingsFunction,
+    onSetCurrentArtifactPath: OnSetCurrentArtifactPathFunction,
+
     onJoin: OnJoinFunction,
     onLeave: OnLeaveFunction,
     onUndo: OnUndoFunction,
