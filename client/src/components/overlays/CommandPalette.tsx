@@ -3,9 +3,9 @@ import i18n from '../../i18n';
 import {OnShowOverlayFunction, OnUndoFunction, OnRedoFunction, OnSetFeatureDiagramLayoutFunction, OnFitToScreenFunction, OnAddFeatureAboveFunction, OnAddFeatureBelowFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnRemoveFeaturesFunction, OnRemoveFeaturesBelowFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureMandatoryFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction, OnExpandAllFeaturesFunction, OnCollapseAllFeaturesFunction} from '../../store/types';
 import {getShortcutText} from '../../shortcuts';
 import {OverlayType, Omit, MessageType, FeatureDiagramLayoutType, FormatType} from '../../types';
-import Palette, {PaletteItem, PaletteAction} from 'src/helpers/Palette';
+import Palette, {PaletteItem, PaletteAction} from '../../helpers/Palette';
 import {canExport} from '../featureDiagram/export';
-import FeatureModel from 'src/server/FeatureModel';
+import FeatureModel from '../../server/FeatureModel';
 
 interface Props {
     isOpen: boolean,

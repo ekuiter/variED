@@ -6212,6 +6212,10 @@ rc@^1.0.1, rc@^1.1.6, rc@^1.2.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
+re-reselect@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/re-reselect/-/re-reselect-2.2.0.tgz#5e175d032bcd67c7c6632bf76b3e9f8386b8f24f"
+
 react-dev-utils@^5.0.2:
   version "5.0.3"
   resolved "https://registry.yarnpkg.com/react-dev-utils/-/react-dev-utils-5.0.3.tgz#92f97668f03deb09d7fa11ea288832a8c756e35e"

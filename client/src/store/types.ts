@@ -1,41 +1,43 @@
 import FeatureModel from '../server/FeatureModel';
 import {defaultSettings, Settings} from './settings';
-import {Message, FeatureDiagramLayoutType, OverlayType, OverlayProps, Feature} from '../types';
+import {Message, FeatureDiagramLayoutType, OverlayType, OverlayProps, Feature, ArtifactPath} from '../types';
+
+interface User {
+    name: string
+};
+
+export interface CollaborativeSession {
+    artifactPath: ArtifactPath,
+    users: User[]
+};
+
+export interface FeatureDiagramCollaborativeSession extends CollaborativeSession {
+    featureModel: object,
+    layout: FeatureDiagramLayoutType,
+    isSelectMultipleFeatures: boolean,
+    selectedFeatureNames: string[],
+    collapsedFeatureNames: string[]
+};
 
 export interface State {
-    server: {
-        users: string[],
-        featureModel?: FeatureModel
-    },
     settings: Settings,
-    ui: {
-        featureDiagram: {
-            layout: FeatureDiagramLayoutType,
-            isSelectMultipleFeatures: boolean,
-            selectedFeatureNames: string[],
-            collapsedFeatureNames: string[]
-        },
-        overlay: OverlayType,
-        overlayProps: OverlayProps
-    }
+    overlay: OverlayType,
+    overlayProps: OverlayProps
+    user?: User,
+    collaborativeSessions: CollaborativeSession[],
+    artifactPaths: ArtifactPath[],
+    currentArtifactPath?: ArtifactPath
+    // TODO: allow split screen
 };
 
 export const initialState: State = {
-    server: {
-        users: [],
-        featureModel: undefined
-    },
     settings: defaultSettings,
-    ui: {
-        featureDiagram: {
-            layout: FeatureDiagramLayoutType.verticalTree,
-            isSelectMultipleFeatures: false,
-            selectedFeatureNames: [],
-            collapsedFeatureNames: []
-        },
-        overlay: OverlayType.none,
-        overlayProps: {}
-    }
+    overlay: OverlayType.none,
+    overlayProps: {},
+    user: undefined,
+    collaborativeSessions: [],
+    artifactPaths: [],
+    currentArtifactPath: undefined
 };
 
 export type OnSelectFeatureFunction = (payload: {featureName: string}) => void;

@@ -61,8 +61,23 @@ export interface FormatOptions {
     quality?: number
 };
 
+export interface ArtifactPath {
+    project: string,
+    artifact: string
+};
+
+export function artifactPathToString(artifactPath: ArtifactPath): string {
+    return artifactPath ? `${artifactPath.project}::${artifactPath.artifact}` : `(unknown artifact)`;
+}
+
+export function isArtifactPathEqual(a?: ArtifactPath, b?: ArtifactPath): boolean {
+    return typeof a !== 'undefined' && typeof b !== 'undefined' &&
+        a.project === b.project && a.artifact === b.artifact;
+}
+
 export interface Message {
     type: MessageType,
+    artifactPath?: ArtifactPath,
     [x: string]: any
 };
 
