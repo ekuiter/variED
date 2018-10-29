@@ -58,18 +58,19 @@ TODO: As of now, the client is oblivious to the project-artifact-organization on
 the server and therefore incompatible. This is about to be fixed. The following
 would be desirable:
 
-The client knows as which user it is registered, in which collaborative sessions
-it participates, as well as the associated state context and other participating
-users. It receives all messages related to any collaborative session it
-participates in. (Usually, the client is expected to only participate in one
-particular collaborative session at a time. But this leaves us freedom for later
-extensions, such as editing feature models and configurations in concert.)
+The client knows as which user it is registered, which artifacts are available,
+in which collaborative sessions it participates, as well as the associated state
+context and other participating users. It receives all messages related to any
+collaborative session it participates in. (Usually, the client is expected to
+only participate in one particular collaborative session at a time. But this
+leaves us freedom for later extensions, such as editing feature models and
+configurations in concert.)
 
 ### Messages
 
 Every message is of the form `{"type": "...", ...}` where type is a string
 denoting the message's type (discussed below). Messages that refer to a specific
-artifact contain the *artifact* property, which is a string of form
+artifact contain the *artifactPath* property, which is a string of form
 *project::artifact*. If the client wants to send a message regarding a specific
 artifact, it first has to join its collaborative session.
 
@@ -103,7 +104,7 @@ are not internationalized or formatted (see issue tracker).
 #### JOIN
 
 ```
-{type: "JOIN", artifact: "project::artifact"}
+{type: "JOIN", artifactPath: "project::artifact"}
 ```
 
 An en-/decodable message. A client sends this to the server to join the given
@@ -115,7 +116,7 @@ artifact's collaborative session. The server sends this to inform
 #### LEAVE
 
 ```
-{type: "JOIN", artifact: "project::artifact"}
+{type: "JOIN", artifactPath: "project::artifact"}
 ```
 
 An en-/decodable message. A client sends this to the server to leave the given
@@ -125,7 +126,7 @@ participants that the client left.
 #### UNDO
 
 ```
-{type: "UNDO", artifact: "project::artifact"}
+{type: "UNDO", artifactPath: "project::artifact"}
 ```
 
 An applicable message. A client sends this to the server to undo an operation
@@ -137,7 +138,7 @@ Returns the result of the undone state change (e.g., an updated feature model).
 #### REDO
 
 ```
-{type: "REDO", artifact: "project::artifact"}
+{type: "REDO", artifactPath: "project::artifact"}
 ```
 
 An applicable message. A client sends this to the server to redo an operation
@@ -149,7 +150,7 @@ Returns the result of the redone state change (e.g., an updated feature model).
 #### BATCH
 
 ```
-{type: "BATCH", artifact: "project::artifact", messages: [{"type": "...", ...}, ...]}
+{type: "BATCH", artifactPath: "project::artifact", messages: [{"type": "...", ...}, ...]}
 ```
 
 An undoable message. A client sends this to the server to perform multiple
@@ -167,7 +168,7 @@ assumed to include all relevant information of the previous state changes).
 #### FEATURE_DIAGRAM_FEATURE_MODEL
 
 ```
-{"type": "FEATURE_DIAGRAM_FEATURE_MODEL", "artifact": "project::artifact", "featureModel": ...}
+{"type": "FEATURE_DIAGRAM_FEATURE_MODEL", "artifactPath": "project::artifact", "featureModel": ...}
 ```
 
 An encodable message. A representation of a feature model artifact. The server
@@ -181,7 +182,7 @@ change in the future as well, if there is a more suitable representation.
 #### FEATURE_DIAGRAM_FEATURE_ADD_BELOW
 
 ```
-{"type": "FEATURE_DIAGRAM_FEATURE_ADD_BELOW", "artifact": "project::artifact", belowFeature: "feature"}
+{"type": "FEATURE_DIAGRAM_FEATURE_ADD_BELOW", "artifactPath": "project::artifact", belowFeature: "feature"}
 ```
 
 An undoable message. Adds a new feature below the specified feature.
@@ -191,7 +192,7 @@ Returns the updated feature model.
 #### FEATURE_DIAGRAM_FEATURE_ADD_ABOVE
 
 ```
-{"type": "FEATURE_DIAGRAM_FEATURE_ADD_ABOVE", "artifact": "project::artifact", aboveFeatures: ["feature", ...]}
+{"type": "FEATURE_DIAGRAM_FEATURE_ADD_ABOVE", "artifactPath": "project::artifact", aboveFeatures: ["feature", ...]}
 ```
 
 An undoable message. Adds a new feature above the specified features.
@@ -201,7 +202,7 @@ Returns the updated feature model.
 #### FEATURE_DIAGRAM_FEATURE_REMOVE
 
 ```
-{"type": "FEATURE_DIAGRAM_FEATURE_REMOVE", "artifact": "project::artifact", feature: "feature"}
+{"type": "FEATURE_DIAGRAM_FEATURE_REMOVE", "artifactPath": "project::artifact", feature: "feature"}
 ```
 
 A batch undoable message. Removes the specified feature.
@@ -211,7 +212,7 @@ Returns the updated feature model.
 #### FEATURE_DIAGRAM_FEATURE_REMOVE_BELOW
 
 ```
-{"type": "FEATURE_DIAGRAM_FEATURE_REMOVE_BELOW", "artifact": "project::artifact", feature: "feature"}
+{"type": "FEATURE_DIAGRAM_FEATURE_REMOVE_BELOW", "artifactPath": "project::artifact", feature: "feature"}
 ```
 
 A batch undoable message. Removes the specified feature and all features below.
@@ -221,7 +222,7 @@ Returns the updated feature model.
 #### FEATURE_DIAGRAM_FEATURE_RENAME
 
 ```
-{"type": "FEATURE_DIAGRAM_FEATURE_RENAME", "artifact": "project::artifact", oldFeature: "featureA", newFeature: "featureB"}
+{"type": "FEATURE_DIAGRAM_FEATURE_RENAME", "artifactPath": "project::artifact", oldFeature: "featureA", newFeature: "featureB"}
 ```
 
 A encodable and undoable message. Renames the specified feature.
@@ -232,7 +233,7 @@ describing the rename operation.
 #### FEATURE_DIAGRAM_FEATURE_SET_DESCRIPTION
 
 ```
-{"type": "FEATURE_DIAGRAM_FEATURE_SET_DESCRIPTION", "artifact": "project::artifact", feature: "feature", description: "..."}
+{"type": "FEATURE_DIAGRAM_FEATURE_SET_DESCRIPTION", "artifactPath": "project::artifact", feature: "feature", description: "..."}
 ```
 
 An undoable message. Sets the specified feature's description.
@@ -242,7 +243,7 @@ Returns the updated feature model.
 #### FEATURE_DIAGRAM_FEATURE_SET_PROPERTY
 
 ```
-{"type": "FEATURE_DIAGRAM_FEATURE_SET_PROPERTY", "artifact": "project::artifact", feature: "feature", property: "...", value: "..."}
+{"type": "FEATURE_DIAGRAM_FEATURE_SET_PROPERTY", "artifactPath": "project::artifact", feature: "feature", property: "...", value: "..."}
 ```
 
 A batch undoable message. Sets a property of the specified feature to a given

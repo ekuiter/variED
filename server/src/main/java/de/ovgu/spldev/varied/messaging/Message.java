@@ -55,24 +55,24 @@ abstract public class Message {
     /**
      * every message may carry a path to the concerned artifact
      */
-    private Artifact.Path artifact;
+    private Artifact.Path artifactPath;
 
     public boolean isType(Api.TypeEnum typeEnum) {
         return type.typeEnum == typeEnum;
     }
 
     public Artifact.Path getArtifactPath() {
-        return artifact;
+        return artifactPath;
     }
 
     Message(Type type, Artifact.Path artifactPath) {
         this.type = type;
-        this.artifact = artifactPath;
+        this.artifactPath = artifactPath;
     }
 
     Message(Api.TypeEnum typeEnum, Artifact.Path artifactPath) {
         this.type = new Type(typeEnum);
-        this.artifact = artifactPath;
+        this.artifactPath = artifactPath;
     }
 
     public String toString() {

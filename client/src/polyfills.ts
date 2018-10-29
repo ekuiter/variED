@@ -8,12 +8,12 @@ import 'blob-polyfill';
 import 'blueimp-canvas-to-blob';
 
 if (!Object.values)
-    Object.values = function<T>(obj: {[s: string]: T} |  ArrayLike<T>) {
+    Object.values = function<T>(obj: {[x: string]: T} |  ArrayLike<T>) {
         return Object.keys(obj).map(key => obj[key]);
     };
 
 if (!Object.entries)
-    Object.entries = function<T>(obj: {[s: string]: T} | ArrayLike<T>) {
+    Object.entries = function<T>(obj: {[x: string]: T} | ArrayLike<T>) {
         var ownProps = Object.keys(obj),
             i = ownProps.length,
             resArray = new Array(i);
