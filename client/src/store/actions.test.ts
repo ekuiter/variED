@@ -8,8 +8,9 @@ jest.mock('../server/webSocket');
 const {propertyTypes, groupValueTypes} = constants.server;
 
 async function expectServerAction(thunk: Func, payload: any, isSendBatch = false): Promise<void> {
-    const dispatch = jest.fn(action => action);
-    const action = await thunk(dispatch);
+    const dispatch = jest.fn(action => action),
+        getState = jest.fn(() => ({})),
+        action = await thunk(dispatch, getState);
     expect(action).toEqual({type: SERVER_SEND_MESSAGE, payload});
     expect(dispatch).toBeCalledWith(action);
     expect(isSendBatch ? sendBatchMessage : sendMessage).lastCalledWith(payload);

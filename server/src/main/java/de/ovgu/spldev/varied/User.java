@@ -57,7 +57,7 @@ public class User {
 
         Artifact artifact = ProjectManager.getInstance().getArtifact(message.getArtifactPath());
         if (artifact == null)
-            throw new RuntimeException("no artifact found for given path");
+            throw new RuntimeException("no artifact found for path " + message.getArtifactPath());
         CollaborativeSession collaborativeSession = artifact.getCollaborativeSession();
 
         if (message.isType(Api.TypeEnum.JOIN) || message.isType(Api.TypeEnum.LEAVE)) {

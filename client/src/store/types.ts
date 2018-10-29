@@ -23,10 +23,10 @@ export interface State {
     settings: Settings,
     overlay: OverlayType,
     overlayProps: OverlayProps
-    user?: User,
+    user?: User, // TODO
     collaborativeSessions: CollaborativeSession[],
-    artifactPaths: ArtifactPath[],
-    currentArtifactPath?: ArtifactPath
+    artifactPaths: ArtifactPath[], // TODO
+    currentArtifactPath?: ArtifactPath // TODO
     // TODO: allow split screen
 };
 
@@ -39,6 +39,17 @@ export const initialState: State = {
     artifactPaths: [],
     currentArtifactPath: undefined
 };
+
+export const initialFeatureDiagramCollaborativeSessionState =
+    (artifactPath: ArtifactPath, featureModel: object): FeatureDiagramCollaborativeSession => ({
+        artifactPath,
+        users: [],
+        featureModel,
+        layout: FeatureDiagramLayoutType.verticalTree,
+        isSelectMultipleFeatures: false,
+        selectedFeatureNames: [],
+        collapsedFeatureNames: []
+    });
 
 export type OnSelectFeatureFunction = (payload: {featureName: string}) => void;
 export type OnDeselectFeatureFunction = (payload: {featureName: string}) => void;
@@ -57,6 +68,8 @@ export type OnHideOverlayFunction = (payload: {overlay: OverlayType}) => void;
 export type OnFitToScreenFunction = () => void;
 export type OnSetSettingFunction = (payload: {path: string, value: any}) => void;
 export type OnResetSettingsFunction = () => void;
+export type OnJoinFunction = (payload: {artifactPath: ArtifactPath}) => Promise<void>;
+export type OnLeaveFunction = (payload: {artifactPath: ArtifactPath}) => Promise<void>;
 export type OnUndoFunction = () => Promise<void>;
 export type OnRedoFunction = () => Promise<void>;
 export type OnAddFeatureBelowFunction = (payload: {belowFeatureName: string}) => Promise<void>;
@@ -103,6 +116,8 @@ export type StateDerivedProps = Partial<{
     onFitToScreen: OnFitToScreenFunction,
     onSetSetting: OnSetSettingFunction,
     onResetSettings: OnResetSettingsFunction,
+    onJoin: OnJoinFunction,
+    onLeave: OnLeaveFunction,
     onUndo: OnUndoFunction,
     onRedo: OnRedoFunction,
     onAddFeatureBelow: OnAddFeatureBelowFunction,

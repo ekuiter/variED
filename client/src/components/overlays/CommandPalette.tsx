@@ -1,8 +1,8 @@
 import React from 'react';
 import i18n from '../../i18n';
-import {OnShowOverlayFunction, OnUndoFunction, OnRedoFunction, OnSetFeatureDiagramLayoutFunction, OnFitToScreenFunction, OnAddFeatureAboveFunction, OnAddFeatureBelowFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnRemoveFeaturesFunction, OnRemoveFeaturesBelowFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureMandatoryFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction, OnExpandAllFeaturesFunction, OnCollapseAllFeaturesFunction} from '../../store/types';
+import {OnShowOverlayFunction, OnUndoFunction, OnRedoFunction, OnSetFeatureDiagramLayoutFunction, OnFitToScreenFunction, OnAddFeatureAboveFunction, OnAddFeatureBelowFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnRemoveFeaturesFunction, OnRemoveFeaturesBelowFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureMandatoryFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction, OnExpandAllFeaturesFunction, OnCollapseAllFeaturesFunction, OnJoinFunction, OnLeaveFunction} from '../../store/types';
 import {getShortcutText} from '../../shortcuts';
-import {OverlayType, Omit, MessageType, FeatureDiagramLayoutType, FormatType} from '../../types';
+import {OverlayType, Omit, FeatureDiagramLayoutType, FormatType} from '../../types';
 import Palette, {PaletteItem, PaletteAction} from '../../helpers/Palette';
 import {canExport} from '../featureDiagram/export';
 import FeatureModel from '../../server/FeatureModel';
@@ -13,6 +13,8 @@ interface Props {
     featureModel?: FeatureModel,
     onDismiss: () => void,
     onShowOverlay: OnShowOverlayFunction,
+    onJoin: OnJoinFunction,
+    onLeave: OnLeaveFunction,
     onUndo: OnUndoFunction,
     onRedo: OnRedoFunction,
     onFitToScreen: OnFitToScreenFunction,
@@ -119,11 +121,13 @@ export default class extends React.Component<Props, State> {
             text: i18n.t('commandPalette.join'),
             action: this.actionWithArguments(
                 [
-                    () => ['FeatureModeling'],
+                    () => ['FeatureModeling'],  // TODO
                     () => ['CTV', 'FeatureIDE', 'Automotive']
                 ],
-                (project, artifact) => (window as any).app.sendMessage({type: MessageType.JOIN, artifact: `${project}::${artifact}`})) // TODO
-        }, {
+                (project, artifact) => this.props.onJoin({artifactPath: {project, artifact}}))
+        },
+        // TODO: leave
+        {
             text: i18n.t('commandPalette.settings'),
             icon: 'Settings',
             shortcut: getShortcutText('settings'),

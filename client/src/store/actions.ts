@@ -5,24 +5,29 @@
 
 import {createStandardAction, ActionType, action} from 'typesafe-actions';
 import constants from '../constants';
-import {Message, MessageType, Feature, FeatureDiagramLayoutType, OverlayType, OverlayProps} from '../types';
+import {Message, MessageType, Feature, FeatureDiagramLayoutType, OverlayType, OverlayProps, ArtifactPath} from '../types';
 import {Dispatch, AnyAction, Action as ReduxAction} from 'redux';
 import {sendMessage, sendBatchMessage} from '../server/webSocket';
 import {ThunkAction} from 'redux-thunk';
+import {State} from './types';
 
 const {propertyTypes, groupValueTypes} = constants.server;
 
 export const SERVER_SEND_MESSAGE = 'server/sendMessage';
 const SERVER_RECEIVE_MESSAGE = 'server/receiveMessage';
 
-function createServerAction<P>(fn: (payload: P) => Message | Message[]): (payload: P) => ThunkAction<Promise<ReduxAction>, any, any, any> {
+function createServerAction<P>(fn: (payload: P) => Message | Message[]): (payload: P) => ThunkAction<Promise<ReduxAction>, State, any, any> {
     return (payload: P) => {
-        return async (dispatch: Dispatch<AnyAction>) => {
-            const messageOrMessages = fn(payload);
+        return async (dispatch: Dispatch<AnyAction>, getState: () => State) => {
+            const messageOrMessages = fn(payload),
+                artifactPath = getState().currentArtifactPath;
             if (Array.isArray(messageOrMessages))
-                await sendBatchMessage(messageOrMessages);
+                await sendBatchMessage(messageOrMessages.map(message =>
+                    artifactPath || message.artifactPath ? {artifactPath, ...message} : message));
             else
-                await sendMessage(messageOrMessages);
+                await sendMessage(artifactPath || messageOrMessages.artifactPath
+                    ? {artifactPath, ...messageOrMessages}
+                    : messageOrMessages);
             return dispatch(action(SERVER_SEND_MESSAGE, messageOrMessages));
         };
     };
@@ -58,6 +63,8 @@ const actions = {
     },
     server: {
         receive: createStandardAction(SERVER_RECEIVE_MESSAGE)<Message>(),
+        join: createServerAction(({artifactPath}: {artifactPath: ArtifactPath}) => ({type: MessageType.JOIN, artifactPath})),
+        leave: createServerAction(({artifactPath}: {artifactPath: ArtifactPath}) => ({type: MessageType.LEAVE, artifactPath})),
         undo: createServerAction(() => ({type: MessageType.UNDO})),
         redo: createServerAction(() => ({type: MessageType.REDO})),
         featureDiagram: {

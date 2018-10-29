@@ -8,7 +8,7 @@ import {PersonaSize} from 'office-ui-fabric-react/lib/Persona';
 import {Tooltip} from 'office-ui-fabric-react/lib/Tooltip';
 import {Settings} from '../store/settings';
 import withDimensions from '../helpers/withDimensions';
-import {User} from 'src/store/types';
+import {User} from '../store/types';
 
 interface Props {
     users: User[],

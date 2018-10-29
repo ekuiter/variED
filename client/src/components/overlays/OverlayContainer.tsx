@@ -31,6 +31,8 @@ const OverlayContainer = (props: StateDerivedProps) => (
             featureModel={props.featureModel}
             onDismiss={() => props.onHideOverlay!({overlay: OverlayType.commandPalette})}
             onShowOverlay={props.onShowOverlay!}
+            onJoin={props.onJoin!}
+            onLeave={props.onLeave!}
             onUndo={props.onUndo!}
             onRedo={props.onRedo!}
             onFitToScreen={props.onFitToScreen!}
@@ -184,6 +186,8 @@ export default connect(
     (dispatch): StateDerivedProps => ({
         onFitToScreen: () => dispatch(actions.ui.featureDiagram.fitToScreen()),
         onSetFeatureDiagramLayout: payload => dispatch(actions.ui.featureDiagram.setLayout(payload)),
+        onJoin: payload => dispatch<any>(actions.server.join(payload)),
+        onLeave: payload => dispatch<any>(actions.server.leave(payload)),
         onUndo: () => dispatch<any>(actions.server.undo({})),
         onRedo: () => dispatch<any>(actions.server.redo({})),
         onHideOverlay: payload => dispatch(actions.ui.overlay.hide(payload)),

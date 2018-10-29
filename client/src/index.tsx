@@ -14,6 +14,8 @@ import thunk from 'redux-thunk';
 import {Provider} from 'react-redux';
 import reducer from './store/reducer';
 import {initializeIcons} from 'office-ui-fabric-react/lib/Icons';
+import actions from './store/actions';
+import {LogLevel, setLogLevel} from './helpers/logger';
 
 if (window.location.protocol !== 'http:')
     window.location.protocol = 'http:'; // TODO: hack until we support WSS
@@ -22,6 +24,9 @@ initializeIcons('/assets/');
 
 const composeEnhancers = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store = createStore(reducer, composeEnhancers(applyMiddleware(thunk)));
+
+declare var window: any;
+window.app = {setLogLevel, LogLevel, actions, store}; // for debugging purposes
 
 ReactDOM.render((
     <Provider store={store}>

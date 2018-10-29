@@ -67,7 +67,3 @@ export async function sendBatchMessage(messages: Message[]): Promise<void> {
     else
         await sendMessage({type: MessageType.BATCH, messages});
 }
-
-declare var window: any;
-window.app = window.app || {};
-window.app.sendMessage = sendMessage; // for debugging purposes

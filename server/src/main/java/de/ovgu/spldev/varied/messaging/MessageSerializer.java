@@ -33,7 +33,6 @@ public class MessageSerializer {
     private static Gson gson = new GsonBuilder()
             .registerTypeAdapterFactory(runtimeTypeAdapterFactory)
             .registerTypeAdapter(Message.Type.class, new MessageTypeTypeAdapter())
-            .registerTypeAdapter(Artifact.Path.class, new ArtifactPathTypeAdapter())
             .registerTypeAdapter(IFeatureModel.class, new FeatureModelSerializer())
             .create();
 
@@ -78,16 +77,6 @@ public class MessageSerializer {
 
         public Message.Type deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             return new Message.Type(json.getAsJsonPrimitive().getAsString());
-        }
-    }
-
-    private static class ArtifactPathTypeAdapter implements JsonSerializer<Artifact.Path>, JsonDeserializer<Artifact.Path> {
-        public JsonElement serialize(Artifact.Path src, Type typeOfSrc, JsonSerializationContext context) {
-            return new JsonPrimitive(src.toString());
-        }
-
-        public Artifact.Path deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-            return new Artifact.Path(json.getAsJsonPrimitive().getAsString());
         }
     }
 }

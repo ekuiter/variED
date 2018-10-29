@@ -5,7 +5,6 @@ import de.ovgu.spldev.varied.util.FeatureModelUtils;
 import de.ovgu.spldev.varied.util.StringUtils;
 
 import java.util.Objects;
-import java.util.regex.Pattern;
 
 public abstract class Artifact {
     private String name;
@@ -15,8 +14,6 @@ public abstract class Artifact {
         Objects.requireNonNull(project, "no project given");
         if (!StringUtils.isPresent(name))
             throw new RuntimeException("no name given for artifact");
-        if (name.contains(Path.SEPARATOR))
-            throw new RuntimeException(Path.SEPARATOR + " not allowed in artifact name");
         this.name = name;
         this.project = project;
     }
@@ -33,32 +30,28 @@ public abstract class Artifact {
 
     public static class Path {
         static String SEPARATOR = "::";
-        String projectName;
-        String artifactName;
-
-        public Path(String artifactPath) {
-            String parts[] = artifactPath.split(Pattern.quote(SEPARATOR));
-            if (parts.length != 2)
-                throw new RuntimeException("invalid artifact path given");
-            this.projectName = parts[0];
-            this.artifactName = parts[1];
-        }
+        String project;
+        String artifact;
 
         Path(String projectName, String artifactName) {
-            this.projectName = projectName;
-            this.artifactName = artifactName;
+            this.project = projectName;
+            this.artifact = artifactName;
         }
 
         String getProjectName() {
-            return projectName;
+            if (project == null)
+                throw new RuntimeException("no project given in artifact path");
+            return project;
         }
 
         String getArtifactName() {
-            return artifactName;
+            if (artifact == null)
+                throw new RuntimeException("no artifact given in artifact path");
+            return artifact;
         }
 
         public String toString() {
-            return projectName + SEPARATOR + artifactName;
+            return getProjectName() + SEPARATOR + getArtifactName();
         }
     }
 

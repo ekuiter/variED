@@ -86,9 +86,4 @@ export const setLogLevel = (_logLevel = defaultLogLevel) => {
     logger.logTagged({tag: 'logger'}, () => `set log level to ${LogLevel[logLevel]}`);
 };
 
-declare var window: any;
-window.app = window.app || {};
-window.app.setLogLevel = setLogLevel;
-window.app.LogLevel = LogLevel;
-
 export default logger;

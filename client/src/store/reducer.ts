@@ -7,16 +7,17 @@
 // @ts-ignore: the type definitions for reduce-reducers are incorrect
 import reduceReducers from 'reduce-reducers';
 import {defaultSettings, getNewSettings} from './settings';
-import {OverlayType, isMessageType, MessageType, isFloatingFeatureOverlay, OverlayProps, isArtifactPathEqual, ArtifactPath} from '../types';
+import {OverlayType, isMessageType, MessageType, isFloatingFeatureOverlay, OverlayProps, isArtifactPathEqual, ArtifactPath, Message} from '../types';
 import {setAdd, setRemove, SetOperationFunction, arrayReplace} from '../helpers/reducer';
 import {getFeatureModel, isEditingFeatureModel, getCollaborativeSession, getCurrentFeatureModel, getCurrentCollaborativeSession, isFeatureDiagramCollaborativeSession} from './selectors';
 import {getViewportWidth, getViewportHeight} from '../helpers/withDimensions';
-import actions, {Action} from './actions';
+import actions, {Action, SERVER_SEND_MESSAGE} from './actions';
 import {getType, isActionOf, ActionType} from 'typesafe-actions';
-import {State, initialState, CollaborativeSession, FeatureDiagramCollaborativeSession} from './types';
+import {State, initialState, CollaborativeSession, FeatureDiagramCollaborativeSession, initialFeatureDiagramCollaborativeSessionState} from './types';
 import objectPath from 'object-path';
 import objectPathImmutable from 'object-path-immutable';
 import logger, {setLogLevel, LogLevel, defaultLogLevel} from '../helpers/logger';
+import {AnyAction} from 'redux';
 
 function getNewState(state: State, ...args: any[]): State {
     if (args.length % 2 == 1)
@@ -95,7 +96,28 @@ function getFeatureNamesBelowWithActualChildren(state: State, artifactPath: Arti
         .reduce((acc, children) => acc.concat(children), []);
 }
 
-function serverReducer(state: State, action: Action): State {
+function serverSendReducer(state: State, action: AnyAction): State {
+    if (action.type === SERVER_SEND_MESSAGE) {
+        const messages: Message[] = Array.isArray(action.payload) ? action.payload : [action.payload];
+        return messages.reduce((state, message) => {
+            switch (message.type) {
+                case MessageType.LEAVE:
+                    // TODO: we just assume that leaving succeeds here. It would be better to wait for the server's
+                    // acknowledgement (and use promises in actions.ts to dispatch this update), see issue #9.
+                    // Also right now, when the server kicks us from a session, we do not handle this.
+                    return getNewState(state, 'collaborativeSessions',
+                        state.collaborativeSessions.filter(collaborativeSession =>
+                            !isArtifactPathEqual(collaborativeSession.artifactPath, message.artifactPath)));
+
+                default:
+                    return state;
+            }
+        }, state);
+    }
+    return state;
+}
+
+function serverReceiveReducer(state: State, action: Action): State {
     if (isActionOf(actions.server.receive, action) && isMessageType(action.payload.type)) {
         switch (action.payload.type) {
             case MessageType.ERROR:
@@ -114,8 +136,13 @@ function serverReducer(state: State, action: Action): State {
 
             case MessageType.FEATURE_DIAGRAM_FEATURE_MODEL:
                 state = getNewState(state, 'collaborativeSessions',
-                    getNewCollaborativeSessions(state, action.payload.artifactPath!, (collaborativeSession: CollaborativeSession) =>
-                        ({...collaborativeSession, featureModel: action.payload.featureModel})));
+                    state.collaborativeSessions.find(collaborativeSession =>
+                        isArtifactPathEqual(collaborativeSession.artifactPath, action.payload.artifactPath!))
+                        ? getNewCollaborativeSessions(state, action.payload.artifactPath!,
+                            (collaborativeSession: CollaborativeSession) =>
+                                ({...collaborativeSession, featureModel: action.payload.featureModel}))
+                        : [...state.collaborativeSessions,
+                            initialFeatureDiagramCollaborativeSessionState(action.payload.artifactPath!, action.payload.featureModel)]);
                 state = removeObsoleteFeaturesFromFeatureList(state, action.payload.artifactPath!, 'collapsedFeatureNames');
                 // TODO: warn user that selection change
                 state = removeObsoleteFeaturesFromFeatureList(state, action.payload.artifactPath!, 'selectedFeatureNames');
@@ -298,7 +325,8 @@ export default <(state?: State, action?: Action) => State>
             logger.infoTagged({tag: 'redux'}, () => action);
             return state;
         },
-        serverReducer,
+        serverSendReducer,
+        serverReceiveReducer,
         settingsReducer,
         uiReducer,
         initialState);
