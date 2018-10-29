@@ -16,6 +16,12 @@ public class ProjectManager {
         addProject(project);
     }
 
+    {
+        Project project = new Project("Isolated Project");
+        project.addArtifact(new Artifact.FeatureModel(project, "Empty feature model", "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><featureModel chosenLayoutAlgorithm=\"1\"><struct><and mandatory=\"true\" name=\"Root\"></and></struct><constraints></constraints><comments/><featureOrder userDefined=\"false\"/></featureModel>"));
+        addProject(project);
+    }
+
     private ProjectManager() {
     }
 

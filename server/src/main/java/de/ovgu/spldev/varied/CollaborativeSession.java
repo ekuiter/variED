@@ -24,9 +24,9 @@ public class CollaborativeSession {
     public void join(User newUser) {
         if (!users.add(newUser))
             throw new RuntimeException("user already joined");
+        stateContext.sendInitialState(newUser);
         unicast(newUser, artifactPath -> new Api.Join(stateContext.getArtifactPath(), artifactPath), user -> user != newUser);
         broadcast(new Api.Join(stateContext.getArtifactPath(), newUser), user -> user != newUser);
-        stateContext.sendInitialState(newUser);
     }
 
     public void leave(User oldUser) {

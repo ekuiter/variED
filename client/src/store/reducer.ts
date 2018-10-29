@@ -133,12 +133,12 @@ function serverReceiveReducer(state: State, action: Action): State {
             case MessageType.JOIN:
                 return getNewState(state, 'collaborativeSessions',
                     getNewCollaborativeSessions(state, action.payload.artifactPath!, (collaborativeSession: CollaborativeSession) =>
-                        ({...collaborativeSession, users: setAdd(collaborativeSession.users, action.payload.user)})));
+                        ({...collaborativeSession, users: setAdd(collaborativeSession.users, action.payload.user, user => user.name)})));
 
             case MessageType.LEAVE:
                 return getNewState(state, 'collaborativeSessions',
                     getNewCollaborativeSessions(state, action.payload.artifactPath!, (collaborativeSession: CollaborativeSession) =>
-                        ({...collaborativeSession, users: setRemove(collaborativeSession.users, action.payload.user)})));
+                        ({...collaborativeSession, users: setRemove(collaborativeSession.users, action.payload.user, user => user.name)})));
 
             case MessageType.FEATURE_DIAGRAM_FEATURE_MODEL:
                 if (state.collaborativeSessions.find(collaborativeSession =>
@@ -185,6 +185,7 @@ function settingsReducer(state: State, action: Action): State {
             return getNewState(state, 'settings', getNewSettings(state.settings, action.payload.path, action.payload.value));
 
         case getType(actions.settings.reset):
+            setLogLevel(defaultLogLevel);
             return getNewState(state, 'settings', defaultSettings);
     }
     return state;

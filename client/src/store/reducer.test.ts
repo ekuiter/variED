@@ -280,22 +280,22 @@ describe('reducer', () => {
         });
     
         it('lets users join', () => {
-            const state = reducer(featureModelState(), actions.server.receive({type: MessageType.JOIN, artifactPath, user: 'some user'}));
-            expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).users).toContain('some user');
+            const state = reducer(featureModelState(), actions.server.receive({type: MessageType.JOIN, artifactPath, user: {name: 'some user'}}));
+            expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).users).toContainEqual({name: 'some user'});
         });
     
         it('does not let users join multiple times', () => {
-            let state = reducer(featureModelState(), actions.server.receive({type: MessageType.JOIN, artifactPath, user: 'some user'}));
+            let state = reducer(featureModelState(), actions.server.receive({type: MessageType.JOIN, artifactPath, user: {name: 'some user'}}));
             expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).users).toHaveLength(1);
-            state = reducer(state, actions.server.receive({type: MessageType.JOIN, artifactPath, user: 'some user'}));
+            state = reducer(state, actions.server.receive({type: MessageType.JOIN, artifactPath, user: {name: 'some user'}}));
             expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).users).toHaveLength(1);
         });
     
         it('lets users leave', () => {
-            let state = reducer(featureModelState(), actions.server.receive({type: MessageType.JOIN, artifactPath, user: 'some user'}));
-            expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).users).toContain('some user');
-            state = reducer(featureModelState(), actions.server.receive({type: MessageType.LEAVE, artifactPath, user: 'some user'}));
-            expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).users).not.toContain('some user');
+            let state = reducer(featureModelState(), actions.server.receive({type: MessageType.JOIN, artifactPath, user: {name: 'some user'}}));
+            expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).users).toContainEqual({name: 'some user'});
+            state = reducer(featureModelState(), actions.server.receive({type: MessageType.LEAVE, artifactPath, user: {name: 'some user'}}));
+            expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).users).not.toContainEqual({name: 'some user'});
         });
     
         it('updates the feature model', () => {

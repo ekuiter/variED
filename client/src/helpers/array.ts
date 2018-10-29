@@ -1,24 +1,17 @@
 export type SetOperationFunction<T> = (array: T[], elementOrElements: T | T[]) => T[];
 
 /**
- * Converts an array into a set by strict equality comparison.
- * @param array an array of elements
- */
-export function arrayUnique<T>(array: T[]) {
-    return array.filter((element, idx) => array.indexOf(element) === idx);
-}
-
-/**
  * Adds an element or an array of elements to a set.
  * Elements are kept unique with strict equality comparison.
  * @param set a set of elements
  * @param elementOrElements an element or an array of elements to be added
+ * @param keyFn extracts a key, defaults to strict equality comparison
  */
-export function setAdd<T>(set: T[], elementOrElements: T | T[]): T[] {
+export function setAdd<T>(set: T[], elementOrElements: T | T[], keyFn: (element: T) => any = element => element): T[] {
     let elements: T[];
     elements = Array.isArray(elementOrElements) ? elementOrElements : [elementOrElements];
-    elements = arrayUnique(elements);
-    return set.filter(element => !elements.includes(element)).concat(elements);
+    elements = arrayUnique(elements, keyFn);
+    return setRemove(set, elements, keyFn).concat(elements);
 }
 
 /**
@@ -26,11 +19,20 @@ export function setAdd<T>(set: T[], elementOrElements: T | T[]): T[] {
  * Elements are kept unique with strict equality comparison.
  * @param set a set of elements
  * @param elementOrElements an element or an array of elements to be removed
+ * @param keyFn extracts a key, defaults to strict equality comparison
  */
-export function setRemove<T>(set: T[], elementOrElements: T | T[]): T[] {
-    let elements: T[];
-    elements = Array.isArray(elementOrElements) ? elementOrElements : [elementOrElements];
-    return set.filter(element => !elements.includes(element));
+export function setRemove<T>(set: T[], elementOrElements: T | T[], keyFn: (element: T) => any = element => element): T[] {
+    let elements: T[] = Array.isArray(elementOrElements) ? elementOrElements : [elementOrElements];
+    return set.filter(a => !elements.find(b => keyFn(a) === keyFn(b)));
+}
+
+/**
+ * Converts an array into a set.
+ * @param array an array of elements
+ * @param keyFn extracts a key, defaults to strict equality comparison
+ */
+export function arrayUnique<T>(array: T[], keyFn: (element: T) => any = element => element) {
+    return array.reduce((acc, val) => [...acc.filter(element => keyFn(element) !== keyFn(val)), val], []);
 }
 
 /**

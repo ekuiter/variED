@@ -26,7 +26,7 @@ export interface State {
     user?: User, // TODO
     collaborativeSessions: CollaborativeSession[],
     artifactPaths: ArtifactPath[], // TODO
-    currentArtifactPath?: ArtifactPath // TODO
+    currentArtifactPath?: ArtifactPath
     // TODO: allow split screen
 };
 

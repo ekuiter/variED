@@ -27,28 +27,28 @@ const CommandBarContainer = (props: StateDerivedProps) => (
                     }
                 }]
                 : [],
-            {
-                key: 'edit',
-                text: i18n.t('commands.edit'),
-                subMenuProps: {
-                    items: [
-                        commands.undo(props.onUndo!),
-                        commands.redo(props.onRedo!),
-                        ...props.featureModel
-                            ? [makeDivider(),
-                                commands.featureDiagram.feature.selectAll(props.onSelectAllFeatures!),
-                                commands.featureDiagram.feature.deselectAll(props.onDeselectAllFeatures!),
-                                commands.featureDiagram.feature.selection(
-                                    props.isSelectMultipleFeatures!, props.onSetSelectMultipleFeatures!, props.selectedFeatureNames!,
-                                    props.onDeselectAllFeatures!, props.onCollapseFeatures!, props.onExpandFeatures!,
-                                    props.onCollapseFeaturesBelow!, props.onExpandFeaturesBelow!, props.onAddFeatureAbove!,
-                                    props.onRemoveFeatures!, props.onRemoveFeaturesBelow!, props.onSetFeatureAbstract!,
-                                    props.onSetFeatureHidden!, props.onSetFeatureMandatory!, props.onSetFeatureAnd!,
-                                    props.onSetFeatureOr!, props.onSetFeatureAlternative!, props.featureModel!)]
-                            : []
-                    ]
-                }
-            },
+            ...props.featureModel
+                ? [{
+                    key: 'edit',
+                    text: i18n.t('commands.edit'),
+                    subMenuProps: {
+                        items: [
+                            commands.undo(props.onUndo!),
+                            commands.redo(props.onRedo!),
+                            makeDivider(),
+                            commands.featureDiagram.feature.selectAll(props.onSelectAllFeatures!),
+                            commands.featureDiagram.feature.deselectAll(props.onDeselectAllFeatures!),
+                            commands.featureDiagram.feature.selection(
+                                props.isSelectMultipleFeatures!, props.onSetSelectMultipleFeatures!, props.selectedFeatureNames!,
+                                props.onDeselectAllFeatures!, props.onCollapseFeatures!, props.onExpandFeatures!,
+                                props.onCollapseFeaturesBelow!, props.onExpandFeaturesBelow!, props.onAddFeatureAbove!,
+                                props.onRemoveFeatures!, props.onRemoveFeaturesBelow!, props.onSetFeatureAbstract!,
+                                props.onSetFeatureHidden!, props.onSetFeatureMandatory!, props.onSetFeatureAnd!,
+                                props.onSetFeatureOr!, props.onSetFeatureAlternative!, props.featureModel!)
+                        ]
+                    }
+                }]
+                : [],
             ...props.featureModel
                 ? [{
                     key: 'view',

@@ -1,5 +1,6 @@
 package de.ovgu.spldev.varied.messaging;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.typeadapters.RuntimeTypeAdapterFactory;
 import de.ovgu.spldev.varied.Artifact;
 import de.ovgu.spldev.varied.StateContext;
@@ -50,11 +51,13 @@ abstract public class Message {
     /**
      * every message stores its type for serialization
      */
+    @Expose
     private Type type;
 
     /**
      * every message may carry a path to the concerned artifact
      */
+    @Expose
     private Artifact.Path artifactPath;
 
     public boolean isType(Api.TypeEnum typeEnum) {

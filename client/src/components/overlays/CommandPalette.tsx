@@ -122,10 +122,11 @@ export default class extends React.Component<Props, State> {
     commands: PaletteItem[] = [
         {
             text: i18n.t('commandPalette.join'),
+            disabled: () => false, // TODO
             action: this.actionWithArguments(
                 [
-                    () => ['FeatureModeling'],  // TODO
-                    () => ['CTV', 'FeatureIDE', 'Automotive']
+                    () => ['FeatureModeling', 'Isolated Project'],  // TODO
+                    () => ['CTV', 'FeatureIDE', 'Automotive', 'Empty feature model']
                 ],
                 (project, artifact) => {
                     if (this.props.collaborativeSessions.find(collaborativeSession =>
@@ -137,6 +138,7 @@ export default class extends React.Component<Props, State> {
         },
         {
             text: i18n.t('commandPalette.leave'),
+            disabled: () => this.props.collaborativeSessions.length === 0,
             action: this.actionWithArguments(
                 [
                     () => arrayUnique(

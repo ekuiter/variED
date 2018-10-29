@@ -1,5 +1,6 @@
 package de.ovgu.spldev.varied;
 
+import com.google.gson.annotations.Expose;
 import de.ovgu.featureide.fm.core.base.IFeatureModel;
 import de.ovgu.spldev.varied.util.FeatureModelUtils;
 import de.ovgu.spldev.varied.util.StringUtils;
@@ -30,7 +31,11 @@ public abstract class Artifact {
 
     public static class Path {
         static String SEPARATOR = "::";
+
+        @Expose
         String project;
+
+        @Expose
         String artifact;
 
         Path(String projectName, String artifactName) {

@@ -1,5 +1,6 @@
 package de.ovgu.spldev.varied.messaging;
 
+import com.google.gson.annotations.Expose;
 import de.ovgu.featureide.fm.core.base.IFeatureModel;
 import de.ovgu.spldev.varied.Artifact;
 import de.ovgu.spldev.varied.StateContext;
@@ -78,6 +79,7 @@ public class Api {
     }
 
     public static class Error extends Message implements Message.IEncodable {
+        @Expose
         String error;
 
         public Error(Throwable throwable) {
@@ -88,20 +90,22 @@ public class Api {
     }
 
     public static class Join extends Message implements Message.IEncodable, Message.IDecodable {
-        private String user;
+        @Expose
+        private User user;
 
         public Join(Artifact.Path artifactPath, User user) {
             super(TypeEnum.JOIN, artifactPath);
-            this.user = user.getName();
+            this.user = user;
         }
     }
 
     public static class Leave extends Message implements Message.IEncodable, Message.IDecodable {
-        private String user;
+        @Expose
+        private User user;
 
         public Leave(Artifact.Path artifactPath, User user) {
             super(TypeEnum.LEAVE, artifactPath);
-            this.user = user.getName();
+            this.user = user;
         }
     }
 
@@ -138,6 +142,7 @@ public class Api {
     }
 
     public static class Batch extends Message implements Message.IUndoable {
+        @Expose
         private Message[] messages;
 
         public Batch(Artifact.Path artifactPath, Message[] messages) {
@@ -177,6 +182,7 @@ public class Api {
     }
 
     public static class FeatureDiagramFeatureModel extends Message implements Message.IEncodable {
+        @Expose
         private IFeatureModel featureModel;
 
         public FeatureDiagramFeatureModel(Artifact.Path artifactPath, IFeatureModel featureModel) {
@@ -186,6 +192,7 @@ public class Api {
     }
 
     public static class FeatureDiagramFeatureAddBelow extends Message implements Message.IUndoable {
+        @Expose
         private String belowFeature;
 
         public FeatureDiagramFeatureAddBelow(Artifact.Path artifactPath, String belowFeature) {
@@ -199,6 +206,7 @@ public class Api {
     }
 
     public static class FeatureDiagramFeatureAddAbove extends Message implements Message.IUndoable {
+        @Expose
         private String[] aboveFeatures;
 
         public FeatureDiagramFeatureAddAbove(Artifact.Path artifactPath, String[] aboveFeatures) {
@@ -212,6 +220,7 @@ public class Api {
     }
 
     public static class FeatureDiagramFeatureRemove extends Message implements Message.IBatchUndoable {
+        @Expose
         private String feature;
 
         public FeatureDiagramFeatureRemove(Artifact.Path artifactPath, String feature) {
@@ -225,6 +234,7 @@ public class Api {
     }
 
     public static class FeatureDiagramFeatureRemoveBelow extends Message implements Message.IBatchUndoable {
+        @Expose
         private String feature;
 
         public FeatureDiagramFeatureRemoveBelow(Artifact.Path artifactPath, String feature) {
@@ -250,6 +260,7 @@ public class Api {
     }
 
     public static class FeatureDiagramFeatureRename extends Message implements Message.IEncodable, Message.IUndoable {
+        @Expose
         private String oldFeature, newFeature;
 
         public FeatureDiagramFeatureRename(Artifact.Path artifactPath, String oldFeature, String newFeature) {
@@ -264,6 +275,7 @@ public class Api {
     }
 
     public static class FeatureDiagramFeatureSetDescription extends Message implements Message.IUndoable {
+        @Expose
         private String feature, description;
 
         public FeatureDiagramFeatureSetDescription(Artifact.Path artifactPath, String feature, String description) {
@@ -278,6 +290,7 @@ public class Api {
     }
 
     public static class FeatureDiagramFeatureSetProperty extends Message implements Message.IBatchUndoable {
+        @Expose
         private String feature, property, value;
 
         public FeatureDiagramFeatureSetProperty(Artifact.Path artifactPath, String feature, String property, String value) {

@@ -1,5 +1,6 @@
 package de.ovgu.spldev.varied;
 
+import com.google.gson.annotations.Expose;
 import de.ovgu.spldev.varied.messaging.Api;
 import de.ovgu.spldev.varied.messaging.Message;
 import me.atrox.haikunator.Haikunator;
@@ -10,7 +11,9 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 public class User {
+    @Expose
     private String name;
+
     private WebSocket webSocket;
     private static Haikunator haikunator = new HaikunatorBuilder().setDelimiter(" ").setTokenLength(0).build();
     private ArrayList<CollaborativeSession> collaborativeSessions = new ArrayList<>();

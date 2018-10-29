@@ -31,6 +31,7 @@ public class MessageSerializer {
      * GSON facilitates JSON serialization
      */
     private static Gson gson = new GsonBuilder()
+            .excludeFieldsWithoutExposeAnnotation()
             .registerTypeAdapterFactory(runtimeTypeAdapterFactory)
             .registerTypeAdapter(Message.Type.class, new MessageTypeTypeAdapter())
             .registerTypeAdapter(IFeatureModel.class, new FeatureModelSerializer())
