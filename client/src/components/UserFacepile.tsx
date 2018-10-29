@@ -8,9 +8,10 @@ import {PersonaSize} from 'office-ui-fabric-react/lib/Persona';
 import {Tooltip} from 'office-ui-fabric-react/lib/Tooltip';
 import {Settings} from '../store/settings';
 import withDimensions from '../helpers/withDimensions';
+import {User} from 'src/store/types';
 
 interface Props {
-    users: string[],
+    users: User[],
     settings: Settings,
     width: number,
     height: number
@@ -31,7 +32,7 @@ class UserFacepile extends React.Component<Props, State> {
 
     render() {
         const personas = this.props.users.map(user => ({
-                personaName: user,
+                personaName: user.name,
                 onMouseMove: (e?: React.MouseEvent, persona?: IFacepilePersona) => {
                     if (typeof e === 'undefined')
                         return;

@@ -9,7 +9,7 @@ import FeatureModel from '../../server/FeatureModel';
 
 interface Props {
     isOpen: boolean,
-    featureDiagramLayout: FeatureDiagramLayoutType,
+    featureDiagramLayout?: FeatureDiagramLayoutType,
     featureModel?: FeatureModel,
     onDismiss: () => void,
     onShowOverlay: OnShowOverlayFunction,
@@ -150,7 +150,7 @@ export default class extends React.Component<Props, State> {
                 [() => Object.values(FormatType).map(format => ({text: i18n.t('commandPalette.featureDiagram', format), key: format}))],
                 formatString => {
                     const format = FormatType[formatString];
-                    if (canExport(this.props.featureDiagramLayout, format))
+                    if (canExport(this.props.featureDiagramLayout!, format))
                         this.props.onShowOverlay({overlay: OverlayType.exportDialog, overlayProps: {format}});
                 })
         }, {
@@ -165,80 +165,100 @@ export default class extends React.Component<Props, State> {
             disabled: () => !this.props.featureModel,
             action: this.action(this.props.onFitToScreen)
         },
+        
         this.featureCommand({
             text: i18n.t('commands.featureDiagram.feature.newMenu.newBelow'),
             shortcut: getShortcutText('featureDiagram.feature.new'),
             icon: 'Add'
         }, featureName => this.props.onAddFeatureBelow({belowFeatureName: featureName})),
+        
         this.featureCommand({
             text: i18n.t('commands.featureDiagram.feature.newMenu.newAbove'),
             icon: 'Add'
         }, featureName => this.props.onAddFeatureAbove({aboveFeatureNames: [featureName]})),
+        
         this.featureCommand({
             text: i18n.getFunction('commands.featureDiagram.feature.removeMenu.remove')({length: 1}),
             shortcut: getShortcutText('featureDiagram.feature.remove'),
             icon: 'Remove'
         }, featureName => this.props.onRemoveFeatures({featureNames: [featureName]})),
+        
         this.featureCommand({
             text: i18n.t('commands.featureDiagram.feature.removeMenu.removeBelow'),
             icon: 'Remove'
         }, featureName => this.props.onRemoveFeaturesBelow({featureNames: [featureName]})),
+        
         this.featureCommand({
             text: i18n.t('commandPalette.featureDiagram.feature.details'),
             shortcut: getShortcutText('featureDiagram.feature.details'),
             icon: 'Info'
         }, featureName => this.props.onShowOverlay({overlay: OverlayType.featurePanel, overlayProps: {featureName}})),
+        
         this.featureCommand({
             text: i18n.t('commandPalette.featureDiagram.feature.rename'),
             shortcut: getShortcutText('featureDiagram.feature.rename'),
             icon: 'Rename'
         }, featureName => this.props.onShowOverlay({overlay: OverlayType.featureRenameDialog, overlayProps: {featureName}})),
+        
         this.featureCommand({
             text: i18n.t('commandPalette.featureDiagram.feature.setDescription'),
             icon: 'TextDocument',
         }, featureName => this.props.onShowOverlay({overlay: OverlayType.featureSetDescriptionDialog, overlayProps: {featureName}})),
+        
         this.featureCommand(
             {text: i18n.t('commandPalette.featureDiagram.feature.propertiesMenu.abstract')},
             featureName => this.props.onSetFeatureAbstract({featureNames: [featureName], value: true})),
+        
         this.featureCommand(
             {text: i18n.t('commandPalette.featureDiagram.feature.propertiesMenu.concrete')},
             featureName => this.props.onSetFeatureAbstract({featureNames: [featureName], value: false})),
+        
         this.featureCommand(
             {text: i18n.t('commandPalette.featureDiagram.feature.propertiesMenu.hidden')},
             featureName => this.props.onSetFeatureHidden({featureNames: [featureName], value: !this.props.featureModel!.getFeature(featureName)!.isHidden})),
+        
         this.featureCommand(
             {text: i18n.t('commandPalette.featureDiagram.feature.propertiesMenu.mandatory')},
             featureName => this.props.onSetFeatureMandatory({featureNames: [featureName], value: true})),
+        
         this.featureCommand(
             {text: i18n.t('commandPalette.featureDiagram.feature.propertiesMenu.optional')},
             featureName => this.props.onSetFeatureMandatory({featureNames: [featureName], value: false})),
+        
         this.featureCommand(
             {text: i18n.t('commandPalette.featureDiagram.feature.propertiesMenu.and')},
             featureName => this.props.onSetFeatureAnd({featureNames: [featureName]})),
+        
         this.featureCommand(
             {text: i18n.t('commandPalette.featureDiagram.feature.propertiesMenu.or')},
             featureName => this.props.onSetFeatureOr({featureNames: [featureName]})),
+        
         this.featureCommand(
             {text: i18n.t('commandPalette.featureDiagram.feature.propertiesMenu.alternative')},
             featureName => this.props.onSetFeatureAlternative({featureNames: [featureName]})),
+        
         this.featureCommand({
             text: i18n.getFunction('commands.featureDiagram.feature.collapseMenu.collapse')(false),
             shortcut: getShortcutText('featureDiagram.feature.collapse'),
             icon: 'CollapseContentSingle'
         }, featureName => this.props.onCollapseFeatures({featureNames: [featureName]})),
+        
         this.featureCommand({
             text: i18n.getFunction('commands.featureDiagram.feature.collapseMenu.collapse')(true),
             shortcut: getShortcutText('featureDiagram.feature.expand'),
             icon: 'ExploreContentSingle'
         }, featureName => this.props.onExpandFeatures({featureNames: [featureName]})),
+        
         this.featureCommand({
             text: i18n.t('commands.featureDiagram.feature.collapseMenu.collapseBelow'),
             icon: 'CollapseContent'
         }, featureName => this.props.onCollapseFeaturesBelow({featureNames: [featureName]})),
+        
         this.featureCommand({
             text: i18n.t('commands.featureDiagram.feature.collapseMenu.expandBelow'),
             icon: 'ExploreContent'
         }, featureName => this.props.onExpandFeaturesBelow({featureNames: [featureName]})),
+        
         {
             text: i18n.t('commands.featureDiagram.feature.collapseAll'),
             shortcut: getShortcutText('featureDiagram.feature.collapse'),

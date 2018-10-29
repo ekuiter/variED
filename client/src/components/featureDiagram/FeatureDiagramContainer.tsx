@@ -6,21 +6,26 @@ import React from 'react';
 import FeatureDiagram from './FeatureDiagram';
 import {connect} from 'react-redux';
 import {Spinner, SpinnerSize} from 'office-ui-fabric-react/lib/Spinner';
-import {getFeatureModel} from '../../store/selectors';
+import {getCurrentCollaborativeSession, isFeatureDiagramCollaborativeSession, getCurrentFeatureModel} from '../../store/selectors';
 import actions from '../../store/actions';
 import {State, StateDerivedProps} from '../../store/types';
 import logger from '../../helpers/logger';
 
 export default connect(
-    logger.mapStateToProps('FeatureDiagramContainer', (state: State): StateDerivedProps => ({
-        settings: state.settings,
-        featureDiagramLayout: state.ui.featureDiagram.layout,
-        isSelectMultipleFeatures: state.ui.featureDiagram.isSelectMultipleFeatures,
-        selectedFeatureNames: state.ui.featureDiagram.selectedFeatureNames,
-        featureModel: getFeatureModel(state),
-        overlay: state.ui.overlay,
-        overlayProps: state.ui.overlayProps
-    })),
+    logger.mapStateToProps('FeatureDiagramContainer', (state: State): StateDerivedProps => {
+        const collaborativeSession = getCurrentCollaborativeSession(state);
+        if (!collaborativeSession || !isFeatureDiagramCollaborativeSession(collaborativeSession))
+            return {};
+        return {
+            settings: state.settings,
+            featureDiagramLayout: collaborativeSession.layout,
+            isSelectMultipleFeatures: collaborativeSession.isSelectMultipleFeatures,
+            selectedFeatureNames: collaborativeSession.selectedFeatureNames,
+            featureModel: getCurrentFeatureModel(state),
+            overlay: state.overlay,
+            overlayProps: state.overlayProps
+        };
+    }),
     (dispatch): StateDerivedProps => ({
         onShowOverlay: payload => dispatch(actions.ui.overlay.show(payload)),
         onHideOverlay: payload => dispatch(actions.ui.overlay.hide(payload)),

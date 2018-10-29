@@ -47,7 +47,7 @@ interface SettingsPanelProps {
     onDismissed: () => void,
     isOpen: boolean,
     settings: Settings,
-    featureDiagramLayout: FeatureDiagramLayoutType,
+    featureDiagramLayout?: FeatureDiagramLayoutType,
     onSetSetting: OnSetSettingFunction,
     onResetSettings: OnResetSettingsFunction
 };
@@ -155,18 +155,18 @@ export default class extends React.Component<SettingsPanelProps> {
                     {...props}
                     path="debug"/>
 
-                <h4>{i18n.t('overlays.settingsPanel.headings.featureDiagram')}</h4>
-                <Setting.FontComboBox
-                    {...props}
-                    path="featureDiagram.font.family"/>
-                <Setting.SpinButton
-                    {...props}
-                    path="featureDiagram.font.size"
-                    min={5} max={50} suffix=" px"/>
-
                 {(featureDiagramLayout === FeatureDiagramLayoutType.verticalTree ||
                     featureDiagramLayout === FeatureDiagramLayoutType.horizontalTree) &&
                 <React.Fragment>
+                    <h4>{i18n.t('overlays.settingsPanel.headings.featureDiagram')}</h4>
+                    <Setting.FontComboBox
+                        {...props}
+                        path="featureDiagram.font.family"/>
+                    <Setting.SpinButton
+                        {...props}
+                        path="featureDiagram.font.size"
+                        min={5} max={50} suffix=" px"/>
+
                     <Setting.Toggle
                         {...props}
                         path="featureDiagram.treeLayout.useTransitions"/>

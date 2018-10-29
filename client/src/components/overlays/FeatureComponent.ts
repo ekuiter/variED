@@ -8,7 +8,7 @@ import FeatureModel from '../../server/FeatureModel';
 import {Feature} from '../../types';
 
 export interface FeatureComponentProps {
-    featureModel?: FeatureModel,
+    featureModel: FeatureModel,
     featureName?: string,
     settings: Settings
 };
@@ -30,8 +30,7 @@ export default ({doUpdate = false} = {}) =>
                 window.clearInterval(this.interval);
         }
 
-        getFeature = () => this.props.featureModel && this.props.featureName &&
-            this.props.featureModel.getFeature(this.props.featureName!);
+        getFeature = () => this.props.featureName && this.props.featureModel.getFeature(this.props.featureName!);
 
         renderIfFeature(_feature: Feature): JSX.Element {
             throw new Error('abstract method not implemented');

@@ -12,7 +12,7 @@ import SettingsPanel from './SettingsPanel';
 import AboutPanel from './AboutPanel';
 import FeaturePanel from './FeaturePanel';
 import actions from '../../store/actions';
-import {getFeatureModel} from '../../store/selectors';
+import {getCurrentCollaborativeSession, isFeatureDiagramCollaborativeSession, getCurrentFeatureModel} from '../../store/selectors';
 import FeatureRenameDialog from './FeatureRenameDialog';
 import FeatureSetDescriptionDialog from './FeatureSetDescriptionDialog';
 import FeatureCallout from './FeatureCallout';
@@ -27,7 +27,7 @@ const OverlayContainer = (props: StateDerivedProps) => (
     <React.Fragment>
         <CommandPalette
             isOpen={props.overlay === OverlayType.commandPalette}
-            featureDiagramLayout={props.featureDiagramLayout!}
+            featureDiagramLayout={props.featureDiagramLayout}
             featureModel={props.featureModel}
             onDismiss={() => props.onHideOverlay!({overlay: OverlayType.commandPalette})}
             onShowOverlay={props.onShowOverlay!}
@@ -58,12 +58,14 @@ const OverlayContainer = (props: StateDerivedProps) => (
             settings={props.settings!}
             onSetSetting={props.onSetSetting!}
             onResetSettings={props.onResetSettings!}
-            featureDiagramLayout={props.featureDiagramLayout!}
+            featureDiagramLayout={props.featureDiagramLayout}
             {...props.overlayProps}/>
+
         <AboutPanel
             isOpen={props.overlay === OverlayType.aboutPanel}
             onDismissed={() => props.onHideOverlay!({overlay: OverlayType.aboutPanel})}
             {...props.overlayProps}/>
+
         {props.overlay === OverlayType.featurePanel &&
         <FeaturePanel
             isOpen={true}
@@ -73,7 +75,7 @@ const OverlayContainer = (props: StateDerivedProps) => (
             onExpandFeatures={props.onExpandFeatures!}
             onCollapseFeaturesBelow={props.onCollapseFeaturesBelow!}
             onExpandFeaturesBelow={props.onExpandFeaturesBelow!}
-            featureModel={props.featureModel}
+            featureModel={props.featureModel!}
             settings={props.settings!}
             onAddFeatureAbove={props.onAddFeatureAbove!}
             onAddFeatureBelow={props.onAddFeatureBelow!}
@@ -91,18 +93,20 @@ const OverlayContainer = (props: StateDerivedProps) => (
         <FeatureRenameDialog
             isOpen={true}
             onDismiss={() => props.onHideOverlay!({overlay: OverlayType.featureRenameDialog})}
-            featureModel={props.featureModel}
+            featureModel={props.featureModel!}
             settings={props.settings!}
             onRenameFeature={props.onRenameFeature!}
             {...props.overlayProps}/>}
+
         {props.overlay === OverlayType.featureSetDescriptionDialog &&
         <FeatureSetDescriptionDialog
             isOpen={true}
             onDismiss={() => props.onHideOverlay!({overlay: OverlayType.featureSetDescriptionDialog})}
-            featureModel={props.featureModel}
+            featureModel={props.featureModel!}
             settings={props.settings!}
             onSetFeatureDescription={props.onSetFeatureDescription!}
             {...props.overlayProps}/>}
+
         {props.overlay === OverlayType.exportDialog &&
         <ExportDialog
             isOpen={true}
@@ -123,7 +127,7 @@ const OverlayContainer = (props: StateDerivedProps) => (
             onExpandFeatures={props.onExpandFeatures!}
             onCollapseFeaturesBelow={props.onCollapseFeaturesBelow!}
             onExpandFeaturesBelow={props.onExpandFeaturesBelow!}
-            featureModel={props.featureModel}
+            featureModel={props.featureModel!}
             onAddFeatureAbove={props.onAddFeatureAbove!}
             onAddFeatureBelow={props.onAddFeatureBelow!}
             onRemoveFeatures={props.onRemoveFeatures!}
@@ -142,7 +146,7 @@ const OverlayContainer = (props: StateDerivedProps) => (
             onExpandFeatures={props.onExpandFeatures!}
             onCollapseFeaturesBelow={props.onCollapseFeaturesBelow!}
             onExpandFeaturesBelow={props.onExpandFeaturesBelow!}
-            featureModel={props.featureModel}
+            featureModel={props.featureModel!}
             isSelectMultipleFeatures={props.isSelectMultipleFeatures!}
             selectedFeatureNames={props.selectedFeatureNames!}
             onAddFeatureAbove={props.onAddFeatureAbove!}
@@ -160,15 +164,23 @@ const OverlayContainer = (props: StateDerivedProps) => (
 );
 
 export default connect(
-    logger.mapStateToProps('OverlayContainer', (state: State): StateDerivedProps => ({
-    overlay: state.ui.overlay,
-        overlayProps: state.ui.overlayProps,
-        featureDiagramLayout: state.ui.featureDiagram.layout,
-        isSelectMultipleFeatures: state.ui.featureDiagram.isSelectMultipleFeatures,
-        selectedFeatureNames: state.ui.featureDiagram.selectedFeatureNames,
-        settings: state.settings,
-        featureModel: getFeatureModel(state)
-    })),
+    logger.mapStateToProps('OverlayContainer', (state: State): StateDerivedProps => {
+        const collaborativeSession = getCurrentCollaborativeSession(state),
+            props = {
+                settings: state.settings,
+                overlay: state.overlay,
+                overlayProps: state.overlayProps
+            };
+        if (!collaborativeSession || !isFeatureDiagramCollaborativeSession(collaborativeSession))
+            return props;
+        return {
+            ...props,
+            featureDiagramLayout: collaborativeSession.layout,
+            isSelectMultipleFeatures: collaborativeSession.isSelectMultipleFeatures,
+            selectedFeatureNames: collaborativeSession.selectedFeatureNames,
+            featureModel: getCurrentFeatureModel(state)
+        };
+    }),
     (dispatch): StateDerivedProps => ({
         onFitToScreen: () => dispatch(actions.ui.featureDiagram.fitToScreen()),
         onSetFeatureDiagramLayout: payload => dispatch(actions.ui.featureDiagram.setLayout(payload)),

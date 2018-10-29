@@ -2,7 +2,7 @@ import FeatureModel from '../server/FeatureModel';
 import {defaultSettings, Settings} from './settings';
 import {Message, FeatureDiagramLayoutType, OverlayType, OverlayProps, Feature, ArtifactPath} from '../types';
 
-interface User {
+export interface User {
     name: string
 };
 
@@ -78,12 +78,12 @@ export type OnToggleFeatureGroupFunction = (payload: {feature: Feature}) => Prom
 // This enforces the convention that a prop called 'on...' has the same type in all components.
 export type StateDerivedProps = Partial<{
     handleMessage: (message: Message) => void,
-    users: string[],
+    users: User[],
     settings: Settings,
     featureDiagramLayout: FeatureDiagramLayoutType,
     isSelectMultipleFeatures: boolean,
     selectedFeatureNames: string[],
-    featureModel?: FeatureModel,
+    featureModel: FeatureModel,
     overlay: OverlayType,
     overlayProps: OverlayProps,
     onSelectFeature: OnSelectFeatureFunction,
