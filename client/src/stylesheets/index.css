@@ -74,7 +74,7 @@ textarea {
     cursor: pointer;
 }
 
-.palette ul li.notFound {
+.palette ul li.inactive {
     cursor: default;
 }
 
@@ -88,7 +88,11 @@ textarea {
     width: 24px;
 }
 
-.palette ul li span {
+.palette ul li b {
+    color: rgb(0, 120, 212);
+}
+
+.palette ul li span.aside {
     color: rgb(102, 102, 102);
     float: right;
     text-align: right;

@@ -135,7 +135,8 @@ const translationMap = {
     },
     overlays: {
         palette: {
-            notFound: 'Nothing found.'
+            notFound: 'Nothing found.',
+            truncatedItems: (truncatedItems: number) => `(and ${truncatedItems} more)`
         },
         aboutPanel: {
             title: 'About',

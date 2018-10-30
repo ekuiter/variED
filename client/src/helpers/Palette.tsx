@@ -3,6 +3,7 @@ import {Modal} from 'office-ui-fabric-react/lib/Modal';
 import {TextField} from 'office-ui-fabric-react/lib/TextField';
 import i18n from '../i18n';
 import {Icon} from 'office-ui-fabric-react/lib/Icon';
+import fuzzysort from 'fuzzysort';
 
 export type PaletteAction = (...args: string[]) => void;
 
@@ -37,7 +38,7 @@ export const getKey = (item: PaletteItem) => item.key || item.text;
 export default class extends React.Component<Props, State> {
     static defaultProps: Partial<Props> = {onSubmit: () => {}, itemUsage: {}};
     state: State = {selectedIndex: 0};
-    results: PaletteItem[];
+    searchResults: PaletteItem[];
 
     componentDidMount() {
         document.addEventListener('keydown', this.onKeyPress);
@@ -50,18 +51,18 @@ export default class extends React.Component<Props, State> {
     componentDidUpdate(prevProps: Props) {
         if (!prevProps.isOpen && this.props.isOpen)
             this.setState({value: undefined, selectedIndex: 0});
-        if (this.state.selectedIndex >= this.results.length && this.state.selectedIndex > 0)
+        if (this.state.selectedIndex >= this.searchResults.length && this.state.selectedIndex > 0)
             this.setState({selectedIndex: 0});
     }
 
     onChange = (_event: any, value?: string) => this.setState({value, selectedIndex: 0});
 
     onKeyPress = (event: KeyboardEvent) => {
-        if (event.key === 'Enter' && this.state.selectedIndex < this.results.length)
-            this.onSubmit(this.results[this.state.selectedIndex]);
+        if (event.key === 'Enter' && this.state.selectedIndex < this.searchResults.length)
+            this.onSubmit(this.searchResults[this.state.selectedIndex]);
         if ((event.key === 'ArrowUp' || event.key === 'Up') && this.state.selectedIndex > 0)
             this.setState(({selectedIndex}) => ({selectedIndex: selectedIndex - 1}));
-        if ((event.key === 'ArrowDown' || event.key === 'Down') && this.state.selectedIndex < this.results.length - 1)
+        if ((event.key === 'ArrowDown' || event.key === 'Down') && this.state.selectedIndex < this.searchResults.length - 1)
             this.setState(({selectedIndex}) => ({selectedIndex: selectedIndex + 1}));
     };
 
@@ -80,22 +81,31 @@ export default class extends React.Component<Props, State> {
         return [...usedItems, ...unusedItems];
     }
 
-    getSearchResults(search?: string): PaletteItem[] {
-        const searchResults = this.sortItems(
+    getSearchResults(search?: string): {searchResults: PaletteItem[], truncatedItems: number} {
+        const maxDisplayableItems = 100;
+        let searchResults =
             (search
-                ? this.props.items.filter(item =>
-                    item.text.toLowerCase().includes(this.state.value!.toLowerCase()))
-                : this.props.items).filter(item => item.disabled ? !item.disabled() : true));
-        return this.props.allowFreeform && this.state.value
+                ? fuzzysort
+                    .go(search, this.props.items, {key: 'text', limit: 20})
+                    .map(result => result.obj)
+                : this.sortItems(this.props.items))
+            .filter(item => item.disabled ? !item.disabled() : true);
+        searchResults = this.props.allowFreeform && this.state.value
             ? [{text: this.state.value, action: this.props.allowFreeform(this.state.value)}, ...searchResults]
             : searchResults;
+        const numberOfItems = searchResults.length;
+        if (searchResults.length > maxDisplayableItems)
+            searchResults = searchResults.slice(0, maxDisplayableItems);
+        return {searchResults, truncatedItems: numberOfItems - maxDisplayableItems};
     }
 
     render() {
-        const results = this.results = this.getSearchResults(this.state.value),
+        const search = this.state.value,
+            {searchResults, truncatedItems} = this.getSearchResults(search),
             showIcons = this.props.items.some(item => typeof item.icon !== 'undefined'),
             showShortcuts = this.props.items.some(item => typeof item.shortcut !== 'undefined'),
             showBeak = this.props.items.some(item => item.action['isActionWithArguments']);
+        this.searchResults = searchResults;
 
         return (
             <Modal
@@ -104,7 +114,7 @@ export default class extends React.Component<Props, State> {
                 onDismiss={this.props.onDismiss}>
                 <div>
                     <TextField borderless
-                        value={this.state.value}
+                        value={search}
                         onChange={this.onChange}
                         placeholder={this.props.placeholder}
                         styles={{
@@ -112,9 +122,9 @@ export default class extends React.Component<Props, State> {
                             fieldGroup: {height: 48}
                         }}/>
                 </div>
-                <ul className={results.length > 0 && this.props.items.length > 0 ? 'scrollable' : undefined}>
-                    {results.length > 0 && this.props.items.length > 0
-                    ? results.map((item, idx) =>
+                <ul className={searchResults.length > 0 && this.props.items.length > 0 ? 'scrollable' : undefined}>
+                    {searchResults.length > 0 && this.props.items.length > 0
+                    ? searchResults.map((item, idx) =>
                         <li key={getKey(item)}
                             onClick={this.onClick(item)}
                             onMouseMove={this.onMouseMove(idx)}
@@ -123,16 +133,21 @@ export default class extends React.Component<Props, State> {
                             (item.icon
                                 ? <Icon iconName={item.icon} />
                                 : <i>&nbsp;</i>)}
-                            {item.text}
+                            {search
+                                ? <span dangerouslySetInnerHTML={{__html: fuzzysort.highlight(fuzzysort.single(search, item.text)!)!}}/>
+                                : item.text}
                             {showBeak &&
                             (item.action['isActionWithArguments']
-                                ? <span><Icon iconName="ChevronRightMed"/></span>
-                                : <span><i>&nbsp;</i></span>)}
+                                ? <span className="aside"><Icon iconName="ChevronRightMed"/></span>
+                                : <span className="aside"><i>&nbsp;</i></span>)}
                             {showShortcuts &&
-                            <span>{item.shortcut}</span>}
+                            <span className="aside">{item.shortcut}</span>}
                         </li>)
                     : !this.props.allowFreeform
-                        ? <li className="notFound">{i18n.t('overlays.palette.notFound')}</li>
+                        ? <li className="inactive">{i18n.t('overlays.palette.notFound')}</li>
+                        : null}
+                    {truncatedItems > 0
+                        ? <li className="inactive">{i18n.getFunction('overlays.palette.truncatedItems')(truncatedItems)}</li>
                         : null}
                 </ul>
             </Modal>
