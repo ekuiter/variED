@@ -97,6 +97,12 @@ function getFeatureNamesBelowWithActualChildren(state: State, artifactPath: Arti
         .reduce((acc, children) => acc.concat(children), []);
 }
 
+function fitToScreen(state: State, collaborativeSession: CollaborativeSession): string[] {
+    return getFeatureModel(state, collaborativeSession.artifactPath)!.getFittingFeatureNames(
+        state.settings, (<FeatureDiagramCollaborativeSession>collaborativeSession).layout,
+        getViewportWidth(), getViewportHeight());
+}
+
 function serverSendReducer(state: State, action: AnyAction): State {
     if (action.type === SERVER_SEND_MESSAGE) {
         const messages: Message[] = Array.isArray(action.payload) ? action.payload : [action.payload];
@@ -153,11 +159,18 @@ function serverReceiveReducer(state: State, action: Action): State {
                         getNewCollaborativeSessions(state, action.payload.artifactPath!,
                             (collaborativeSession: CollaborativeSession) =>
                                 ({...collaborativeSession, featureModel: action.payload.featureModel})));
-                else
+                else {
                     state = getNewState(state,
                         'collaborativeSessions', [...state.collaborativeSessions,
                             initialFeatureDiagramCollaborativeSessionState(action.payload.artifactPath!, action.payload.featureModel)],
                         'currentArtifactPath', action.payload.artifactPath!);
+                    state = getNewState(state, 'collaborativeSessions',
+                        getNewCollaborativeSessions(state, action.payload.artifactPath!,
+                            (collaborativeSession: CollaborativeSession) => ({
+                                ...collaborativeSession,
+                                collapsedFeatureNames: fitToScreen(state, getCollaborativeSession(state, action.payload.artifactPath!))
+                            })));
+                }
                 state = removeObsoleteFeaturesFromFeatureList(state, action.payload.artifactPath!, 'collapsedFeatureNames');
                 // TODO: warn user that selection change
                 state = removeObsoleteFeaturesFromFeatureList(state, action.payload.artifactPath!, 'selectedFeatureNames');
@@ -216,9 +229,7 @@ function uiReducer(state: State, action: Action): State {
                 ? getNewState(state, 'collaborativeSessions',
                     getNewCollaborativeSessions(state, state.currentArtifactPath!, (collaborativeSession: CollaborativeSession) => ({
                         ...collaborativeSession,
-                        collapsedFeatureNames: getCurrentFeatureModel(state)!.getFittingFeatureNames(
-                            state.settings, (<FeatureDiagramCollaborativeSession>collaborativeSession).layout,
-                            getViewportWidth(), getViewportHeight())
+                        collapsedFeatureNames: fitToScreen(state, collaborativeSession)
                     })),
                     'settings', getNewSettings(state.settings, 'featureDiagram.forceRerender', +new Date()))
                 : state;

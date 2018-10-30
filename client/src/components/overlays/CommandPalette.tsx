@@ -195,11 +195,13 @@ export default class extends React.Component<Props, State> {
         }, {
             text: i18n.t('commands.undo'),
             icon: 'Undo',
+            disabled: () => !this.props.featureModel,
             shortcut: getShortcutText('undo'),
             action: this.action(this.props.onUndo)
         }, {
             text: i18n.t('commands.redo'),
             icon: 'Redo',
+            disabled: () => !this.props.featureModel,
             shortcut: getShortcutText('redo'),
             action: this.action(this.props.onRedo)
         }, {
