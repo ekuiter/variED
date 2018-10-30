@@ -78,22 +78,24 @@ const CommandBarContainer = (props: StateDerivedProps) => (
                 }
             }
         ]}
-        farItems={
-            props.featureModel ? [
-                {
-                    key: 'userFacepile',
-                    onRender: () =>
-                        <UserFacepile
-                            users={props.users!}
-                            settings={props.settings!}/>
-                }
-            ] : []}/>
+        farItems={[{
+            key: 'userFacepile',
+            onRender: () =>
+                <UserFacepile
+                    users={props.users!}
+                    settings={props.settings!}
+                    user={props.user}/>
+        }]}/>
 );
 
 export default connect(
     logger.mapStateToProps('CommandBarContainer', (state: State): StateDerivedProps => {
         const collaborativeSession = getCurrentCollaborativeSession(state),
-            props: StateDerivedProps = {settings: state.settings};
+            props: StateDerivedProps = {
+                settings: state.settings,
+                user: state.user,
+                users: []
+            };
         if (!collaborativeSession || !isFeatureDiagramCollaborativeSession(collaborativeSession))
             return props;
         return {

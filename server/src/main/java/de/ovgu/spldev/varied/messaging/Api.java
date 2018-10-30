@@ -19,62 +19,14 @@ public class Api {
      * Types of messages. Decodable message types can also be decoded and are registered with Gson.
      */
     public enum TypeEnum {
-        /**
-         * generic exception wrapper
-         */
-        ERROR,
-        /**
-         * join a collaborative session
-         */
-        JOIN,
-        /**
-         * leave a collaborative session
-         */
-        LEAVE,
-        /**
-         * undo the last state change
-         */
-        UNDO,
-        /**
-         * undo the last undone state change
-         */
-        REDO,
-        /**
-         * contains multiple undoable messages of the same type
-         * only the last message's response message is returned to the client
-         */
-        BATCH,
-        /**
-         * a serialized feature model
-         */
+        ERROR, USER_INFO, JOIN, LEAVE, UNDO, REDO, BATCH,
         FEATURE_DIAGRAM_FEATURE_MODEL,
-        /**
-         * add a new feature below another feature
-         */
         FEATURE_DIAGRAM_FEATURE_ADD_BELOW,
-        /**
-         * add a new feature above (adjacent) feature(s)
-         */
         FEATURE_DIAGRAM_FEATURE_ADD_ABOVE,
-        /**
-         * remove a feature
-         */
         FEATURE_DIAGRAM_FEATURE_REMOVE,
-        /**
-         * remove a feature and all its children recursively
-         */
         FEATURE_DIAGRAM_FEATURE_REMOVE_BELOW,
-        /**
-         * rename a feature
-         */
         FEATURE_DIAGRAM_FEATURE_RENAME,
-        /**
-         * set a feature description
-         */
         FEATURE_DIAGRAM_FEATURE_SET_DESCRIPTION,
-        /**
-         * set one of a feature's properties (e.g., abstract, hidden, mandatory, or, alternative)
-         */
         FEATURE_DIAGRAM_FEATURE_SET_PROPERTY
     }
 
@@ -86,6 +38,16 @@ public class Api {
             super(TypeEnum.ERROR, null);
             this.error = throwable.toString();
             throwable.printStackTrace();
+        }
+    }
+
+    public static class UserInfo extends Message implements Message.IEncodable {
+        @Expose
+        private User user;
+
+        public UserInfo(User user) {
+            super(TypeEnum.USER_INFO, null);
+            this.user = user;
         }
     }
 

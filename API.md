@@ -113,6 +113,15 @@ artifact's collaborative session. The server sends this to inform
 - the joined client about other participants
 - the other participants about the joined client
 
+#### USER_INFO
+
+```
+{type: "USER_INFO", artifactPath: "project::artifact", user: {...}}
+```
+
+An encodable message. The server sends this to inform new users about their user
+profile.
+
 #### LEAVE
 
 ```

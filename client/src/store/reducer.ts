@@ -130,6 +130,9 @@ function serverReceiveReducer(state: State, action: Action): State {
                 logger.warnTagged({tag: 'server'}, () => action.payload.error);
                 return state;
 
+            case MessageType.USER_INFO:
+                return getNewState(state, 'user', action.payload.user);
+
             case MessageType.JOIN:
                 return getNewState(state, 'collaborativeSessions',
                     getNewCollaborativeSessions(state, action.payload.artifactPath!, (collaborativeSession: CollaborativeSession) =>

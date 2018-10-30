@@ -4,13 +4,14 @@
 
 import * as React from 'react';
 import {Facepile, OverflowButtonType, IFacepilePersona} from 'office-ui-fabric-react/lib/Facepile';
-import {PersonaSize} from 'office-ui-fabric-react/lib/Persona';
+import {PersonaSize, PersonaInitialsColor} from 'office-ui-fabric-react/lib/Persona';
 import {Tooltip} from 'office-ui-fabric-react/lib/Tooltip';
 import {Settings} from '../store/settings';
 import withDimensions from '../helpers/withDimensions';
 import {User} from '../store/types';
 
 interface Props {
+    user?: User,
     users: User[],
     settings: Settings,
     width: number,
@@ -31,22 +32,23 @@ class UserFacepile extends React.Component<Props, State> {
     }
 
     render() {
-        const personas = this.props.users.map(user => ({
-                personaName: user.name,
-                onMouseMove: (e?: React.MouseEvent, persona?: IFacepilePersona) => {
-                    if (typeof e === 'undefined')
-                        return;
-                    const tooltipTarget = e.target && (e.target as HTMLElement).closest('.ms-Facepile-member') as HTMLElement;
-                    if (tooltipTarget && this.state.tooltipTarget !== tooltipTarget)
-                        this.setState({tooltipTarget, persona});
-                },
-                onMouseOut: (e?: React.MouseEvent) => {
-                    if (typeof e === 'undefined')
-                        return;
-                    if (e.relatedTarget && !(e.relatedTarget as HTMLElement).closest('.ms-Facepile-member'))
-                        this.setState({tooltipTarget: undefined, persona: undefined});
-                }
-            })),
+        const toPersona = (user: User) => ({
+            personaName: user.name,
+            onMouseMove: (e?: React.MouseEvent, persona?: IFacepilePersona) => {
+                if (typeof e === 'undefined')
+                    return;
+                const tooltipTarget = e.target && (e.target as HTMLElement).closest('.ms-Facepile-member') as HTMLElement;
+                if (tooltipTarget && this.state.tooltipTarget !== tooltipTarget)
+                    this.setState({tooltipTarget, persona});
+            },
+            onMouseOut: (e?: React.MouseEvent) => {
+                if (typeof e === 'undefined')
+                    return;
+                if (e.relatedTarget && !(e.relatedTarget as HTMLElement).closest('.ms-Facepile-member'))
+                    this.setState({tooltipTarget: undefined, persona: undefined});
+            }
+        }),
+            personas = this.props.users.map(toPersona),
             {maxDisplayableUsers, overflowBreakpoint, gapSpace} = this.props.settings.userFacepile,
             maxDisplayablePersonas = this.props.width < overflowBreakpoint ? 1 : maxDisplayableUsers;
 
@@ -70,12 +72,28 @@ class UserFacepile extends React.Component<Props, State> {
                     }}
                     personaSize={PersonaSize.size28}
                     getPersonaProps={_persona => ({hidePersonaDetails: true})}
-                    styles={{root: {margin: '6px 12px'}}}/>
+                    styles={{
+                        root: {
+                            padding: '0 10px',
+                            margin: '6px 10px',
+                            borderRight: '1px solid #ddd'
+                        }
+                    }}/>
                 {this.state.tooltipTarget && this.state.persona &&
                 <Tooltip
                     targetElement={this.state.tooltipTarget}
                     content={this.state.persona.personaName}
                     calloutProps={{gapSpace}}/>}
+                {this.props.user &&
+                <Facepile
+                    personas={[toPersona(this.props.user)]}
+                    personaSize={PersonaSize.size28}
+                    getPersonaProps={_persona => ({
+                        hidePersonaDetails: true,
+                        text: undefined,
+                        initialsColor: PersonaInitialsColor.darkBlue
+                    })}
+                    styles={{root: {margin: '6px 0'}}}/>}
             </React.Fragment>
         );
     }

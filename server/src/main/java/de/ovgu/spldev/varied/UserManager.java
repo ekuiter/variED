@@ -1,5 +1,6 @@
 package de.ovgu.spldev.varied;
 
+import de.ovgu.spldev.varied.messaging.Api;
 import de.ovgu.spldev.varied.messaging.Message;
 import de.ovgu.spldev.varied.util.StringUtils;
 
@@ -36,6 +37,7 @@ public class UserManager {
         if (users.containsKey(newUser.getWebSocket()))
             throw new RuntimeException("web socket is already logged in as another user");
         users.put(newUser.getWebSocket(), newUser);
+        newUser.send(new Api.UserInfo(newUser));
     }
 
     public void register(WebSocket webSocket) {

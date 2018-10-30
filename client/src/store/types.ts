@@ -23,7 +23,7 @@ export interface State {
     settings: Settings,
     overlay: OverlayType,
     overlayProps: OverlayProps
-    user?: User, // TODO
+    user?: User,
     collaborativeSessions: CollaborativeSession[],
     artifactPaths: ArtifactPath[], // TODO
     currentArtifactPath?: ArtifactPath
@@ -94,6 +94,7 @@ export type OnToggleFeatureGroupFunction = (payload: {feature: Feature}) => Prom
 export type StateDerivedProps = Partial<{
     handleMessage: (message: Message) => void,
     collaborativeSessions: CollaborativeSession[],
+    user: User,
     users: User[],
     settings: Settings,
     featureDiagramLayout: FeatureDiagramLayoutType,
