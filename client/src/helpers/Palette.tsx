@@ -50,7 +50,7 @@ export default class extends React.Component<Props, State> {
     componentDidUpdate(prevProps: Props) {
         if (!prevProps.isOpen && this.props.isOpen)
             this.setState({value: undefined, selectedIndex: 0});
-        if (this.state.selectedIndex >= this.results.length)
+        if (this.state.selectedIndex >= this.results.length && this.state.selectedIndex > 0)
             this.setState({selectedIndex: 0});
     }
 
@@ -112,7 +112,7 @@ export default class extends React.Component<Props, State> {
                             fieldGroup: {height: 48}
                         }}/>
                 </div>
-                <ul>
+                <ul className={results.length > 0 && this.props.items.length > 0 ? 'scrollable' : undefined}>
                     {results.length > 0 && this.props.items.length > 0
                     ? results.map((item, idx) =>
                         <li key={getKey(item)}
