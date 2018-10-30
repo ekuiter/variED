@@ -133,6 +133,9 @@ function serverReceiveReducer(state: State, action: Action): State {
             case MessageType.USER_INFO:
                 return getNewState(state, 'user', action.payload.user);
 
+            case MessageType.ARTIFACT_INFO:
+                return getNewState(state, 'artifactPaths', setAdd(state.artifactPaths, action.payload.artifactPath!));
+
             case MessageType.JOIN:
                 return getNewState(state, 'collaborativeSessions',
                     getNewCollaborativeSessions(state, action.payload.artifactPath!, (collaborativeSession: CollaborativeSession) =>

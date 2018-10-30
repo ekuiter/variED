@@ -33,3 +33,5 @@ ReactDOM.render((
         <AppContainer/>
     </Provider>
 ), document.getElementById('root'));
+
+store.dispatch<any>(actions.server.join({artifactPath: {project: 'FeatureModeling', artifact: 'CTV'}}));

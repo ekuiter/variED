@@ -2,7 +2,9 @@ package de.ovgu.spldev.varied;
 
 import de.ovgu.spldev.varied.util.StringUtils;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Set;
 
 public class Project {
     private String name;
@@ -35,5 +37,9 @@ public class Project {
 
     public void removeArtifact(Artifact artifact) {
         artifacts.remove(artifact.getName());
+    }
+
+    public Collection<Artifact> getArtifacts() {
+        return artifacts.values();
     }
 }

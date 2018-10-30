@@ -26,6 +26,7 @@ import CommandPalette from './CommandPalette';
 const OverlayContainer = (props: StateDerivedProps) => (
     <React.Fragment>
         <CommandPalette
+            artifactPaths={props.artifactPaths!}
             collaborativeSessions={props.collaborativeSessions!}
             isOpen={props.overlay === OverlayType.commandPalette}
             featureDiagramLayout={props.featureDiagramLayout}
@@ -174,6 +175,7 @@ export default connect(
                 settings: state.settings,
                 overlay: state.overlay,
                 overlayProps: state.overlayProps,
+                artifactPaths: state.artifactPaths,
                 collaborativeSessions: state.collaborativeSessions
             };
         if (!collaborativeSession || !isFeatureDiagramCollaborativeSession(collaborativeSession))

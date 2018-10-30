@@ -2,7 +2,7 @@ import React from 'react';
 import i18n from '../../i18n';
 import {OnShowOverlayFunction, OnUndoFunction, OnRedoFunction, OnSetFeatureDiagramLayoutFunction, OnFitToScreenFunction, OnAddFeatureAboveFunction, OnAddFeatureBelowFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnRemoveFeaturesFunction, OnRemoveFeaturesBelowFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureMandatoryFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction, OnExpandAllFeaturesFunction, OnCollapseAllFeaturesFunction, OnJoinFunction, OnLeaveFunction, CollaborativeSession, OnSetCurrentArtifactPathFunction} from '../../store/types';
 import {getShortcutText} from '../../shortcuts';
-import {OverlayType, Omit, FeatureDiagramLayoutType, FormatType, isArtifactPathEqual} from '../../types';
+import {OverlayType, Omit, FeatureDiagramLayoutType, FormatType, isArtifactPathEqual, ArtifactPath} from '../../types';
 import Palette, {PaletteItem, PaletteAction, getKey} from '../../helpers/Palette';
 import {canExport} from '../featureDiagram/export';
 import FeatureModel from '../../server/FeatureModel';
@@ -10,6 +10,7 @@ import {arrayUnique} from '../../helpers/array';
 import defer from '../../helpers/defer';
 
 interface Props {
+    artifactPaths: ArtifactPath[],
     collaborativeSessions: CollaborativeSession[],
     isOpen: boolean,
     featureDiagramLayout?: FeatureDiagramLayoutType,
@@ -127,18 +128,27 @@ export default class extends React.Component<Props, State> {
         };
     }
 
+    isEditing = (artifactPath: ArtifactPath) =>
+        this.props.collaborativeSessions.find(collaborativeSession =>
+            isArtifactPathEqual(collaborativeSession.artifactPath, artifactPath));
+
     commands: PaletteItem[] = [
         {
             text: i18n.t('commandPalette.join'),
-            disabled: () => false, // TODO
+            disabled: () => this.props.artifactPaths.length === 0,
             action: this.actionWithArguments(
                 [
-                    () => ['FeatureModeling', 'Isolated Project'],  // TODO
-                    project => project === 'FeatureModeling' ? ['CTV', 'FeatureIDE', 'Automotive'] : ['Empty feature model']
+                    () => arrayUnique(this.props.artifactPaths.map(artifactPath => artifactPath.project)),
+                    (project: string) =>
+                        this.props.artifactPaths
+                            .filter(artifactPath => artifactPath.project === project)
+                            .map(artifactPath => ({
+                                text: artifactPath.artifact,
+                                icon: this.isEditing(artifactPath) ? 'FolderOpen' : 'Folder'
+                            }))
                 ],
                 (project, artifact) => {
-                    if (this.props.collaborativeSessions.find(collaborativeSession =>
-                        isArtifactPathEqual(collaborativeSession.artifactPath, {project, artifact})))
+                    if (this.isEditing({project, artifact}))
                         this.props.onSetCurrentArtifactPath({artifactPath: {project, artifact}});
                     else
                         this.props.onJoin({artifactPath: {project, artifact}});

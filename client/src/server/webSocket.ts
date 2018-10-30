@@ -11,11 +11,11 @@ type HandleMessageFunction = (data: Message) => void;
 let handleMessage: HandleMessageFunction;
 
 const getWebSocket = ((): () => Promise<WebSocket> => {
-    let webSocket: WebSocket;
+    let promise: Promise<WebSocket>;
 
     function connect(): Promise<WebSocket> {
-        return new Promise((resolve, reject) => {
-            webSocket = new WebSocket(constants.server.webSocket);
+        return promise = new Promise((resolve, reject) => {
+            let webSocket = new WebSocket(constants.server.webSocket);
             
             webSocket.onopen = () => {
                 logger.logTagged({tag: 'socket'}, () => 'open');
@@ -41,8 +41,8 @@ const getWebSocket = ((): () => Promise<WebSocket> => {
         });
     }
 
-    return () => (webSocket && webSocket.readyState !== webSocket.CLOSED)
-        ? Promise.resolve(webSocket)
+    return () => promise
+        ? promise.then(webSocket => webSocket.readyState !== webSocket.CLOSED ? webSocket : connect())
         : connect();
 })();
 

@@ -37,7 +37,7 @@ public class UserManager {
         if (users.containsKey(newUser.getWebSocket()))
             throw new RuntimeException("web socket is already logged in as another user");
         users.put(newUser.getWebSocket(), newUser);
-        newUser.send(new Api.UserInfo(newUser));
+        newUser.sendInitialInformation();
     }
 
     public void register(WebSocket webSocket) {

@@ -19,7 +19,7 @@ public class Api {
      * Types of messages. Decodable message types can also be decoded and are registered with Gson.
      */
     public enum TypeEnum {
-        ERROR, USER_INFO, JOIN, LEAVE, UNDO, REDO, BATCH,
+        ERROR, USER_INFO, ARTIFACT_INFO, JOIN, LEAVE, UNDO, REDO, BATCH,
         FEATURE_DIAGRAM_FEATURE_MODEL,
         FEATURE_DIAGRAM_FEATURE_ADD_BELOW,
         FEATURE_DIAGRAM_FEATURE_ADD_ABOVE,
@@ -48,6 +48,12 @@ public class Api {
         public UserInfo(User user) {
             super(TypeEnum.USER_INFO, null);
             this.user = user;
+        }
+    }
+
+    public static class ArtifactInfo extends Message implements Message.IEncodable {
+        public ArtifactInfo(Artifact.Path artifactPath) {
+            super(TypeEnum.ARTIFACT_INFO, artifactPath);
         }
     }
 

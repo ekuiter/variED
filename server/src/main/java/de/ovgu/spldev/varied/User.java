@@ -40,6 +40,12 @@ public class User {
         webSocket.send(message);
     }
 
+    public void sendInitialInformation() {
+        send(new Api.UserInfo(this));
+        for (Artifact artifact : ProjectManager.getInstance().getArtifacts())
+            send(new Api.ArtifactInfo(artifact.getPath()));
+    }
+
     public String getName() {
         return name;
     }
