@@ -55,7 +55,6 @@ async function exportJpg({scale = 1, quality = 0.8}: FormatOptions): BlobPromise
 
 async function exportPdf({}, fileName: string): BlobPromise {
     const {svg, width, height} = svgData();
-    // @ts-ignore: there are no type declarations for these modules
     const [svg2pdf, jsPDF] = await Promise.all([importSvg2PdfJs(), importJspdfYworks()]);
     const pdf = new jsPDF({
         orientation: 'landscape',
