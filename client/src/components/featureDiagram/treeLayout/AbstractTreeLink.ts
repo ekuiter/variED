@@ -12,9 +12,15 @@ import {
     Style
 } from '../../../helpers/svg';
 import styles from './styles';
-import AbstractTreeNode from './AbstractTreeNode';
 import {FeatureModelNode, Rect, Point, D3Selection, NodePointFunction, NodeCoordinateForAxisFunction, FeatureType} from '../../../types';
 import {OnToggleFeatureMandatoryFunction} from '../../../store/types';
+
+declare class AbstractTreeNode {
+    rectInfo: Rect;
+    x(_node: FeatureModelNode): number;
+    y(_node: FeatureModelNode): number;
+    estimateTextWidth(node: FeatureModelNode): number;
+}
 
 export default class {
     constructor(public settings: Settings, public getCurrentParentCoordinate: NodeCoordinateForAxisFunction,

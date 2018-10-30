@@ -9,9 +9,13 @@ import measureTextWidth from '../../../helpers/measureTextWidth';
 import {addStyle, appendCross, drawCircle, translateTransform, StyleDescriptor, Style} from '../../../helpers/svg';
 import styles from './styles';
 import {isCommand} from '../../../helpers/withKeys';
-import {OverlayType, Rect, D3Selection, FeatureModelNode} from '../../../types';
-import AbstractTreeLink from './AbstractTreeLink';
+import {OverlayType, Rect, D3Selection, FeatureModelNode, Point} from '../../../types';
 import {OnShowOverlayFunction, OnExpandFeaturesFunction, OnToggleFeatureGroupFunction} from '../../../store/types';
+
+declare class AbstractTreeLink {
+    collapseAnchor(_node: FeatureModelNode): Partial<Point>;
+    drawGroup(arcSegment: D3Selection, arcSlice: D3Selection, arcClick: D3Selection): void;
+}
 
 function widenBbox({x, y, width, height}: Rect, paddingX: number, paddingY: number): Rect {
     return {x: x - paddingX, y: y - paddingY, width: width + 2 * paddingX, height: height + 2 * paddingY};

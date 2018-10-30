@@ -5,7 +5,6 @@
 import {Settings} from '../../../store/settings';
 import {FeatureModelNode, FeatureDiagramLayoutType} from '../../../types';
 import measureTextWidth from '../../../helpers/measureTextWidth';
-import {getName} from '../../../server/FeatureModel';
 import constants from '../../../constants';
 import logger from '../../../helpers/logger';
 
@@ -46,7 +45,8 @@ export function estimateYOffset(settings: Settings, sgn: number, _layout: Featur
 // estimates minimum size of the given hierarchy without layouting it
 // and proposes features that can be collapsed to reduce the size
 export function estimateHierarchySize(nodes: FeatureModelNode[], collapsedFeatureNames: string[], featureDiagramLayout: FeatureDiagramLayoutType,
-    {fontFamily, fontSize, widthPadding, rectHeight}: {fontFamily: string, fontSize: number, widthPadding: number, rectHeight: number}):
+    {fontFamily, fontSize, widthPadding, rectHeight, getName}:
+    {fontFamily: string, fontSize: number, widthPadding: number, rectHeight: number, getName: (node: FeatureModelNode) => string}):
     {estimatedSize: number, collapsibleNodes: FeatureModelNode[]} {
 
     const maxCollapsibleNodes = constants.featureDiagram.fitToScreen.maxCollapsibleNodes(nodes),

@@ -229,7 +229,7 @@ export default class {
         while (true) {
             const {estimatedSize, collapsibleNodes} = estimateHierarchySize(
                 nodes, collapsedFeatureNames, featureDiagramLayout,
-                {fontFamily, fontSize, widthPadding, rectHeight});
+                {fontFamily, fontSize, widthPadding, rectHeight, getName});
             logger.info(() => `estimated ${estimatedDimension} ${Math.round(estimatedSize)}px when collapsing ${JSON.stringify(collapsedFeatureNames)}`);
     
             if ((featureDiagramLayout === FeatureDiagramLayoutType.verticalTree ? estimatedSize <= width : estimatedSize <= height) ||
