@@ -104,6 +104,7 @@ const translationMap = {
         feature: 'Feature',
         format: 'Format',
         layout: 'Layout',
+        delay: 'Delay',
         join: 'Join collaborative session',
         leave: 'Leave collaborative session',
         settings: 'Settings',
@@ -131,6 +132,10 @@ const translationMap = {
                     alternative: 'Change feature group to alternative'
                 }
             }
+        },
+        developer: {
+            debug: 'Developer: Toggle debug mode',
+            delay: 'Developer: Simulate message delay'
         }
     },
     overlays: {
@@ -167,7 +172,6 @@ const translationMap = {
                 horizontalTree: 'Horizontal tree'
             },
             labels: {
-                debug: 'Show developer information',
                 featureDiagram: {
                     font: {
                         family: 'Font family',

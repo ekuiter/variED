@@ -20,11 +20,12 @@ function createServerAction<P>(fn: (payload: P) => Message | Message[]): (payloa
     return (payload: P) => {
         return async (dispatch: Dispatch<AnyAction>, getState: () => State) => {
             const messageOrMessages = fn(payload),
-                artifactPath = getState().currentArtifactPath;
+                state = getState(),
+                artifactPath = state.currentArtifactPath;
             if (Array.isArray(messageOrMessages))
-                await sendBatchMessage(messageOrMessages, artifactPath);
+                await sendBatchMessage(messageOrMessages, artifactPath, state.settings.developer.delay);
             else
-                await sendMessage(messageOrMessages, artifactPath);
+                await sendMessage(messageOrMessages, artifactPath, state.settings.developer.delay);
             return dispatch(action(SERVER_SEND_MESSAGE, messageOrMessages));
         };
     };

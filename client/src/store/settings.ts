@@ -8,7 +8,10 @@ import objectPath from 'object-path';
 import objectPathImmutable from 'object-path-immutable';
 
 export interface Settings {
-    debug: false, // whether to show detailed logs and the estimated bounding box and node anchors for feature diagrams
+    developer: {
+        debug: boolean, // whether to show detailed logs and the estimated bounding box and node anchors for feature diagrams
+        delay: number // simulate message delay when developing on localhost
+    },
     featureDiagram: {
         // settings paths that should NOT trigger a rerender of the feature diagram
         doNotRerenderForPaths: string[],
@@ -71,7 +74,10 @@ export interface Settings {
 };
 
 export const defaultSettings: Settings = {
-    debug: false,
+    developer: {
+        debug: false,
+        delay: 0
+    },
     featureDiagram: {
         doNotRerenderForPaths: ['treeLayout.useTransitions', 'treeLayout.transitionDuration'],
         forceRerender: +new Date(),

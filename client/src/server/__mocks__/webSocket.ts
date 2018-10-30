@@ -10,10 +10,10 @@ export function openWebSocket(_handleMessage?: HandleMessageFunction): Promise<v
     return Promise.resolve();
 }
 
-export const sendMessage = jest.fn((_message: Message, artifactPath?: ArtifactPath): Promise<void> => {
+export const sendMessage = jest.fn((_message: Message, artifactPath?: ArtifactPath, delay = 0): Promise<void> => {
     return Promise.resolve();
 });
 
-export const sendBatchMessage = jest.fn((_messages: Message[], artifactPath?: ArtifactPath): Promise<void> => {
+export const sendBatchMessage = jest.fn((_messages: Message[], artifactPath?: ArtifactPath, delay = 0): Promise<void> => {
     return Promise.resolve();
 });

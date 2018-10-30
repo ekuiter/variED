@@ -35,7 +35,7 @@ export default class extends React.Component<Props> {
             });
         // add debug flag to key (as it is managed outside of the featureDiagram settings,
         // but should also trigger a rerender)
-        (clonedFeatureDiagramSettings as any).debug = settings.debug;
+        (clonedFeatureDiagramSettings as any).debug = settings.developer.debug;
         return stringify(clonedFeatureDiagramSettings);
     }
 
@@ -43,7 +43,7 @@ export default class extends React.Component<Props> {
         const {featureDiagramLayout, ...props} = this.props,
             LayoutComponent = layoutMap[featureDiagramLayout];
         return (
-            <LayoutComponent key={this.getKey(props)} debug={props.settings.debug} {...props}/>
+            <LayoutComponent key={this.getKey(props)} debug={props.settings.developer.debug} {...props}/>
         );
     }
 }

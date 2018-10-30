@@ -55,7 +55,8 @@ const OverlayContainer = (props: StateDerivedProps) => (
             onSetFeatureAnd={props.onSetFeatureAnd!}
             onSetFeatureOr={props.onSetFeatureOr!}
             onSetFeatureAlternative={props.onSetFeatureAlternative!}
-            onSetCurrentArtifactPath={props.onSetCurrentArtifactPath!}/>
+            onSetCurrentArtifactPath={props.onSetCurrentArtifactPath!}
+            onSetSetting={props.onSetSetting!}/>
 
         <SettingsPanel
             isOpen={props.overlay === OverlayType.settingsPanel}

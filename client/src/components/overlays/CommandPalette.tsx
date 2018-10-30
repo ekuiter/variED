@@ -1,6 +1,6 @@
 import React from 'react';
 import i18n from '../../i18n';
-import {OnShowOverlayFunction, OnUndoFunction, OnRedoFunction, OnSetFeatureDiagramLayoutFunction, OnFitToScreenFunction, OnAddFeatureAboveFunction, OnAddFeatureBelowFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnRemoveFeaturesFunction, OnRemoveFeaturesBelowFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureMandatoryFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction, OnExpandAllFeaturesFunction, OnCollapseAllFeaturesFunction, OnJoinFunction, OnLeaveFunction, CollaborativeSession, OnSetCurrentArtifactPathFunction} from '../../store/types';
+import {OnShowOverlayFunction, OnUndoFunction, OnRedoFunction, OnSetFeatureDiagramLayoutFunction, OnFitToScreenFunction, OnAddFeatureAboveFunction, OnAddFeatureBelowFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnRemoveFeaturesFunction, OnRemoveFeaturesBelowFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureMandatoryFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction, OnExpandAllFeaturesFunction, OnCollapseAllFeaturesFunction, OnJoinFunction, OnLeaveFunction, CollaborativeSession, OnSetCurrentArtifactPathFunction, OnSetSettingFunction} from '../../store/types';
 import {getShortcutText} from '../../shortcuts';
 import {OverlayType, Omit, FeatureDiagramLayoutType, FormatType, isArtifactPathEqual, ArtifactPath} from '../../types';
 import Palette, {PaletteItem, PaletteAction, getKey} from '../../helpers/Palette';
@@ -8,6 +8,7 @@ import {canExport} from '../featureDiagram/export';
 import FeatureModel from '../../server/FeatureModel';
 import {arrayUnique} from '../../helpers/array';
 import defer from '../../helpers/defer';
+import logger from 'src/helpers/logger';
 
 interface Props {
     artifactPaths: ArtifactPath[],
@@ -39,7 +40,8 @@ interface Props {
     onSetFeatureOr: OnSetFeatureOrFunction,
     onSetFeatureAlternative: OnSetFeatureAlternativeFunction
     onSetFeatureDiagramLayout: OnSetFeatureDiagramLayoutFunction,
-    onSetCurrentArtifactPath: OnSetCurrentArtifactPathFunction
+    onSetCurrentArtifactPath: OnSetCurrentArtifactPathFunction,
+    onSetSetting: OnSetSettingFunction
 };
 
 interface State {
@@ -54,7 +56,7 @@ type PaletteItemDescriptor = Omit<PaletteItem, 'action'> & {key?: string} | stri
 type PaletteItemsFunction = ((...args: string[]) => PaletteItemDescriptor[] | Promise<PaletteItemDescriptor[]>);
 
 interface ArgumentDescriptor {
-    items: PaletteItemsFunction,
+    items?: PaletteItemsFunction,
     allowFreeform?: boolean,
     title?: string
 };
@@ -340,6 +342,25 @@ export default class extends React.Component<Props, State> {
             icon: 'ExploreContent',
             disabled: () => !this.props.featureModel,
             action: this.action(this.props.onExpandAllFeatures)
+        }, {
+            text: i18n.t('commandPalette.developer.debug'),
+            icon: 'DeveloperTools',
+            action: this.action(() => this.props.onSetSetting({path: 'developer.debug', value: (bool: boolean) => !bool}))
+        }, {
+            text: i18n.t('commandPalette.developer.delay'),
+            icon: 'DeveloperTools',
+            action: this.actionWithArguments(
+                [{
+                    title: i18n.t('commandPalette.delay'),
+                    allowFreeform: true
+                }],
+                delayString => {
+                    const delay = parseInt(delayString);
+                    if (isNaN(delay) || delay < 0)
+                        logger.warn(() => 'invalid delay specified');
+                    else
+                        this.props.onSetSetting({path: 'developer.delay', value: delay});
+                })
         }
     ];
 

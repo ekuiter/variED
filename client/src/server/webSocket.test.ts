@@ -3,11 +3,11 @@ import {Server} from 'mock-socket';
 import constants from '../constants';
 import {MessageType} from '../types';
 import logger from '../helpers/logger';
+import {wait} from '../helpers/wait';
 
 jest.mock('../helpers/logger');
 
-const wait = (time = 10) => new Promise(resolve => window.setTimeout(resolve, time)),
-    close = (mockServer: any) => {
+const close = (mockServer: any) => {
         mockServer.clients().forEach((webSocket: WebSocket) => webSocket.close());
         mockServer.stop();
         return wait();
@@ -57,6 +57,7 @@ describe('webSocket', () => {
             handleMessage = jest.fn();
         await openWebSocket(handleMessage);
         mockServer.emit('message', '{"type":"MESSAGE_TEST"}');
+        await wait();
         expect(handleMessage).toBeCalledWith({type: 'MESSAGE_TEST'});
         await close(mockServer);
     });

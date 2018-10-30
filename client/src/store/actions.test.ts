@@ -2,6 +2,7 @@ import actions, {SERVER_SEND_MESSAGE} from './actions';
 import {FeatureDiagramLayoutType, OverlayType, MessageType, Func} from '../types';
 import constants from '../constants';
 import {sendMessage, sendBatchMessage} from '../server/webSocket';
+import {defaultSettings} from './settings';
 
 jest.mock('../server/webSocket');
 
@@ -9,11 +10,11 @@ const {propertyTypes, groupValueTypes} = constants.server;
 
 async function expectServerAction(thunk: Func, payload: any, isSendBatch = false): Promise<void> {
     const dispatch = jest.fn(action => action),
-        getState = jest.fn(() => ({})),
+        getState = jest.fn(() => ({settings: defaultSettings})),
         action = await thunk(dispatch, getState);
     expect(action).toEqual({type: SERVER_SEND_MESSAGE, payload});
     expect(dispatch).toBeCalledWith(action);
-    expect(isSendBatch ? sendBatchMessage : sendMessage).lastCalledWith(payload, undefined);
+    expect(isSendBatch ? sendBatchMessage : sendMessage).lastCalledWith(payload, undefined, 0);
 }
 
 const expectBatchServerAction = (thunk: Func, payload: any) =>

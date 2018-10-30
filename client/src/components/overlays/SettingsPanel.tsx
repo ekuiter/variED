@@ -151,10 +151,6 @@ export default class extends React.Component<SettingsPanelProps> {
                     disabled={!this.state.canReset}
                     text={i18n.t('overlays.settingsPanel.resetToDefaults')}/>
 
-                <Setting.Toggle
-                    {...props}
-                    path="debug"/>
-
                 {(featureDiagramLayout === FeatureDiagramLayoutType.verticalTree ||
                     featureDiagramLayout === FeatureDiagramLayoutType.horizontalTree) &&
                 <React.Fragment>

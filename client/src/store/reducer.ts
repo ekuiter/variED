@@ -195,10 +195,10 @@ function serverReceiveReducer(state: State, action: Action): State {
 function settingsReducer(state: State, action: Action): State {
     switch (action.type) {
         case getType(actions.settings.set):
-            if (action.payload.path === 'debug') {
+            if (action.payload.path === 'developer.debug') {
                 // just for once, we allow side-effects in a reducer: when the debug flag is set or cleared,
                 // the log level is adjusted accordingly.
-                const newDebug = typeof action.payload.value === 'function' ? action.payload.value(state.settings.debug) : action.payload.value;
+                const newDebug = typeof action.payload.value === 'function' ? action.payload.value(state.settings.developer.debug) : action.payload.value;
                 setLogLevel(newDebug ? LogLevel.info : defaultLogLevel);
             }
             return getNewState(state, 'settings', getNewSettings(state.settings, action.payload.path, action.payload.value));
