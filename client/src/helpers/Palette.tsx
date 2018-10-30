@@ -18,6 +18,7 @@ export interface PaletteItem {
 interface Props {
     isOpen: boolean,
     items: PaletteItem[],
+    placeholder?: string,
     onDismiss: () => void,
     onSubmit: (item: PaletteItem) => void,
     allowFreeform?: (value: string) => PaletteAction,
@@ -27,30 +28,44 @@ interface Props {
 };
 
 interface State {
-    value?: string
+    value?: string,
+    selectedIndex: number
 };
 
 export const getKey = (item: PaletteItem) => item.key || item.text;
 
 export default class extends React.Component<Props, State> {
     static defaultProps: Partial<Props> = {onSubmit: () => {}, itemUsage: {}};
-    state: State = {};
+    state: State = {selectedIndex: 0};
+    results: PaletteItem[];
+
+    componentDidMount() {
+        document.addEventListener('keydown', this.onKeyPress);
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener('keydown', this.onKeyPress);
+    }
 
     componentDidUpdate(prevProps: Props) {
         if (!prevProps.isOpen && this.props.isOpen)
-            this.setState({value: undefined});
+            this.setState({value: undefined, selectedIndex: 0});
+        if (this.state.selectedIndex >= this.results.length)
+            this.setState({selectedIndex: 0});
     }
 
-    onChange = (_event: any, value?: string) => this.setState({value});
+    onChange = (_event: any, value?: string) => this.setState({value, selectedIndex: 0});
 
-    onKeyPress = (event: React.KeyboardEvent) => {
-        if (event.key === 'Enter') {
-            const results = this.getSearchResults(this.state.value);
-            if (results.length > 0)
-                this.onSubmit(results[0]);
-        }
+    onKeyPress = (event: KeyboardEvent) => {
+        if (event.key === 'Enter' && this.state.selectedIndex < this.results.length)
+            this.onSubmit(this.results[this.state.selectedIndex]);
+        if ((event.key === 'ArrowUp' || event.key === 'Up') && this.state.selectedIndex > 0)
+            this.setState(({selectedIndex}) => ({selectedIndex: selectedIndex - 1}));
+        if ((event.key === 'ArrowDown' || event.key === 'Down') && this.state.selectedIndex < this.results.length - 1)
+            this.setState(({selectedIndex}) => ({selectedIndex: selectedIndex + 1}));
     };
 
+    onMouseMove = (idx: number) => () => this.setState({selectedIndex: idx});
     onClick = (item: PaletteItem) => () => this.onSubmit(item);
 
     onSubmit(item: PaletteItem) {
@@ -77,7 +92,7 @@ export default class extends React.Component<Props, State> {
     }
 
     render() {
-        const results = this.getSearchResults(this.state.value),
+        const results = this.results = this.getSearchResults(this.state.value),
             showIcons = this.props.items.some(item => typeof item.icon !== 'undefined'),
             showShortcuts = this.props.items.some(item => typeof item.shortcut !== 'undefined'),
             showBeak = this.props.items.some(item => item.action['isActionWithArguments']);
@@ -91,7 +106,7 @@ export default class extends React.Component<Props, State> {
                     <TextField borderless
                         value={this.state.value}
                         onChange={this.onChange}
-                        onKeyPress={this.onKeyPress}
+                        placeholder={this.props.placeholder}
                         styles={{
                             field: {fontSize: 21},
                             fieldGroup: {height: 48}
@@ -99,8 +114,11 @@ export default class extends React.Component<Props, State> {
                 </div>
                 <ul>
                     {results.length > 0 && this.props.items.length > 0
-                    ? results.map(item =>
-                        <li key={getKey(item)} onClick={this.onClick(item)}>
+                    ? results.map((item, idx) =>
+                        <li key={getKey(item)}
+                            onClick={this.onClick(item)}
+                            onMouseMove={this.onMouseMove(idx)}
+                            className={this.state.selectedIndex === idx ? 'selected' : undefined}>
                             {showIcons &&
                             (item.icon
                                 ? <Icon iconName={item.icon} />

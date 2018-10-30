@@ -5,7 +5,6 @@ import de.ovgu.spldev.varied.util.StringUtils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Map;
 
 public class ProjectManager {
     private static ProjectManager instance;

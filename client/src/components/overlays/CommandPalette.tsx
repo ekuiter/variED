@@ -46,15 +46,17 @@ interface State {
     rerenderPalette: number,
     getArgumentItems?: () => Promise<PaletteItem[]>,
     argumentItems?: PaletteItem[],
-    allowFreeform?: (value: string) => PaletteAction
+    allowFreeform?: (value: string) => PaletteAction,
+    title?: string
 };
 
 type PaletteItemDescriptor = Omit<PaletteItem, 'action'> & {key?: string} | string;
 type PaletteItemsFunction = ((...args: string[]) => PaletteItemDescriptor[] | Promise<PaletteItemDescriptor[]>);
 
 interface ArgumentDescriptor {
-    items?: PaletteItemsFunction,
-    allowFreeform?: boolean
+    items: PaletteItemsFunction,
+    allowFreeform?: boolean,
+    title?: string
 };
 
 export default class extends React.Component<Props, State> {
@@ -65,7 +67,7 @@ export default class extends React.Component<Props, State> {
 
     componentDidUpdate(prevProps: Props, prevState: State) {
         if (!prevProps.isOpen && this.props.isOpen)
-            this.setState({argumentItems: undefined, allowFreeform: undefined});
+            this.setState({getArgumentItems: undefined, argumentItems: undefined, allowFreeform: undefined, title: undefined});
 
         if (this.state.getArgumentItems &&
             (prevState.getArgumentItems !== this.state.getArgumentItems ||
@@ -111,7 +113,8 @@ export default class extends React.Component<Props, State> {
                         item = {text: item};
                     return {...item, action: recurse(item.key || item.text)};
                 })),
-                allowFreeform: !!argumentDescriptor.allowFreeform ? recurse : undefined
+                allowFreeform: !!argumentDescriptor.allowFreeform ? recurse : undefined,
+                title: argumentDescriptor.title
             });
         };
         wrappedAction.isActionWithArguments = true;
@@ -122,7 +125,10 @@ export default class extends React.Component<Props, State> {
         return {
             disabled: () => !this.props.featureModel,
             action: this.actionWithArguments(
-                [() => this.props.featureModel!.getVisibleFeatureNames()],
+                [{
+                    title: i18n.t('commandPalette.feature'),
+                    items: () => this.props.featureModel!.getVisibleFeatureNames()
+                }],
                 action),
             ...command
         };
@@ -138,16 +144,19 @@ export default class extends React.Component<Props, State> {
             icon: 'JoinOnlineMeeting',
             disabled: () => this.props.artifactPaths.length === 0,
             action: this.actionWithArguments(
-                [
-                    () => arrayUnique(this.props.artifactPaths.map(artifactPath => artifactPath.project)),
-                    (project: string) =>
+                [{
+                    title: i18n.t('commandPalette.project'),
+                    items: () => arrayUnique(this.props.artifactPaths.map(artifactPath => artifactPath.project))
+                }, {
+                    title: i18n.t('commandPalette.artifact'),
+                    items: (project: string) =>
                         this.props.artifactPaths
                             .filter(artifactPath => artifactPath.project === project)
                             .map(artifactPath => ({
                                 text: artifactPath.artifact,
                                 icon: this.isEditing(artifactPath) ? 'FolderOpen' : 'Folder'
                             }))
-                ],
+                }],
                 (project, artifact) => {
                     if (this.isEditing({project, artifact}))
                         this.props.onSetCurrentArtifactPath({artifactPath: {project, artifact}});
@@ -160,15 +169,18 @@ export default class extends React.Component<Props, State> {
             icon: 'JoinOnlineMeeting',
             disabled: () => this.props.collaborativeSessions.length === 0,
             action: this.actionWithArguments(
-                [
-                    () => arrayUnique(
+                [{
+                    title: i18n.t('commandPalette.project'),
+                    items: () => arrayUnique(
                         this.props.collaborativeSessions
-                            .map(collaborativeSession => collaborativeSession.artifactPath.project)),
-                    (project: string) =>
-                        this.props.collaborativeSessions
-                            .filter(collaborativeSession => collaborativeSession.artifactPath.project === project)
-                            .map(collaborativeSession => collaborativeSession.artifactPath.artifact)
-                ],
+                            .map(collaborativeSession => collaborativeSession.artifactPath.project))
+                }, {
+                    title: i18n.t('commandPalette.artifact'),
+                    items: (project: string) =>
+                    this.props.collaborativeSessions
+                        .filter(collaborativeSession => collaborativeSession.artifactPath.project === project)
+                        .map(collaborativeSession => collaborativeSession.artifactPath.artifact)
+                }],
                 (project, artifact) => this.props.onLeave({artifactPath: {project, artifact}}))
         },
         {
@@ -195,7 +207,10 @@ export default class extends React.Component<Props, State> {
             icon: 'Share',
             disabled: () => !this.props.featureModel,
             action: this.actionWithArguments(
-                [() => Object.values(FormatType).map(format => ({text: i18n.t('commandPalette.featureDiagram', format), key: format}))],
+                [{
+                    title: i18n.t('commandPalette.format'),
+                    items: () => Object.values(FormatType).map(format => ({text: i18n.t('commandPalette.featureDiagram', format), key: format}))
+                }],
                 formatString => {
                     const format = FormatType[formatString];
                     if (canExport(this.props.featureDiagramLayout!, format))
@@ -205,7 +220,10 @@ export default class extends React.Component<Props, State> {
             text: i18n.t('commandPalette.featureDiagram.setLayout'),
             disabled: () => !this.props.featureModel,
             action: this.actionWithArguments(
-                [() => Object.values(FeatureDiagramLayoutType).map(layout => ({text: i18n.t('commands.featureDiagram', layout), key: layout}))],
+                [{
+                    title: i18n.t('commandPalette.layout'),
+                    items: () => Object.values(FeatureDiagramLayoutType).map(layout => ({text: i18n.t('commands.featureDiagram', layout), key: layout}))
+                }],
                 layoutString => this.props.onSetFeatureDiagramLayout({layout: FeatureDiagramLayoutType[layoutString]}))
         }, {
             key: 'fitToScreen',
@@ -332,6 +350,7 @@ export default class extends React.Component<Props, State> {
                 items={items}
                 onDismiss={this.props.onDismiss}
                 allowFreeform={this.state.allowFreeform}
+                placeholder={this.state.title}
                 onSubmit={this.onSubmit}
                 itemUsage={this.state.argumentItems ? undefined : this.commandUsage}/>
         );

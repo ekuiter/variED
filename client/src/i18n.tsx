@@ -28,9 +28,9 @@ const translationMap = {
     noCollaborativeSessions: (onShowCommandPalette: () => void) => (
         <div className="standout">
             <div>
-                <p>You are not participating in any collaborative session yet.</p>
-                <p>Open the <Link onClick={onShowCommandPalette}><strong>command palette</strong></Link> <strong>(
-                {getShortcutText('commandPalette')})</strong> to join a collaborative session.</p>
+                <p>You are not currently participating in any collaborative session.</p>
+                <p>To join one, open the <Link onClick={onShowCommandPalette}><strong>command palette</strong></Link> <strong>(
+                {getShortcutText('commandPalette')})</strong>.</p>
             </div>
         </div>
     ),
@@ -99,6 +99,11 @@ const translationMap = {
         }
     },
     commandPalette: {
+        project: 'Project',
+        artifact: 'Artifact',
+        feature: 'Feature',
+        format: 'Format',
+        layout: 'Layout',
         join: 'Join collaborative session',
         leave: 'Leave collaborative session',
         settings: 'Settings',

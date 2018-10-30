@@ -67,7 +67,7 @@ textarea {
     cursor: default;
 }
 
-.palette ul li:not(.notFound):hover {
+.palette ul li.selected {
     background-color: #eee;
 }
 

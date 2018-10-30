@@ -10,7 +10,7 @@ import actions from '../../store/actions';
 import {State, StateDerivedProps} from '../../store/types';
 import logger from '../../helpers/logger';
 import i18n from '../../i18n';
-import {OverlayType} from 'src/types';
+import {OverlayType} from '../../types';
 
 export default connect(
     logger.mapStateToProps('FeatureDiagramContainer', (state: State): StateDerivedProps => {
