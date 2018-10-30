@@ -108,8 +108,8 @@ export default class extends React.Component<Props, State> {
                             {item.text}
                             {showBeak &&
                             (item.action['isActionWithArguments']
-                                ? <span>&gt;</span>
-                                : <span>&nbsp;</span>)}
+                                ? <span><Icon iconName="ChevronRightMed"/></span>
+                                : <span><i>&nbsp;</i></span>)}
                             {showShortcuts &&
                             <span>{item.shortcut}</span>}
                         </li>)

@@ -114,6 +114,7 @@ const commands = {
         fitToScreen: (onFitToScreen: OnFitToScreenFunction) => ({
             key: 'fitToScreen',
             text: i18n.t('commands.featureDiagram.fitToScreen'),
+            iconProps: {iconName: 'FullScreen'},
             onClick: onFitToScreen
         }),
         feature: {

@@ -79,9 +79,8 @@ textarea {
 
 .palette ul li span {
     color: rgb(102, 102, 102);
-    padding-left: 16px;
     float: right;
-    min-width: 12px;
+    text-align: right;
 }
 
 .standout {

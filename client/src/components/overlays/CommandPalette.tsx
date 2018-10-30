@@ -135,6 +135,7 @@ export default class extends React.Component<Props, State> {
     commands: PaletteItem[] = [
         {
             text: i18n.t('commandPalette.join'),
+            icon: 'JoinOnlineMeeting',
             disabled: () => this.props.artifactPaths.length === 0,
             action: this.actionWithArguments(
                 [
@@ -156,6 +157,7 @@ export default class extends React.Component<Props, State> {
         },
         {
             text: i18n.t('commandPalette.leave'),
+            icon: 'JoinOnlineMeeting',
             disabled: () => this.props.collaborativeSessions.length === 0,
             action: this.actionWithArguments(
                 [
@@ -207,6 +209,7 @@ export default class extends React.Component<Props, State> {
                 layoutString => this.props.onSetFeatureDiagramLayout({layout: FeatureDiagramLayoutType[layoutString]}))
         }, {
             key: 'fitToScreen',
+            icon: 'FullScreen',
             text: i18n.t('commandPalette.featureDiagram.fitToScreen'),
             disabled: () => !this.props.featureModel,
             action: this.action(this.props.onFitToScreen)
