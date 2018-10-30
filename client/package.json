@@ -47,7 +47,7 @@
     "enzyme": "^3.7.0",
     "enzyme-adapter-react-16": "^1.6.0",
     "enzyme-to-json": "^3.3.4",
-    "mock-socket": "^8.0.4",
+    "mock-socket": "^8.0.5",
     "redux-devtools": "^3.4.1",
     "tslint": "^5.11.0",
     "typescript": "^3.1.3"
