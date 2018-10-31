@@ -1,5 +1,5 @@
 task build {
-    dependsOn 'clean', 'client:build', 'server:build'
+    dependsOn ':clean', ':client:build', ':server:build'
     doLast() {
         copy {
             from 'server/build/libs'
@@ -15,3 +15,7 @@ task clean {
         delete 'build'
     }
 }
+
+tasks.getByPath(':client:build').mustRunAfter ':clean'
+tasks.getByPath(':server:build').mustRunAfter ':clean'
+tasks.getByPath(':server:build').mustRunAfter ':client:build'

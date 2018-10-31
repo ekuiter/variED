@@ -7,10 +7,11 @@ node {
     version = '8.11.4'
 }
 
+yarn.mustRunAfter 'clean'
+yarn_build.mustRunAfter 'yarn'
+
 task build {
-    dependsOn 'clean'
-    dependsOn 'yarn'
-    dependsOn 'yarn_build'
+    dependsOn 'clean', 'yarn', 'yarn_build'
     doLast {
         copy {
             from 'build'
