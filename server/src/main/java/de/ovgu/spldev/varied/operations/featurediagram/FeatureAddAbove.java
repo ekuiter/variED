@@ -1,14 +1,13 @@
-package de.ovgu.spldev.varied.statechanges.featurediagram;
+package de.ovgu.spldev.varied.operations.featurediagram;
 
 import de.ovgu.featureide.fm.core.base.IFeature;
-import de.ovgu.featureide.fm.core.base.IFeatureModel;
 import de.ovgu.featureide.fm.core.base.IFeatureStructure;
 import de.ovgu.featureide.fm.core.base.impl.FMFactoryManager;
 import de.ovgu.spldev.varied.StateContext;
 import de.ovgu.spldev.varied.util.FeatureModelUtils;
 import de.ovgu.spldev.varied.util.FeatureUtils;
 import de.ovgu.spldev.varied.messaging.Message;
-import de.ovgu.spldev.varied.statechanges.StateChange;
+import de.ovgu.spldev.varied.operations.Operation;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -17,7 +16,7 @@ import java.util.TreeMap;
 import static de.ovgu.featureide.fm.core.localization.StringTable.DEFAULT_FEATURE_LAYER_CAPTION;
 
 // adapted from CreateFeatureAboveOperation
-public class FeatureAddAbove extends StateChange {
+public class FeatureAddAbove extends Operation {
     private StateContext.FeatureModel stateContext;
     private IFeature newCompound;
     private IFeature child;

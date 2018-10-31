@@ -5,7 +5,7 @@ import com.google.gson.typeadapters.RuntimeTypeAdapterFactory;
 import de.ovgu.spldev.varied.Artifact;
 import de.ovgu.spldev.varied.StateContext;
 import de.ovgu.spldev.varied.util.StringUtils;
-import de.ovgu.spldev.varied.statechanges.StateChange;
+import de.ovgu.spldev.varied.operations.Operation;
 
 import java.util.stream.Stream;
 
@@ -100,21 +100,21 @@ abstract public class Message {
 
     // may be received, applied, undone and redone
     public interface IUndoable extends IDecodable {
-        StateChange getStateChange(StateContext stateContext);
+        Operation getOperation(StateContext stateContext);
     }
 
     // may be received, applied, undone and redone as a single message,
     // but also as part of a batch message
     public interface IBatchUndoable extends IUndoable {
-        default StateChange getStateChange(StateContext stateContext, Object batchContext) {
-            return getStateChange(stateContext);
+        default Operation getOperation(StateContext stateContext, Object batchContext) {
+            return getOperation(stateContext);
         }
 
         default Object createBatchContext() {
             return null;
         }
 
-        default Object nextBatchContext(StateChange stateChange, Object batchContext) {
+        default Object nextBatchContext(Operation operation, Object batchContext) {
             return null;
         }
     }

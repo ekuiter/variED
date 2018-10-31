@@ -7,7 +7,7 @@ import java.util.Objects;
 
 public abstract class StateContext {
     protected Artifact.Path artifactPath;
-    private StateChangeStack stateChangeStack = new StateChangeStack();
+    private OperationStack operationStack = new OperationStack();
 
     StateContext(Artifact.Path artifactPath) {
         this.artifactPath = artifactPath;
@@ -17,8 +17,8 @@ public abstract class StateContext {
         return artifactPath;
     }
 
-    public StateChangeStack getStateChangeStack() {
-        return stateChangeStack;
+    public OperationStack getOperationStack() {
+        return operationStack;
     }
 
     abstract void sendInitialState(User user);

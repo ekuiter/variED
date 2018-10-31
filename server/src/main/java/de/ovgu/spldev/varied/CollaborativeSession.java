@@ -2,7 +2,7 @@ package de.ovgu.spldev.varied;
 
 import de.ovgu.spldev.varied.messaging.Api;
 import de.ovgu.spldev.varied.messaging.Message;
-import de.ovgu.spldev.varied.statechanges.StateChange;
+import de.ovgu.spldev.varied.operations.Operation;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -62,18 +62,18 @@ public class CollaborativeSession {
         Message.IDecodable decodableMessage = (Message.IDecodable) message;
         if (!decodableMessage.isValid(stateContext))
             throw new RuntimeException("invalid message " + message);
-        Message.IEncodable[] stateChangeMessages = null;
+        Message.IEncodable[] operationMessages = null;
         if (message instanceof Message.IApplicable) {
             Message.IApplicable applicableMessage = (Message.IApplicable) message;
-            stateChangeMessages = applicableMessage.apply(stateContext);
+            operationMessages = applicableMessage.apply(stateContext);
         } else if (message instanceof Message.IUndoable) {
             Message.IUndoable undoableMessage = (Message.IUndoable) message;
-            StateChange stateChange = undoableMessage.getStateChange(stateContext);
-            if (stateChange != null)
-                stateChangeMessages = stateContext.getStateChangeStack().apply(stateChange);
+            Operation operation = undoableMessage.getOperation(stateContext);
+            if (operation != null)
+                operationMessages = stateContext.getOperationStack().apply(operation);
         } else
             throw new RuntimeException("message can not be processed");
-        if (stateChangeMessages != null)
-            broadcast(stateChangeMessages);
+        if (operationMessages != null)
+            broadcast(operationMessages);
     }
 }

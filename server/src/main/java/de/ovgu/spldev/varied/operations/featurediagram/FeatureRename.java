@@ -1,14 +1,14 @@
-package de.ovgu.spldev.varied.statechanges.featurediagram;
+package de.ovgu.spldev.varied.operations.featurediagram;
 
 import de.ovgu.spldev.varied.StateContext;
 import de.ovgu.spldev.varied.messaging.Api;
 import de.ovgu.spldev.varied.messaging.Message;
-import de.ovgu.spldev.varied.statechanges.StateChange;
+import de.ovgu.spldev.varied.operations.Operation;
 import de.ovgu.spldev.varied.util.FeatureUtils;
 import de.ovgu.spldev.varied.util.StringUtils;
 
 // adapted from RenameFeatureOperation
-public class FeatureRename extends StateChange {
+public class FeatureRename extends Operation {
     private StateContext.FeatureModel stateContext;
     private final String oldName;
     private final String newName;

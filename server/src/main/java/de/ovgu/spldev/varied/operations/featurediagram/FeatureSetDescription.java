@@ -1,17 +1,16 @@
-package de.ovgu.spldev.varied.statechanges.featurediagram;
+package de.ovgu.spldev.varied.operations.featurediagram;
 
 import de.ovgu.featureide.fm.core.base.IFeature;
-import de.ovgu.featureide.fm.core.base.IFeatureModel;
 import de.ovgu.spldev.varied.StateContext;
 import de.ovgu.spldev.varied.util.FeatureModelUtils;
 import de.ovgu.spldev.varied.util.FeatureUtils;
 import de.ovgu.spldev.varied.messaging.Message;
-import de.ovgu.spldev.varied.statechanges.StateChange;
+import de.ovgu.spldev.varied.operations.Operation;
 import de.ovgu.spldev.varied.util.StringUtils;
 
 import java.util.Objects;
 
-public class FeatureSetDescription extends StateChange {
+public class FeatureSetDescription extends Operation {
     private StateContext.FeatureModel stateContext;
     private IFeature feature;
     private String oldDescription, description;

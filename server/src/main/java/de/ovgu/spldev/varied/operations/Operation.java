@@ -1,8 +1,8 @@
-package de.ovgu.spldev.varied.statechanges;
+package de.ovgu.spldev.varied.operations;
 
 import de.ovgu.spldev.varied.messaging.Message;
 
-public abstract class StateChange {
+public abstract class Operation {
     private boolean applyWasSuccessful = true, undoWasSuccessful = true;
 
     public final Message.IEncodable[] apply() {
@@ -15,7 +15,7 @@ public abstract class StateChange {
                 throw t;
             }
         else
-            throw new RuntimeException("can not redo an invalid state change");
+            throw new RuntimeException("can not redo an invalid operation");
         return messages;
     }
 
@@ -29,7 +29,7 @@ public abstract class StateChange {
                 throw t;
             }
         else
-            throw new RuntimeException("can not undo an invalid state change");
+            throw new RuntimeException("can not undo an invalid operation");
         return messages;
     }
 
@@ -40,7 +40,7 @@ public abstract class StateChange {
     protected abstract Message.IEncodable[] _apply();
     // contract: do not throw if undo was successful, throw indicates that redo is invalid
     // throw also indicates that _the feature model was not changed_ (should be atomic).
-    // this MAY NOT normally throw because undoing a valid state change must always be possible!
+    // this MAY NOT normally throw because undoing a valid operation must always be possible!
 
     protected abstract Message.IEncodable[] _undo();
 

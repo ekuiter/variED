@@ -5,14 +5,14 @@ import de.ovgu.featureide.fm.core.base.IFeatureModel;
 import de.ovgu.spldev.varied.Artifact;
 import de.ovgu.spldev.varied.StateContext;
 import de.ovgu.spldev.varied.User;
-import de.ovgu.spldev.varied.statechanges.StateChange;
-import de.ovgu.spldev.varied.statechanges.featurediagram.*;
+import de.ovgu.spldev.varied.operations.Operation;
+import de.ovgu.spldev.varied.operations.featurediagram.*;
 
 import java.util.LinkedList;
 
 /**
  * To add a new kind of message: Add a type below and create a camel-cased inner class
- * that derives Message.IEncodable or Message.IDecodable. Possibly also add a state change.
+ * that derives Message.IEncodable or Message.IDecodable. Possibly also add an operation.
  */
 public class Api {
     /**
@@ -83,13 +83,13 @@ public class Api {
         }
 
         public boolean isValid(StateContext stateContext) {
-            if (!stateContext.getStateChangeStack().canUndo())
+            if (!stateContext.getOperationStack().canUndo())
                 throw new RuntimeException("can not undo");
             return true;
         }
 
         public IEncodable[] apply(StateContext stateContext) {
-            return stateContext.getStateChangeStack().undo();
+            return stateContext.getOperationStack().undo();
         }
     }
 
@@ -99,13 +99,13 @@ public class Api {
         }
 
         public boolean isValid(StateContext stateContext) {
-            if (!stateContext.getStateChangeStack().canRedo())
+            if (!stateContext.getOperationStack().canRedo())
                 throw new RuntimeException("can not redo");
             return true;
         }
 
         public IEncodable[] apply(StateContext stateContext) {
-            return stateContext.getStateChangeStack().redo();
+            return stateContext.getOperationStack().redo();
         }
     }
 
@@ -144,8 +144,8 @@ public class Api {
             return valid;
         }
 
-        public StateChange getStateChange(StateContext stateContext) {
-            return new de.ovgu.spldev.varied.statechanges.Batch(stateContext, getMessages());
+        public Operation getOperation(StateContext stateContext) {
+            return new de.ovgu.spldev.varied.operations.Batch(stateContext, getMessages());
         }
     }
 
@@ -168,7 +168,7 @@ public class Api {
             this.belowFeature = belowFeature;
         }
 
-        public StateChange getStateChange(StateContext stateContext) {
+        public Operation getOperation(StateContext stateContext) {
             return new FeatureAddBelow((StateContext.FeatureModel) stateContext, belowFeature);
         }
     }
@@ -182,7 +182,7 @@ public class Api {
             this.aboveFeatures = aboveFeatures;
         }
 
-        public StateChange getStateChange(StateContext stateContext) {
+        public Operation getOperation(StateContext stateContext) {
             return new FeatureAddAbove((StateContext.FeatureModel) stateContext, aboveFeatures);
         }
     }
@@ -196,7 +196,7 @@ public class Api {
             this.feature = feature;
         }
 
-        public StateChange getStateChange(StateContext stateContext) {
+        public Operation getOperation(StateContext stateContext) {
             return new FeatureRemove((StateContext.FeatureModel) stateContext, feature);
         }
     }
@@ -210,11 +210,11 @@ public class Api {
             this.feature = feature;
         }
 
-        public StateChange getStateChange(StateContext stateContext) {
+        public Operation getOperation(StateContext stateContext) {
             return new FeatureRemoveBelow((StateContext.FeatureModel) stateContext, feature);
         }
 
-        public StateChange getStateChange(StateContext stateContext, Object batchContext) {
+        public Operation getOperation(StateContext stateContext, Object batchContext) {
             return new FeatureRemoveBelow((StateContext.FeatureModel) stateContext, feature, batchContext);
         }
 
@@ -222,8 +222,8 @@ public class Api {
             return FeatureRemoveBelow.createBatchContext();
         }
 
-        public Object nextBatchContext(StateChange stateChange, Object batchContext) {
-            return ((FeatureRemoveBelow) stateChange).nextBatchContext(batchContext);
+        public Object nextBatchContext(Operation operation, Object batchContext) {
+            return ((FeatureRemoveBelow) operation).nextBatchContext(batchContext);
         }
     }
 
@@ -237,7 +237,7 @@ public class Api {
             this.newFeature = newFeature;
         }
 
-        public StateChange getStateChange(StateContext stateContext) {
+        public Operation getOperation(StateContext stateContext) {
             return new FeatureRename((StateContext.FeatureModel) stateContext, oldFeature, newFeature);
         }
     }
@@ -252,7 +252,7 @@ public class Api {
             this.description = description;
         }
 
-        public StateChange getStateChange(StateContext stateContext) {
+        public Operation getOperation(StateContext stateContext) {
             return new FeatureSetDescription((StateContext.FeatureModel) stateContext, feature, description);
         }
     }
@@ -268,11 +268,11 @@ public class Api {
             this.value = value;
         }
 
-        public StateChange getStateChange(StateContext stateContext) {
+        public Operation getOperation(StateContext stateContext) {
             return new FeatureSetProperty((StateContext.FeatureModel) stateContext, feature, property, value);
         }
 
-        public StateChange getStateChange(StateContext stateContext, Object batchContext) {
+        public Operation getOperation(StateContext stateContext, Object batchContext) {
             return new FeatureSetProperty((StateContext.FeatureModel) stateContext, feature, property, value, batchContext);
         }
 
@@ -280,7 +280,7 @@ public class Api {
             return property; // only allow the same property for all messages in the batch message
         }
 
-        public Object nextBatchContext(StateChange stateChange, Object batchContext) {
+        public Object nextBatchContext(Operation operation, Object batchContext) {
             return property; // return the current property, it should equal the next message's property
         }
     }

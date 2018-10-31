@@ -1,4 +1,4 @@
-package de.ovgu.spldev.varied.statechanges.featurediagram;
+package de.ovgu.spldev.varied.operations.featurediagram;
 
 import de.ovgu.featureide.fm.core.base.IFeature;
 import de.ovgu.featureide.fm.core.base.IFeatureModel;
@@ -7,14 +7,14 @@ import de.ovgu.spldev.varied.StateContext;
 import de.ovgu.spldev.varied.util.FeatureModelUtils;
 import de.ovgu.spldev.varied.util.FeatureUtils;
 import de.ovgu.spldev.varied.messaging.Message;
-import de.ovgu.spldev.varied.statechanges.BatchStateChange;
+import de.ovgu.spldev.varied.operations.BatchOperation;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 // adapted from FeatureTreeDeleteOperation
-public class FeatureRemoveBelow extends BatchStateChange {
+public class FeatureRemoveBelow extends BatchOperation {
     private StateContext.FeatureModel stateContext;
     private LinkedList<IFeature> featureList = new LinkedList<>();
     private LinkedList<IFeature> containedFeatureList = new LinkedList<>();
@@ -29,7 +29,7 @@ public class FeatureRemoveBelow extends BatchStateChange {
     public FeatureRemoveBelow(StateContext.FeatureModel stateContext, String feature, Object batchContext) {
         this.stateContext = stateContext;
 
-        // do nothing if the feature has already been removed by another state change in a batch message
+        // do nothing if the feature has already been removed by another operation in a batch message
         if (stateContext.getFeatureModel().getFeature(feature) == null && batchContext != null &&
                 ((LinkedList<String>) batchContext).contains(feature))
             return;
@@ -50,7 +50,7 @@ public class FeatureRemoveBelow extends BatchStateChange {
                 } else if (feat.getStructure().isAlternative()) {
                     alternativeList.add(feat);
                 }
-                addStateChange(new FeatureRemove(stateContext, feat));
+                addOperation(new FeatureRemove(stateContext, feat));
             }
         } else {
             final String containedFeatures = containedFeatureList.toString();

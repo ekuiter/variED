@@ -1,20 +1,19 @@
-package de.ovgu.spldev.varied.statechanges.featurediagram;
+package de.ovgu.spldev.varied.operations.featurediagram;
 
 import de.ovgu.featureide.fm.core.base.IConstraint;
 import de.ovgu.featureide.fm.core.base.IFeature;
 import de.ovgu.featureide.fm.core.base.IFeatureModel;
-import de.ovgu.featureide.fm.core.base.IFeatureStructure;
 import de.ovgu.featureide.fm.core.functional.Functional;
 import de.ovgu.spldev.varied.StateContext;
 import de.ovgu.spldev.varied.util.FeatureModelUtils;
 import de.ovgu.spldev.varied.util.FeatureUtils;
 import de.ovgu.spldev.varied.messaging.Message;
-import de.ovgu.spldev.varied.statechanges.StateChange;
+import de.ovgu.spldev.varied.operations.Operation;
 
 import java.util.LinkedList;
 
 // adapted from DeleteFeatureOperation
-public class FeatureRemove extends StateChange {
+public class FeatureRemove extends Operation {
     private StateContext.FeatureModel stateContext;
     private IFeature feature;
     private IFeature oldParent;
