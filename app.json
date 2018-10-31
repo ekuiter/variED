@@ -1,6 +1,14 @@
 {
-  "name": "variED",
-  "description": "The variability editor",
-  "repository": "https://github.com/ekuiter/variED",
-  "keywords": ["variability", "feature modeling", "collaboration"]
+    "name": "variED",
+    "description": "The variability editor",
+    "repository": "https://github.com/ekuiter/variED",
+    "keywords": ["variability", "feature modeling", "collaboration"],
+    "buildpacks": [
+        {
+            "url": "heroku/nodejs"
+        },
+        {
+            "url": "heroku/gradle"
+        }
+    ]
 }

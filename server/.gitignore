@@ -12,3 +12,4 @@
 /.git_private
 /src/main/webapp/*
 !/src/main/webapp/WEB-INF
+/.jsweet

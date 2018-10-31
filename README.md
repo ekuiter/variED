@@ -20,8 +20,6 @@ build process.
 
 - `./gradlew build` builds a WAR file that can be deployed on Java servlet
   containers, the `variED.sh` script runs the WAR file in Apache Tomcat
-- `./gradlew client:build` and `./gradlew server:build` build only the client or
-  server
 - `yarn start` inside the `client` directory runs the client on
   `http://localhost:3000`
 - `./gradlew server:run` runs the server on `http://localhost:8080`

@@ -1,5 +1,9 @@
 task build {
-    dependsOn ':clean', ':client:build', ':server:build'
+    dependsOn ':clean'
+    dependsOn ':client:clean'
+    dependsOn ':server:clean'
+    dependsOn ':client:build'
+    dependsOn ':server:build'
     doLast() {
         copy {
             from 'server/build/libs'
@@ -8,6 +12,11 @@ task build {
     }
 }
 
+tasks.getByPath(':client:clean').mustRunAfter ':clean'
+tasks.getByPath(':server:clean').mustRunAfter ':client:clean'
+tasks.getByPath(':client:build').mustRunAfter ':server:clean'
+tasks.getByPath(':server:build').mustRunAfter ':client:build'
+
 task stage(dependsOn: 'build')
 
 task clean {
@@ -15,7 +24,3 @@ task clean {
         delete 'build'
     }
 }
-
-tasks.getByPath(':client:build').mustRunAfter ':clean'
-tasks.getByPath(':server:build').mustRunAfter ':clean'
-tasks.getByPath(':server:build').mustRunAfter ':client:build'

@@ -16,6 +16,7 @@ import reducer from './store/reducer';
 import {initializeIcons} from 'office-ui-fabric-react/lib/Icons';
 import actions from './store/actions';
 import {LogLevel, setLogLevel} from './helpers/logger';
+import {Test} from './common/Test';
 
 if (window.location.protocol !== 'http:')
     window.location.protocol = 'http:'; // TODO: hack until we support WSS
@@ -35,3 +36,5 @@ ReactDOM.render((
 ), document.getElementById('root'));
 
 store.dispatch<any>(actions.server.join({artifactPath: {project: 'FeatureModeling', artifact: 'CTV'}}));
+
+Test.doSomething();
