@@ -4,7 +4,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.typeadapters.RuntimeTypeAdapterFactory;
 import de.ovgu.spldev.varied.Artifact;
 import de.ovgu.spldev.varied.StateContext;
-import de.ovgu.spldev.varied.util.StringUtils;
+import de.ovgu.spldev.varied.common.util.StringUtils;
 import de.ovgu.spldev.varied.operations.Operation;
 
 import java.util.stream.Stream;

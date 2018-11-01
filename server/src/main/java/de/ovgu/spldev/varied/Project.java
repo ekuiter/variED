@@ -1,10 +1,9 @@
 package de.ovgu.spldev.varied;
 
-import de.ovgu.spldev.varied.util.StringUtils;
+import de.ovgu.spldev.varied.common.util.StringUtils;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Set;
 
 public class Project {
     private String name;

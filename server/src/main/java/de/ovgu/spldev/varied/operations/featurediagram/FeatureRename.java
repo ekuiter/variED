@@ -4,8 +4,8 @@ import de.ovgu.spldev.varied.StateContext;
 import de.ovgu.spldev.varied.messaging.Api;
 import de.ovgu.spldev.varied.messaging.Message;
 import de.ovgu.spldev.varied.operations.Operation;
-import de.ovgu.spldev.varied.util.FeatureUtils;
-import de.ovgu.spldev.varied.util.StringUtils;
+import de.ovgu.spldev.varied.common.util.FeatureUtils;
+import de.ovgu.spldev.varied.common.util.StringUtils;
 
 // adapted from RenameFeatureOperation
 public class FeatureRename extends Operation {

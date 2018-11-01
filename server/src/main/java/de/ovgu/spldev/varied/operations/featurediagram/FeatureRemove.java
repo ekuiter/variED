@@ -6,7 +6,7 @@ import de.ovgu.featureide.fm.core.base.IFeatureModel;
 import de.ovgu.featureide.fm.core.functional.Functional;
 import de.ovgu.spldev.varied.StateContext;
 import de.ovgu.spldev.varied.util.FeatureModelUtils;
-import de.ovgu.spldev.varied.util.FeatureUtils;
+import de.ovgu.spldev.varied.common.util.FeatureUtils;
 import de.ovgu.spldev.varied.messaging.Message;
 import de.ovgu.spldev.varied.operations.Operation;
 

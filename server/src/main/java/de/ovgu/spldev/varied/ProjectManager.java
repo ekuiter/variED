@@ -1,6 +1,6 @@
 package de.ovgu.spldev.varied;
 
-import de.ovgu.spldev.varied.util.StringUtils;
+import de.ovgu.spldev.varied.common.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;

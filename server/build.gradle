@@ -51,9 +51,11 @@ jsweet {
     outDir = file('../client/src/common')
     tsOut = file('.jsweet/ts')
     workingDir = file('.jsweet')
-    declaration = true
     noRootDirectories = true
     module = 'es2015'
+    targetVersion = 'ES6'
+    // this is needed because we bridge FeatureIDE manually at runtime
+    ignoreTypeScriptErrors = true
 }
 
 task copyWebappRunner {

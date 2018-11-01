@@ -1,10 +1,12 @@
-package de.ovgu.spldev.varied.util;
+package de.ovgu.spldev.varied.common.util;
 
 import de.ovgu.featureide.fm.core.base.IFeature;
 import de.ovgu.featureide.fm.core.base.IFeatureModel;
 import de.ovgu.featureide.fm.core.base.IFeatureStructure;
 
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Set;
 import java.util.stream.Stream;
 
 public class FeatureUtils {
@@ -25,10 +27,12 @@ public class FeatureUtils {
     }
 
     public static boolean requireSiblings(IFeatureModel featureModel, String[] features) {
-        if (Stream.of(features)
-                .map(feature -> featureModel.getFeature(feature).getStructure().getParent())
-                .distinct().count() > 1)
-            throw new RuntimeException("the given features are not adjacent");
+        if (features.length == 0)
+            return true;
+        IFeatureStructure parent = featureModel.getFeature(features[0]).getStructure().getParent();
+        for (String feature : features)
+            if (featureModel.getFeature(feature).getStructure().getParent() != parent)
+                throw new RuntimeException("the given features are not adjacent");
         return true;
     }
 
@@ -39,4 +43,10 @@ public class FeatureUtils {
         });
     }
 
+    public static Set<String> getFeatureNames(IFeatureModel featureModel) {
+        HashSet<String> featureNames = new HashSet<>();
+        for (IFeature feature : featureModel.getFeatures())
+            featureNames.add(feature.getName());
+        return featureNames;
+    }
 }

@@ -41,6 +41,13 @@ modeling.
 
 The client-server interface is described in [API.md](API.md).
 
+Parts of the server code are reused in the client (`common` package) by
+transpiling them to JavaScript. Because of this, classes in the `common` package
+may only use certain APIs (`java.util.*`, a subset of the FeatureIDE API
+implemented in the client, and other classes in the `common` package). When in
+development, `./gradlew server:transpileCommon` has to be run manually whenever
+a `common` class is changed (this is not needed when building).
+
 ### IDE setup
 
 These are some notes if you want to set up development.

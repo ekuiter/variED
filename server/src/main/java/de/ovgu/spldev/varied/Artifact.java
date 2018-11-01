@@ -3,7 +3,7 @@ package de.ovgu.spldev.varied;
 import com.google.gson.annotations.Expose;
 import de.ovgu.featureide.fm.core.base.IFeatureModel;
 import de.ovgu.spldev.varied.util.FeatureModelUtils;
-import de.ovgu.spldev.varied.util.StringUtils;
+import de.ovgu.spldev.varied.common.util.StringUtils;
 
 import java.util.Objects;
 

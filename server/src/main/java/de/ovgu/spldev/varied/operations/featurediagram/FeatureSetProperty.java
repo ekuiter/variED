@@ -6,8 +6,8 @@ import de.ovgu.spldev.varied.StateContext;
 import de.ovgu.spldev.varied.util.FeatureModelUtils;
 import de.ovgu.spldev.varied.messaging.Message;
 import de.ovgu.spldev.varied.operations.Operation;
-import de.ovgu.spldev.varied.util.StringUtils;
-import de.ovgu.spldev.varied.util.FeatureUtils;
+import de.ovgu.spldev.varied.common.util.StringUtils;
+import de.ovgu.spldev.varied.common.util.FeatureUtils;
 
 import java.util.LinkedList;
 import java.util.Objects;
