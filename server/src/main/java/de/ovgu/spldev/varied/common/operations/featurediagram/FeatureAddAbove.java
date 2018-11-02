@@ -3,6 +3,7 @@ package de.ovgu.spldev.varied.common.operations.featurediagram;
 import de.ovgu.featureide.fm.core.base.IFeature;
 import de.ovgu.featureide.fm.core.base.IFeatureModel;
 import de.ovgu.featureide.fm.core.base.IFeatureStructure;
+import de.ovgu.spldev.varied.common.operations.Operation;
 import de.ovgu.spldev.varied.common.util.BridgeUtils;
 import de.ovgu.spldev.varied.common.util.FeatureUtils;
 
@@ -10,8 +11,10 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.TreeMap;
 
+import static de.ovgu.spldev.varied.common.util.BridgeUtils.DEFAULT_FEATURE_LAYER_CAPTION;
+
 // adapted from CreateFeatureAboveOperation
-public class FeatureAddAbove {
+public class FeatureAddAbove extends Operation {
     private IFeatureModel featureModel;
     private IFeature newCompound;
     private IFeature child;
@@ -19,7 +22,6 @@ public class FeatureAddAbove {
     private TreeMap<Integer, IFeature> children = new TreeMap<>();
     private boolean parentOr = false;
     private boolean parentAlternative = false;
-    private static final String DEFAULT_FEATURE_LAYER_CAPTION = "NewFeature";
 
     public FeatureAddAbove(IFeatureModel featureModel, String[] aboveFeatures) {
         if (aboveFeatures == null || aboveFeatures.length == 0)
@@ -30,7 +32,7 @@ public class FeatureAddAbove {
         FeatureUtils.sortSiblingFeatures(this.selectedFeatures);
         child = selectedFeatures.get(0);
         int number = 0;
-        while (FeatureUtils.getFeatureNames(featureModel).contains(DEFAULT_FEATURE_LAYER_CAPTION + ++number)) {
+        while (BridgeUtils.getFeatureNames(featureModel).contains(DEFAULT_FEATURE_LAYER_CAPTION + ++number)) {
         }
 
         newCompound = BridgeUtils.createFeature(featureModel, DEFAULT_FEATURE_LAYER_CAPTION + number);

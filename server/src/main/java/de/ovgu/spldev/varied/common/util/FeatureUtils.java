@@ -4,10 +4,7 @@ import de.ovgu.featureide.fm.core.base.IFeature;
 import de.ovgu.featureide.fm.core.base.IFeatureModel;
 import de.ovgu.featureide.fm.core.base.IFeatureStructure;
 
-import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.Set;
-import java.util.stream.Stream;
 
 public class FeatureUtils {
     public static IFeature requireFeature(IFeatureModel featureModel, String feature) {
@@ -43,10 +40,4 @@ public class FeatureUtils {
         });
     }
 
-    public static Set<String> getFeatureNames(IFeatureModel featureModel) {
-        HashSet<String> featureNames = new HashSet<>();
-        for (IFeature feature : featureModel.getFeatures())
-            featureNames.add(feature.getName());
-        return featureNames;
-    }
 }

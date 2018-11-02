@@ -16,6 +16,7 @@ import reducer from './store/reducer';
 import {initializeIcons} from 'office-ui-fabric-react/lib/Icons';
 import actions from './store/actions';
 import {LogLevel, setLogLevel} from './helpers/logger';
+import {tryOperation, operations} from './modeling/operations';
 
 if (window.location.protocol !== 'http:')
     window.location.protocol = 'http:'; // TODO: hack until we support WSS
@@ -26,7 +27,7 @@ const composeEnhancers = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ||
 const store = createStore(reducer, composeEnhancers(applyMiddleware(thunk)));
 
 declare var window: any;
-window.app = {setLogLevel, LogLevel, actions, store}; // for debugging purposes
+window.app = {setLogLevel, LogLevel, actions, store, operations, tryOperation}; // for debugging purposes
 
 ReactDOM.render((
     <Provider store={store}>

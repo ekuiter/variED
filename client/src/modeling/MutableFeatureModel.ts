@@ -20,12 +20,11 @@ class IFeatureStructure {
     hidden: boolean = false;
     concrete: boolean = true;
 
-    // void addChild(IFeatureStructure newChild);
     addChild(newChild: IFeatureStructure): void {
         this.children.push(newChild);
         newChild.setParent(this);
     }
-    // void addChildAtPosition(int index, IFeatureStructure newChild);
+
     addChildAtPosition(index: number, newChild: IFeatureStructure): void {
         if (index > this.getChildrenCount())
 			this.children.push(newChild);
@@ -33,94 +32,105 @@ class IFeatureStructure {
 			this.children.splice(index, 0, newChild);
 		newChild.setParent(this);
     }
-    // void changeToAlternative();
+
     changeToAlternative(): void {
         if (this.getChildrenCount() <= 1)
 			return;
 		this.and = false;
 		this.multiple = false;
     }
-    // void changeToAnd();
+
     changeToAnd(): void {
         this.and = true;
 		this.multiple = false;
     }
-    // void changeToOr();
+
     changeToOr(): void {
         if (this.getChildrenCount() <= 1)
 			return;
 		this.and = false;
 		this.multiple = true;
     }
-	// IFeatureStructure cloneSubtree(IFeatureModel newFeatureModel);
-    // int getChildIndex(IFeatureStructure feature);
+    
+    // IFeatureStructure cloneSubtree(IFeatureModel newFeatureModel);
+
     getChildIndex(feature: IFeatureStructure): number {
         return this.children.indexOf(feature);
     }
-    // List<IFeatureStructure> getChildren();
+
     getChildren(): IFeatureStructure[] {
         return this.children;
     }
-    // int getChildrenCount();
+
     getChildrenCount(): number {
         return this.children.length;
     }
-    // IFeature getFeature();
+
     getFeature(): IFeature {
         return this.correspondingFeature;
     }
-	// IFeatureStructure getFirstChild();
+    
+    // IFeatureStructure getFirstChild();
 	// IFeatureStructure getLastChild();
-    // IFeatureStructure getParent();
+
     getParent(): IFeatureStructure | null {
         return this.parent;
     }
-	// Collection<IConstraint> getRelevantConstraints();
-    // boolean hasChildren();
+    
+    // Collection<IConstraint> getRelevantConstraints();
+
     hasChildren(): boolean {
         return this.getChildrenCount() > 0;
     }
-	// boolean hasVisibleChildren(boolean showHiddenFeatures);
+    
+    // boolean hasVisibleChildren(boolean showHiddenFeatures);
 	// boolean hasHiddenParent();
 	// boolean hasInlineRule();
-    // boolean isAbstract();
+
     isAbstract(): boolean {
         return !this.isConcrete();
     }
-    // boolean isAlternative();
+
     isAlternative(): boolean {
         return !this.and && !this.multiple && this.getChildrenCount() > 1;
     }
-	// boolean isAncestorOf(IFeatureStructure next);
-    // boolean isAnd();
+    
+    // boolean isAncestorOf(IFeatureStructure next);
+
     isAnd(): boolean {
         return this.and || this.getChildrenCount() <= 1;
     }
-	// boolean isANDPossible();
-    // boolean isConcrete();
+    
+    // boolean isANDPossible();
+
     isConcrete(): boolean {
         return this.concrete;
     }
-	// boolean isFirstChild(IFeatureStructure child);
-    // boolean isHidden();
+    
+    // boolean isFirstChild(IFeatureStructure child);
+
     isHidden(): boolean {
         return this.hidden;
     }
-    // boolean isMandatory();
+
     isMandatory(): boolean {
         return this.parent === null || !this.parent.isAnd() || this.mandatory;
     }
-	// boolean isMandatorySet();
-    // boolean isMultiple();
+    
+    // boolean isMandatorySet();
+
     isMultiple(): boolean {
         return this.multiple && this.getChildrenCount() > 1;
     }
-    // boolean isOr();
+
     isOr(): boolean {
         return !this.and && this.multiple && this.getChildrenCount() > 1;
     }
-	// boolean isRoot();
-    // void removeChild(IFeatureStructure child);
+
+    isRoot(): boolean {
+        return this.parent === null;
+    }
+
     removeChild(child: IFeatureStructure): void {
         const idx = this.children.indexOf(child);
         if (idx === -1)
@@ -128,7 +138,7 @@ class IFeatureStructure {
         this.children.splice(idx, 1);
 		child.setParent(null);
     }
-    // IFeatureStructure removeLastChild();
+
     removeLastChild(): IFeatureStructure {
         const child = this.children.pop();
         if (!child)
@@ -136,50 +146,53 @@ class IFeatureStructure {
 		child.setParent(null);
 		return child;
     }
-	// void replaceChild(IFeatureStructure oldChild, IFeatureStructure newChild);
-    // void setAbstract(boolean value);
+    
+    // void replaceChild(IFeatureStructure oldChild, IFeatureStructure newChild);
+
     setAbstract(value: boolean): void {
         this.concrete = !value;
     }
-    // void setAlternative();
+
     setAlternative(): void {
         this.and = false;
         this.multiple = false;
     }
-    // void setAnd();
+
     setAnd(): void {
         this.and = true;
     }
-	// void setAND(boolean and);
-    // void setChildren(List<IFeatureStructure> children);
+    
+    // void setAND(boolean and);
+
     setChildren(children: IFeatureStructure[]): void {
         this.children.length = 0;
         children.forEach(child => this.addChild(child));
     }
-    // void setHidden(boolean hid);
+
     setHidden(hidden: boolean): void {
         this.hidden = hidden;
     }
-    // void setMandatory(boolean mandatory);
+
     setMandatory(mandatory: boolean): void {
         this.mandatory = mandatory;
     }
-    // void setMultiple(boolean multiple);
+
     setMultiple(multiple: boolean): void {
         this.multiple = multiple;
     }
-    // void setOr();
+
     setOr(): void {
         this.and = false;
         this.multiple = true;
     }
-    // void setParent(IFeatureStructure newParent);
+
     setParent(newParent: IFeatureStructure | null): void {
         if (newParent === this.parent)
 			return;
 		this.parent = newParent;
     }
-	// void setRelevantConstraints();
+    
+    // void setRelevantConstraints();
 	// void setRelevantConstraints(List<IConstraint> constraints);
 }
 
@@ -188,17 +201,19 @@ class IFeatureProperty {
     description: string = '';
 
     // IFeatureProperty clone(IFeature newFeature);
-    // String getDescription();
+
     getDescription(): string {
         return this.description;
     }
-	// String getDisplayName();
+
+    // String getDisplayName();
 	// IFeature getFeature();
 	// FeatureStatus getFeatureStatus();
-    // void setDescription(CharSequence description);
+
     setDescription(description: string): void {
         this.description = description;
     }
+
 	// void setDisplayName(CharSequence name);
 	// void setFeatureStatus(FeatureStatus status);
 	// void setFeatureStatus(FeatureStatus stat, boolean fire);
@@ -212,23 +227,29 @@ class IFeature {
     property: IFeatureProperty;
 
     // IFeature clone(IFeatureModel newFeatureModel, IFeatureStructure newStructure);
-    // IFeatureProperty getProperty();
+
     getProperty(): IFeatureProperty {
         return this.property;
     }
+
 	// IPropertyContainer getCustomProperties();
-    // IFeatureStructure getStructure();
+
     getStructure(): IFeatureStructure {
         return this.featureStructure;
     }
+
     // String createTooltip(Object... objects);
     // IFeatureModel getFeatureModel();
 	// long getInternalId();
-    // String getName();
+
     getName(): string {
         return this.name;
     }
-	// void setName(String name);
+
+    // void setName(String name);
+    setName(name: string): void {
+        this.name = name;
+    }
 }
 
 class IFeatureModelStructure {
@@ -238,10 +259,11 @@ class IFeatureModelStructure {
 	// IFeatureModelStructure clone(IFeatureModel newFeatureNodel);
 	// IFeatureModel getFeatureModel();
 	// Collection<IFeature> getFeaturesPreorder();
-    // IFeatureStructure getRoot();
+
     getRoot(): IFeatureStructure {
         return this.rootFeature;
     }
+
 	// boolean hasAbstract();
 	// boolean hasAlternativeGroup();
 	// boolean hasAndGroup();
@@ -253,16 +275,17 @@ class IFeatureModelStructure {
 	// boolean hasOrGroup();
 	// int numAlternativeGroup();
 	// int numOrGroup();
-    // void replaceRoot(IFeatureStructure feature);
+
     replaceRoot(feature: IFeatureStructure): void {
         this.correspondingFeatureModel.deleteFeatureFromTable(this.rootFeature.getFeature());
 		feature.setParent(null);
 		this.rootFeature = feature;
     }
-    // void setRoot(IFeatureStructure root);
+
     setRoot(root: IFeatureStructure): void {
         this.rootFeature = root;
     }
+
 	// boolean hasFalseOptionalFeatures();
 	// boolean hasUnsatisfiableConstraints();
 	// boolean hasTautologyConstraints();
@@ -273,10 +296,46 @@ class IFeatureModelStructure {
 	// void setShowHiddenFeatures(boolean showHiddenFeatures);
 }
 
+class RenamingsManager {
+    model: IFeatureModel;
+
+	renameFeature(oldName: string, newName: string): boolean {
+		const featureTable = this.model.getFeatureTable();
+		if (!featureTable.hasOwnProperty(oldName) || featureTable.hasOwnProperty(newName))
+			return false;
+		//final List<IConstraint> constraints = model.getConstraints();
+		const feature = this.model.getFeature(oldName)!;
+		this.model.deleteFeatureFromTable(feature);
+		feature.setName(newName);
+		this.model.addFeature(feature);
+		/*for (final IConstraint c : constraints) {
+			renameVariables(c.getNode(), oldName, newName);
+		}
+		final List<String> featureOrderList = Functional.toList(model.getFeatureOrderList());
+		for (int i = 0; i < featureOrderList.size(); i++) {
+			if (featureOrderList.get(i).equals(oldName)) {
+				model.setFeatureOrderListItem(i, newName);
+				break;
+			}
+		}*/
+		return true;
+	}
+
+	// boolean isRenamed();
+	// void performRenamings();
+	// void performRenamings(File file);
+	// void performRenamings(Path path);
+	// String getNewName(String name);
+	// String getOldName(String name);
+	// Set<String> getOldFeatureNames();
+	// void clear();
+}
+
 class IFeatureModel {
     serializedFeatureModel: SerializedFeatureModel;
     featureTable: {[x: string]: IFeature} = {};
     structure: IFeatureModelStructure;
+    renamingsManager: RenamingsManager;
 
     // used by BridgeUtils
     createFeature(name: string): IFeature {
@@ -295,7 +354,7 @@ class IFeatureModel {
     // String getFactoryID();
     // void addConstraint(IConstraint constraint);
     // void addConstraint(IConstraint constraint, int index);
-    // boolean addFeature(IFeature feature);
+
     addFeature(feature: IFeature): boolean {
         const name = feature.getName();
 		if (this.featureTable.hasOwnProperty(name))
@@ -303,9 +362,10 @@ class IFeatureModel {
 		this.featureTable[name] = feature;
 		return true;
     }
+
     // IFeatureModel clone(IFeature newRoot);
     // void createDefaultValues(CharSequence projectName);
-    // boolean deleteFeature(IFeature feature);
+
     deleteFeature(feature: IFeature): boolean {
         if (feature === this.structure.getRoot().getFeature())
             return false;
@@ -336,31 +396,38 @@ class IFeatureModel {
         // featureOrderList.remove(name);
         return true;
     }
-    // void deleteFeatureFromTable(IFeature feature);
+
     deleteFeatureFromTable(feature: IFeature): void {
         delete this.featureTable[feature.getName()];
     }
+
     // FeatureModelAnalyzer getAnalyser();
     // int getConstraintCount();
     // int getConstraintIndex(IConstraint constraint);
     // List<IConstraint> getConstraints();
-    // IFeature getFeature(CharSequence name);
+
     getFeature(name: string): IFeature | null {
         return this.featureTable[name] || null;
     }
+
     // List<String> getFeatureOrderList();
-    // Iterable<IFeature> getFeatures();
+
     getFeatures(): IFeature[] {
         return Object.values(this.featureTable);
     }
+
     // Iterable<IFeature> getVisibleFeatures(boolean showHiddenFeatures);
     // int getNumberOfFeatures();
     // IFeatureModelProperty getProperty();
-    // RenamingsManager getRenamingsManager();
-    // IFeatureModelStructure getStructure();
+
+    getRenamingsManager(): RenamingsManager {
+        return this.renamingsManager;
+    }
+    
     getStructure(): IFeatureModelStructure {
         return this.structure;
     }
+
     // void handleModelDataChanged();
     // void handleModelDataLoaded();
     // boolean isFeatureOrderUserDefined();
@@ -372,7 +439,11 @@ class IFeatureModel {
     // void setFeatureOrderList(final List<String> featureOrderList);
     // void setFeatureOrderUserDefined(boolean featureOrderUserDefined);
     // void setFeatureTable(final Hashtable<String, IFeature> featureTable);
-    // Map<String, IFeature> getFeatureTable();
+    
+    getFeatureTable(): {[x: string]: IFeature} {
+        return this.featureTable;
+    }
+    
     // IFeatureModel clone();
     // Object getUndoContext();
     // void setUndoContext(Object undoContext);
@@ -390,10 +461,13 @@ class MutableFeatureModel extends IFeatureModel {
             throw new Error('feature model has no structure');
     
         const mutableFeatureModel = new MutableFeatureModel(),
-            featureModelStructure = new IFeatureModelStructure();
+            featureModelStructure = new IFeatureModelStructure(),
+            renamingsManager = new RenamingsManager();
         mutableFeatureModel.structure = featureModelStructure;
-        featureModelStructure.correspondingFeatureModel = mutableFeatureModel;
         mutableFeatureModel.serializedFeatureModel = serializedFeatureModel;
+        mutableFeatureModel.renamingsManager = renamingsManager;
+        featureModelStructure.correspondingFeatureModel = mutableFeatureModel;
+        renamingsManager.model = mutableFeatureModel;
     
         function parseFeatures(nodes: SerializedFeatureModelNode[], parent: IFeature | null): void {
             nodes.forEach(node => {
