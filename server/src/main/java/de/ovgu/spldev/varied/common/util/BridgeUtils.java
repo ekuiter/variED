@@ -4,10 +4,10 @@ import de.ovgu.featureide.fm.core.base.IFeature;
 import de.ovgu.featureide.fm.core.base.IFeatureModel;
 import de.ovgu.featureide.fm.core.base.IFeatureStructure;
 import de.ovgu.featureide.fm.core.base.impl.FMFactoryManager;
-import jsweet.lang.Erased;
 import jsweet.util.Lang;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -20,17 +20,23 @@ public class BridgeUtils {
     public static IFeature createFeature(IFeatureModel featureModel, String name) {
         // Some trickery to make this work on the server (using FMFactoryManager)
         // as well as on the client (custom createFeature method).
-        IFeature feature = _createFeature(featureModel, name);
+        IFeature feature;
         try {
             feature = Lang.$insert("featureModel.createFeature(name);");
         } catch (UnsatisfiedLinkError e) {
+            feature = FMFactoryManager.getFactory(featureModel).createFeature(featureModel, name);
         }
         return feature;
     }
 
-    @Erased
-    private static IFeature _createFeature(IFeatureModel featureModel, String name) {
-        return FMFactoryManager.getFactory(featureModel).createFeature(featureModel, name);
+    public static <T> Iterator<T> descendingIterator(LinkedList<T> list) {
+        Iterator<T> iterator;
+        try {
+            iterator = Lang.$insert("((a) => { let i = a.length - 1; return {next: () => i >= 0 ? a[i--] : null, hasNext: () => i >= 0}; })(list)");
+        } catch (UnsatisfiedLinkError e) {
+            iterator = list.descendingIterator();
+        }
+        return iterator;
     }
 
     public static Set<String> getFeatureNames(IFeatureModel featureModel) {
@@ -40,16 +46,23 @@ public class BridgeUtils {
         return featureNames;
     }
 
-    public static List<IFeature> convertToFeatureList(List<IFeatureStructure> list) {
+    public static List<String> getFeatureNames(List<IFeature> features) {
+        LinkedList<String> featureNames = new LinkedList<>();
+        for (IFeature feature : features)
+            featureNames.add(feature.getName());
+        return featureNames;
+    }
+
+    public static List<IFeature> convertToFeatureList(List<IFeatureStructure> featureStructures) {
         List<IFeature> featureList = new LinkedList<>();
-        for (IFeatureStructure featureStructure : list)
+        for (IFeatureStructure featureStructure : featureStructures)
             featureList.add(featureStructure.getFeature());
         return featureList;
     }
 
-    public static List<IFeatureStructure> convertToFeatureStructureList(List<IFeature> list) {
+    public static List<IFeatureStructure> convertToFeatureStructureList(List<IFeature> features) {
         List<IFeatureStructure> featureStructureList = new LinkedList<>();
-        for (IFeature feature : list)
+        for (IFeature feature : features)
             featureStructureList.add(feature.getStructure());
         return featureStructureList;
     }

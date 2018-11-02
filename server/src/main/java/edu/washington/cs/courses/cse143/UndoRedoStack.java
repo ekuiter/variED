@@ -9,9 +9,9 @@ package edu.washington.cs.courses.cse143;
 // operation is performed, it is not possible to redo any undo operations until
 // another call is made on undo).
 
-import java.util.*;
+import java.util.Stack;
 
-public class UndoRedoStack<E> extends Stack<E> {
+public class UndoRedoStack<T> extends Stack<T> {
     private Stack undoStack;
     private Stack redoStack;
 
@@ -22,7 +22,7 @@ public class UndoRedoStack<E> extends Stack<E> {
     }
 
     // post: pushes and returns the given value on top of the stack
-    public E push(E value) {
+    public T push(T value) {
         super.push(value);
         undoStack.push("push");
         redoStack.clear();
@@ -30,8 +30,8 @@ public class UndoRedoStack<E> extends Stack<E> {
     }
 
     // post: pops and returns the value at the top of the stack
-    public E pop() {
-        E value = super.pop();
+    public T pop() {
+        T value = super.pop();
         undoStack.push(value);
         undoStack.push("pop");
         redoStack.clear();
@@ -43,11 +43,11 @@ public class UndoRedoStack<E> extends Stack<E> {
         return !undoStack.isEmpty();
     }
 
-    public E peekUndoneValue() {
+    public T peekUndoneValue() {
         if (!canUndo())
             throw new IllegalStateException();
         Object action = undoStack.pop();
-        E value = action.equals("push") ? super.peek() : (E) undoStack.peek();
+        T value = action.equals("push") ? super.peek() : (T) undoStack.peek();
         undoStack.push(action);
         return value;
     }
@@ -60,11 +60,11 @@ public class UndoRedoStack<E> extends Stack<E> {
         }
         Object action = undoStack.pop();
         if (action.equals("push")) {
-            E value = super.pop();
+            T value = super.pop();
             redoStack.push(value);
             redoStack.push("push");
         } else {
-            E value = (E) undoStack.pop();
+            T value = (T) undoStack.pop();
             super.push(value);
             redoStack.push("pop");
         }
@@ -75,11 +75,11 @@ public class UndoRedoStack<E> extends Stack<E> {
         return !redoStack.isEmpty();
     }
 
-    public E peekRedoneValue() {
+    public T peekRedoneValue() {
         if (!canRedo())
             throw new IllegalStateException();
         Object action = redoStack.pop();
-        E value = action.equals("push") ? (E) redoStack.peek() : super.peek();
+        T value = action.equals("push") ? (T) redoStack.peek() : super.peek();
         redoStack.push(action);
         return value;
     }
@@ -92,11 +92,11 @@ public class UndoRedoStack<E> extends Stack<E> {
         }
         Object action = redoStack.pop();
         if (action.equals("push")) {
-            E value = (E) redoStack.pop();
+            T value = (T) redoStack.pop();
             super.push(value);
             undoStack.push("push");
         } else {
-            E value = super.pop();
+            T value = super.pop();
             undoStack.push(value);
             undoStack.push("pop");
         }

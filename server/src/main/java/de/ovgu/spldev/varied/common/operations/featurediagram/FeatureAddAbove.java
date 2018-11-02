@@ -38,7 +38,7 @@ public class FeatureAddAbove extends Operation {
         newCompound = BridgeUtils.createFeature(featureModel, DEFAULT_FEATURE_LAYER_CAPTION + number);
     }
 
-    public void apply() {
+    protected void _apply() {
         final IFeatureStructure parent = child.getStructure().getParent();
         if (parent != null) {
             parentOr = parent.isOr();
@@ -73,7 +73,7 @@ public class FeatureAddAbove extends Operation {
         }
     }
 
-    public void undo() {
+    protected void _undo() {
         final IFeatureStructure parent = newCompound.getStructure().getParent();
         if (parent != null) {
             newCompound.getStructure().setChildren(Collections.emptyList());

@@ -1,5 +1,9 @@
+/*
+// currently not available.
 package de.ovgu.spldev.varied.operations;
 
+import de.ovgu.spldev.varied.common.operations.BatchOperation;
+import de.ovgu.spldev.varied.common.operations.Operation;
 import de.ovgu.spldev.varied.messaging.Message;
 import de.ovgu.spldev.varied.StateContext;
 
@@ -33,3 +37,4 @@ public class Batch extends BatchOperation {
         return operation;
     }
 }
+*/

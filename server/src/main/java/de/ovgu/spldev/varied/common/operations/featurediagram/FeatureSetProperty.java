@@ -44,7 +44,7 @@ public class FeatureSetProperty extends Operation {
         oldMandatoryChildren.forEach(child -> child.setMandatory(true));
     }
 
-    public void apply() {
+    protected void _apply() {
         oldMandatoryChildren = new LinkedList<>();
         switch (property) {
             case "abstract":
@@ -87,7 +87,7 @@ public class FeatureSetProperty extends Operation {
         }
     }
 
-    public void undo() {
+    protected void _undo() {
         switch (property) {
             case "abstract":
                 feature.getStructure().setAbstract(oldValue.equals("true"));

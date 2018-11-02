@@ -7,6 +7,7 @@ import {FeatureRename} from '../common/operations/featurediagram/FeatureRename';
 import {FeatureSetDescription} from '../common/operations/featurediagram/FeatureSetDescription';
 import {FeatureSetProperty} from '../common/operations/featurediagram/FeatureSetProperty';
 import {Operation} from '../common/operations/Operation';
+import {FeatureRemoveBelow} from '../common/operations/featurediagram/FeatureRemoveBelow';
 
 export const operations = {
     featureDiagram: {
@@ -14,6 +15,7 @@ export const operations = {
             addAbove: FeatureAddAbove,
             addBelow: FeatureAddBelow,
             remove: FeatureRemove,
+            removeBelow: FeatureRemoveBelow,
             rename: FeatureRename,
             setDescription: FeatureSetDescription,
             setProperty: FeatureSetProperty

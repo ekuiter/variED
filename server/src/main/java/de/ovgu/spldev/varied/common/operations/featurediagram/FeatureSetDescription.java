@@ -19,11 +19,11 @@ public class FeatureSetDescription extends Operation {
             throw new RuntimeException("no description given");
     }
 
-    public void apply() {
+    protected void _apply() {
         feature.getProperty().setDescription(description);
     }
 
-    public void undo() {
+    protected void _undo() {
         feature.getProperty().setDescription(oldDescription);
     }
 }

@@ -20,12 +20,12 @@ public class FeatureRename extends Operation {
         FeatureUtils.requireFeature(featureModel, oldName);
     }
 
-    public void apply() {
+    protected void _apply() {
         if (!featureModel.getRenamingsManager().renameFeature(oldName, newName))
             throw new RuntimeException("invalid renaming operation");
     }
 
-    public void undo() {
+    protected void _undo() {
         if (!featureModel.getRenamingsManager().renameFeature(newName, oldName))
             throw new RuntimeException("invalid renaming operation");
     }

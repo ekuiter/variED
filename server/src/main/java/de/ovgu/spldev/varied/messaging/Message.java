@@ -5,7 +5,7 @@ import com.google.gson.typeadapters.RuntimeTypeAdapterFactory;
 import de.ovgu.spldev.varied.Artifact;
 import de.ovgu.spldev.varied.StateContext;
 import de.ovgu.spldev.varied.common.util.StringUtils;
-import de.ovgu.spldev.varied.operations.Operation;
+import de.ovgu.spldev.varied.common.operations.Operation;
 
 import java.util.stream.Stream;
 
@@ -101,6 +101,10 @@ abstract public class Message {
     // may be received, applied, undone and redone
     public interface IUndoable extends IDecodable {
         Operation getOperation(StateContext stateContext);
+
+        default Message.IEncodable[] getResponse(StateContext stateContext) {
+            return new Message.IEncodable[]{};
+        }
     }
 
     // may be received, applied, undone and redone as a single message,

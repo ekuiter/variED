@@ -1,6 +1,6 @@
-package de.ovgu.spldev.varied.operations;
+package de.ovgu.spldev.varied.common.operations;
 
-import de.ovgu.spldev.varied.messaging.Message;
+import de.ovgu.spldev.varied.common.util.BridgeUtils;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -30,33 +30,32 @@ public abstract class BatchOperation extends Operation {
     }
 
     // can be overridden to provide custom iterator-based operation instantiation
-    boolean _hasNextOperation() {
+    private boolean _hasNextOperation() {
         if (operationIterator == null)
             operationIterator = operations.iterator();
         return operationIterator.hasNext();
     }
 
-    Operation _nextOperation() {
+    private Operation _nextOperation() {
         if (operationIterator == null)
             operationIterator = operations.iterator();
         return operationIterator.next();
     }
 
     // if applying one operation fails, undo all applied operations to guarantee atomicity
-    protected Message.IEncodable[] _apply() {
-        Message.IEncodable[] operationMessages = new Message.IEncodable[0];
+    protected void _apply() {
         while (hasNextOperation()) {
             Operation operation = null;
             Throwable t = null;
             try {
                 operation = nextOperation();
-                operationMessages = operation.apply();
+                operation.apply();
             } catch (Throwable _t) {
                 t = _t;
             }
-            if (operation == null || !operation.isApplyWasSuccessful()) {
+            if (operation == null || !operation.applyWasSuccessful()) {
                 boolean found = operation == null; // if building the operations, undo all operations
-                for (final Iterator<Operation> it = operations.descendingIterator(); it.hasNext(); ) {
+                for (final Iterator<Operation> it = BridgeUtils.descendingIterator(operations); it.hasNext(); ) {
                     Operation _operation = it.next();
                     if (found)
                         try {
@@ -74,21 +73,19 @@ public abstract class BatchOperation extends Operation {
             }
         }
         operationIterator = operations.iterator();
-        return operationMessages;
     }
 
     // if undoing one operation fails, redo all undone operations to guarantee atomicity
-    protected Message.IEncodable[] _undo() {
-        Message.IEncodable[] operationMessages = new Message.IEncodable[0];
-        for (final Iterator<Operation> it = operations.descendingIterator(); it.hasNext(); ) {
+    protected void _undo() {
+        for (final Iterator<Operation> it = BridgeUtils.descendingIterator(operations); it.hasNext(); ) {
             Operation operation = it.next();
             Throwable t = null;
             try {
-                operationMessages = operation.undo();
+                operation.undo();
             } catch (Throwable _t) {
                 t = _t;
             }
-            if (!operation.isUndoWasSuccessful()) {
+            if (!operation.undoWasSuccessful()) {
                 boolean found = false;
                 for (Operation _operation : operations) {
                     if (found)
@@ -106,6 +103,5 @@ public abstract class BatchOperation extends Operation {
                     throw new RuntimeException(t);
             }
         }
-        return operationMessages;
     }
 }

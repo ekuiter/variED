@@ -19,7 +19,7 @@ public class FeatureAddBelow extends Operation {
         this.feature = FeatureUtils.requireFeature(featureModel, belowFeature);
     }
 
-    public void apply() {
+    protected void _apply() {
         int number = 1;
 
         while (BridgeUtils.getFeatureNames(featureModel).contains(DEFAULT_FEATURE_LAYER_CAPTION + number)) {
@@ -32,7 +32,7 @@ public class FeatureAddBelow extends Operation {
         feature.getStructure().addChild(newFeature.getStructure());
     }
 
-    public void undo() {
+    protected void _undo() {
         newFeature = featureModel.getFeature(newFeature.getName());
         featureModel.deleteFeature(newFeature);
     }

@@ -1,40 +1,32 @@
-package de.ovgu.spldev.varied.operations.featurediagram;
+package de.ovgu.spldev.varied.common.operations.featurediagram;
 
 import de.ovgu.featureide.fm.core.base.IFeature;
 import de.ovgu.featureide.fm.core.base.IFeatureModel;
-import de.ovgu.featureide.fm.core.base.IFeatureModelElement;
-import de.ovgu.spldev.varied.StateContext;
-import de.ovgu.spldev.varied.util.FeatureModelUtils;
+import de.ovgu.spldev.varied.common.operations.BatchOperation;
+import de.ovgu.spldev.varied.common.util.BridgeUtils;
 import de.ovgu.spldev.varied.common.util.FeatureUtils;
-import de.ovgu.spldev.varied.messaging.Message;
-import de.ovgu.spldev.varied.operations.BatchOperation;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 // adapted from FeatureTreeDeleteOperation
 public class FeatureRemoveBelow extends BatchOperation {
-    private StateContext.FeatureModel stateContext;
+    private IFeatureModel featureModel;
     private LinkedList<IFeature> featureList = new LinkedList<>();
     private LinkedList<IFeature> containedFeatureList = new LinkedList<>();
     private LinkedList<IFeature> andList = new LinkedList<>();
     private LinkedList<IFeature> orList = new LinkedList<>();
     private LinkedList<IFeature> alternativeList = new LinkedList<>();
 
-    public FeatureRemoveBelow(StateContext.FeatureModel stateContext, String feature) {
-        this(stateContext, feature, null);
-    }
-
-    public FeatureRemoveBelow(StateContext.FeatureModel stateContext, String feature, Object batchContext) {
-        this.stateContext = stateContext;
+    public FeatureRemoveBelow(IFeatureModel featureModel, String feature, Object batchContext) {
+        this.featureModel = featureModel;
 
         // do nothing if the feature has already been removed by another operation in a batch message
-        if (stateContext.getFeatureModel().getFeature(feature) == null && batchContext != null &&
+        if (featureModel.getFeature(feature) == null && batchContext != null &&
                 ((LinkedList<String>) batchContext).contains(feature))
             return;
 
-        IFeature _feature = FeatureUtils.requireFeature(stateContext.getFeatureModel(), feature);
+        IFeature _feature = FeatureUtils.requireFeature(featureModel, feature);
         if (_feature.getStructure().isRoot())
             throw new RuntimeException("can not delete root feature and its children");
         final LinkedList<IFeature> list = new LinkedList<>();
@@ -50,7 +42,7 @@ public class FeatureRemoveBelow extends BatchOperation {
                 } else if (feat.getStructure().isAlternative()) {
                     alternativeList.add(feat);
                 }
-                addOperation(new FeatureRemove(stateContext, feat));
+                addOperation(new FeatureRemove(featureModel, feat.getName()));
             }
         } else {
             final String containedFeatures = containedFeatureList.toString();
@@ -65,29 +57,23 @@ public class FeatureRemoveBelow extends BatchOperation {
 
     public Object nextBatchContext(Object batchContext) {
         LinkedList<String> featuresToDelete = (LinkedList<String>) batchContext;
-        featuresToDelete.addAll(featureList.stream().map(IFeatureModelElement::getName).collect(Collectors.toList()));
+        featuresToDelete.addAll(BridgeUtils.getFeatureNames(featureList));
         return featuresToDelete;
     }
 
     private void getFeaturesToDelete(List<IFeature> linkedList) {
         for (final IFeature feat : linkedList) {
-            if (!feat.getStructure().getRelevantConstraints().isEmpty()) {
+            /*if (!feat.getStructure().getRelevantConstraints().isEmpty()) {
                 containedFeatureList.add(feat);
-            }
+            }*/
             if (feat.getStructure().hasChildren()) {
-                getFeaturesToDelete(de.ovgu.featureide.fm.core.base.FeatureUtils.convertToFeatureList(feat.getStructure().getChildren()));
+                getFeaturesToDelete(BridgeUtils.convertToFeatureList(feat.getStructure().getChildren()));
             }
             featureList.add(feat);
         }
     }
 
-    public Message.IEncodable[] _apply() {
-        super._apply();
-        return FeatureModelUtils.toMessage(stateContext);
-    }
-
-    public Message.IEncodable[] _undo() {
-        IFeatureModel featureModel = stateContext.getFeatureModel();
+    protected void _undo() {
         super._undo();
         // Set the right group types for the features
         for (final IFeature ifeature : andList) {
@@ -105,6 +91,5 @@ public class FeatureRemoveBelow extends BatchOperation {
                 featureModel.getFeature(ifeature.getName()).getStructure().changeToOr();
             }
         }
-        return FeatureModelUtils.toMessage(stateContext);
     }
 }

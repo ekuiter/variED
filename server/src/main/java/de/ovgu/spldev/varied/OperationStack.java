@@ -1,16 +1,14 @@
 package de.ovgu.spldev.varied;
 
-import de.ovgu.spldev.varied.messaging.Message;
-import de.ovgu.spldev.varied.operations.Operation;
+import de.ovgu.spldev.varied.common.operations.Operation;
 import edu.washington.cs.courses.cse143.UndoRedoStack;
 
 public class OperationStack {
     private UndoRedoStack<Operation> operationUndoRedoStack = new UndoRedoStack<>();
 
-    public Message.IEncodable[] apply(Operation operation) {
-        Message.IEncodable[] operationMessages = operation.apply();
+    public void apply(Operation operation) {
+        operation.apply();
         operationUndoRedoStack.push(operation);
-        return operationMessages;
     }
 
     public boolean canUndo() {
@@ -21,21 +19,19 @@ public class OperationStack {
         return operationUndoRedoStack.canRedo();
     }
 
-    public Message.IEncodable[] undo() {
+    public void undo() {
         if (!operationUndoRedoStack.canUndo())
             throw new RuntimeException("can not undo");
         Operation operation = operationUndoRedoStack.peekUndoneValue();
-        Message.IEncodable[] operationMessages = operation.undo();
+        operation.undo();
         operationUndoRedoStack.undo();
-        return operationMessages;
     }
 
-    public Message.IEncodable[] redo() {
+    public void redo() {
         if (!operationUndoRedoStack.canRedo())
             throw new RuntimeException("can not redo");
         Operation operation = operationUndoRedoStack.peekRedoneValue();
-        Message.IEncodable[] operationMessages = operation.apply();
+        operation.apply();
         operationUndoRedoStack.redo();
-        return operationMessages;
     }
 }

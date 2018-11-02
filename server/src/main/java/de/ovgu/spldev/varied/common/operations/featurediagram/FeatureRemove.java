@@ -26,7 +26,7 @@ public class FeatureRemove extends Operation {
             throw new RuntimeException("can only delete root feature when it has exactly one child");
     }
 
-    public void apply() {
+    protected void _apply() {
         feature = featureModel.getFeature(feature.getName());
         oldParent = BridgeUtils.getParent(feature);
         if (oldParent != null) {
@@ -74,7 +74,7 @@ public class FeatureRemove extends Operation {
         }
     }
 
-    public void undo() {
+    protected void _undo() {
         if (!deleted) {
             return;
         }

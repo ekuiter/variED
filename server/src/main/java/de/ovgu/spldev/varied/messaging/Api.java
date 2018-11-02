@@ -5,10 +5,9 @@ import de.ovgu.featureide.fm.core.base.IFeatureModel;
 import de.ovgu.spldev.varied.Artifact;
 import de.ovgu.spldev.varied.StateContext;
 import de.ovgu.spldev.varied.User;
-import de.ovgu.spldev.varied.operations.Operation;
-import de.ovgu.spldev.varied.operations.featurediagram.*;
-
-import java.util.LinkedList;
+import de.ovgu.spldev.varied.common.operations.Operation;
+import de.ovgu.spldev.varied.common.operations.featurediagram.*;
+import de.ovgu.spldev.varied.util.FeatureModelUtils;
 
 /**
  * To add a new kind of message: Add a type below and create a camel-cased inner class
@@ -89,7 +88,8 @@ public class Api {
         }
 
         public IEncodable[] apply(StateContext stateContext) {
-            return stateContext.getOperationStack().undo();
+            stateContext.getOperationStack().undo();
+            return FeatureModelUtils.toMessage((StateContext.FeatureModel) stateContext);
         }
     }
 
@@ -105,10 +105,13 @@ public class Api {
         }
 
         public IEncodable[] apply(StateContext stateContext) {
-            return stateContext.getOperationStack().redo();
+            stateContext.getOperationStack().redo();
+            return FeatureModelUtils.toMessage((StateContext.FeatureModel) stateContext);
         }
     }
 
+    /*
+    // currently not available.
     public static class Batch extends Message implements Message.IUndoable {
         @Expose
         private Message[] messages;
@@ -147,6 +150,28 @@ public class Api {
         public Operation getOperation(StateContext stateContext) {
             return new de.ovgu.spldev.varied.operations.Batch(stateContext, getMessages());
         }
+
+        public IEncodable[] getResponse(StateContext stateContext) {
+            return FeatureModelUtils.toMessage((StateContext.FeatureModel) stateContext);
+        }
+    }*/
+
+    public static class Batch extends Message implements Message.IUndoable {
+        @Expose
+        private Message[] messages;
+
+        public Batch(Artifact.Path artifactPath, Message[] messages) {
+            super(TypeEnum.BATCH, artifactPath);
+            this.messages = messages;
+        }
+
+        public boolean isValid(StateContext stateContext) {
+            throw new RuntimeException("batch messages currently not available");
+        }
+
+        public Operation getOperation(StateContext stateContext) {
+            return null;
+        }
     }
 
     public static class FeatureDiagramFeatureModel extends Message implements Message.IEncodable {
@@ -169,7 +194,11 @@ public class Api {
         }
 
         public Operation getOperation(StateContext stateContext) {
-            return new FeatureAddBelow((StateContext.FeatureModel) stateContext, belowFeature);
+            return new FeatureAddBelow(((StateContext.FeatureModel) stateContext).getFeatureModel(), belowFeature);
+        }
+
+        public IEncodable[] getResponse(StateContext stateContext) {
+            return FeatureModelUtils.toMessage((StateContext.FeatureModel) stateContext);
         }
     }
 
@@ -183,7 +212,11 @@ public class Api {
         }
 
         public Operation getOperation(StateContext stateContext) {
-            return new FeatureAddAbove((StateContext.FeatureModel) stateContext, aboveFeatures);
+            return new FeatureAddAbove(((StateContext.FeatureModel) stateContext).getFeatureModel(), aboveFeatures);
+        }
+
+        public IEncodable[] getResponse(StateContext stateContext) {
+            return FeatureModelUtils.toMessage((StateContext.FeatureModel) stateContext);
         }
     }
 
@@ -197,7 +230,11 @@ public class Api {
         }
 
         public Operation getOperation(StateContext stateContext) {
-            return new FeatureRemove((StateContext.FeatureModel) stateContext, feature);
+            return new FeatureRemove(((StateContext.FeatureModel) stateContext).getFeatureModel(), feature);
+        }
+
+        public IEncodable[] getResponse(StateContext stateContext) {
+            return FeatureModelUtils.toMessage((StateContext.FeatureModel) stateContext);
         }
     }
 
@@ -211,11 +248,11 @@ public class Api {
         }
 
         public Operation getOperation(StateContext stateContext) {
-            return new FeatureRemoveBelow((StateContext.FeatureModel) stateContext, feature);
+            return getOperation(stateContext, null);
         }
 
         public Operation getOperation(StateContext stateContext, Object batchContext) {
-            return new FeatureRemoveBelow((StateContext.FeatureModel) stateContext, feature, batchContext);
+            return new FeatureRemoveBelow(((StateContext.FeatureModel) stateContext).getFeatureModel(), feature, batchContext);
         }
 
         public Object createBatchContext() {
@@ -224,6 +261,10 @@ public class Api {
 
         public Object nextBatchContext(Operation operation, Object batchContext) {
             return ((FeatureRemoveBelow) operation).nextBatchContext(batchContext);
+        }
+
+        public IEncodable[] getResponse(StateContext stateContext) {
+            return FeatureModelUtils.toMessage((StateContext.FeatureModel) stateContext);
         }
     }
 
@@ -238,7 +279,17 @@ public class Api {
         }
 
         public Operation getOperation(StateContext stateContext) {
-            return new FeatureRename((StateContext.FeatureModel) stateContext, oldFeature, newFeature);
+            return new FeatureRename(((StateContext.FeatureModel) stateContext).getFeatureModel(), oldFeature, newFeature);
+        }
+
+        public IEncodable[] getResponse(StateContext stateContext) {
+            return new Message.IEncodable[]{
+                    // TODO: this is currently broken whenever we un- or redo a rename message
+                    // (in that case, the client only gets the updated feature model)
+                    new FeatureDiagramFeatureRename(stateContext.getArtifactPath(), oldFeature, newFeature),
+                    new Api.FeatureDiagramFeatureModel(
+                            stateContext.getArtifactPath(), ((StateContext.FeatureModel) stateContext).getFeatureModel())
+            };
         }
     }
 
@@ -253,7 +304,11 @@ public class Api {
         }
 
         public Operation getOperation(StateContext stateContext) {
-            return new FeatureSetDescription((StateContext.FeatureModel) stateContext, feature, description);
+            return new FeatureSetDescription(((StateContext.FeatureModel) stateContext).getFeatureModel(), feature, description);
+        }
+
+        public IEncodable[] getResponse(StateContext stateContext) {
+            return FeatureModelUtils.toMessage((StateContext.FeatureModel) stateContext);
         }
     }
 
@@ -269,11 +324,11 @@ public class Api {
         }
 
         public Operation getOperation(StateContext stateContext) {
-            return new FeatureSetProperty((StateContext.FeatureModel) stateContext, feature, property, value);
+            return getOperation(stateContext, null);
         }
 
         public Operation getOperation(StateContext stateContext, Object batchContext) {
-            return new FeatureSetProperty((StateContext.FeatureModel) stateContext, feature, property, value, batchContext);
+            return new FeatureSetProperty(((StateContext.FeatureModel) stateContext).getFeatureModel(), feature, property, value, batchContext);
         }
 
         public Object createBatchContext() {
@@ -282,6 +337,10 @@ public class Api {
 
         public Object nextBatchContext(Operation operation, Object batchContext) {
             return property; // return the current property, it should equal the next message's property
+        }
+
+        public IEncodable[] getResponse(StateContext stateContext) {
+            return FeatureModelUtils.toMessage((StateContext.FeatureModel) stateContext);
         }
     }
 }
