@@ -22,7 +22,7 @@ public class BridgeUtils {
         // as well as on the client (custom createFeature method).
         IFeature feature;
         try {
-            feature = Lang.$insert("featureModel.createFeature(name);");
+            feature = Lang.$insert("featureModel.createFeature(name)");
         } catch (UnsatisfiedLinkError e) {
             feature = FMFactoryManager.getFactory(featureModel).createFeature(featureModel, name);
         }
@@ -32,7 +32,8 @@ public class BridgeUtils {
     public static <T> Iterator<T> descendingIterator(LinkedList<T> list) {
         Iterator<T> iterator;
         try {
-            iterator = Lang.$insert("((a) => { let i = a.length - 1; return {next: () => i >= 0 ? a[i--] : null, hasNext: () => i >= 0}; })(list)");
+            // JavaScript implementation of a descending iterator
+            iterator = Lang.$insert("(a => {let i = a.length - 1; return {next: () => i >= 0 ? a[i--] : null, hasNext: () => i >= 0};})(list)");
         } catch (UnsatisfiedLinkError e) {
             iterator = list.descendingIterator();
         }

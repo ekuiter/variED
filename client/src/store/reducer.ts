@@ -17,7 +17,7 @@ import {State, initialState, CollaborativeSession, FeatureDiagramCollaborativeSe
 import objectPath from 'object-path';
 import objectPathImmutable from 'object-path-immutable';
 import logger, {setLogLevel, LogLevel, defaultLogLevel} from '../helpers/logger';
-import {AnyAction} from 'redux';
+import {AnyAction, Store} from 'redux';
 
 function getNewState(state: State, ...args: any[]): State {
     if (args.length % 2 == 1)
@@ -360,3 +360,4 @@ export default <(state?: State, action?: Action) => State>
         settingsReducer,
         uiReducer,
         initialState);
+export type Store = Store<State, Action>;
