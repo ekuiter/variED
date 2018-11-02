@@ -29,22 +29,6 @@ const constants = {
             and: 'and',
             or: 'or',
             alternative: 'alternative'
-        },
-        featureModel: {
-            serialization: { // tags and attributes used in serialized feature models
-                STRUCT: 'struct',
-                CONSTRAINTS: 'constraints',
-                PROPERTIES: 'properties',
-                CALCULATIONS: 'calculations',
-                COMMENTS: 'comments',
-                FEATURE_ORDER: 'featureOrder',
-                TYPE: 'type',
-                NAME: 'name',
-                DESCRIPTION: 'description',
-                MANDATORY: 'mandatory',
-                ABSTRACT: 'abstract',
-                HIDDEN: 'hidden'
-            }
         }
     },
     helpers: {

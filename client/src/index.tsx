@@ -16,8 +16,6 @@ import reducer from './store/reducer';
 import {initializeIcons} from 'office-ui-fabric-react/lib/Icons';
 import actions from './store/actions';
 import {LogLevel, setLogLevel} from './helpers/logger';
-import {FeatureAddAbove} from './common/operations/featurediagram/FeatureAddAbove';
-import {IFeatureModel} from './bridge';
 
 if (window.location.protocol !== 'http:')
     window.location.protocol = 'http:'; // TODO: hack until we support WSS
@@ -37,9 +35,3 @@ ReactDOM.render((
 ), document.getElementById('root'));
 
 store.dispatch<any>(actions.server.join({artifactPath: {project: 'FeatureModeling', artifact: 'CTV'}}));
-
-window.addFeatureAboveTest = (serializedFeatureModel: object, aboveFeatureNames: string[]) => {
-    const featureModel = IFeatureModel.fromJSON(serializedFeatureModel);
-    new FeatureAddAbove(featureModel, aboveFeatureNames).apply();
-    return featureModel.toJSON();
-};

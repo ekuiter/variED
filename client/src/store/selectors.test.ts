@@ -19,7 +19,7 @@ describe('selectors', () => {
                 currentArtifactPath: {project: 'project', artifact: 'artifact'}
             };
             expect(getCurrentGraphicalFeatureModel(state)!.serializedFeatureModel)
-                .toEqual(GraphicalFeatureModel.fromJSON(validFeatureModel).serializedFeatureModel);
+                .toEqual(GraphicalFeatureModel.fromJSON(validFeatureModel).toJSON());
         });
 
         it('recomputes when the store state changes', () => {

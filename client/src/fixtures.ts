@@ -1,10 +1,12 @@
+import {SerializedFeatureModel} from './modeling/types';
+
 /**
  * Some fixtures for use in tests.
  */
 
-export const invalidFeatureModel1 = {};
+export const invalidFeatureModel1 = <SerializedFeatureModel>{};
 
-export const invalidFeatureModel2 = {
+export const invalidFeatureModel2 = <any>{
     'struct': [],
     'constraints': [],
     'properties': [],
@@ -19,7 +21,7 @@ export const invalidFeatureModel2 = {
     'featureOrder': {'userDefined': false}
 };
 
-export const validFeatureModel = {
+export const validFeatureModel = <SerializedFeatureModel>{
     'struct': [
         {
             'name': 'Eclipse',
@@ -139,7 +141,7 @@ export const validFeatureModel = {
     'featureOrder': {'userDefined': false}
 };
 
-export const validFeatureModelWithRemovedFeatures = {
+export const validFeatureModelWithRemovedFeatures = <SerializedFeatureModel>{
     'struct': [
         {
             'name': 'Eclipse',

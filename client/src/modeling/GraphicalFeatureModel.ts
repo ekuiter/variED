@@ -1,6 +1,8 @@
 /**
  * The feature model is the main artifact shown and edited by this application.
  * It is a tree-like structure containing features and additional feature and cross-tree constraints.
+ * The graphical feature model is intended for read-only use in rendering a feature model.
+ * It lays out the feature model and manages collapsed features.
  */
 
 import {hierarchy as d3Hierarchy} from 'd3-hierarchy';
@@ -11,12 +13,10 @@ import {Settings} from '../store/settings';
 import {FeatureDiagramLayoutType} from '../types';
 import {present} from '../helpers/present';
 import logger from '../helpers/logger';
-import {GraphicalFeatureModelNode, GraphicalFeature, FeatureType} from './types';
-
-const serialization = constants.server.featureModel.serialization;
+import {GraphicalFeatureModelNode, GraphicalFeature, FeatureType, SerializedFeatureModel, NAME, DESCRIPTION, TYPE, ABSTRACT, HIDDEN, MANDATORY, STRUCT} from './types';
 
 export function getName(node: GraphicalFeatureModelNode): string {
-    return node.data[serialization.NAME];
+    return node.data[NAME];
 }
 
 function isRoot(node: GraphicalFeatureModelNode): boolean {
@@ -60,18 +60,18 @@ d3Hierarchy.prototype.feature = function(this: GraphicalFeatureModelNode): Graph
     return this._feature || (this._feature = {
         node: this,
         name: getName(this),
-        type: this.data[serialization.TYPE],
-        description: this.data[serialization.DESCRIPTION],
+        type: this.data[TYPE],
+        description: this.data[DESCRIPTION],
         isRoot: isRoot(this),
-        isAbstract: !!this.data[serialization.ABSTRACT],
-        isHidden: !!this.data[serialization.HIDDEN],
-        isMandatory: !!this.data[serialization.MANDATORY],
-        isAnd: this.data[serialization.TYPE] === FeatureType.and,
-        isOr: this.data[serialization.TYPE] === FeatureType.or,
-        isAlternative: this.data[serialization.TYPE] === FeatureType.alt,
+        isAbstract: !!this.data[ABSTRACT],
+        isHidden: !!this.data[HIDDEN],
+        isMandatory: !!this.data[MANDATORY],
+        isAnd: this.data[TYPE] === FeatureType.and,
+        isOr: this.data[TYPE] === FeatureType.or,
+        isAlternative: this.data[TYPE] === FeatureType.alt,
         isGroup:
-            this.data[serialization.TYPE] === FeatureType.or ||
-            this.data[serialization.TYPE] === FeatureType.alt,
+            this.data[TYPE] === FeatureType.or ||
+            this.data[TYPE] === FeatureType.alt,
         isCollapsed: isCollapsed(this),
         hasChildren: hasChildren(this),
         hasActualChildren: hasActualChildren(this),
@@ -92,17 +92,21 @@ d3Hierarchy.prototype.feature = function(this: GraphicalFeatureModelNode): Graph
 };
 
 class GraphicalFeatureModel {
-    serializedFeatureModel: object;
+    serializedFeatureModel: SerializedFeatureModel;
     collapsedFeatureNames: string[] = [];
     _hierarchy: GraphicalFeatureModelNode;
     _actualNodes: GraphicalFeatureModelNode[];
      _visibleNodes: GraphicalFeatureModelNode[];
 
     // feature model as supplied by feature model messages from the server
-    static fromJSON(serializedFeatureModel: object): GraphicalFeatureModel {
+    static fromJSON(serializedFeatureModel: SerializedFeatureModel): GraphicalFeatureModel {
         const graphicalFeatureModel = new GraphicalFeatureModel();
         graphicalFeatureModel.serializedFeatureModel = serializedFeatureModel;
         return graphicalFeatureModel;
+    }
+
+    toJSON(): SerializedFeatureModel {
+        return this.serializedFeatureModel;
     }
 
     collapse(collapsedFeatureNames: string[]): GraphicalFeatureModel {
@@ -113,10 +117,9 @@ class GraphicalFeatureModel {
     }
 
     get structure() {
-        const struct = constants.server.featureModel.serialization.STRUCT;
-        if (!this.serializedFeatureModel[struct] || this.serializedFeatureModel[struct].length !== 1)
+        if (!this.serializedFeatureModel[STRUCT] || this.serializedFeatureModel[STRUCT].length !== 1)
             throw new Error('feature model has no structure');
-        return this.serializedFeatureModel[struct][0];
+        return this.serializedFeatureModel[STRUCT][0];
     }
 
     prepare(): void {

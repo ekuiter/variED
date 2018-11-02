@@ -1,20 +1,55 @@
 import {HierarchyPointNode} from 'd3-hierarchy';
 import {Point} from '../types';
 
-export type FeaturePropertyKey = string | ((node: GraphicalFeatureModelNode) => string);
+// tags and attributes used in serialized feature models
+export const STRUCT = 'struct';
+export const CONSTRAINTS = 'constraints';
+export const PROPERTIES = 'properties';
+export const CALCULATIONS = 'calculations';
+export const COMMENTS = 'comments';
+export const FEATURE_ORDER = 'featureOrder';
+export const TYPE = 'type';
+export const NAME = 'name';
+export const DESCRIPTION = 'description';
+export const MANDATORY = 'mandatory';
+export const ABSTRACT = 'abstract';
+export const HIDDEN = 'hidden';
 
 export enum FeatureType {
     feature = 'feature',
     or = 'or',
     alt = 'alt',
-    and = 'and'
+    and = 'and',
+    unknown = 'unknown'
 };
+
+export interface SerializedFeatureModelNode {
+    [TYPE]: FeatureType,
+    [NAME]: string,
+    [HIDDEN]?: boolean,
+    [MANDATORY]?: boolean,
+    [ABSTRACT]?: boolean,
+    [DESCRIPTION]?: string,
+    children?: SerializedFeatureModelNode[]
+};
+
+export interface SerializedFeatureModel {
+    [STRUCT]: SerializedFeatureModelNode[],
+    // ignored for now
+    [CONSTRAINTS]: never,
+    [PROPERTIES]: never,
+    [CALCULATIONS]: never,
+    [COMMENTS]: never,
+    [FEATURE_ORDER]: never
+};
+
+export type FeaturePropertyKey = string | ((node: GraphicalFeatureModelNode) => string);
 
 export interface GraphicalFeature {
     node: GraphicalFeatureModelNode,
     name: string,
     type: FeatureType,
-    description: string,
+    description?: string,
     isRoot: boolean,
     isAbstract: boolean,
     isHidden: boolean,
@@ -30,7 +65,7 @@ export interface GraphicalFeature {
     getNumberOfFeaturesBelow: () => number
 };
 
-type Datum = object; // this is an object per feature sent by the server accessible as node.data
+type Datum = SerializedFeatureModelNode; // accessible as node.data
 
 export type GraphicalFeatureModelNode = HierarchyPointNode<Datum> & {
     children?: GraphicalFeatureModelNode[];

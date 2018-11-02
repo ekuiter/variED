@@ -1,5 +1,5 @@
 /**
- * This file contains FeatureIDE compatible bindings.
+ * This file contains a mutable feature model compatible with the FeatureIDE API.
  * Because operations are implemented on the server using FeatureIDE, we need to mimic
  * its API if we want to provide optimistic UI on the client. Only methods that are
  * actually used have to be implemented here. (The original API is shown in comments.)
@@ -8,10 +8,7 @@
  * is not feasible though, and this approach is very lightweight.)
  */
 
-import constants from './constants';
-import {FeatureType} from './modeling/types';
-
-const serialization = constants.server.featureModel.serialization;
+import {FeatureType, SerializedFeatureModel, STRUCT, SerializedFeatureModelNode, TYPE, NAME, DESCRIPTION, ABSTRACT, MANDATORY, HIDDEN} from './types';
 
 class IFeatureStructure {
     correspondingFeature: IFeature;
@@ -276,11 +273,12 @@ class IFeatureModelStructure {
 	// void setShowHiddenFeatures(boolean showHiddenFeatures);
 }
 
-export class IFeatureModel {
-    serializedFeatureModel: object;
+class IFeatureModel {
+    serializedFeatureModel: SerializedFeatureModel;
     featureTable: {[x: string]: IFeature} = {};
     structure: IFeatureModelStructure;
 
+    // used by BridgeUtils
     createFeature(name: string): IFeature {
         const feature = new IFeature(),
             featureStructure = new IFeatureStructure(),
@@ -291,100 +289,6 @@ export class IFeatureModel {
         featureStructure.correspondingFeature = feature;
         featureProperty.correspondingFeature = feature;
         return feature;
-    }
-
-    // a serialized JSON feature model as received from the server
-    static fromJSON(serializedFeatureModel: object): IFeatureModel {
-        if (!serializedFeatureModel[serialization.STRUCT] || serializedFeatureModel[serialization.STRUCT].length !== 1)
-            throw new Error('feature model has no structure');
-    
-        const featureModel = new IFeatureModel(),
-            featureModelStructure = new IFeatureModelStructure();
-        featureModel.structure = featureModelStructure;
-        featureModelStructure.correspondingFeatureModel = featureModel;
-        featureModel.serializedFeatureModel = serializedFeatureModel;
-    
-        function parseFeatures(nodes: object[], parent: IFeature | null): void {
-            nodes.forEach(node => {
-                const type = node[serialization.TYPE],
-                    name = node[serialization.NAME];
-                if (featureModel.getFeature(name) !== null)
-                    throw new Error('Duplicate entry for feature: ' + name);
-                const feature = featureModel.createFeature(name);
-                if (node[serialization.DESCRIPTION])
-                    feature.getProperty().setDescription(node[serialization.DESCRIPTION]);
-                feature.getStructure().setMandatory(true);
-                if (type === FeatureType.and)
-                    feature.getStructure().setAnd();
-                else if (type === FeatureType.alt)
-                    feature.getStructure().setAlternative();
-                else if (type === FeatureType.or)
-                    feature.getStructure().setOr();
-                else if (type === FeatureType.feature) {}
-                else
-                    throw new Error('Unknown feature type: ' + type);
-                feature.getStructure().setAbstract(!!node[serialization.ABSTRACT]);
-                feature.getStructure().setMandatory(!!node[serialization.MANDATORY]);
-                feature.getStructure().setHidden(!!node[serialization.HIDDEN]);
-                featureModel.addFeature(feature);
-                if (parent === null)
-                    featureModel.getStructure().setRoot(feature.getStructure());
-                else
-                    parent.getStructure().addChild(feature.getStructure());
-                if (node['children'] && node['children'].length > 0)
-                    parseFeatures(node['children'], feature);
-            });
-        }
-    
-        parseFeatures(serializedFeatureModel[serialization.STRUCT], null);
-        return featureModel;
-    }
-
-    // serializes feature model back to JSON (to allow storing in Redux)
-    toJSON(): object {
-        function writeAttributes(obj: object, feature: IFeature): object {
-            obj[serialization.NAME] = feature.getName();
-            if (feature.getStructure().isHidden())
-                obj[serialization.HIDDEN] = true;
-            if (feature.getStructure().isMandatory() &&
-                ((feature.getStructure().getParent() !== null && feature.getStructure().getParent()!.isAnd()) ||
-                    feature.getStructure().getParent() == null))
-                    obj[serialization.MANDATORY] = true;
-            if (feature.getStructure().isAbstract())
-                obj[serialization.ABSTRACT] = true;
-            const description = feature.getProperty().getDescription();
-            if (description !== null && description.trim())
-                obj[serialization.DESCRIPTION] = description.replace("\r", "");
-            return obj;
-        }
-
-        function serializeFeature(feature: IFeature | null): object {
-            if (feature == null)
-                throw new Error('no feature given');
-            const children = feature.getStructure().getChildren()
-                .map(featureStructure => featureStructure.getFeature());
-    
-            if (children.length === 0)
-                return writeAttributes({type: FeatureType.feature}, feature);
-            else {
-                const obj = {
-                    type: feature.getStructure().isAnd()
-                    ? FeatureType.and
-                    : feature.getStructure().isOr()
-                        ? FeatureType.or
-                        : feature.getStructure().isAlternative()
-                            ? FeatureType.alt
-                            : 'unknown',
-                    children: children.map(serializeFeature)
-                };
-                return writeAttributes(obj, feature);    
-            }
-        }
-
-        return {
-            ...this.serializedFeatureModel,
-            struct: [serializeFeature(this.getStructure().getRoot().getFeature())]
-        };
     }
 
     // long getId();
@@ -478,3 +382,99 @@ export class IFeatureModel {
     // long getNextElementId();
     // void setConstraint(int index, IConstraint constraint);
 }
+
+class MutableFeatureModel extends IFeatureModel {
+    // a serialized JSON feature model as received from the server
+    static fromJSON(serializedFeatureModel: SerializedFeatureModel): MutableFeatureModel {
+        if (!serializedFeatureModel[STRUCT] || serializedFeatureModel[STRUCT].length !== 1)
+            throw new Error('feature model has no structure');
+    
+        const mutableFeatureModel = new MutableFeatureModel(),
+            featureModelStructure = new IFeatureModelStructure();
+        mutableFeatureModel.structure = featureModelStructure;
+        featureModelStructure.correspondingFeatureModel = mutableFeatureModel;
+        mutableFeatureModel.serializedFeatureModel = serializedFeatureModel;
+    
+        function parseFeatures(nodes: SerializedFeatureModelNode[], parent: IFeature | null): void {
+            nodes.forEach(node => {
+                const type = node[TYPE],
+                    name = node[NAME];
+                if (mutableFeatureModel.getFeature(name) !== null)
+                    throw new Error('Duplicate entry for feature: ' + name);
+                const feature = mutableFeatureModel.createFeature(name);
+                if (node[DESCRIPTION])
+                    feature.getProperty().setDescription(node[DESCRIPTION]!);
+                feature.getStructure().setMandatory(true);
+                if (type === FeatureType.and)
+                    feature.getStructure().setAnd();
+                else if (type === FeatureType.alt)
+                    feature.getStructure().setAlternative();
+                else if (type === FeatureType.or)
+                    feature.getStructure().setOr();
+                else if (type === FeatureType.feature) {}
+                else
+                    throw new Error('Unknown feature type: ' + type);
+                feature.getStructure().setAbstract(!!node[ABSTRACT]);
+                feature.getStructure().setMandatory(!!node[MANDATORY]);
+                feature.getStructure().setHidden(!!node[HIDDEN]);
+                mutableFeatureModel.addFeature(feature);
+                if (parent === null)
+                    mutableFeatureModel.getStructure().setRoot(feature.getStructure());
+                else
+                    parent.getStructure().addChild(feature.getStructure());
+                if (node['children'] && node['children'].length > 0)
+                    parseFeatures(node['children'], feature);
+            });
+        }
+    
+        parseFeatures(serializedFeatureModel[STRUCT], null);
+        return mutableFeatureModel;
+    }
+
+    // serializes feature model back to JSON (to allow storing in Redux)
+    toJSON(): SerializedFeatureModel {
+        function writeAttributes(node: SerializedFeatureModelNode, feature: IFeature): SerializedFeatureModelNode {
+            if (feature.getStructure().isHidden())
+                node[HIDDEN] = true;
+            if (feature.getStructure().isMandatory() &&
+                ((feature.getStructure().getParent() !== null && feature.getStructure().getParent()!.isAnd()) ||
+                    feature.getStructure().getParent() == null))
+                    node[MANDATORY] = true;
+            if (feature.getStructure().isAbstract())
+                node[ABSTRACT] = true;
+            const description = feature.getProperty().getDescription();
+            if (description !== null && description.trim())
+                node[DESCRIPTION] = description.replace("\r", "");
+            return node;
+        }
+
+        function serializeFeature(feature: IFeature | null): SerializedFeatureModelNode {
+            if (feature == null)
+                throw new Error('no feature given');
+            const children = feature.getStructure().getChildren()
+                .map(featureStructure => featureStructure.getFeature());
+    
+            if (children.length === 0)
+                return writeAttributes({[TYPE]: FeatureType.feature, [NAME]: feature.getName()}, feature);
+            else
+                return writeAttributes({
+                    [TYPE]: feature.getStructure().isAnd()
+                        ? FeatureType.and
+                        : feature.getStructure().isOr()
+                            ? FeatureType.or
+                            : feature.getStructure().isAlternative()
+                                ? FeatureType.alt
+                                : FeatureType.unknown,
+                    [NAME]: feature.getName(),
+                    children: children.map(serializeFeature)
+                }, feature);
+        }
+
+        return {
+            ...this.serializedFeatureModel,
+            [STRUCT]: [serializeFeature(this.getStructure().getRoot().getFeature())]
+        };
+    }
+}
+
+export default MutableFeatureModel;

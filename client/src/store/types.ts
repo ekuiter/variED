@@ -1,7 +1,7 @@
 import GraphicalFeatureModel from '../modeling/GraphicalFeatureModel';
 import {defaultSettings, Settings} from './settings';
 import {Message, FeatureDiagramLayoutType, OverlayType, OverlayProps, ArtifactPath} from '../types';
-import {GraphicalFeature} from '../modeling/types';
+import {GraphicalFeature, SerializedFeatureModel} from '../modeling/types';
 
 export interface User {
     name: string
@@ -13,7 +13,7 @@ export interface CollaborativeSession {
 };
 
 export interface FeatureDiagramCollaborativeSession extends CollaborativeSession {
-    serializedFeatureModel: object,
+    serializedFeatureModel: SerializedFeatureModel,
     layout: FeatureDiagramLayoutType,
     isSelectMultipleFeatures: boolean,
     selectedFeatureNames: string[],
@@ -42,7 +42,7 @@ export const initialState: State = {
 };
 
 export const initialFeatureDiagramCollaborativeSessionState =
-    (artifactPath: ArtifactPath, serializedFeatureModel: object): FeatureDiagramCollaborativeSession => ({
+    (artifactPath: ArtifactPath, serializedFeatureModel: SerializedFeatureModel): FeatureDiagramCollaborativeSession => ({
         artifactPath,
         users: [],
         serializedFeatureModel,

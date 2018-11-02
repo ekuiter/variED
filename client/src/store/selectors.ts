@@ -10,6 +10,7 @@ import GraphicalFeatureModel from '../modeling/GraphicalFeatureModel';
 import {State, CollaborativeSession, FeatureDiagramCollaborativeSession} from './types';
 import logger from '../helpers/logger';
 import {ArtifactPath, isArtifactPathEqual, artifactPathToString} from '../types';
+import {SerializedFeatureModel} from '../modeling/types';
 
 export function isFeatureDiagramCollaborativeSession(collaborativeSession?: CollaborativeSession): collaborativeSession is FeatureDiagramCollaborativeSession {
     return typeof collaborativeSession !== 'undefined' &&
@@ -59,7 +60,7 @@ const currentGraphicalFeatureModelCollaborativeSessionKeySelector = <T>(key: str
 export const getGraphicalFeatureModel = createCachedSelector(
     graphicalFeatureModelCollaborativeSessionKeySelector('serializedFeatureModel'),
     graphicalFeatureModelCollaborativeSessionKeySelector('collapsedFeatureNames'),
-    (serializedFeatureModel?: object, collapsedFeatureNames?: string[]): GraphicalFeatureModel | undefined => {
+    (serializedFeatureModel?: SerializedFeatureModel, collapsedFeatureNames?: string[]): GraphicalFeatureModel | undefined => {
         logger.infoTagged({tag: 'redux'}, () => 'updating feature model selector');
         if (!serializedFeatureModel || !collapsedFeatureNames)
             return undefined;
@@ -70,7 +71,7 @@ export const getGraphicalFeatureModel = createCachedSelector(
 export const getCurrentGraphicalFeatureModel = createSelector(
     currentGraphicalFeatureModelCollaborativeSessionKeySelector('serializedFeatureModel'),
     currentGraphicalFeatureModelCollaborativeSessionKeySelector('collapsedFeatureNames'),
-    (serializedFeatureModel?: object, collapsedFeatureNames?: string[]): GraphicalFeatureModel | undefined => {
+    (serializedFeatureModel?: SerializedFeatureModel, collapsedFeatureNames?: string[]): GraphicalFeatureModel | undefined => {
         logger.infoTagged({tag: 'redux'}, () => 'updating feature model selector');
         if (!serializedFeatureModel || !collapsedFeatureNames)
             return undefined;
