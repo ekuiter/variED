@@ -5,11 +5,12 @@
 
 import {createStandardAction, ActionType, action} from 'typesafe-actions';
 import constants from '../constants';
-import {Message, MessageType, Feature, FeatureDiagramLayoutType, OverlayType, OverlayProps, ArtifactPath} from '../types';
+import {Message, MessageType, FeatureDiagramLayoutType, OverlayType, OverlayProps, ArtifactPath} from '../types';
 import {Dispatch, AnyAction, Action as ReduxAction} from 'redux';
 import {sendMessage, sendBatchMessage} from '../server/webSocket';
 import {ThunkAction} from 'redux-thunk';
 import {State} from './types';
+import {GraphicalFeature} from '../modeling/types';
 
 const {propertyTypes, groupValueTypes} = constants.server;
 
@@ -96,7 +97,7 @@ const actions = {
                             type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
                             feature: featureName, property: propertyTypes.mandatory, value
                         }))),
-                    toggleMandatory: createServerAction(({feature}: {feature: Feature}) => ({
+                    toggleMandatory: createServerAction(({feature}: {feature: GraphicalFeature}) => ({
                             type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
                             feature: feature.name, property: propertyTypes.mandatory, value: !feature.isMandatory
                         })),
@@ -115,7 +116,7 @@ const actions = {
                             type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
                             feature: featureName, property: propertyTypes.group, value: groupValueTypes.alternative
                         }))),
-                    toggleGroup: createServerAction(({feature}: {feature: Feature}) => ({
+                    toggleGroup: createServerAction(({feature}: {feature: GraphicalFeature}) => ({
                             type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
                             feature: feature.name, property: propertyTypes.group,
                             value: feature.isAnd

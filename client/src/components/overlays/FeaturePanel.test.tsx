@@ -1,7 +1,7 @@
 import React from 'react';
 import {shallow} from 'enzyme';
 import FeaturePanel from './FeaturePanel';
-import FeatureModel from '../../server/FeatureModel';
+import GraphicalFeatureModel from '../../modeling/GraphicalFeatureModel';
 import {validFeatureModel} from '../../fixtures';
 import {Panel} from 'office-ui-fabric-react/lib/Panel';
 import i18n from '../../i18n';
@@ -9,7 +9,7 @@ import {defaultSettings} from '../../store/settings';
 
 describe('FeaturePanel', () => {
     const featurePanel = (featureName = 'FeatureIDE') => {
-        const featureModel = new FeatureModel(validFeatureModel, []),
+        const graphicalFeatureModel = GraphicalFeatureModel.fromJSON(validFeatureModel),
             mock = jest.fn();
         return shallow(
             <FeaturePanel
@@ -20,7 +20,7 @@ describe('FeaturePanel', () => {
                 onExpandFeatures={mock}
                 onCollapseFeaturesBelow={mock}
                 onExpandFeaturesBelow={mock}
-                featureModel={featureModel}
+                graphicalFeatureModel={graphicalFeatureModel}
                 featureName={featureName}
                 settings={defaultSettings}
                 onAddFeatureAbove={mock}

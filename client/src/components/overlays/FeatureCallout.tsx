@@ -6,9 +6,10 @@ import React from 'react';
 import {Callout, DirectionalHint} from 'office-ui-fabric-react/lib/Callout';
 import commands from '../commands';
 import {CommandBar} from 'office-ui-fabric-react/lib/CommandBar';
-import {Feature, FeatureDiagramLayoutType} from '../../types';
+import {FeatureDiagramLayoutType} from '../../types';
 import FeatureComponent, {FeatureComponentProps} from './FeatureComponent';
 import {OnShowOverlayFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnRemoveFeaturesFunction, OnAddFeatureBelowFunction, OnAddFeatureAboveFunction, OnRemoveFeaturesBelowFunction} from '../../store/types';
+import {GraphicalFeature} from '../../modeling/types';
 
 type Props = FeatureComponentProps & {
     onDismiss: () => void,
@@ -26,11 +27,11 @@ type Props = FeatureComponentProps & {
 };
 
 export default class extends FeatureComponent({doUpdate: true})<Props> {
-    renderIfFeature(feature: Feature) {
-        const {onDismiss, featureModel} = this.props,
+    renderIfFeature(feature: GraphicalFeature) {
+        const {onDismiss, graphicalFeatureModel} = this.props,
             {gapSpace, width} = this.props.settings.featureDiagram.overlay;
         return (
-            <Callout target={featureModel!.getElement(feature.name)!.querySelector('.rectAndText')}
+            <Callout target={graphicalFeatureModel!.getElement(feature.name)!.querySelector('.rectAndText')}
                 onDismiss={onDismiss}
                 hidden={!this.props.isOpen}
                 gapSpace={gapSpace}

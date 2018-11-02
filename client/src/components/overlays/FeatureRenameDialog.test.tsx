@@ -1,7 +1,7 @@
 import React from 'react';
 import {shallow} from 'enzyme';
 import FeatureRenameDialog from './FeatureRenameDialog';
-import FeatureModel from '../../server/FeatureModel';
+import GraphicalFeatureModel from '../../modeling/GraphicalFeatureModel';
 import {validFeatureModel} from '../../fixtures';
 import {TextFieldDialog} from '../../helpers/Dialog';
 import {defaultSettings} from '../../store/settings';
@@ -16,7 +16,7 @@ describe('FeatureRenameDialog', () => {
             <FeatureRenameDialog
                 isOpen={true}
                 onDismiss={mock}
-                featureModel={new FeatureModel(validFeatureModel, [])}
+                graphicalFeatureModel={GraphicalFeatureModel.fromJSON(validFeatureModel)}
                 featureName="FeatureIDE"
                 settings={defaultSettings}
                 onRenameFeature={onRenameFeature}/>

@@ -1,7 +1,7 @@
 import React from 'react';
 import {shallow} from 'enzyme';
 import FeatureCallout from './FeatureCallout';
-import FeatureModel from '../../server/FeatureModel';
+import GraphicalFeatureModel from '../../modeling/GraphicalFeatureModel';
 import {validFeatureModel} from '../../fixtures';
 import {defaultSettings} from '../../store/settings';
 import {Callout, DirectionalHint} from 'office-ui-fabric-react/lib/Callout';
@@ -9,9 +9,9 @@ import {FeatureDiagramLayoutType} from '../../types';
 
 describe('FeatureCallout', () => {
     const featureCallout = (featureName = 'FeatureIDE') => {
-        const featureModel = new FeatureModel(validFeatureModel, []),
+        const graphicalFeatureModel = GraphicalFeatureModel.fromJSON(validFeatureModel),
             mock = jest.fn();
-        featureModel.getElement = jest.fn().mockReturnValue({
+        graphicalFeatureModel.getElement = jest.fn().mockReturnValue({
             querySelector: () => '<target element>'
         });
         return shallow(
@@ -25,7 +25,7 @@ describe('FeatureCallout', () => {
                 onExpandFeatures={mock}
                 onCollapseFeaturesBelow={mock}
                 onExpandFeaturesBelow={mock}
-                featureModel={featureModel}
+                graphicalFeatureModel={graphicalFeatureModel}
                 featureName={featureName}
                 onRemoveFeatures={mock}
                 onAddFeatureAbove={mock}

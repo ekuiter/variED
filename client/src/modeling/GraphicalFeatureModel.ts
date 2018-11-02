@@ -8,34 +8,35 @@ import constants from '../constants';
 import memoize from '../helpers/memoize';
 import {estimateHierarchySize} from '../components/featureDiagram/treeLayout/estimation';
 import {Settings} from '../store/settings';
-import {FeatureDiagramLayoutType, FeatureModelNode, Feature, FeatureType} from '../types';
+import {FeatureDiagramLayoutType} from '../types';
 import {present} from '../helpers/present';
 import logger from '../helpers/logger';
+import {GraphicalFeatureModelNode, GraphicalFeature, FeatureType} from './types';
 
 const serialization = constants.server.featureModel.serialization;
 
-export function getName(node: FeatureModelNode): string {
+export function getName(node: GraphicalFeatureModelNode): string {
     return node.data[serialization.NAME];
 }
 
-function isRoot(node: FeatureModelNode): boolean {
+function isRoot(node: GraphicalFeatureModelNode): boolean {
     return !node.parent;
 }
 
-function isCollapsed(node: FeatureModelNode): boolean {
+function isCollapsed(node: GraphicalFeatureModelNode): boolean {
     return !!(!node.children && node.actualChildren);
 }
 
-function hasChildren(node: FeatureModelNode): boolean {
+function hasChildren(node: GraphicalFeatureModelNode): boolean {
     return !!(node.children && node.children.length > 0);
 }
 
-function hasActualChildren(node: FeatureModelNode): boolean {
+function hasActualChildren(node: GraphicalFeatureModelNode): boolean {
     return !!(node.actualChildren && node.actualChildren.length > 0);
 }
 
-function eachNodeBelow(node: FeatureModelNode, callback: (node: FeatureModelNode) => void): void {
-    var current, currentNode: FeatureModelNode | undefined = node, next = [node], children, i, n;
+function eachNodeBelow(node: GraphicalFeatureModelNode, callback: (node: GraphicalFeatureModelNode) => void): void {
+    var current, currentNode: GraphicalFeatureModelNode | undefined = node, next = [node], children, i, n;
     do {
         current = next.reverse();
         next = [];
@@ -49,13 +50,13 @@ function eachNodeBelow(node: FeatureModelNode, callback: (node: FeatureModelNode
     } while (next.length);
 }
 
-function getNodesBelow(node: FeatureModelNode): FeatureModelNode[] {
-    var nodes: FeatureModelNode[] = [];
+function getNodesBelow(node: GraphicalFeatureModelNode): GraphicalFeatureModelNode[] {
+    var nodes: GraphicalFeatureModelNode[] = [];
     eachNodeBelow(node, node => nodes.push(node));
     return nodes;
 }
 
-d3Hierarchy.prototype.feature = function(this: FeatureModelNode): Feature {
+d3Hierarchy.prototype.feature = function(this: GraphicalFeatureModelNode): GraphicalFeature {
     return this._feature || (this._feature = {
         node: this,
         name: getName(this),
@@ -90,34 +91,47 @@ d3Hierarchy.prototype.feature = function(this: FeatureModelNode): Feature {
     });
 };
 
-export default class {
-    _hierarchy: FeatureModelNode;
-    _actualNodes: FeatureModelNode[];
-     _visibleNodes: FeatureModelNode[];
+class GraphicalFeatureModel {
+    serializedFeatureModel: object;
+    collapsedFeatureNames: string[] = [];
+    _hierarchy: GraphicalFeatureModelNode;
+    _actualNodes: GraphicalFeatureModelNode[];
+     _visibleNodes: GraphicalFeatureModelNode[];
 
     // feature model as supplied by feature model messages from the server
-    constructor(public featureModel: object, public collapsedFeatureNames: string[]) {}
+    static fromJSON(serializedFeatureModel: object): GraphicalFeatureModel {
+        const graphicalFeatureModel = new GraphicalFeatureModel();
+        graphicalFeatureModel.serializedFeatureModel = serializedFeatureModel;
+        return graphicalFeatureModel;
+    }
+
+    collapse(collapsedFeatureNames: string[]): GraphicalFeatureModel {
+        if (this._hierarchy)
+            throw new Error('graphical feature model already initialized');
+        this.collapsedFeatureNames = collapsedFeatureNames;
+        return this;
+    }
 
     get structure() {
         const struct = constants.server.featureModel.serialization.STRUCT;
-        if (!this.featureModel[struct] || this.featureModel[struct].length !== 1)
+        if (!this.serializedFeatureModel[struct] || this.serializedFeatureModel[struct].length !== 1)
             throw new Error('feature model has no structure');
-        return this.featureModel[struct][0];
+        return this.serializedFeatureModel[struct][0];
     }
 
     prepare(): void {
-        if (!this._hierarchy || !this._actualNodes || !this._visibleNodes) {
-            this._hierarchy = d3Hierarchy(this.structure) as FeatureModelNode;
+        if (!this._hierarchy) {
+            this._hierarchy = d3Hierarchy(this.structure) as GraphicalFeatureModelNode;
             this._actualNodes = this._hierarchy.descendants();
             this._visibleNodes = [];
 
-            const isVisible: (node: FeatureModelNode) => boolean = memoize(node => {
+            const isVisible: (node: GraphicalFeatureModelNode) => boolean = memoize(node => {
                 if (isRoot(node))
                     return true;
                 if (isCollapsed(node.parent!))
                     return false;
                 return isVisible(node.parent!);
-            }, (node: FeatureModelNode) => getName(node));
+            }, (node: GraphicalFeatureModelNode) => getName(node));
 
             this._actualNodes.forEach(node => {
                 // store children nodes (because they are changed on collapse)
@@ -132,37 +146,37 @@ export default class {
         }
     }
 
-    get hierarchy(): FeatureModelNode {
+    get hierarchy(): GraphicalFeatureModelNode {
         this.prepare();
         return this._hierarchy;
     }
 
-    get visibleNodes(): FeatureModelNode[] {
+    get visibleNodes(): GraphicalFeatureModelNode[] {
         this.prepare();
         return this._visibleNodes;
     }
 
-    get actualNodes(): FeatureModelNode[] {
+    get actualNodes(): GraphicalFeatureModelNode[] {
         this.prepare();
         return this._actualNodes;
     }
 
-    getNode(featureName: string): FeatureModelNode | undefined {
+    getNode(featureName: string): GraphicalFeatureModelNode | undefined {
         return this.actualNodes.find(node => getName(node) === featureName);
     }
 
-    getFeature(featureName: string): Feature | undefined {
+    getFeature(featureName: string): GraphicalFeature | undefined {
         const node = this.getNode(featureName);
         return node ? node.feature() : undefined;
     }
 
-    getNodes(featureNames: string[]): FeatureModelNode[] {
+    getNodes(featureNames: string[]): GraphicalFeatureModelNode[] {
         return featureNames
             .map(featureName => this.getNode(featureName))
             .filter(present);
     }
 
-    getFeatures(featureNames: string[]): Feature[] {
+    getFeatures(featureNames: string[]): GraphicalFeature[] {
         return featureNames
             .map(featureName => this.getFeature(featureName))
             .filter(present);
@@ -250,6 +264,8 @@ export default class {
     }
 
     toString() {
-        return `FeatureModel ${JSON.stringify(this.getVisibleFeatureNames())}`;
+        return `GraphicalFeatureModel ${JSON.stringify(this.getVisibleFeatureNames())}`;
     }
 }
+
+export default GraphicalFeatureModel;

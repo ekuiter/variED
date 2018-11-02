@@ -1,7 +1,7 @@
 import * as svg from './svg';
 import {select as d3Select} from 'd3-selection';
 import 'd3-selection-multi';
-import {FeaturePropertyKey} from '../types';
+import {FeaturePropertyKey} from '../modeling/types';
 import logger from './logger';
 
 jest.mock('./logger');

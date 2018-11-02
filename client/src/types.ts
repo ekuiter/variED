@@ -2,7 +2,6 @@
  * Definition of common types and enumerations.
  */
 
-import {HierarchyPointNode} from 'd3-hierarchy';
 import {Selection} from 'd3-selection';
 
 export enum MessageType {
@@ -87,52 +86,11 @@ export function isMessageType(type: string) {
     return Object.values(MessageType).includes(type);
 };
 
-export type FeaturePropertyKey = string | ((node: FeatureModelNode) => string);
-
-export enum FeatureType {
-    feature = 'feature',
-    or = 'or',
-    alt = 'alt',
-    and = 'and'
-};
-
-export interface Feature {
-    node: FeatureModelNode,
-    name: string,
-    type: FeatureType,
-    description: string,
-    isRoot: boolean,
-    isAbstract: boolean,
-    isHidden: boolean,
-    isMandatory: boolean,
-    isAnd: boolean,
-    isOr: boolean,
-    isAlternative: boolean,
-    isGroup: boolean,
-    isCollapsed: boolean,
-    hasChildren: boolean,
-    hasActualChildren: boolean,
-    getPropertyString: (key: FeaturePropertyKey) => string,
-    getNumberOfFeaturesBelow: () => number
-};
-
-type Datum = object; // this is an object per feature sent by the server accessible as node.data
-
-export type FeatureModelNode = HierarchyPointNode<Datum> & {
-    children?: FeatureModelNode[];
-    actualChildren?: FeatureModelNode[];
-    _feature: Feature;
-    feature: () => Feature;
-}
-
 export type Point = {x: number, y: number};
 // essentially the same as a DOMRect/ClientRect
 export type Rect = Point & {width: number, height: number};
 // upper left and lower right point, can be transformed to rect (but the tuple form is also useful)
 export type Bbox = [[number, number], [number, number]];
-export type NodeCoordinateFunction = (node: FeatureModelNode) => number;
-export type NodeCoordinateForAxisFunction = (node: FeatureModelNode, axis: string) => number;
-export type NodePointFunction = (node: FeatureModelNode) => Point;
 // Represents any selection. We ignore the generic parameters here for simplicity.
 // (IMO adding them would improve type safety, but decrease overall readability.)
 export type D3Selection = Selection<any, any, any, any>;

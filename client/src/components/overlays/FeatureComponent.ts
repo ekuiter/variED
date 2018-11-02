@@ -4,11 +4,11 @@
 
 import React from 'react';
 import {Settings} from '../../store/settings';
-import FeatureModel from '../../server/FeatureModel';
-import {Feature} from '../../types';
+import GraphicalFeatureModel from '../../modeling/GraphicalFeatureModel';
+import {GraphicalFeature} from '../../modeling/types';
 
 export interface FeatureComponentProps {
-    featureModel: FeatureModel,
+    graphicalFeatureModel: GraphicalFeatureModel,
     featureName?: string,
     settings: Settings
 };
@@ -16,7 +16,7 @@ export interface FeatureComponentProps {
 export default ({doUpdate = false} = {}) =>
     class <Props extends FeatureComponentProps> extends React.Component<Props> {
         interval: number;
-        feature: Feature;
+        feature: GraphicalFeature;
 
         componentDidMount() {
             if (doUpdate)
@@ -30,9 +30,9 @@ export default ({doUpdate = false} = {}) =>
                 window.clearInterval(this.interval);
         }
 
-        getFeature = () => this.props.featureName && this.props.featureModel.getFeature(this.props.featureName!);
+        getFeature = () => this.props.featureName && this.props.graphicalFeatureModel.getFeature(this.props.featureName!);
 
-        renderIfFeature(_feature: Feature): JSX.Element {
+        renderIfFeature(_feature: GraphicalFeature): JSX.Element {
             throw new Error('abstract method not implemented');
         }
 

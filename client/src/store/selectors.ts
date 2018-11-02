@@ -6,14 +6,14 @@
 
 import {createSelector} from 'reselect';
 import createCachedSelector from 're-reselect';
-import FeatureModel from '../server/FeatureModel';
+import GraphicalFeatureModel from '../modeling/GraphicalFeatureModel';
 import {State, CollaborativeSession, FeatureDiagramCollaborativeSession} from './types';
 import logger from '../helpers/logger';
 import {ArtifactPath, isArtifactPathEqual, artifactPathToString} from '../types';
 
 export function isFeatureDiagramCollaborativeSession(collaborativeSession?: CollaborativeSession): collaborativeSession is FeatureDiagramCollaborativeSession {
     return typeof collaborativeSession !== 'undefined' &&
-        (<FeatureDiagramCollaborativeSession>collaborativeSession).featureModel !== undefined;
+        (<FeatureDiagramCollaborativeSession>collaborativeSession).serializedFeatureModel !== undefined;
 }
 
 export function isEditingFeatureModel(state: State): boolean {
@@ -42,38 +42,38 @@ export const getCurrentCollaborativeSession = createSelector(
     (collaborativeSessions: CollaborativeSession[], currentArtifactPath: ArtifactPath): CollaborativeSession | undefined =>
         currentArtifactPath ? lookupCollaborativeSession(collaborativeSessions, currentArtifactPath) : undefined);
 
-const featureModelCollaborativeSessionKeySelector = <T>(key: string) => (state: State, artifactPath: ArtifactPath): T | undefined => {
+const graphicalFeatureModelCollaborativeSessionKeySelector = <T>(key: string) => (state: State, artifactPath: ArtifactPath): T | undefined => {
     const collaborativeSession = getCollaborativeSession(state, artifactPath);
     if (collaborativeSession && isFeatureDiagramCollaborativeSession(collaborativeSession))
         return collaborativeSession[key];
     return undefined;
 };
 
-const currentFeatureModelCollaborativeSessionKeySelector = <T>(key: string) => (state: State): T | undefined => {
+const currentGraphicalFeatureModelCollaborativeSessionKeySelector = <T>(key: string) => (state: State): T | undefined => {
     const collaborativeSession = getCurrentCollaborativeSession(state);
     if (collaborativeSession && isFeatureDiagramCollaborativeSession(collaborativeSession))
         return collaborativeSession[key];
     return undefined;
 };
 
-export const getFeatureModel = createCachedSelector(
-    featureModelCollaborativeSessionKeySelector('featureModel'),
-    featureModelCollaborativeSessionKeySelector('collapsedFeatureNames'),
-    (featureModel?: object, collapsedFeatureNames?: string[]): FeatureModel | undefined => {
+export const getGraphicalFeatureModel = createCachedSelector(
+    graphicalFeatureModelCollaborativeSessionKeySelector('serializedFeatureModel'),
+    graphicalFeatureModelCollaborativeSessionKeySelector('collapsedFeatureNames'),
+    (serializedFeatureModel?: object, collapsedFeatureNames?: string[]): GraphicalFeatureModel | undefined => {
         logger.infoTagged({tag: 'redux'}, () => 'updating feature model selector');
-        if (!featureModel || !collapsedFeatureNames)
+        if (!serializedFeatureModel || !collapsedFeatureNames)
             return undefined;
-        return new FeatureModel(featureModel, collapsedFeatureNames);
+        return GraphicalFeatureModel.fromJSON(serializedFeatureModel).collapse(collapsedFeatureNames);
     }
 )((_state: State, artifactPath: ArtifactPath) => artifactPathToString(artifactPath));
 
-export const getCurrentFeatureModel = createSelector(
-    currentFeatureModelCollaborativeSessionKeySelector('featureModel'),
-    currentFeatureModelCollaborativeSessionKeySelector('collapsedFeatureNames'),
-    (featureModel?: object, collapsedFeatureNames?: string[]): FeatureModel | undefined => {
+export const getCurrentGraphicalFeatureModel = createSelector(
+    currentGraphicalFeatureModelCollaborativeSessionKeySelector('serializedFeatureModel'),
+    currentGraphicalFeatureModelCollaborativeSessionKeySelector('collapsedFeatureNames'),
+    (serializedFeatureModel?: object, collapsedFeatureNames?: string[]): GraphicalFeatureModel | undefined => {
         logger.infoTagged({tag: 'redux'}, () => 'updating feature model selector');
-        if (!featureModel || !collapsedFeatureNames)
+        if (!serializedFeatureModel || !collapsedFeatureNames)
             return undefined;
-        return new FeatureModel(featureModel, collapsedFeatureNames);
+        return GraphicalFeatureModel.fromJSON(serializedFeatureModel).collapse(collapsedFeatureNames);
     }
 );

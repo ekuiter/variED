@@ -2,7 +2,7 @@ import React from 'react';
 import {shallow} from 'enzyme';
 import FeatureContextualMenu from './FeatureContextualMenu';
 import {defaultSettings} from '../../store/settings';
-import FeatureModel from '../../server/FeatureModel';
+import GraphicalFeatureModel from '../../modeling/GraphicalFeatureModel';
 import {validFeatureModel} from '../../fixtures';
 import {ContextualMenu} from 'office-ui-fabric-react/lib/ContextualMenu';
 import {DirectionalHint} from 'office-ui-fabric-react/lib/Callout';
@@ -10,9 +10,9 @@ import {FeatureDiagramLayoutType} from '../../types';
 
 describe('FeatureContextualMenu', () => {
     const featureContextualMenu = (selectedFeatureNames: string[] = []) => {
-        const featureModel = new FeatureModel(validFeatureModel, []),
+        const graphicalFeatureModel = GraphicalFeatureModel.fromJSON(validFeatureModel),
             mock = jest.fn();
-        featureModel.getElement = jest.fn().mockReturnValue({
+        graphicalFeatureModel.getElement = jest.fn().mockReturnValue({
             querySelector: () => '<target element>'
         });
         return shallow(
@@ -27,7 +27,7 @@ describe('FeatureContextualMenu', () => {
                 onExpandFeatures={mock}
                 onCollapseFeaturesBelow={mock}
                 onExpandFeaturesBelow={mock}
-                featureModel={featureModel}
+                graphicalFeatureModel={graphicalFeatureModel}
                 isSelectMultipleFeatures={selectedFeatureNames.length > 0}
                 selectedFeatureNames={selectedFeatureNames}
                 onAddFeatureAbove={mock}

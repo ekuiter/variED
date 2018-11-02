@@ -7,7 +7,7 @@ import UserFacepile from './UserFacepile';
 import {CommandBar} from 'office-ui-fabric-react/lib/CommandBar';
 import React from 'react';
 import {connect} from 'react-redux';
-import {getCurrentCollaborativeSession, isFeatureDiagramCollaborativeSession, getCurrentFeatureModel} from '../store/selectors';
+import {getCurrentCollaborativeSession, isFeatureDiagramCollaborativeSession, getCurrentGraphicalFeatureModel} from '../store/selectors';
 import actions from '../store/actions';
 import i18n from '../i18n';
 import {State, StateDerivedProps} from '../store/types';
@@ -16,7 +16,7 @@ import logger from '../helpers/logger';
 const CommandBarContainer = (props: StateDerivedProps) => (
     <CommandBar
         items={[
-            ...props.featureModel
+            ...props.graphicalFeatureModel
                 ? [{
                     key: 'file',
                     text: i18n.t('commands.file'),
@@ -27,7 +27,7 @@ const CommandBarContainer = (props: StateDerivedProps) => (
                     }
                 }]
                 : [],
-            ...props.featureModel
+            ...props.graphicalFeatureModel
                 ? [{
                     key: 'edit',
                     text: i18n.t('commands.edit'),
@@ -44,12 +44,12 @@ const CommandBarContainer = (props: StateDerivedProps) => (
                                 props.onCollapseFeaturesBelow!, props.onExpandFeaturesBelow!, props.onAddFeatureAbove!,
                                 props.onRemoveFeatures!, props.onRemoveFeaturesBelow!, props.onSetFeatureAbstract!,
                                 props.onSetFeatureHidden!, props.onSetFeatureMandatory!, props.onSetFeatureAnd!,
-                                props.onSetFeatureOr!, props.onSetFeatureAlternative!, props.featureModel!)
+                                props.onSetFeatureOr!, props.onSetFeatureAlternative!, props.graphicalFeatureModel!)
                         ]
                     }
                 }]
                 : [],
-            ...props.featureModel
+            ...props.graphicalFeatureModel
                 ? [{
                     key: 'view',
                     text: i18n.t('commands.view'),
@@ -104,7 +104,7 @@ export default connect(
             isSelectMultipleFeatures: collaborativeSession.isSelectMultipleFeatures,
             selectedFeatureNames: collaborativeSession.selectedFeatureNames,
             users: collaborativeSession.users,
-            featureModel: getCurrentFeatureModel(state)
+            graphicalFeatureModel: getCurrentGraphicalFeatureModel(state)
         };
     }),
     (dispatch): StateDerivedProps => ({

@@ -5,17 +5,17 @@ import {getShortcutText} from '../../shortcuts';
 import {OverlayType, Omit, FeatureDiagramLayoutType, FormatType, isArtifactPathEqual, ArtifactPath} from '../../types';
 import Palette, {PaletteItem, PaletteAction, getKey} from '../../helpers/Palette';
 import {canExport} from '../featureDiagram/export';
-import FeatureModel from '../../server/FeatureModel';
+import GraphicalFeatureModel from '../../modeling/GraphicalFeatureModel';
 import {arrayUnique} from '../../helpers/array';
 import defer from '../../helpers/defer';
-import logger from 'src/helpers/logger';
+import logger from '../../helpers/logger';
 
 interface Props {
     artifactPaths: ArtifactPath[],
     collaborativeSessions: CollaborativeSession[],
     isOpen: boolean,
     featureDiagramLayout?: FeatureDiagramLayoutType,
-    featureModel?: FeatureModel,
+    graphicalFeatureModel?: GraphicalFeatureModel,
     onDismiss: () => void,
     onShowOverlay: OnShowOverlayFunction,
     onJoin: OnJoinFunction,
@@ -73,7 +73,7 @@ export default class extends React.Component<Props, State> {
 
         if (this.state.getArgumentItems &&
             (prevState.getArgumentItems !== this.state.getArgumentItems ||
-                prevProps.featureModel !== this.props.featureModel))
+                prevProps.graphicalFeatureModel !== this.props.graphicalFeatureModel))
             this.state.getArgumentItems()
                 .then(argumentItems => this.setState({argumentItems}));
     }
@@ -125,11 +125,11 @@ export default class extends React.Component<Props, State> {
 
     featureCommand(command: Omit<PaletteItem, 'action'>, action: PaletteAction): PaletteItem {
         return {
-            disabled: () => !this.props.featureModel,
+            disabled: () => !this.props.graphicalFeatureModel,
             action: this.actionWithArguments(
                 [{
                     title: i18n.t('commandPalette.feature'),
-                    items: () => this.props.featureModel!.getVisibleFeatureNames()
+                    items: () => this.props.graphicalFeatureModel!.getVisibleFeatureNames()
                 }],
                 action),
             ...command
@@ -197,19 +197,19 @@ export default class extends React.Component<Props, State> {
         }, {
             text: i18n.t('commands.undo'),
             icon: 'Undo',
-            disabled: () => !this.props.featureModel,
+            disabled: () => !this.props.graphicalFeatureModel,
             shortcut: getShortcutText('undo'),
             action: this.action(this.props.onUndo)
         }, {
             text: i18n.t('commands.redo'),
             icon: 'Redo',
-            disabled: () => !this.props.featureModel,
+            disabled: () => !this.props.graphicalFeatureModel,
             shortcut: getShortcutText('redo'),
             action: this.action(this.props.onRedo)
         }, {
             text: i18n.t('commandPalette.featureDiagram.export'),
             icon: 'Share',
-            disabled: () => !this.props.featureModel,
+            disabled: () => !this.props.graphicalFeatureModel,
             action: this.actionWithArguments(
                 [{
                     title: i18n.t('commandPalette.format'),
@@ -222,7 +222,7 @@ export default class extends React.Component<Props, State> {
                 })
         }, {
             text: i18n.t('commandPalette.featureDiagram.setLayout'),
-            disabled: () => !this.props.featureModel,
+            disabled: () => !this.props.graphicalFeatureModel,
             action: this.actionWithArguments(
                 [{
                     title: i18n.t('commandPalette.layout'),
@@ -233,7 +233,7 @@ export default class extends React.Component<Props, State> {
             key: 'fitToScreen',
             icon: 'FullScreen',
             text: i18n.t('commandPalette.featureDiagram.fitToScreen'),
-            disabled: () => !this.props.featureModel,
+            disabled: () => !this.props.graphicalFeatureModel,
             action: this.action(this.props.onFitToScreen)
         },
         
@@ -286,7 +286,7 @@ export default class extends React.Component<Props, State> {
         
         this.featureCommand(
             {text: i18n.t('commandPalette.featureDiagram.feature.propertiesMenu.hidden')},
-            featureName => this.props.onSetFeatureHidden({featureNames: [featureName], value: !this.props.featureModel!.getFeature(featureName)!.isHidden})),
+            featureName => this.props.onSetFeatureHidden({featureNames: [featureName], value: !this.props.graphicalFeatureModel!.getFeature(featureName)!.isHidden})),
         
         this.featureCommand(
             {text: i18n.t('commandPalette.featureDiagram.feature.propertiesMenu.mandatory')},
@@ -334,13 +334,13 @@ export default class extends React.Component<Props, State> {
             text: i18n.t('commands.featureDiagram.feature.collapseAll'),
             shortcut: getShortcutText('featureDiagram.feature.collapse'),
             icon: 'CollapseContent',
-            disabled: () => !this.props.featureModel,
+            disabled: () => !this.props.graphicalFeatureModel,
             action: this.action(this.props.onCollapseAllFeatures)
         }, {
             text: i18n.t('commands.featureDiagram.feature.expandAll'),
             shortcut: getShortcutText('featureDiagram.feature.expand'),
             icon: 'ExploreContent',
-            disabled: () => !this.props.featureModel,
+            disabled: () => !this.props.graphicalFeatureModel,
             action: this.action(this.props.onExpandAllFeatures)
         }, {
             text: i18n.t('commandPalette.developer.debug'),

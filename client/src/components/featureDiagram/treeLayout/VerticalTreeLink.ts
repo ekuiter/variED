@@ -4,7 +4,8 @@
 
 import AbstractTreeLink from './AbstractTreeLink';
 import {drawLine, ArcPathFunction, Style} from '../../../helpers/svg';
-import {Rect, Point, FeatureModelNode, D3Selection, NodePointFunction} from '../../../types';
+import {Rect, Point, D3Selection} from '../../../types';
+import {GraphicalFeatureModelNode, NodePointFunction} from '../../../modeling/types';
 
 function topSide(y: number, rectInfo: Rect): number {
     return y + rectInfo.y;
@@ -15,11 +16,11 @@ function bottomSide(y: number, rectInfo: Rect): number {
 }
 
 export default class extends AbstractTreeLink {
-    groupAnchor(_node: FeatureModelNode): Point {
+    groupAnchor(_node: GraphicalFeatureModelNode): Point {
         return {x: 0, y: bottomSide(0, this.getRectInfo())};
     }
 
-    collapseAnchor(_node: FeatureModelNode): Partial<Point> {
+    collapseAnchor(_node: GraphicalFeatureModelNode): Partial<Point> {
         return {y: bottomSide(0, this.getRectInfo()) + this.settings.featureDiagram.font.size};
     }
 
@@ -43,14 +44,14 @@ export default class extends AbstractTreeLink {
         drawLine(selection, selector, {klass, from, to, style});
     }
 
-    from(node: FeatureModelNode, _phase?: string): Point {
+    from(node: GraphicalFeatureModelNode, _phase?: string): Point {
         return {
             x: this.nodeX(node),
             y: topSide(this.nodeY(node), this.getRectInfo())
         };
     }
 
-    to(node: FeatureModelNode, phase?: string): Point {
+    to(node: GraphicalFeatureModelNode, phase?: string): Point {
         const rectInfo = this.getRectInfo();
         const parent = node.parent!; // we only draw links for non-root nodes, so node always has a parent
         return phase === 'enter' ? {

@@ -5,12 +5,13 @@
  */
 
 import i18n from '../i18n';
-import {FeatureDiagramLayoutType, OverlayType, FormatType, Feature} from '../types';
+import {FeatureDiagramLayoutType, OverlayType, FormatType} from '../types';
 import {ContextualMenuItemType} from 'office-ui-fabric-react/lib/ContextualMenu';
 import {getShortcutText} from '../shortcuts';
 import {canExport} from './featureDiagram/export';
 import {OnShowOverlayFunction, OnCollapseFeaturesFunction, OnExpandFeaturesFunction, OnSetFeatureDiagramLayoutFunction, OnFitToScreenFunction, OnDeselectAllFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesBelowFunction, OnSetSelectMultipleFeaturesFunction, OnSelectAllFeaturesFunction, OnCollapseAllFeaturesFunction, OnExpandAllFeaturesFunction, OnRemoveFeaturesFunction, OnUndoFunction, OnRedoFunction, OnAddFeatureBelowFunction, OnAddFeatureAboveFunction, OnRemoveFeaturesBelowFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureMandatoryFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction} from '../store/types';
-import FeatureModel from '../server/FeatureModel';
+import GraphicalFeatureModel from '../modeling/GraphicalFeatureModel';
+import {GraphicalFeature} from '../modeling/types';
 
 const exportFormatItem = (featureDiagramLayout: FeatureDiagramLayoutType,
     onShowOverlay: OnShowOverlayFunction, format: FormatType) =>
@@ -25,12 +26,12 @@ const exportFormatItem = (featureDiagramLayout: FeatureDiagramLayoutType,
 export const makeDivider = () =>
     ({key: 'divider', itemType: ContextualMenuItemType.Divider});
 
-export const removeCommand = (features: Feature[], onRemoveFeatures: OnRemoveFeaturesFunction) => ({
+export const removeCommand = (features: GraphicalFeature[], onRemoveFeatures: OnRemoveFeaturesFunction) => ({
     disabled: features.some(feature => feature.isRoot && (!feature.hasChildren || feature.node.children!.length > 1)),
     action: () => onRemoveFeatures({featureNames: features.map(feature => feature.name)})
 });
 
-export const collapseCommand = (features: Feature[], onCollapseFeatures: OnCollapseFeaturesFunction,
+export const collapseCommand = (features: GraphicalFeature[], onCollapseFeatures: OnCollapseFeaturesFunction,
     onExpandFeatures: OnExpandFeaturesFunction, onClick?: () => void) => ({
     disabled: features.some(feature => !feature.hasActualChildren),
     action: (fn?: OnCollapseFeaturesFunction | OnExpandFeaturesFunction) => {
@@ -144,14 +145,14 @@ const commands = {
                 }
             }),
             newAbove: (featureNames: string[], onAddFeatureAbove: OnAddFeatureAboveFunction,
-                onClick: () => void, featureModel?: FeatureModel) => {
+                onClick: () => void, graphicalFeatureModel?: GraphicalFeatureModel) => {
                 let disabled = false;
                 if (featureNames.length === 0)
                     disabled = true;
                 else if (featureNames.length > 1) {
-                    if (!featureModel)
+                    if (!graphicalFeatureModel)
                         throw new Error('no feature model given');
-                    disabled = !featureModel.isSiblingFeatures(featureNames);
+                    disabled = !graphicalFeatureModel.isSiblingFeatures(featureNames);
                 }
                 return ({
                     key: 'newAbove',
@@ -163,7 +164,7 @@ const commands = {
                     }
                 });
             },
-            removeMenu: (features: Feature[], onRemoveFeatures: OnRemoveFeaturesFunction,
+            removeMenu: (features: GraphicalFeature[], onRemoveFeatures: OnRemoveFeaturesFunction,
                 onRemoveFeaturesBelow: OnRemoveFeaturesBelowFunction, onClick: () => void, iconOnly = false) => {
                 const {disabled, action} = removeCommand(features, onRemoveFeatures);
                 return {
@@ -218,7 +219,7 @@ const commands = {
                 iconProps: {iconName: 'TextDocument'},
                 onClick: () => onShowOverlay({overlay: OverlayType.featureSetDescriptionDialog, overlayProps: {featureName}})
             }),
-            properties: (features: Feature[], onSetFeatureAbstract: OnSetFeatureAbstractFunction,
+            properties: (features: GraphicalFeature[], onSetFeatureAbstract: OnSetFeatureAbstractFunction,
                 onSetFeatureHidden: OnSetFeatureHiddenFunction, onSetFeatureMandatory: OnSetFeatureMandatoryFunction,
                 onSetFeatureAnd: OnSetFeatureAndFunction, onSetFeatureOr: OnSetFeatureOrFunction,
                 onSetFeatureAlternative: OnSetFeatureAlternativeFunction, onClick: () => void) => {
@@ -320,7 +321,7 @@ const commands = {
                 onRemoveFeaturesBelow: OnRemoveFeaturesBelowFunction, onSetFeatureAbstract: OnSetFeatureAbstractFunction,
                 onSetFeatureHidden: OnSetFeatureHiddenFunction, onSetFeatureMandatory: OnSetFeatureMandatoryFunction,
                 onSetFeatureAnd: OnSetFeatureAndFunction, onSetFeatureOr: OnSetFeatureOrFunction,
-                onSetFeatureAlternative: OnSetFeatureAlternativeFunction, featureModel: FeatureModel) => ({
+                onSetFeatureAlternative: OnSetFeatureAlternativeFunction, graphicalFeatureModel: GraphicalFeatureModel) => ({
                 key: 'selection',
                 text: i18n.getFunction('commands.featureDiagram.feature.selection')(isSelectMultipleFeatures, selectedFeatureNames),
                 onClick: () => onSetSelectMultipleFeatures({isSelectMultipleFeatures: !isSelectMultipleFeatures}), // TODO: tell the user he can choose features now
@@ -328,7 +329,7 @@ const commands = {
                     ? {items: commands.featureDiagram.feature.selectionItems(selectedFeatureNames, onDeselectAllFeatures,
                         onCollapseFeatures, onExpandFeatures, onCollapseFeaturesBelow, onExpandFeaturesBelow, onAddFeatureAbove,
                         onRemoveFeatures, onRemoveFeaturesBelow, onSetFeatureAbstract, onSetFeatureHidden, onSetFeatureMandatory, onSetFeatureAnd, onSetFeatureOr,
-                        onSetFeatureAlternative, featureModel)}
+                        onSetFeatureAlternative, graphicalFeatureModel)}
                     : undefined
             }),
             selectionItems: (selectedFeatureNames: string[], onDeselectAllFeatures: OnDeselectAllFeaturesFunction,
@@ -338,13 +339,13 @@ const commands = {
                 onRemoveFeaturesBelow: OnRemoveFeaturesBelowFunction, onSetFeatureAbstract: OnSetFeatureAbstractFunction,
                 onSetFeatureHidden: OnSetFeatureHiddenFunction, onSetFeatureMandatory: OnSetFeatureMandatoryFunction,
                 onSetFeatureAnd: OnSetFeatureAndFunction, onSetFeatureOr: OnSetFeatureOrFunction,
-                onSetFeatureAlternative: OnSetFeatureAlternativeFunction, featureModel: FeatureModel) => [
-                commands.featureDiagram.feature.newAbove(selectedFeatureNames, onAddFeatureAbove, onDeselectAllFeatures, featureModel),
-                commands.featureDiagram.feature.removeMenu(featureModel.getFeatures(selectedFeatureNames), onRemoveFeatures, onRemoveFeaturesBelow, onDeselectAllFeatures),
-                commands.featureDiagram.feature.collapseMenu(featureModel.getFeatures(selectedFeatureNames),
+                onSetFeatureAlternative: OnSetFeatureAlternativeFunction, graphicalFeatureModel: GraphicalFeatureModel) => [
+                commands.featureDiagram.feature.newAbove(selectedFeatureNames, onAddFeatureAbove, onDeselectAllFeatures, graphicalFeatureModel),
+                commands.featureDiagram.feature.removeMenu(graphicalFeatureModel.getFeatures(selectedFeatureNames), onRemoveFeatures, onRemoveFeaturesBelow, onDeselectAllFeatures),
+                commands.featureDiagram.feature.collapseMenu(graphicalFeatureModel.getFeatures(selectedFeatureNames),
                     onCollapseFeatures, onExpandFeatures, onCollapseFeaturesBelow, onExpandFeaturesBelow, onDeselectAllFeatures),
                 makeDivider(),
-                commands.featureDiagram.feature.properties(featureModel.getFeatures(selectedFeatureNames),
+                commands.featureDiagram.feature.properties(graphicalFeatureModel.getFeatures(selectedFeatureNames),
                 onSetFeatureAbstract, onSetFeatureHidden, onSetFeatureMandatory, onSetFeatureAnd, onSetFeatureOr,
                 onSetFeatureAlternative, onDeselectAllFeatures)
             ],
@@ -360,7 +361,7 @@ const commands = {
                 secondaryText: getShortcutText('featureDiagram.feature.deselectAll'),
                 onClick: onDeselectAll
             }),
-            collapseMenu: (features: Feature[], onCollapseFeatures: OnCollapseFeaturesFunction, onExpandFeatures: OnExpandFeaturesFunction,
+            collapseMenu: (features: GraphicalFeature[], onCollapseFeatures: OnCollapseFeaturesFunction, onExpandFeatures: OnExpandFeaturesFunction,
                 onCollapseFeaturesBelow: OnCollapseFeaturesBelowFunction, onExpandFeaturesBelow: OnExpandFeaturesBelowFunction,
                 onClick: () => void, iconOnly = false) => {
                 const isSingleFeature = features.length === 1,

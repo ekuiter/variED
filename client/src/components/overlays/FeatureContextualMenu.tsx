@@ -6,9 +6,10 @@ import React from 'react';
 import {DirectionalHint} from 'office-ui-fabric-react/lib/Callout';
 import {ContextualMenu} from 'office-ui-fabric-react/lib/ContextualMenu';
 import commands, {makeDivider} from '../commands';
-import {FeatureDiagramLayoutType, Feature} from '../../types';
+import {FeatureDiagramLayoutType} from '../../types';
 import FeatureComponent, {FeatureComponentProps} from './FeatureComponent';
 import {OnShowOverlayFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnDeselectAllFeaturesFunction, OnRemoveFeaturesFunction, OnAddFeatureAboveFunction, OnAddFeatureBelowFunction, OnRemoveFeaturesBelowFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureMandatoryFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction} from '../../store/types';
+import {GraphicalFeature} from '../../modeling/types';
 
 type Props = FeatureComponentProps & {
     onDismiss: () => void,
@@ -35,14 +36,14 @@ type Props = FeatureComponentProps & {
 };
 
 export default class extends FeatureComponent({doUpdate: true})<Props> {
-    renderIfFeature(feature: Feature) {
+    renderIfFeature(feature: GraphicalFeature) {
         const {
-                onDismiss, onDeselectAllFeatures, isSelectMultipleFeatures, selectedFeatureNames, featureModel
+                onDismiss, onDeselectAllFeatures, isSelectMultipleFeatures, selectedFeatureNames, graphicalFeatureModel
             } = this.props,
             {gapSpace} = this.props.settings.featureDiagram.overlay;
         return (
             <ContextualMenu
-                target={featureModel!.getElement(feature.name)!.querySelector('.rectAndText')}
+                target={graphicalFeatureModel!.getElement(feature.name)!.querySelector('.rectAndText')}
                 onDismiss={onDismiss}
                 hidden={!this.props.isOpen}
                 isBeakVisible={!isSelectMultipleFeatures}
@@ -57,7 +58,7 @@ export default class extends FeatureComponent({doUpdate: true})<Props> {
                         this.props.onExpandFeaturesBelow, this.props.onAddFeatureAbove, this.props.onRemoveFeatures,
                         this.props.onRemoveFeaturesBelow, this.props.onSetFeatureAbstract, this.props.onSetFeatureHidden,
                         this.props.onSetFeatureMandatory, this.props.onSetFeatureAnd, this.props.onSetFeatureOr,
-                        this.props.onSetFeatureAlternative, featureModel!)
+                        this.props.onSetFeatureAlternative, graphicalFeatureModel!)
                     : [
                         commands.featureDiagram.feature.newMenu(feature.name, this.props.onAddFeatureBelow, this.props.onAddFeatureAbove, onDismiss),
                         commands.featureDiagram.feature.removeMenu([feature], this.props.onRemoveFeatures, this.props.onRemoveFeaturesBelow, onDismiss),

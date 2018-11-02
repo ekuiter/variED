@@ -3,10 +3,11 @@
  */
 
 import {Settings} from '../../../store/settings';
-import {FeatureModelNode, FeatureDiagramLayoutType} from '../../../types';
+import {FeatureDiagramLayoutType} from '../../../types';
 import measureTextWidth from '../../../helpers/measureTextWidth';
 import constants from '../../../constants';
 import logger from '../../../helpers/logger';
+import {GraphicalFeatureModelNode} from '../../../modeling/types';
 
 // estimates the width of a node's rectangle
 export function estimateRectWidth(settings: Settings, estimatedTextWidth: number): number {
@@ -44,13 +45,13 @@ export function estimateYOffset(settings: Settings, sgn: number, _layout: Featur
 
 // estimates minimum size of the given hierarchy without layouting it
 // and proposes features that can be collapsed to reduce the size
-export function estimateHierarchySize(nodes: FeatureModelNode[], collapsedFeatureNames: string[], featureDiagramLayout: FeatureDiagramLayoutType,
+export function estimateHierarchySize(nodes: GraphicalFeatureModelNode[], collapsedFeatureNames: string[], featureDiagramLayout: FeatureDiagramLayoutType,
     {fontFamily, fontSize, widthPadding, rectHeight, getName}:
-    {fontFamily: string, fontSize: number, widthPadding: number, rectHeight: number, getName: (node: FeatureModelNode) => string}):
-    {estimatedSize: number, collapsibleNodes: FeatureModelNode[]} {
+    {fontFamily: string, fontSize: number, widthPadding: number, rectHeight: number, getName: (node: GraphicalFeatureModelNode) => string}):
+    {estimatedSize: number, collapsibleNodes: GraphicalFeatureModelNode[]} {
 
     const maxCollapsibleNodes = constants.featureDiagram.fitToScreen.maxCollapsibleNodes(nodes),
-        minLayerSizes: {depth: number, size: number}[] = [], collapsibleNodesPerLayer: FeatureModelNode[][] = [];
+        minLayerSizes: {depth: number, size: number}[] = [], collapsibleNodesPerLayer: GraphicalFeatureModelNode[][] = [];
     let layerNum = -1;
     logger.infoBeginCollapsed(() => `estimating size for ${nodes.length} feature(s) (${collapsedFeatureNames.length} collapsed), ` +
         `may collapse up to ${maxCollapsibleNodes} feature(s)`);
@@ -76,7 +77,7 @@ export function estimateHierarchySize(nodes: FeatureModelNode[], collapsedFeatur
     logLayer(layerNum);
     layerNum++;
     minLayerSizes.sort((a, b) => b.size - a.size);
-    let collapsibleNodes: FeatureModelNode[] = [];
+    let collapsibleNodes: GraphicalFeatureModelNode[] = [];
     for (let i = 0; i < layerNum; i++) {
         if (minLayerSizes[i].depth === 0)
             continue;

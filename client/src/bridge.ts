@@ -9,7 +9,7 @@
  */
 
 import constants from './constants';
-import {FeatureType} from './types';
+import {FeatureType} from './modeling/types';
 
 const serialization = constants.server.featureModel.serialization;
 

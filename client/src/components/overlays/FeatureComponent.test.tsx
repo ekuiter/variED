@@ -1,6 +1,6 @@
 import React from 'react';
 import {shallow} from 'enzyme';
-import FeatureModel from '../../server/FeatureModel';
+import GraphicalFeatureModel from '../../modeling/GraphicalFeatureModel';
 import {validFeatureModel} from '../../fixtures';
 import {defaultSettings} from '../../store/settings';
 import getFeatureComponent from './FeatureComponent';
@@ -9,7 +9,7 @@ describe('FeatureComponent', () => {
     const featureComponent = (
         {featureComponent, featureName = 'FeatureIDE', mockRenderIfFeature = true, onDismiss = jest.fn()}:
         {featureComponent?: object, featureName?: string, mockRenderIfFeature?: boolean, onDismiss?: jest.Mock} = {}) => {
-        const featureModel = new FeatureModel(validFeatureModel, []),
+        const graphicalFeatureModel = GraphicalFeatureModel.fromJSON(validFeatureModel),
             FeatureComponent = getFeatureComponent(featureComponent);
         if (mockRenderIfFeature)
             FeatureComponent.prototype.renderIfFeature =
@@ -20,7 +20,7 @@ describe('FeatureComponent', () => {
                     isOpen={true}
                     onDismiss={onDismiss}
                     settings={defaultSettings}
-                    featureModel={featureModel}
+                    graphicalFeatureModel={graphicalFeatureModel}
                     featureName={featureName}/>
             ),
             renderIfFeature: FeatureComponent.prototype.renderIfFeature

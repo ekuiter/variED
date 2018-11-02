@@ -7,12 +7,12 @@ import {OverlayType, isFloatingFeatureOverlay} from '../types';
 import {getShortcutKeyBinding} from '../shortcuts';
 import {removeCommand, collapseCommand} from './commands';
 import {connect} from 'react-redux';
-import {getCurrentCollaborativeSession, isFeatureDiagramCollaborativeSession, getCurrentFeatureModel} from '../store/selectors';
+import {getCurrentCollaborativeSession, isFeatureDiagramCollaborativeSession, getCurrentGraphicalFeatureModel} from '../store/selectors';
 import actions from '../store/actions';
 import {State, StateDerivedProps} from '../store/types';
 import logger from '../helpers/logger';
 
-const ifFeatureModel = (props: StateDerivedProps) => !!props.featureModel,
+const ifFeatureModel = (props: StateDerivedProps) => !!props.graphicalFeatureModel,
     ifGlobal = (props: StateDerivedProps) => props.overlay === OverlayType.none,
     ifFloatingFeature = (props: StateDerivedProps) => isFloatingFeatureOverlay(props.overlay!),
     ifSingleFloatingFeature = (props: StateDerivedProps) => ifFloatingFeature(props) && !props.isSelectMultipleFeatures;
@@ -30,7 +30,7 @@ export default connect(
             ...props,
             isSelectMultipleFeatures: collaborativeSession.isSelectMultipleFeatures,
             selectedFeatureNames: collaborativeSession.selectedFeatureNames,
-            featureModel: getCurrentFeatureModel(state)
+            graphicalFeatureModel: getCurrentGraphicalFeatureModel(state)
         };
     }),
     (dispatch): StateDerivedProps => ({
@@ -75,7 +75,7 @@ export default connect(
         'featureDiagram.feature.remove',
         (props: StateDerivedProps) => ifFeatureModel(props) && (props.isSelectMultipleFeatures || ifFloatingFeature(props)),
         async ({props}: {props: StateDerivedProps}) => {
-            const {disabled, action} = removeCommand(props.featureModel!.getFeatures(props.selectedFeatureNames!), props.onRemoveFeatures!);
+            const {disabled, action} = removeCommand(props.graphicalFeatureModel!.getFeatures(props.selectedFeatureNames!), props.onRemoveFeatures!);
             if (!disabled) {
                 await action();
                 props.onHideOverlay!({overlay: props.overlay!});
@@ -101,7 +101,7 @@ export default connect(
                 return;
             }
             const {disabled, action} = collapseCommand(
-                props.featureModel!.getFeatures(props.selectedFeatureNames!),
+                props.graphicalFeatureModel!.getFeatures(props.selectedFeatureNames!),
                 props.onCollapseFeatures!, props.onExpandFeatures!,
                 !ifGlobal(props) ? (() => props.onHideOverlay!({overlay: props.overlay!})) : undefined);
             if (!disabled)
@@ -117,7 +117,7 @@ export default connect(
                 return;
             }
             const {disabled, action} = collapseCommand(
-                props.featureModel!.getFeatures(props.selectedFeatureNames!),
+                props.graphicalFeatureModel!.getFeatures(props.selectedFeatureNames!),
                 props.onCollapseFeatures!, props.onExpandFeatures!,
                 !ifGlobal(props) ? (() => props.onHideOverlay!({overlay: props.overlay!})) : undefined);
             if (!disabled)

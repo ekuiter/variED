@@ -1,75 +1,75 @@
-import {getCurrentFeatureModel} from './selectors';
+import {getCurrentGraphicalFeatureModel} from './selectors';
 import {validFeatureModel, invalidFeatureModel1} from '../fixtures';
-import FeatureModel from '../server/FeatureModel';
+import GraphicalFeatureModel from '../modeling/GraphicalFeatureModel';
 import {initialState} from './types';
 
 describe('selectors', () => {
-    describe('getFeatureModel', () => {
+    describe('getCurrentGraphicalFeatureModel', () => {
         it('gets no feature model from the initial store state', () => {
-            expect(getCurrentFeatureModel(initialState)).toBeUndefined();
+            expect(getCurrentGraphicalFeatureModel(initialState)).toBeUndefined();
         });
 
         it('gets a feature model from a loaded store state', () => {
             const state = <any>{
                 collaborativeSessions: [{
                     artifactPath: {project: 'project', artifact: 'artifact'},
-                    featureModel: validFeatureModel,
+                    serializedFeatureModel: validFeatureModel,
                     collapsedFeatureNames: []
                 }],
                 currentArtifactPath: {project: 'project', artifact: 'artifact'}
             };
-            expect(getCurrentFeatureModel(state)!.featureModel)
-                .toEqual(new FeatureModel(validFeatureModel, []).featureModel);
+            expect(getCurrentGraphicalFeatureModel(state)!.serializedFeatureModel)
+                .toEqual(GraphicalFeatureModel.fromJSON(validFeatureModel).serializedFeatureModel);
         });
 
         it('recomputes when the store state changes', () => {
             const collaborativeSessions = [{
                     artifactPath: {project: 'project', artifact: 'artifact'},
-                    featureModel: invalidFeatureModel1,
+                    serializedFeatureModel: invalidFeatureModel1,
                     collapsedFeatureNames: ['test1']
                 }],
                 currentArtifactPath = {project: 'project', artifact: 'artifact'};
-                getCurrentFeatureModel.resetRecomputations();
+                getCurrentGraphicalFeatureModel.resetRecomputations();
 
             let state: any = {collaborativeSessions, currentArtifactPath};
-            getCurrentFeatureModel(state);
-            expect(getCurrentFeatureModel.recomputations()).toBe(1);
+            getCurrentGraphicalFeatureModel(state);
+            expect(getCurrentGraphicalFeatureModel.recomputations()).toBe(1);
 
             state = {collaborativeSessions, currentArtifactPath};
-            getCurrentFeatureModel(state);
-            expect(getCurrentFeatureModel.recomputations()).toBe(1);
+            getCurrentGraphicalFeatureModel(state);
+            expect(getCurrentGraphicalFeatureModel.recomputations()).toBe(1);
 
             state = {collaborativeSessions, currentArtifactPath};
             state.collaborativeSessions = [{
                 artifactPath: {project: 'project', artifact: 'artifact'},
-                featureModel: validFeatureModel,
+                serializedFeatureModel: validFeatureModel,
                 collapsedFeatureNames: ['test1']
             }];
-            getCurrentFeatureModel(state);
-            expect(getCurrentFeatureModel.recomputations()).toBe(2);
+            getCurrentGraphicalFeatureModel(state);
+            expect(getCurrentGraphicalFeatureModel.recomputations()).toBe(2);
 
             state = {collaborativeSessions: state.collaborativeSessions, currentArtifactPath};
             state.collaborativeSessions = [state.collaborativeSessions[0]];
-            getCurrentFeatureModel(state);
-            expect(getCurrentFeatureModel.recomputations()).toBe(2);
+            getCurrentGraphicalFeatureModel(state);
+            expect(getCurrentGraphicalFeatureModel.recomputations()).toBe(2);
 
             state = {collaborativeSessions: state.collaborativeSessions, currentArtifactPath};
             state.collaborativeSessions = [{
                 artifactPath: {project: 'project', artifact: 'artifact'},
-                featureModel: validFeatureModel,
+                serializedFeatureModel: validFeatureModel,
                 collapsedFeatureNames: []
             }];
-            getCurrentFeatureModel(state);
-            expect(getCurrentFeatureModel.recomputations()).toBe(3);
+            getCurrentGraphicalFeatureModel(state);
+            expect(getCurrentGraphicalFeatureModel.recomputations()).toBe(3);
 
             state = {collaborativeSessions: state.collaborativeSessions, currentArtifactPath};
             state.collaborativeSessions = [{
                 artifactPath: {project: 'project', artifact: 'artifact'},
-                featureModel: validFeatureModel,
+                serializedFeatureModel: validFeatureModel,
                 collapsedFeatureNames: state.collaborativeSessions[0].collapsedFeatureNames
             }];
-            getCurrentFeatureModel(state);
-            expect(getCurrentFeatureModel.recomputations()).toBe(3);
+            getCurrentGraphicalFeatureModel(state);
+            expect(getCurrentGraphicalFeatureModel.recomputations()).toBe(3);
         });
     });
 });

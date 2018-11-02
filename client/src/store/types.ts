@@ -1,6 +1,7 @@
-import FeatureModel from '../server/FeatureModel';
+import GraphicalFeatureModel from '../modeling/GraphicalFeatureModel';
 import {defaultSettings, Settings} from './settings';
-import {Message, FeatureDiagramLayoutType, OverlayType, OverlayProps, Feature, ArtifactPath} from '../types';
+import {Message, FeatureDiagramLayoutType, OverlayType, OverlayProps, ArtifactPath} from '../types';
+import {GraphicalFeature} from '../modeling/types';
 
 export interface User {
     name: string
@@ -12,7 +13,7 @@ export interface CollaborativeSession {
 };
 
 export interface FeatureDiagramCollaborativeSession extends CollaborativeSession {
-    featureModel: object,
+    serializedFeatureModel: object,
     layout: FeatureDiagramLayoutType,
     isSelectMultipleFeatures: boolean,
     selectedFeatureNames: string[],
@@ -41,10 +42,10 @@ export const initialState: State = {
 };
 
 export const initialFeatureDiagramCollaborativeSessionState =
-    (artifactPath: ArtifactPath, featureModel: object): FeatureDiagramCollaborativeSession => ({
+    (artifactPath: ArtifactPath, serializedFeatureModel: object): FeatureDiagramCollaborativeSession => ({
         artifactPath,
         users: [],
-        featureModel,
+        serializedFeatureModel,
         layout: FeatureDiagramLayoutType.verticalTree,
         isSelectMultipleFeatures: false,
         selectedFeatureNames: [],
@@ -83,11 +84,11 @@ export type OnSetFeatureDescriptionFunction = (payload: {featureName: string, de
 export type OnSetFeatureAbstractFunction = (payload: {featureNames: string[], value: boolean}) => Promise<void>;
 export type OnSetFeatureHiddenFunction = (payload: {featureNames: string[], value: boolean}) => Promise<void>;
 export type OnSetFeatureMandatoryFunction = (payload: {featureNames: string[], value: boolean}) => Promise<void>;
-export type OnToggleFeatureMandatoryFunction = (payload: {feature: Feature}) => Promise<void>;
+export type OnToggleFeatureMandatoryFunction = (payload: {feature: GraphicalFeature}) => Promise<void>;
 export type OnSetFeatureAndFunction = (payload: {featureNames: string[]}) => Promise<void>;
 export type OnSetFeatureOrFunction = (payload: {featureNames: string[]}) => Promise<void>;
 export type OnSetFeatureAlternativeFunction = (payload: {featureNames: string[]}) => Promise<void>;
-export type OnToggleFeatureGroupFunction = (payload: {feature: Feature}) => Promise<void>;
+export type OnToggleFeatureGroupFunction = (payload: {feature: GraphicalFeature}) => Promise<void>;
 
 // Props that may derived from the state to use in React components.
 // This enforces the convention that a prop called 'on...' has the same type in all components.
@@ -101,7 +102,7 @@ export type StateDerivedProps = Partial<{
     featureDiagramLayout: FeatureDiagramLayoutType,
     isSelectMultipleFeatures: boolean,
     selectedFeatureNames: string[],
-    featureModel: FeatureModel,
+    graphicalFeatureModel: GraphicalFeatureModel,
     overlay: OverlayType,
     overlayProps: OverlayProps,
 
