@@ -34,7 +34,6 @@ deploy:
       secure: l5Agcx9m6DJOMKr9o703gE9mIjcr+zI9iITUhaFoNw/fwpZRm1bvKgitlpfq83e7pzw8TAZdRPIL9WQRbvVRhpx/F4lEn5lF94tJJnrvhKjYolnw/UyZ9E8vgecYtYI15fEBeRwLyQQaSrtYD5XWCUEYVo5p0OJf+yTZoN+67ck1bsjeRICxSsvAl1GQySYvGj2teLe3euqpuFrv51VvCjubiCM0H7aperxJtJdXbJ1H9vCvylcnzn/SZp3hlOm455rooVPVZHHt7Ra4oF9SZn6nwXMpPdLpbnTWNNpbm0GTGxCgQ+KROeGRjx6O2JmnCC2V3Ql6ard+1luyuu9Dfwr6G/uFjBPLBEdSz2O24yogAh/sgzs8Rdt9HL/Wf0nSmLuRM83zKIROFWmdoic7VqRtwkd6sACBj9DxgtKob7IKYe7PWIgJzAiux8kQIbe2vZuNmzBcWbeCfa0NNhgpH4f45l5uHTIOESxYsLlAbFakyNMHkJ6sfDhA3GsUq/ztm4KcUxORyVfiRALNksErYCBE3jU+4dBAbQz5Vd+UbEZ53mE1p4SYOgvOJjmSd4Qm/HCvrYjb+Sw+F71w7uF5YQQnJT5I7VB3eEYVYoYO0B0724elbUB+DA/dNlNQpDiCdydfo1mTuQ7dqhDEZgMxWraLuf2mtxMFu/sNFf7DnS8=
   - provider: heroku
     app: varied
-    skip_cleanup: true
     on:
       repo: ekuiter/variED
       tags: true
@@ -46,6 +45,7 @@ deploy:
     script: bash -c 'ls | grep -v build | grep -v Procfile | grep -v app-build.json | xargs rm -rf && rm -rf .gradle build.gradle .travis.yml .gitignore && mv app-build.json app.json && git add -A && git add build -f'
     on:
       repo: ekuiter/variED
+      tags: false
       all_branches: true
   - provider: pages
     target-branch: build
@@ -54,6 +54,7 @@ deploy:
     allow-empty-commit: true
     on:
       repo: ekuiter/variED
+      tags: false
       all_branches: true
     github-token:
       secure: l5Agcx9m6DJOMKr9o703gE9mIjcr+zI9iITUhaFoNw/fwpZRm1bvKgitlpfq83e7pzw8TAZdRPIL9WQRbvVRhpx/F4lEn5lF94tJJnrvhKjYolnw/UyZ9E8vgecYtYI15fEBeRwLyQQaSrtYD5XWCUEYVo5p0OJf+yTZoN+67ck1bsjeRICxSsvAl1GQySYvGj2teLe3euqpuFrv51VvCjubiCM0H7aperxJtJdXbJ1H9vCvylcnzn/SZp3hlOm455rooVPVZHHt7Ra4oF9SZn6nwXMpPdLpbnTWNNpbm0GTGxCgQ+KROeGRjx6O2JmnCC2V3Ql6ard+1luyuu9Dfwr6G/uFjBPLBEdSz2O24yogAh/sgzs8Rdt9HL/Wf0nSmLuRM83zKIROFWmdoic7VqRtwkd6sACBj9DxgtKob7IKYe7PWIgJzAiux8kQIbe2vZuNmzBcWbeCfa0NNhgpH4f45l5uHTIOESxYsLlAbFakyNMHkJ6sfDhA3GsUq/ztm4KcUxORyVfiRALNksErYCBE3jU+4dBAbQz5Vd+UbEZ53mE1p4SYOgvOJjmSd4Qm/HCvrYjb+Sw+F71w7uF5YQQnJT5I7VB3eEYVYoYO0B0724elbUB+DA/dNlNQpDiCdydfo1mTuQ7dqhDEZgMxWraLuf2mtxMFu/sNFf7DnS8=
