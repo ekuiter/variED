@@ -1,6 +1,6 @@
 ## variED
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/ekuiter/variED/tree/build)
+[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/ekuiter/variED/tree/build) [![Deploy to Amazon AWS](https://s3.eu-central-1.amazonaws.com/de.ovgu.spldev.varied/awsdeploy.png)](https://console.aws.amazon.com/elasticbeanstalk/?region=eu-central-1#/newApplication?applicationName=variED&platform=Tomcat%208.5%20with%20Java%208%20running%20on%2064bit%20Amazon%20Linux&sourceBundleUrl=https%3A%2F%2Fs3.eu-central-1.amazonaws.com%2Fde.ovgu.spldev.varied%2Fserver.war&environmentType=SingleInstance&tierName=WebServer)
 
 variED (the *vari*ability *ed*itor) is a software for viewing, editing and
 analyzing feature models. It is currently under active development and therefore
@@ -10,7 +10,35 @@ variED relies on a client-server architecture where the client is implemented in
 TypeScript and the server in Java. It requires Java 1.8 and can be deployed on
 Java servlet containers such as Apache Tomcat or Jetty.
 
-### Getting started
+### Deploy to the Cloud
+
+Using the buttons above, you can simply deploy variED to a number of cloud
+service providers.
+
+#### Heroku
+
+Just click the deploy button and register for a free account. This is the
+fastest way to get started using variED.
+
+#### Amazon AWS
+
+Using the deploy button, you can deploy to AWS Elastic Beanstalk. In the
+background, this creates an Amazon EC2 instance. For new accounts, Amazon offers
+a 1-year free plan.
+
+For *Application code*, choose *Upload your code* and *Upload*, then confirm
+again with *Upload*, *Review and launch* and *Create app*.
+
+After the app is set up (this can take a few minutes), the EC2 instance has to
+be configured to allow inbound traffic on port 8080 for the WebSockets to work.
+To do that, switch to the EC2 console, then go to *Network & Security > Security
+Groups*, select your new application, then *Inbound*, *Edit* and *Add Rule*.
+Create a *Custom TCP Rule* for *Port Range* *8080* and *Save*.
+
+Now you can access the app on port 8080 (e.g.,
+`http://…eu-central-1.elasticbeanstalk.com:8080/`).
+
+### Manual Build
 
 The only dependency required for building is [JDK
 1.8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html).
@@ -24,7 +52,8 @@ build process.
   `http://localhost:3000`
 - `./gradlew server:run` runs the server on `http://localhost:8080`
 - `CI=true ./gradlew check` runs all unit tests
-- you can deploy to Heroku by simply using the button above or with:
+- you can deploy to Heroku by running this with the
+  [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli) installed:
   ```
   heroku create
   heroku buildpacks:add heroku/nodejs
