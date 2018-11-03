@@ -58,3 +58,15 @@ deploy:
       all_branches: true
     github-token:
       secure: l5Agcx9m6DJOMKr9o703gE9mIjcr+zI9iITUhaFoNw/fwpZRm1bvKgitlpfq83e7pzw8TAZdRPIL9WQRbvVRhpx/F4lEn5lF94tJJnrvhKjYolnw/UyZ9E8vgecYtYI15fEBeRwLyQQaSrtYD5XWCUEYVo5p0OJf+yTZoN+67ck1bsjeRICxSsvAl1GQySYvGj2teLe3euqpuFrv51VvCjubiCM0H7aperxJtJdXbJ1H9vCvylcnzn/SZp3hlOm455rooVPVZHHt7Ra4oF9SZn6nwXMpPdLpbnTWNNpbm0GTGxCgQ+KROeGRjx6O2JmnCC2V3Ql6ard+1luyuu9Dfwr6G/uFjBPLBEdSz2O24yogAh/sgzs8Rdt9HL/Wf0nSmLuRM83zKIROFWmdoic7VqRtwkd6sACBj9DxgtKob7IKYe7PWIgJzAiux8kQIbe2vZuNmzBcWbeCfa0NNhgpH4f45l5uHTIOESxYsLlAbFakyNMHkJ6sfDhA3GsUq/ztm4KcUxORyVfiRALNksErYCBE3jU+4dBAbQz5Vd+UbEZ53mE1p4SYOgvOJjmSd4Qm/HCvrYjb+Sw+F71w7uF5YQQnJT5I7VB3eEYVYoYO0B0724elbUB+DA/dNlNQpDiCdydfo1mTuQ7dqhDEZgMxWraLuf2mtxMFu/sNFf7DnS8=
+  - provider: s3
+    skip_cleanup: true
+    access_key_id: AKIAJSCSCBNGTGQMNOKQ
+    bucket: de.ovgu.spldev.varied
+    region: eu-central-1
+    local_dir: build
+    on:
+      repo: ekuiter/variED
+      tags: false
+      all_branches: true
+    secret_access_key:
+      secure: aVMReY8EFfbbV6DAvAH4MCWZmC9B/aPyXtPMLjBP6bdoEX04Fv8KgnUAgPoUePZqAUMfZUlBRNKvUWDszrKDw70EFDN4+7Q7XFSb/puKb90kTIIEhL82+mKNTTrVkOLi5VMZPsilYdSLlRkgmllcdbM7bhiSZcNd0si8KddAlFVNGdSVIr8FagOOFvoY0tvQN4p9br0JzLCj/FKRCWY6CqZEbwrGanldx27UNMFdK0kD8t7oYmu+kcIIaMv27iX/yGKxBH77DQ51cl4cIoHByHVK5bKwYAqtaHU43Xg4gA7Y/AeIz6Kqm0iAvFaL4FZJjigULpPcXhX9LAEue1rxd6Va7Z/rWuul6RLBYDUk6u0yWQvO7ZmCH6pygI5cyH0LZjXbc69N1L4gyADvhhrqz9c8qh+zSE5LfPQWRyI2KbbuwZp3gYz7YegC/SsuDgL++J+bE/rGxkoQ16vSCSWnRrOLDkSx9St4GQlFvb8V7u3rABFlNItc4hsCJse9QZzPYSqO/cxp8DXUm0GTo9nmN9gKICG2oIgF2nLw4eaf7/UWmsPGqTcfA2oBNiiDNTMRFcxUV3bdfPiTR/EeXSc+++Z3a+34m3kaqKX03andhnfLDaBWtrT7rLR6KRna9EKfalHPH2eL2SFMnR6BqobjVnYHrsyC2QsZXUHpN+j4Lnc=
