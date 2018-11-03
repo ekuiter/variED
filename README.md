@@ -24,8 +24,13 @@ build process.
   `http://localhost:3000`
 - `./gradlew server:run` runs the server on `http://localhost:8080`
 - `CI=true ./gradlew check` runs all unit tests
-- you can deploy to Heroku by simply using the button above or with `heroku
-  create && git push heroku master`
+- you can deploy to Heroku by simply using the button above or with:
+  ```
+  heroku create
+  heroku buildpacks:add heroku/nodejs
+  heroku buildpacks:add heroku/gradle
+  git push heroku master
+  ```
 
 ### Implementation
 
