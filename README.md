@@ -1,6 +1,6 @@
 ## variED
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/ekuiter/variED)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/ekuiter/variED/tree/build)
 
 variED (the *vari*ability *ed*itor) is a software for viewing, editing and
 analyzing feature models. It is currently under active development and therefore

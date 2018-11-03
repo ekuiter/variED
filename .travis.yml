@@ -51,6 +51,7 @@ deploy:
     target-branch: build
     skip_cleanup: true
     keep-history: true
+    allow-empty-commit: true
     on:
       repo: ekuiter/variED
       all_branches: true
