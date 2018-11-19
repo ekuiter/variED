@@ -17,6 +17,7 @@ public class User {
     private WebSocket webSocket;
     private static Haikunator haikunator = new HaikunatorBuilder().setDelimiter(" ").setTokenLength(0).build();
     private ArrayList<CollaborativeSession> collaborativeSessions = new ArrayList<>();
+    private static final Object lock = new Object();
 
     private static String generateName() {
         Supplier<String> generator = () -> haikunator.haikunate() + " (anonymous)";
@@ -64,24 +65,28 @@ public class User {
         if (message.getArtifactPath() == null)
             throw new RuntimeException("no artifact path given");
 
-        Artifact artifact = ProjectManager.getInstance().getArtifact(message.getArtifactPath());
-        if (artifact == null)
-            throw new RuntimeException("no artifact found for path " + message.getArtifactPath());
-        CollaborativeSession collaborativeSession = artifact.getCollaborativeSession();
+        // This essentially forces the server to handle only one message at a time.
+        // This assumption simplifies multithreaded access to feature models, but limits server performance.
+        synchronized (lock) {
+            Artifact artifact = ProjectManager.getInstance().getArtifact(message.getArtifactPath());
+            if (artifact == null)
+                throw new RuntimeException("no artifact found for path " + message.getArtifactPath());
+            CollaborativeSession collaborativeSession = artifact.getCollaborativeSession();
 
-        if (message.isType(Api.TypeEnum.JOIN) || message.isType(Api.TypeEnum.LEAVE)) {
-            if (message.isType(Api.TypeEnum.JOIN))
-                joinCollaborativeSession(collaborativeSession);
-            if (message.isType(Api.TypeEnum.LEAVE))
-                leaveCollaborativeSession(collaborativeSession);
-            return;
-        }
-
-        for (CollaborativeSession _collaborativeSession : collaborativeSessions)
-            if (_collaborativeSession == collaborativeSession) {
-                collaborativeSession.onMessage(message);
+            if (message.isType(Api.TypeEnum.JOIN) || message.isType(Api.TypeEnum.LEAVE)) {
+                if (message.isType(Api.TypeEnum.JOIN))
+                    joinCollaborativeSession(collaborativeSession);
+                if (message.isType(Api.TypeEnum.LEAVE))
+                    leaveCollaborativeSession(collaborativeSession);
                 return;
             }
+
+            for (CollaborativeSession _collaborativeSession : collaborativeSessions)
+                if (_collaborativeSession == collaborativeSession) {
+                    collaborativeSession.onMessage(message);
+                    return;
+                }
+        }
 
         throw new RuntimeException("did not join collaborative session for given artifact path");
     }

@@ -4,11 +4,11 @@ import de.ovgu.spldev.varied.common.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ProjectManager {
     private static ProjectManager instance;
-    private HashMap<String, Project> projects = new HashMap<>();
+    private ConcurrentHashMap<String, Project> projects = new ConcurrentHashMap<>();
 
     {
         Project project = new Project("FeatureModeling");

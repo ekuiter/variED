@@ -1,16 +1,16 @@
 package de.ovgu.spldev.varied;
 
-import de.ovgu.spldev.varied.messaging.Message;
 import de.ovgu.spldev.varied.common.util.StringUtils;
+import de.ovgu.spldev.varied.messaging.Message;
 
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Holds a mapping from web sockets to users and manages user registration
  */
 public class UserManager {
     private static UserManager instance;
-    private HashMap<WebSocket, User> users = new HashMap<>();
+    private ConcurrentHashMap<WebSocket, User> users = new ConcurrentHashMap<>();
 
     private UserManager() {
     }

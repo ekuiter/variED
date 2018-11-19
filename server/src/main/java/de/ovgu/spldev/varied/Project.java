@@ -3,11 +3,11 @@ package de.ovgu.spldev.varied;
 import de.ovgu.spldev.varied.common.util.StringUtils;
 
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Project {
     private String name;
-    private HashMap<String, Artifact> artifacts = new HashMap<>();
+    private ConcurrentHashMap<String, Artifact> artifacts = new ConcurrentHashMap<>();
 
     Project(String name) {
         if (!StringUtils.isPresent(name))
