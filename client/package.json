@@ -28,6 +28,7 @@
     "redux": "^4.0.1",
     "redux-thunk": "^2.3.0",
     "reselect": "^4.0.0",
+    "sockette": "^2.0.3",
     "svg2pdf.js": "1.2.1",
     "typesafe-actions": "^2.0.4"
   },

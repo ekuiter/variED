@@ -6879,6 +6879,10 @@ snapdragon@^0.8.1:
     source-map-resolve "^0.5.0"
     use "^3.1.0"
 
+sockette@^2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/sockette/-/sockette-2.0.3.tgz#f9204f67accae3505cacaf696c780d15fead22b1"
+
 sockjs-client@1.1.5:
   version "1.1.5"
   resolved "https://registry.yarnpkg.com/sockjs-client/-/sockjs-client-1.1.5.tgz#1bb7c0f7222c40f42adf14f4442cbd1269771a83"

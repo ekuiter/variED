@@ -54,10 +54,6 @@ may comprise any number of users.)
 
 #### Client
 
-TODO: As of now, the client is oblivious to the project-artifact-organization on
-the server and therefore incompatible. This is about to be fixed. The following
-would be desirable:
-
 The client knows as which user it is registered, which artifacts are available,
 in which collaborative sessions it participates, as well as the associated state
 context and other participating users. It receives all messages related to any
