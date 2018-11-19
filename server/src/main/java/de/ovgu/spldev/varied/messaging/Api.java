@@ -8,6 +8,7 @@ import de.ovgu.spldev.varied.User;
 import de.ovgu.spldev.varied.common.operations.Operation;
 import de.ovgu.spldev.varied.common.operations.featurediagram.*;
 import de.ovgu.spldev.varied.util.FeatureModelUtils;
+import org.pmw.tinylog.Logger;
 
 /**
  * To add a new kind of message: Add a type below and create a camel-cased inner class
@@ -36,7 +37,7 @@ public class Api {
         public Error(Throwable throwable) {
             super(TypeEnum.ERROR, null);
             this.error = throwable.toString();
-            throwable.printStackTrace();
+            Logger.error(throwable);
         }
     }
 

@@ -1,6 +1,7 @@
 package de.ovgu.spldev.varied;
 
 import de.ovgu.spldev.varied.common.util.StringUtils;
+import org.pmw.tinylog.Logger;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,6 +33,7 @@ public class ProjectManager {
     }
 
     public void addProject(Project project) {
+        Logger.info("adding project {}", project);
         String name = project.getName();
         if (!StringUtils.isPresent(name))
             throw new RuntimeException("no name given for project");
@@ -43,6 +45,7 @@ public class ProjectManager {
     }
 
     public void removeProject(Project project) {
+        Logger.info("removing project {}", project);
         projects.remove(project.getName());
     }
 

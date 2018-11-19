@@ -7,11 +7,13 @@ import de.ovgu.featureide.fm.core.io.manager.FeatureModelManager;
 import de.ovgu.spldev.varied.StateContext;
 import de.ovgu.spldev.varied.messaging.Api;
 import de.ovgu.spldev.varied.messaging.Message;
+import org.pmw.tinylog.Logger;
 
 import java.nio.file.Path;
 
 public class FeatureModelUtils {
     public static IFeatureModel loadFeatureModel(Path path) {
+        Logger.debug("loading feature model from {}", path);
         IFeatureModel featureModel = FeatureModelManager.load(path).getObject();
         if (featureModel == null)
             throw new RuntimeException("no valid feature model found at path " + path);
@@ -19,6 +21,7 @@ public class FeatureModelUtils {
     }
 
     public static IFeatureModel loadFeatureModel(String source, String fileName) {
+        Logger.debug("loading feature model from a string");
         IPersistentFormat format = FMFormatManager.getInstance().getFormatByContent(source, fileName);
         if (format == null)
             throw new RuntimeException("feature model format not recognized");

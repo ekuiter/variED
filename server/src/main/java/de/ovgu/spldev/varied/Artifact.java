@@ -23,8 +23,16 @@ public abstract class Artifact {
         return name;
     }
 
+    public Project getProject() {
+        return project;
+    }
+
     public Path getPath() {
         return new Path(project.getName(), name);
+    }
+
+    public String toString() {
+        return getPath().toString();
     }
 
     abstract public CollaborativeSession getCollaborativeSession();

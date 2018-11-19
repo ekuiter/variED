@@ -5,6 +5,7 @@ import de.ovgu.spldev.varied.messaging.Api;
 import de.ovgu.spldev.varied.messaging.Message;
 import me.atrox.haikunator.Haikunator;
 import me.atrox.haikunator.HaikunatorBuilder;
+import org.pmw.tinylog.Logger;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -38,10 +39,12 @@ public class User {
     }
 
     public void send(Message.IEncodable message) {
+        Logger.info("sending message {} to user {}", message, this);
         webSocket.send(message);
     }
 
     public void sendInitialInformation() {
+        Logger.info("sending initial information to user {}", this);
         send(new Api.UserInfo(this));
         for (Artifact artifact : ProjectManager.getInstance().getArtifacts())
             send(new Api.ArtifactInfo(artifact.getPath()));
@@ -61,6 +64,7 @@ public class User {
 
     public void onMessage(Message message) {
         Objects.requireNonNull(message, "no message given");
+        Logger.info("received message {} from user {}", message, this);
 
         if (message.getArtifactPath() == null)
             throw new RuntimeException("no artifact path given");
@@ -68,24 +72,30 @@ public class User {
         // This essentially forces the server to handle only one message at a time.
         // This assumption simplifies multithreaded access to feature models, but limits server performance.
         synchronized (lock) {
-            Artifact artifact = ProjectManager.getInstance().getArtifact(message.getArtifactPath());
-            if (artifact == null)
-                throw new RuntimeException("no artifact found for path " + message.getArtifactPath());
-            CollaborativeSession collaborativeSession = artifact.getCollaborativeSession();
+            Logger.debug("entering locked region");
+            try {
+                Artifact artifact = ProjectManager.getInstance().getArtifact(message.getArtifactPath());
+                if (artifact == null)
+                    throw new RuntimeException("no artifact found for path " + message.getArtifactPath());
+                CollaborativeSession collaborativeSession = artifact.getCollaborativeSession();
+                Logger.debug("message concerns collaborative session {}", collaborativeSession);
 
-            if (message.isType(Api.TypeEnum.JOIN) || message.isType(Api.TypeEnum.LEAVE)) {
-                if (message.isType(Api.TypeEnum.JOIN))
-                    joinCollaborativeSession(collaborativeSession);
-                if (message.isType(Api.TypeEnum.LEAVE))
-                    leaveCollaborativeSession(collaborativeSession);
-                return;
-            }
-
-            for (CollaborativeSession _collaborativeSession : collaborativeSessions)
-                if (_collaborativeSession == collaborativeSession) {
-                    collaborativeSession.onMessage(message);
+                if (message.isType(Api.TypeEnum.JOIN) || message.isType(Api.TypeEnum.LEAVE)) {
+                    if (message.isType(Api.TypeEnum.JOIN))
+                        joinCollaborativeSession(collaborativeSession);
+                    if (message.isType(Api.TypeEnum.LEAVE))
+                        leaveCollaborativeSession(collaborativeSession);
                     return;
                 }
+
+                for (CollaborativeSession _collaborativeSession : collaborativeSessions)
+                    if (_collaborativeSession == collaborativeSession) {
+                        collaborativeSession.onMessage(message);
+                        return;
+                    }
+            } finally {
+                Logger.debug("leaving locked region");
+            }
         }
 
         throw new RuntimeException("did not join collaborative session for given artifact path");

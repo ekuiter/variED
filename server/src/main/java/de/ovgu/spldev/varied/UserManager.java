@@ -2,6 +2,7 @@ package de.ovgu.spldev.varied;
 
 import de.ovgu.spldev.varied.common.util.StringUtils;
 import de.ovgu.spldev.varied.messaging.Message;
+import org.pmw.tinylog.Logger;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -26,6 +27,7 @@ public class UserManager {
     }
 
     public void register(User newUser) {
+        Logger.info("registering user {}", newUser);
         String name = newUser.getName();
         if (!StringUtils.isPresent(name))
             throw new RuntimeException("no name supplied on registration");
@@ -44,6 +46,7 @@ public class UserManager {
     }
 
     public void unregister(User oldUser) {
+        Logger.info("unregistering user {}", oldUser);
         oldUser.leaveAllCollaborativeSessions();
         users.remove(oldUser.getWebSocket());
     }
