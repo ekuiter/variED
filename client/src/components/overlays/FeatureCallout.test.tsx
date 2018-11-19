@@ -8,7 +8,7 @@ import {Callout, DirectionalHint} from 'office-ui-fabric-react/lib/Callout';
 import {FeatureDiagramLayoutType} from '../../types';
 
 describe('FeatureCallout', () => {
-    const featureCallout = (featureName = 'FeatureIDE') => {
+    const featureCallout = (featureUUID = 'FeatureIDE') => {
         const graphicalFeatureModel = GraphicalFeatureModel.fromJSON(validFeatureModel),
             mock = jest.fn();
         graphicalFeatureModel.getElement = jest.fn().mockReturnValue({
@@ -26,7 +26,7 @@ describe('FeatureCallout', () => {
                 onCollapseFeaturesBelow={mock}
                 onExpandFeaturesBelow={mock}
                 graphicalFeatureModel={graphicalFeatureModel}
-                featureName={featureName}
+                featureUUID={featureUUID}
                 onRemoveFeatures={mock}
                 onAddFeatureAbove={mock}
                 onAddFeatureBelow={mock}

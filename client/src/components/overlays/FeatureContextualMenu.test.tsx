@@ -9,7 +9,7 @@ import {DirectionalHint} from 'office-ui-fabric-react/lib/Callout';
 import {FeatureDiagramLayoutType} from '../../types';
 
 describe('FeatureContextualMenu', () => {
-    const featureContextualMenu = (selectedFeatureNames: string[] = []) => {
+    const featureContextualMenu = (selectedFeatureUUIDs: string[] = []) => {
         const graphicalFeatureModel = GraphicalFeatureModel.fromJSON(validFeatureModel),
             mock = jest.fn();
         graphicalFeatureModel.getElement = jest.fn().mockReturnValue({
@@ -28,8 +28,8 @@ describe('FeatureContextualMenu', () => {
                 onCollapseFeaturesBelow={mock}
                 onExpandFeaturesBelow={mock}
                 graphicalFeatureModel={graphicalFeatureModel}
-                isSelectMultipleFeatures={selectedFeatureNames.length > 0}
-                selectedFeatureNames={selectedFeatureNames}
+                isSelectMultipleFeatures={selectedFeatureUUIDs.length > 0}
+                selectedFeatureUUIDs={selectedFeatureUUIDs}
                 onAddFeatureAbove={mock}
                 onAddFeatureBelow={mock}
                 onRemoveFeatures={mock}
@@ -40,7 +40,7 @@ describe('FeatureContextualMenu', () => {
                 onSetFeatureHidden={mock}
                 onSetFeatureMandatory={mock}
                 onSetFeatureOr={mock}
-                featureName="FeatureIDE"/>
+                featureUUID="FeatureIDE"/>
         );
     };
 

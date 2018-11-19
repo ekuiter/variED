@@ -14,7 +14,7 @@ describe('selectors', () => {
                 collaborativeSessions: [{
                     artifactPath: {project: 'project', artifact: 'artifact'},
                     serializedFeatureModel: validFeatureModel,
-                    collapsedFeatureNames: []
+                    collapsedFeatureUUIDs: []
                 }],
                 currentArtifactPath: {project: 'project', artifact: 'artifact'}
             };
@@ -26,7 +26,7 @@ describe('selectors', () => {
             const collaborativeSessions = [{
                     artifactPath: {project: 'project', artifact: 'artifact'},
                     serializedFeatureModel: invalidFeatureModel1,
-                    collapsedFeatureNames: ['test1']
+                    collapsedFeatureUUIDs: ['test1']
                 }],
                 currentArtifactPath = {project: 'project', artifact: 'artifact'};
                 getCurrentGraphicalFeatureModel.resetRecomputations();
@@ -43,7 +43,7 @@ describe('selectors', () => {
             state.collaborativeSessions = [{
                 artifactPath: {project: 'project', artifact: 'artifact'},
                 serializedFeatureModel: validFeatureModel,
-                collapsedFeatureNames: ['test1']
+                collapsedFeatureUUIDs: ['test1']
             }];
             getCurrentGraphicalFeatureModel(state);
             expect(getCurrentGraphicalFeatureModel.recomputations()).toBe(2);
@@ -57,7 +57,7 @@ describe('selectors', () => {
             state.collaborativeSessions = [{
                 artifactPath: {project: 'project', artifact: 'artifact'},
                 serializedFeatureModel: validFeatureModel,
-                collapsedFeatureNames: []
+                collapsedFeatureUUIDs: []
             }];
             getCurrentGraphicalFeatureModel(state);
             expect(getCurrentGraphicalFeatureModel.recomputations()).toBe(3);
@@ -66,7 +66,7 @@ describe('selectors', () => {
             state.collaborativeSessions = [{
                 artifactPath: {project: 'project', artifact: 'artifact'},
                 serializedFeatureModel: validFeatureModel,
-                collapsedFeatureNames: state.collaborativeSessions[0].collapsedFeatureNames
+                collapsedFeatureUUIDs: state.collaborativeSessions[0].collapsedFeatureUUIDs
             }];
             getCurrentGraphicalFeatureModel(state);
             expect(getCurrentGraphicalFeatureModel.recomputations()).toBe(3);

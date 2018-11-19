@@ -10,6 +10,7 @@ export const COMMENTS = 'comments';
 export const FEATURE_ORDER = 'featureOrder';
 export const TYPE = 'type';
 export const NAME = 'name';
+export const UUID = 'uuid';
 export const DESCRIPTION = 'description';
 export const MANDATORY = 'mandatory';
 export const ABSTRACT = 'abstract';
@@ -26,6 +27,7 @@ export enum FeatureType {
 export interface SerializedFeatureModelNode {
     [TYPE]: FeatureType,
     [NAME]: string,
+    [UUID]: string,
     [HIDDEN]?: boolean,
     [MANDATORY]?: boolean,
     [ABSTRACT]?: boolean,
@@ -37,7 +39,6 @@ export interface SerializedFeatureModel {
     [STRUCT]: SerializedFeatureModelNode[],
     // ignored for now
     [CONSTRAINTS]: never,
-    [PROPERTIES]: never,
     [CALCULATIONS]: never,
     [COMMENTS]: never,
     [FEATURE_ORDER]: never
@@ -47,6 +48,7 @@ export type FeaturePropertyKey = string | ((node: GraphicalFeatureModelNode) => 
 
 export interface GraphicalFeature {
     node: GraphicalFeatureModelNode,
+    uuid: string,
     name: string,
     type: FeatureType,
     description?: string,

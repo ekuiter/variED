@@ -8,13 +8,14 @@ jest.mock('../server/webSocket');
 
 const {propertyTypes, groupValueTypes} = constants.server;
 
-async function expectMessageAction(thunk: Func, payload: any, isSendBatch = false): Promise<void> {
+async function expectMessageAction(thunk: Func, payload: any, isSendBatch = false, matcher = 'toEqual'): Promise<void> {
     const dispatch = jest.fn(action => action),
         getState = jest.fn(() => ({settings: defaultSettings})),
         action = await thunk(dispatch, getState);
-    expect(action).toEqual({type: SERVER_SEND_MESSAGE, payload});
+    expect(action)[matcher]({type: SERVER_SEND_MESSAGE, payload});
     expect(dispatch).toBeCalledWith(action);
-    expect(isSendBatch ? sendBatchMessage : sendMessage).lastCalledWith(payload, undefined, 0);
+    if (matcher === 'toEqual')
+        expect(isSendBatch ? sendBatchMessage : sendMessage).lastCalledWith(payload, undefined, 0);
 }
 
 const expectBatchMessageAction = (thunk: Func, payload: any) =>
@@ -40,23 +41,23 @@ describe('actions', () => {
 
         describe('feature', () => {
             it('is selected', () => {
-                expect(actions.ui.featureDiagram.feature.select({featureName: 'FeatureIDE'}))
-                    .toEqual({type: 'ui/featureDiagram/feature/select', payload: {featureName: 'FeatureIDE'}});
+                expect(actions.ui.featureDiagram.feature.select({featureUUID: 'FeatureIDE'}))
+                    .toEqual({type: 'ui/featureDiagram/feature/select', payload: {featureUUID: 'FeatureIDE'}});
             });
 
             it('is deselected', () => {
-                expect(actions.ui.featureDiagram.feature.deselect({featureName: 'FeatureIDE'}))
-                    .toEqual({type: 'ui/featureDiagram/feature/deselect', payload: {featureName: 'FeatureIDE'}});
+                expect(actions.ui.featureDiagram.feature.deselect({featureUUID: 'FeatureIDE'}))
+                    .toEqual({type: 'ui/featureDiagram/feature/deselect', payload: {featureUUID: 'FeatureIDE'}});
             });
 
             it('is collapsed', () => {
-                expect(actions.ui.featureDiagram.feature.collapse({featureNames: ['FeatureIDE']}))
-                    .toEqual({type: 'ui/featureDiagram/feature/collapse', payload: {featureNames: ['FeatureIDE']}});
+                expect(actions.ui.featureDiagram.feature.collapse({featureUUIDs: ['FeatureIDE']}))
+                    .toEqual({type: 'ui/featureDiagram/feature/collapse', payload: {featureUUIDs: ['FeatureIDE']}});
             });
 
             it('is expanded', () => {
-                expect(actions.ui.featureDiagram.feature.expand({featureNames: ['FeatureIDE']}))
-                    .toEqual({type: 'ui/featureDiagram/feature/expand', payload: {featureNames: ['FeatureIDE']}});
+                expect(actions.ui.featureDiagram.feature.expand({featureUUIDs: ['FeatureIDE']}))
+                    .toEqual({type: 'ui/featureDiagram/feature/expand', payload: {featureUUIDs: ['FeatureIDE']}});
             });
         });
 
@@ -98,22 +99,22 @@ describe('actions', () => {
             });
 
             it('shows the feature panel', () => {
-                expect(actions.ui.overlay.show({overlay: OverlayType.featurePanel, overlayProps: {featureName: 'FeatureIDE'}}))
+                expect(actions.ui.overlay.show({overlay: OverlayType.featurePanel, overlayProps: {featureUUID: 'FeatureIDE'}}))
                     .toEqual({
                         type: 'ui/overlay/show', payload: {
                             overlay: OverlayType.featurePanel,
-                            overlayProps: {featureName: 'FeatureIDE'},
+                            overlayProps: {featureUUID: 'FeatureIDE'},
                             selectFeature: undefined
                         }
                     });
             });
 
             it('shows the feature panel and selects a feature', () => {
-                expect(actions.ui.overlay.show({overlay: OverlayType.featurePanel, overlayProps: {featureName: 'FeatureIDE'}, selectOneFeature: 'FeatureIDE'}))
+                expect(actions.ui.overlay.show({overlay: OverlayType.featurePanel, overlayProps: {featureUUID: 'FeatureIDE'}, selectOneFeature: 'FeatureIDE'}))
                     .toEqual({
                         type: 'ui/overlay/show', payload: {
                             overlay: OverlayType.featurePanel,
-                            overlayProps: {featureName: 'FeatureIDE'},
+                            overlayProps: {featureUUID: 'FeatureIDE'},
                             selectOneFeature: 'FeatureIDE'
                         }
                     });
@@ -137,65 +138,65 @@ describe('actions', () => {
     
         describe('feature', () => {
             it('adds a feature below', () => {
-                return expectMessageAction(actions.server.featureDiagram.feature.addBelow({belowFeatureName: 'FeatureIDE'}),
-                    {type: MessageType.FEATURE_DIAGRAM_FEATURE_ADD_BELOW, belowFeature: 'FeatureIDE'});
+                return expectMessageAction(actions.server.featureDiagram.feature.addBelow({belowFeatureUUID: 'FeatureIDE'}),
+                    {type: MessageType.FEATURE_DIAGRAM_FEATURE_ADD_BELOW, belowFeatureUUID: 'FeatureIDE'}, false, 'toMatchObject');
             });
     
             it('removes a feature', () => {
-                return expectBatchMessageAction(actions.server.featureDiagram.feature.remove({featureNames: ['FeatureIDE']}),
-                    [{type: MessageType.FEATURE_DIAGRAM_FEATURE_REMOVE, feature: 'FeatureIDE'}]);
+                return expectBatchMessageAction(actions.server.featureDiagram.feature.remove({featureUUIDs: ['FeatureIDE']}),
+                    [{type: MessageType.FEATURE_DIAGRAM_FEATURE_REMOVE, featureUUID: 'FeatureIDE'}]);
             });
     
             it('renames a feature', () => {
-                return expectMessageAction(actions.server.featureDiagram.feature.rename({oldFeatureName: 'FeatureIDE', newFeatureName: 'new feature name'}),
-                    {type: MessageType.FEATURE_DIAGRAM_FEATURE_RENAME, oldFeature: 'FeatureIDE', newFeature: 'new feature name'});
+                return expectMessageAction(actions.server.featureDiagram.feature.rename({featureUUID: 'FeatureIDE', name: 'new feature name'}),
+                    {type: MessageType.FEATURE_DIAGRAM_FEATURE_RENAME, featureUUID: 'FeatureIDE', name: 'new feature name'});
             });
     
             it('sets a feature description', () => {
-                return expectMessageAction(actions.server.featureDiagram.feature.setDescription({featureName: 'FeatureIDE', description: 'some description'}),
-                    {type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_DESCRIPTION, feature: 'FeatureIDE', description: 'some description'});
+                return expectMessageAction(actions.server.featureDiagram.feature.setDescription({featureUUID: 'FeatureIDE', description: 'some description'}),
+                    {type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_DESCRIPTION, featureUUID: 'FeatureIDE', description: 'some description'});
             });
     
             describe('properties', () => {
                 it('sets the abstract property', () =>
-                    expectBatchMessageAction(actions.server.featureDiagram.feature.properties.setAbstract({featureNames: ['FeatureIDE'], value: true}),
-                        [{type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY, feature: 'FeatureIDE', property: propertyTypes.abstract, value: true}]));
+                    expectBatchMessageAction(actions.server.featureDiagram.feature.properties.setAbstract({featureUUIDs: ['FeatureIDE'], value: true}),
+                        [{type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY, featureUUID: 'FeatureIDE', property: propertyTypes.abstract, value: true}]));
     
                 it('sets the hidden property', () =>
-                    expectBatchMessageAction(actions.server.featureDiagram.feature.properties.setHidden({featureNames: ['FeatureIDE'], value: true}),
-                        [{type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY, feature: 'FeatureIDE', property: propertyTypes.hidden, value: true}]));
+                    expectBatchMessageAction(actions.server.featureDiagram.feature.properties.setHidden({featureUUIDs: ['FeatureIDE'], value: true}),
+                        [{type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY, featureUUID: 'FeatureIDE', property: propertyTypes.hidden, value: true}]));
     
                 it('sets the mandatory property', () =>
-                    expectBatchMessageAction(actions.server.featureDiagram.feature.properties.setMandatory({featureNames: ['FeatureIDE'], value: true}),
-                        [{type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY, feature: 'FeatureIDE', property: propertyTypes.mandatory, value: true}]));
+                    expectBatchMessageAction(actions.server.featureDiagram.feature.properties.setMandatory({featureUUIDs: ['FeatureIDE'], value: true}),
+                        [{type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY, featureUUID: 'FeatureIDE', property: propertyTypes.mandatory, value: true}]));
     
                 it('toggles the mandatory property', async () => {
-                    await expectMessageAction(actions.server.featureDiagram.feature.properties.toggleMandatory({feature: <any>{name: 'FeatureIDE', isMandatory: true}}),
-                        {type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY, feature: 'FeatureIDE', property: propertyTypes.mandatory, value: false});
-                    await expectMessageAction(actions.server.featureDiagram.feature.properties.toggleMandatory({feature: <any>{name: 'FeatureIDE', isMandatory: false}}),
-                            {type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY, feature: 'FeatureIDE', property: propertyTypes.mandatory, value: true});
+                    await expectMessageAction(actions.server.featureDiagram.feature.properties.toggleMandatory({feature: <any>{uuid: 'FeatureIDE', isMandatory: true}}),
+                        {type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY, featureUUID: 'FeatureIDE', property: propertyTypes.mandatory, value: false});
+                    await expectMessageAction(actions.server.featureDiagram.feature.properties.toggleMandatory({feature: <any>{uuid: 'FeatureIDE', isMandatory: false}}),
+                            {type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY, featureUUID: 'FeatureIDE', property: propertyTypes.mandatory, value: true});
                 });
     
                 it('changes the group type to and', () =>
-                    expectBatchMessageAction(actions.server.featureDiagram.feature.properties.setAnd({featureNames: ['FeatureIDE']}), [{
+                    expectBatchMessageAction(actions.server.featureDiagram.feature.properties.setAnd({featureUUIDs: ['FeatureIDE']}), [{
                         type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
-                        feature: 'FeatureIDE',
+                        featureUUID: 'FeatureIDE',
                         property: propertyTypes.group,
                         value: groupValueTypes.and
                     }]));
     
                 it('changes the group type to or', () =>
-                    expectBatchMessageAction(actions.server.featureDiagram.feature.properties.setOr({featureNames: ['FeatureIDE']}), [{
+                    expectBatchMessageAction(actions.server.featureDiagram.feature.properties.setOr({featureUUIDs: ['FeatureIDE']}), [{
                         type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
-                        feature: 'FeatureIDE',
+                        featureUUID: 'FeatureIDE',
                         property: propertyTypes.group,
                         value: groupValueTypes.or
                     }]));
     
                 it('changes the group type to alternative', () =>
-                    expectBatchMessageAction(actions.server.featureDiagram.feature.properties.setAlternative({featureNames: ['FeatureIDE']}), [{
+                    expectBatchMessageAction(actions.server.featureDiagram.feature.properties.setAlternative({featureUUIDs: ['FeatureIDE']}), [{
                         type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
-                        feature: 'FeatureIDE',
+                        featureUUID: 'FeatureIDE',
                         property: propertyTypes.group,
                         value: groupValueTypes.alternative
                     }]));
@@ -204,14 +205,14 @@ describe('actions', () => {
                     expectMessageAction(
                         actions.server.featureDiagram.feature.properties.toggleGroup({
                             feature: <any>{
-                                name: 'FeatureIDE',
+                                uuid: 'FeatureIDE',
                                 isAnd: true,
                                 isOr: false,
                                 isAlternative: false
                             }
                         }), {
                             type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
-                            feature: 'FeatureIDE',
+                            featureUUID: 'FeatureIDE',
                             property: propertyTypes.group,
                             value: groupValueTypes.or
                         }));
@@ -220,14 +221,14 @@ describe('actions', () => {
                     expectMessageAction(
                         actions.server.featureDiagram.feature.properties.toggleGroup({
                             feature: <any>{
-                                name: 'FeatureIDE',
+                                uuid: 'FeatureIDE',
                                 isAnd: false,
                                 isOr: true,
                                 isAlternative: false
                             }
                         }), {
                             type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
-                            feature: 'FeatureIDE',
+                            featureUUID: 'FeatureIDE',
                             property: propertyTypes.group,
                             value: groupValueTypes.alternative
                         }));
@@ -236,14 +237,14 @@ describe('actions', () => {
                     expectMessageAction(
                         actions.server.featureDiagram.feature.properties.toggleGroup({
                             feature: <any>{
-                                name: 'FeatureIDE',
+                                uuid: 'FeatureIDE',
                                 isAnd: false,
                                 isOr: false,
                                 isAlternative: true
                             }
                         }), {
                             type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
-                            feature: 'FeatureIDE',
+                            featureUUID: 'FeatureIDE',
                             property: propertyTypes.group,
                             value: groupValueTypes.and
                         }));
@@ -252,8 +253,8 @@ describe('actions', () => {
     
         describe('features', () => {
             it('adds a feature above', () =>
-                expectMessageAction(actions.server.featureDiagram.feature.addAbove({aboveFeatureNames: ['FeatureIDE', 'Eclipse']}),
-                    {type: MessageType.FEATURE_DIAGRAM_FEATURE_ADD_ABOVE, aboveFeatures: ['FeatureIDE', 'Eclipse']}));
+                expectMessageAction(actions.server.featureDiagram.feature.addAbove({aboveFeatureUUIDs: ['FeatureIDE', 'Eclipse']}),
+                    {type: MessageType.FEATURE_DIAGRAM_FEATURE_ADD_ABOVE, aboveFeatureUUIDs: ['FeatureIDE', 'Eclipse']}, false, 'toMatchObject'));
         });
     });
 });

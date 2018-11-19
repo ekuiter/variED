@@ -52,7 +52,7 @@ interface State {
     title?: string
 };
 
-type PaletteItemDescriptor = Omit<PaletteItem, 'action'> & {key?: string} | string;
+type PaletteItemDescriptor = Omit<PaletteItem, 'action'> | string;
 type PaletteItemsFunction = ((...args: string[]) => PaletteItemDescriptor[] | Promise<PaletteItemDescriptor[]>);
 
 interface ArgumentDescriptor {
@@ -129,7 +129,9 @@ export default class extends React.Component<Props, State> {
             action: this.actionWithArguments(
                 [{
                     title: i18n.t('commandPalette.feature'),
-                    items: () => this.props.graphicalFeatureModel!.getVisibleFeatureNames()
+                    items: () => this.props.graphicalFeatureModel!.getVisibleFeatureUUIDs().map(featureUUID => ({
+                        key: featureUUID, text: this.props.graphicalFeatureModel!.getFeature(featureUUID)!.name
+                    }))
                 }],
                 action),
             ...command
@@ -241,94 +243,94 @@ export default class extends React.Component<Props, State> {
             text: i18n.t('commands.featureDiagram.feature.newMenu.newBelow'),
             shortcut: getShortcutText('featureDiagram.feature.new'),
             icon: 'Add'
-        }, featureName => this.props.onAddFeatureBelow({belowFeatureName: featureName})),
+        }, featureUUID => this.props.onAddFeatureBelow({belowFeatureUUID: featureUUID})),
         
         this.featureCommand({
             text: i18n.t('commands.featureDiagram.feature.newMenu.newAbove'),
             icon: 'Add'
-        }, featureName => this.props.onAddFeatureAbove({aboveFeatureNames: [featureName]})),
+        }, featureUUID => this.props.onAddFeatureAbove({aboveFeatureUUIDs: [featureUUID]})),
         
         this.featureCommand({
             text: i18n.getFunction('commands.featureDiagram.feature.removeMenu.remove')({length: 1}),
             shortcut: getShortcutText('featureDiagram.feature.remove'),
             icon: 'Remove'
-        }, featureName => this.props.onRemoveFeatures({featureNames: [featureName]})),
+        }, featureUUID => this.props.onRemoveFeatures({featureUUIDs: [featureUUID]})),
         
         this.featureCommand({
             text: i18n.t('commands.featureDiagram.feature.removeMenu.removeBelow'),
             icon: 'Remove'
-        }, featureName => this.props.onRemoveFeaturesBelow({featureNames: [featureName]})),
+        }, featureUUID => this.props.onRemoveFeaturesBelow({featureUUIDs: [featureUUID]})),
         
         this.featureCommand({
             text: i18n.t('commandPalette.featureDiagram.feature.details'),
             shortcut: getShortcutText('featureDiagram.feature.details'),
             icon: 'Info'
-        }, featureName => this.props.onShowOverlay({overlay: OverlayType.featurePanel, overlayProps: {featureName}})),
+        }, featureUUID => this.props.onShowOverlay({overlay: OverlayType.featurePanel, overlayProps: {featureUUID}})),
         
         this.featureCommand({
             text: i18n.t('commandPalette.featureDiagram.feature.rename'),
             shortcut: getShortcutText('featureDiagram.feature.rename'),
             icon: 'Rename'
-        }, featureName => this.props.onShowOverlay({overlay: OverlayType.featureRenameDialog, overlayProps: {featureName}})),
+        }, featureUUID => this.props.onShowOverlay({overlay: OverlayType.featureRenameDialog, overlayProps: {featureUUID}})),
         
         this.featureCommand({
             text: i18n.t('commandPalette.featureDiagram.feature.setDescription'),
             icon: 'TextDocument',
-        }, featureName => this.props.onShowOverlay({overlay: OverlayType.featureSetDescriptionDialog, overlayProps: {featureName}})),
+        }, featureUUID => this.props.onShowOverlay({overlay: OverlayType.featureSetDescriptionDialog, overlayProps: {featureUUID}})),
         
         this.featureCommand(
             {text: i18n.t('commandPalette.featureDiagram.feature.propertiesMenu.abstract')},
-            featureName => this.props.onSetFeatureAbstract({featureNames: [featureName], value: true})),
+            featureUUID => this.props.onSetFeatureAbstract({featureUUIDs: [featureUUID], value: true})),
         
         this.featureCommand(
             {text: i18n.t('commandPalette.featureDiagram.feature.propertiesMenu.concrete')},
-            featureName => this.props.onSetFeatureAbstract({featureNames: [featureName], value: false})),
+            featureUUID => this.props.onSetFeatureAbstract({featureUUIDs: [featureUUID], value: false})),
         
         this.featureCommand(
             {text: i18n.t('commandPalette.featureDiagram.feature.propertiesMenu.hidden')},
-            featureName => this.props.onSetFeatureHidden({featureNames: [featureName], value: !this.props.graphicalFeatureModel!.getFeature(featureName)!.isHidden})),
+            featureUUID => this.props.onSetFeatureHidden({featureUUIDs: [featureUUID], value: !this.props.graphicalFeatureModel!.getFeature(featureUUID)!.isHidden})),
         
         this.featureCommand(
             {text: i18n.t('commandPalette.featureDiagram.feature.propertiesMenu.mandatory')},
-            featureName => this.props.onSetFeatureMandatory({featureNames: [featureName], value: true})),
+            featureUUID => this.props.onSetFeatureMandatory({featureUUIDs: [featureUUID], value: true})),
         
         this.featureCommand(
             {text: i18n.t('commandPalette.featureDiagram.feature.propertiesMenu.optional')},
-            featureName => this.props.onSetFeatureMandatory({featureNames: [featureName], value: false})),
+            featureUUID => this.props.onSetFeatureMandatory({featureUUIDs: [featureUUID], value: false})),
         
         this.featureCommand(
             {text: i18n.t('commandPalette.featureDiagram.feature.propertiesMenu.and')},
-            featureName => this.props.onSetFeatureAnd({featureNames: [featureName]})),
+            featureUUID => this.props.onSetFeatureAnd({featureUUIDs: [featureUUID]})),
         
         this.featureCommand(
             {text: i18n.t('commandPalette.featureDiagram.feature.propertiesMenu.or')},
-            featureName => this.props.onSetFeatureOr({featureNames: [featureName]})),
+            featureUUID => this.props.onSetFeatureOr({featureUUIDs: [featureUUID]})),
         
         this.featureCommand(
             {text: i18n.t('commandPalette.featureDiagram.feature.propertiesMenu.alternative')},
-            featureName => this.props.onSetFeatureAlternative({featureNames: [featureName]})),
+            featureUUID => this.props.onSetFeatureAlternative({featureUUIDs: [featureUUID]})),
         
         this.featureCommand({
             text: i18n.getFunction('commands.featureDiagram.feature.collapseMenu.collapse')(false),
             shortcut: getShortcutText('featureDiagram.feature.collapse'),
             icon: 'CollapseContentSingle'
-        }, featureName => this.props.onCollapseFeatures({featureNames: [featureName]})),
+        }, featureUUID => this.props.onCollapseFeatures({featureUUIDs: [featureUUID]})),
         
         this.featureCommand({
             text: i18n.getFunction('commands.featureDiagram.feature.collapseMenu.collapse')(true),
             shortcut: getShortcutText('featureDiagram.feature.expand'),
             icon: 'ExploreContentSingle'
-        }, featureName => this.props.onExpandFeatures({featureNames: [featureName]})),
+        }, featureUUID => this.props.onExpandFeatures({featureUUIDs: [featureUUID]})),
         
         this.featureCommand({
             text: i18n.t('commands.featureDiagram.feature.collapseMenu.collapseBelow'),
             icon: 'CollapseContent'
-        }, featureName => this.props.onCollapseFeaturesBelow({featureNames: [featureName]})),
+        }, featureUUID => this.props.onCollapseFeaturesBelow({featureUUIDs: [featureUUID]})),
         
         this.featureCommand({
             text: i18n.t('commands.featureDiagram.feature.collapseMenu.expandBelow'),
             icon: 'ExploreContent'
-        }, featureName => this.props.onExpandFeaturesBelow({featureNames: [featureName]})),
+        }, featureUUID => this.props.onExpandFeaturesBelow({featureUUIDs: [featureUUID]})),
         
         {
             text: i18n.t('commands.featureDiagram.feature.collapseAll'),

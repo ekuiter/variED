@@ -13,10 +13,10 @@ import {Settings} from '../store/settings';
 import {FeatureDiagramLayoutType} from '../types';
 import {present} from '../helpers/present';
 import logger from '../helpers/logger';
-import {GraphicalFeatureModelNode, GraphicalFeature, FeatureType, SerializedFeatureModel, NAME, DESCRIPTION, TYPE, ABSTRACT, HIDDEN, MANDATORY, STRUCT} from './types';
+import {GraphicalFeatureModelNode, GraphicalFeature, FeatureType, SerializedFeatureModel, UUID, DESCRIPTION, TYPE, ABSTRACT, HIDDEN, MANDATORY, STRUCT, NAME} from './types';
 
-export function getName(node: GraphicalFeatureModelNode): string {
-    return node.data[NAME];
+export function getUUID(node: GraphicalFeatureModelNode): string {
+    return node.data[UUID];
 }
 
 function isRoot(node: GraphicalFeatureModelNode): boolean {
@@ -59,7 +59,8 @@ function getNodesBelow(node: GraphicalFeatureModelNode): GraphicalFeatureModelNo
 d3Hierarchy.prototype.feature = function(this: GraphicalFeatureModelNode): GraphicalFeature {
     return this._feature || (this._feature = {
         node: this,
-        name: getName(this),
+        uuid: getUUID(this),
+        name: this.data[NAME],
         type: this.data[TYPE],
         description: this.data[DESCRIPTION],
         isRoot: isRoot(this),
@@ -93,7 +94,7 @@ d3Hierarchy.prototype.feature = function(this: GraphicalFeatureModelNode): Graph
 
 class GraphicalFeatureModel {
     serializedFeatureModel: SerializedFeatureModel;
-    collapsedFeatureNames: string[] = [];
+    collapsedFeatureUUIDs: string[] = [];
     _hierarchy: GraphicalFeatureModelNode;
     _actualNodes: GraphicalFeatureModelNode[];
      _visibleNodes: GraphicalFeatureModelNode[];
@@ -109,10 +110,10 @@ class GraphicalFeatureModel {
         return this.serializedFeatureModel;
     }
 
-    collapse(collapsedFeatureNames: string[]): GraphicalFeatureModel {
+    collapse(collapsedFeatureUUIDs: string[]): GraphicalFeatureModel {
         if (this._hierarchy)
             throw new Error('graphical feature model already initialized');
-        this.collapsedFeatureNames = collapsedFeatureNames;
+        this.collapsedFeatureUUIDs = collapsedFeatureUUIDs;
         return this;
     }
 
@@ -134,13 +135,13 @@ class GraphicalFeatureModel {
                 if (isCollapsed(node.parent!))
                     return false;
                 return isVisible(node.parent!);
-            }, (node: GraphicalFeatureModelNode) => getName(node));
+            }, (node: GraphicalFeatureModelNode) => getUUID(node));
 
             this._actualNodes.forEach(node => {
                 // store children nodes (because they are changed on collapse)
                 node.actualChildren = node.children;
 
-                if (this.collapsedFeatureNames.find(featureName => getName(node) === featureName))
+                if (this.collapsedFeatureUUIDs.find(featureUUID => getUUID(node) === featureUUID))
                     node.children = undefined;
 
                 if (isVisible(node))
@@ -164,35 +165,42 @@ class GraphicalFeatureModel {
         return this._actualNodes;
     }
 
-    getNode(featureName: string): GraphicalFeatureModelNode | undefined {
-        return this.actualNodes.find(node => getName(node) === featureName);
+    getNode(featureUUID: string): GraphicalFeatureModelNode | undefined {
+        return this.actualNodes.find(node => getUUID(node) === featureUUID);
     }
 
-    getFeature(featureName: string): GraphicalFeature | undefined {
-        const node = this.getNode(featureName);
+    getFeature(featureUUID: string): GraphicalFeature | undefined {
+        const node = this.getNode(featureUUID);
         return node ? node.feature() : undefined;
     }
 
-    getNodes(featureNames: string[]): GraphicalFeatureModelNode[] {
-        return featureNames
-            .map(featureName => this.getNode(featureName))
+    getNodes(featureUUIDs: string[]): GraphicalFeatureModelNode[] {
+        return featureUUIDs
+            .map(featureUUID => this.getNode(featureUUID))
             .filter(present);
     }
 
-    getFeatures(featureNames: string[]): GraphicalFeature[] {
-        return featureNames
-            .map(featureName => this.getFeature(featureName))
+    getFeatures(featureUUIDs: string[]): GraphicalFeature[] {
+        return featureUUIDs
+            .map(featureUUID => this.getFeature(featureUUID))
             .filter(present);
     }
 
-    getElement(featureName: string): Element | undefined {
+    hasElement(featureUUID: string): boolean {
+        return Array
+            .from(document.querySelectorAll('[data-feature-uuid]'))
+            .filter(node => node.getAttribute('data-feature-uuid') === featureUUID)
+            .length === 1;
+    }
+
+    getElement(featureUUID: string): Element | undefined {
         // Operate under the assumption that we only render ONE feature model, and that it is THIS feature model.
         // This way we don't need to propagate a concrete feature diagram instance.
         const elements = Array
-            .from(document.querySelectorAll('[data-feature]'))
-            .filter(node => node.getAttribute('data-feature') === featureName);
+            .from(document.querySelectorAll('[data-feature-uuid]'))
+            .filter(node => node.getAttribute('data-feature-uuid') === featureUUID);
         if (elements.length > 1)
-            throw new Error(`multiple features "${featureName}" found - ` +
+            throw new Error(`multiple features "${featureUUID}" found - ` +
                 'getElement supports only one feature model on the page');
         return elements.length === 1 ? elements[0] : undefined;
     }
@@ -205,31 +213,32 @@ class GraphicalFeatureModel {
         return svg[0];
     }
 
-    getVisibleFeatureNames(): string[] {
-        return this.visibleNodes.map(getName);
+    getVisibleFeatureUUIDs(): string[] {
+        return this.visibleNodes.map(getUUID);
     }
 
-    getActualFeatureNames(): string[] {
-        return this.actualNodes.map(getName);
+    getActualFeatureUUIDs(): string[] {
+        return this.actualNodes.map(getUUID);
     }
 
-    getFeatureNamesWithActualChildren(): string[] {
-        return this.actualNodes.filter(hasActualChildren).map(getName);
+    getFeatureUUIDsWithActualChildren(): string[] {
+        return this.actualNodes.filter(hasActualChildren).map(getUUID);
     }
 
-    getFeatureNamesBelowWithActualChildren(featureName: string): string[] {
-        const node = this.getNode(featureName);
-        return node ? getNodesBelow(node).filter(hasActualChildren).map(getName) : [];
+    getFeatureUUIDsBelowWithActualChildren(featureUUID: string): string[] {
+        const node = this.getNode(featureUUID);
+        return node ? getNodesBelow(node).filter(hasActualChildren).map(getUUID) : [];
     }
 
-    isSiblingFeatures(featureNames: string[]): boolean {
+    isSiblingFeatures(featureUUIDs: string[]): boolean {
         const parents = this
-            .getNodes(featureNames)
+            .getNodes(featureUUIDs)
             .map(node => node.parent);
         return parents.every(parent => parent === parents[0]);
     }
 
-    getFittingFeatureNames(settings: Settings, featureDiagramLayout: FeatureDiagramLayoutType, width: number, height: number) {
+    // returns features which, when collapsed, make the feature model fit to the given screen size
+    getFittingFeatureUUIDs(settings: Settings, featureDiagramLayout: FeatureDiagramLayoutType, width: number, height: number): string[] {
         const fontFamily = settings.featureDiagram.font.family,
             fontSize = settings.featureDiagram.font.size,
             widthPadding = 2 * settings.featureDiagram.treeLayout.node.paddingX +
@@ -238,27 +247,27 @@ class GraphicalFeatureModel {
                 2 * settings.featureDiagram.treeLayout.node.paddingY +
                 2 * settings.featureDiagram.treeLayout.node.strokeWidth,
             estimatedDimension = featureDiagramLayout === FeatureDiagramLayoutType.verticalTree ? 'width' : 'height';
-        let nodes = this.actualNodes, collapsedFeatureNames: string[] = [];
+        let nodes = this.actualNodes, collapsedFeatureUUIDs: string[] = [];
         width = Math.max(width, constants.featureDiagram.fitToScreen.minWidth);
         height = Math.max(height, constants.featureDiagram.fitToScreen.minHeight);
         logger.infoBeginCollapsed(() => `[fit to screen] fitting feature model to ${estimatedDimension} ${FeatureDiagramLayoutType.verticalTree ? width : height}px`);
 
         while (true) {
             const {estimatedSize, collapsibleNodes} = estimateHierarchySize(
-                nodes, collapsedFeatureNames, featureDiagramLayout,
-                {fontFamily, fontSize, widthPadding, rectHeight, getName});
-            logger.info(() => `estimated ${estimatedDimension} ${Math.round(estimatedSize)}px when collapsing ${JSON.stringify(collapsedFeatureNames)}`);
+                nodes, collapsedFeatureUUIDs, featureDiagramLayout,
+                {fontFamily, fontSize, widthPadding, rectHeight, getUUID});
+            logger.info(() => `estimated ${estimatedDimension} ${Math.round(estimatedSize)}px when collapsing ${JSON.stringify(collapsedFeatureUUIDs)}`);
     
             if ((featureDiagramLayout === FeatureDiagramLayoutType.verticalTree ? estimatedSize <= width : estimatedSize <= height) ||
                 collapsibleNodes.length === 0) {
-                logger.info(() => `feature model fitted by collapsing ${collapsedFeatureNames.length} feature(s)`);
+                logger.info(() => `feature model fitted by collapsing ${collapsedFeatureUUIDs.length} feature(s)`);
                 logger.infoEnd();
-                return collapsedFeatureNames;
+                return collapsedFeatureUUIDs;
             }
     
-            const collapsibleNodeNames = collapsibleNodes.map(getName);
+            const collapsibleNodeNames = collapsibleNodes.map(getUUID);
             logger.info(() => `collapsing ${JSON.stringify(collapsibleNodeNames)}`);
-            collapsedFeatureNames = collapsedFeatureNames.concat(collapsibleNodeNames);
+            collapsedFeatureUUIDs = collapsedFeatureUUIDs.concat(collapsibleNodeNames);
             const invisibleNodes = collapsibleNodes
                 .map(node => getNodesBelow(node).slice(1))
                 .reduce((acc, children) => acc.concat(children), []);
@@ -267,7 +276,7 @@ class GraphicalFeatureModel {
     }
 
     toString() {
-        return `GraphicalFeatureModel ${JSON.stringify(this.getVisibleFeatureNames())}`;
+        return `GraphicalFeatureModel ${JSON.stringify(this.getVisibleFeatureUUIDs())}`;
     }
 }
 

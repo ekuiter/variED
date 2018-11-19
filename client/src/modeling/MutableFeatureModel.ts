@@ -8,7 +8,8 @@
  * is not feasible though, and this approach is very lightweight.)
  */
 
-import {FeatureType, SerializedFeatureModel, STRUCT, SerializedFeatureModelNode, TYPE, NAME, DESCRIPTION, ABSTRACT, MANDATORY, HIDDEN} from './types';
+import {FeatureType, SerializedFeatureModel, STRUCT, SerializedFeatureModelNode, TYPE, NAME, DESCRIPTION, ABSTRACT, MANDATORY, HIDDEN, UUID} from './types';
+import {FeatureUtils} from '../common/util/FeatureUtils';
 
 class IFeatureStructure {
     correspondingFeature: IFeature;
@@ -221,10 +222,42 @@ class IFeatureProperty {
 	// boolean selectConstraint(boolean state);
 }
 
+class IPropertyContainer {
+    correspondingFeature: IFeature;
+    name: string;
+
+    // <T> T get(final String key, final T defaultValue);
+	// Type getDataType(final String key) throws NoSuchPropertyException;
+    
+    get(key: string): string {
+        if (key !== FeatureUtils.NAME_PROPERTY)
+            throw new Error('only the name property is valid');
+        return this.name;
+    }
+
+    has(key: string): boolean {
+        if (key !== FeatureUtils.NAME_PROPERTY)
+            throw new Error('only the name property is valid');
+        return true;
+    }
+
+	// Set<String> keySet();
+	// Set<Entry<String, Type, Object>> entrySet();
+	// void setEntrySet(final Set<Entry<String, Type, Object>> entries);
+	// void remove(final String key) throws NoSuchPropertyException;
+    
+    set(key: string, _type: any, value: string): void {
+        if (key !== FeatureUtils.NAME_PROPERTY)
+            throw new Error('only the name property is valid');
+        this.name = value;
+    }
+}
+
 class IFeature {
     name: string;
     featureStructure: IFeatureStructure;
     property: IFeatureProperty;
+    propertyContainer: IPropertyContainer;
 
     // IFeature clone(IFeatureModel newFeatureModel, IFeatureStructure newStructure);
 
@@ -232,7 +265,10 @@ class IFeature {
         return this.property;
     }
 
-	// IPropertyContainer getCustomProperties();
+    // IPropertyContainer getCustomProperties();
+    getCustomProperties(): IPropertyContainer {
+        return this.propertyContainer;
+    }
 
     getStructure(): IFeatureStructure {
         return this.featureStructure;
@@ -296,57 +332,24 @@ class IFeatureModelStructure {
 	// void setShowHiddenFeatures(boolean showHiddenFeatures);
 }
 
-class RenamingsManager {
-    model: IFeatureModel;
-
-	renameFeature(oldName: string, newName: string): boolean {
-		const featureTable = this.model.getFeatureTable();
-		if (!featureTable.hasOwnProperty(oldName) || featureTable.hasOwnProperty(newName))
-			return false;
-		//final List<IConstraint> constraints = model.getConstraints();
-		const feature = this.model.getFeature(oldName)!;
-		this.model.deleteFeatureFromTable(feature);
-		feature.setName(newName);
-		this.model.addFeature(feature);
-		/*for (final IConstraint c : constraints) {
-			renameVariables(c.getNode(), oldName, newName);
-		}
-		final List<String> featureOrderList = Functional.toList(model.getFeatureOrderList());
-		for (int i = 0; i < featureOrderList.size(); i++) {
-			if (featureOrderList.get(i).equals(oldName)) {
-				model.setFeatureOrderListItem(i, newName);
-				break;
-			}
-		}*/
-		return true;
-	}
-
-	// boolean isRenamed();
-	// void performRenamings();
-	// void performRenamings(File file);
-	// void performRenamings(Path path);
-	// String getNewName(String name);
-	// String getOldName(String name);
-	// Set<String> getOldFeatureNames();
-	// void clear();
-}
-
 class IFeatureModel {
     serializedFeatureModel: SerializedFeatureModel;
     featureTable: {[x: string]: IFeature} = {};
     structure: IFeatureModelStructure;
-    renamingsManager: RenamingsManager;
 
     // used by BridgeUtils
     createFeature(name: string): IFeature {
         const feature = new IFeature(),
             featureStructure = new IFeatureStructure(),
-            featureProperty = new IFeatureProperty();
+            property = new IFeatureProperty(),
+            propertyContainer = new IPropertyContainer();
         feature.name = name;
         feature.featureStructure = featureStructure;
-        feature.property = featureProperty;
+        feature.property = property;
+        feature.propertyContainer = propertyContainer;
         featureStructure.correspondingFeature = feature;
-        featureProperty.correspondingFeature = feature;
+        property.correspondingFeature = feature;
+        propertyContainer.correspondingFeature = feature;
         return feature;
     }
 
@@ -419,10 +422,7 @@ class IFeatureModel {
     // Iterable<IFeature> getVisibleFeatures(boolean showHiddenFeatures);
     // int getNumberOfFeatures();
     // IFeatureModelProperty getProperty();
-
-    getRenamingsManager(): RenamingsManager {
-        return this.renamingsManager;
-    }
+    // RenamingsManager getRenamingsManager();
     
     getStructure(): IFeatureModelStructure {
         return this.structure;
@@ -461,21 +461,20 @@ class MutableFeatureModel extends IFeatureModel {
             throw new Error('feature model has no structure');
     
         const mutableFeatureModel = new MutableFeatureModel(),
-            featureModelStructure = new IFeatureModelStructure(),
-            renamingsManager = new RenamingsManager();
+            featureModelStructure = new IFeatureModelStructure();
         mutableFeatureModel.structure = featureModelStructure;
         mutableFeatureModel.serializedFeatureModel = serializedFeatureModel;
-        mutableFeatureModel.renamingsManager = renamingsManager;
         featureModelStructure.correspondingFeatureModel = mutableFeatureModel;
-        renamingsManager.model = mutableFeatureModel;
     
         function parseFeatures(nodes: SerializedFeatureModelNode[], parent: IFeature | null): void {
             nodes.forEach(node => {
                 const type = node[TYPE],
+                    uuid = node[UUID],
                     name = node[NAME];
-                if (mutableFeatureModel.getFeature(name) !== null)
-                    throw new Error('Duplicate entry for feature: ' + name);
-                const feature = mutableFeatureModel.createFeature(name);
+                if (mutableFeatureModel.getFeature(uuid) !== null)
+                    throw new Error('Duplicate entry for feature: ' + uuid);
+                const feature = mutableFeatureModel.createFeature(uuid);
+                feature.getCustomProperties().set(FeatureUtils.NAME_PROPERTY, null, name);
                 if (node[DESCRIPTION])
                     feature.getProperty().setDescription(node[DESCRIPTION]!);
                 feature.getStructure().setMandatory(true);
@@ -526,12 +525,18 @@ class MutableFeatureModel extends IFeatureModel {
             if (feature == null)
                 throw new Error('no feature given');
             const children = feature.getStructure().getChildren()
-                .map(featureStructure => featureStructure.getFeature());
+                .map(featureStructure => featureStructure.getFeature()),
+                node = {
+                    [TYPE]: FeatureType.feature,
+                    [UUID]: feature.getName(),
+                    [NAME]: feature.getCustomProperties().get(FeatureUtils.NAME_PROPERTY)
+                };
     
             if (children.length === 0)
-                return writeAttributes({[TYPE]: FeatureType.feature, [NAME]: feature.getName()}, feature);
+                return writeAttributes(node, feature);
             else
                 return writeAttributes({
+                    ...node,
                     [TYPE]: feature.getStructure().isAnd()
                         ? FeatureType.and
                         : feature.getStructure().isOr()
@@ -539,7 +544,6 @@ class MutableFeatureModel extends IFeatureModel {
                             : feature.getStructure().isAlternative()
                                 ? FeatureType.alt
                                 : FeatureType.unknown,
-                    [NAME]: feature.getName(),
                     children: children.map(serializeFeature)
                 }, feature);
         }

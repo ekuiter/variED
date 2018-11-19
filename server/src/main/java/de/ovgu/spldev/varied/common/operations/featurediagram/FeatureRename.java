@@ -1,5 +1,6 @@
 package de.ovgu.spldev.varied.common.operations.featurediagram;
 
+import de.ovgu.featureide.fm.core.base.IFeature;
 import de.ovgu.featureide.fm.core.base.IFeatureModel;
 import de.ovgu.spldev.varied.common.operations.Operation;
 import de.ovgu.spldev.varied.common.util.FeatureUtils;
@@ -7,26 +8,22 @@ import de.ovgu.spldev.varied.common.util.StringUtils;
 
 // adapted from RenameFeatureOperation
 public class FeatureRename extends Operation {
-    private IFeatureModel featureModel;
-    private final String oldName;
-    private final String newName;
+    private IFeature feature;
+    private String oldName, name;
 
-    public FeatureRename(IFeatureModel featureModel, String oldName, String newName) throws InvalidOperationException {
-        this.featureModel = featureModel;
-        if (!StringUtils.isPresent(newName))
+    public FeatureRename(IFeatureModel featureModel, String featureUUID, String name) throws InvalidOperationException {
+        this.feature = FeatureUtils.requireFeature(featureModel, featureUUID);
+        this.oldName = FeatureUtils.getFeatureName(this.feature);
+        this.name = name;
+        if (!StringUtils.isPresent(name))
             throw new IllegalArgumentException("no new feature name given");
-        this.oldName = oldName;
-        this.newName = newName;
-        FeatureUtils.requireFeature(featureModel, oldName);
     }
 
-    protected void _apply() throws InvalidOperationException {
-        if (!featureModel.getRenamingsManager().renameFeature(oldName, newName))
-            throw new InvalidOperationException("invalid renaming operation");
+    protected void _apply() {
+        FeatureUtils.setFeatureName(feature, name); // TODO: ensure name uniqueness
     }
 
-    protected void _undo() throws InvalidOperationException {
-        if (!featureModel.getRenamingsManager().renameFeature(newName, oldName))
-            throw new InvalidOperationException("invalid renaming operation");
+    protected void _undo() {
+        FeatureUtils.setFeatureName(feature, oldName);
     }
 }

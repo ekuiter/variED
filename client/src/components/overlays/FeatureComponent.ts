@@ -9,7 +9,7 @@ import {GraphicalFeature} from '../../modeling/types';
 
 export interface FeatureComponentProps {
     graphicalFeatureModel: GraphicalFeatureModel,
-    featureName?: string,
+    featureUUID?: string,
     settings: Settings
 };
 
@@ -30,9 +30,9 @@ export default ({doUpdate = false} = {}) =>
                 window.clearInterval(this.interval);
         }
 
-        getFeature = () => this.props.featureName && this.props.graphicalFeatureModel.getFeature(this.props.featureName!);
+        getFeature = () => this.props.featureUUID && this.props.graphicalFeatureModel.getFeature(this.props.featureUUID!);
 
-        renderIfFeature(_feature: GraphicalFeature): JSX.Element {
+        renderIfFeature(_feature: GraphicalFeature): JSX.Element | null {
             throw new Error('abstract method not implemented');
         }
 

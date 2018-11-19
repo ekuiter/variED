@@ -79,9 +79,9 @@ const translationMap = {
                     or: 'Or',
                     alternative: 'Alternative'
                 },
-                selection: (isSelectMultipleFeatures: boolean, selectedFeatureNames: string[]) =>
+                selection: (isSelectMultipleFeatures: boolean, selectedFeatureUUIDs: string[]) =>
                     isSelectMultipleFeatures
-                        ? `Feature selection (${selectedFeatureNames.length})`
+                        ? `Feature selection (${selectedFeatureUUIDs.length})`
                         : 'Begin feature selection',
                 selectAll: 'Select all features',
                 deselectAll: 'Deselect all features',

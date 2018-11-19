@@ -5,14 +5,10 @@ import de.ovgu.featureide.fm.core.base.FeatureUtils;
 import de.ovgu.featureide.fm.core.base.IConstraint;
 import de.ovgu.featureide.fm.core.base.IFeature;
 import de.ovgu.featureide.fm.core.base.IFeatureModel;
-import de.ovgu.featureide.fm.core.base.IPropertyContainer.Entry;
-import de.ovgu.featureide.fm.core.base.IPropertyContainer.Type;
-import de.ovgu.featureide.fm.core.io.xml.XmlPropertyLoader;
 import org.prop4j.*;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import static de.ovgu.featureide.fm.core.io.xml.XMLFeatureModelTags.*;
 import static de.ovgu.featureide.fm.core.io.xml.XMLFeatureModelTags.AND;
@@ -29,11 +25,10 @@ import static de.ovgu.featureide.fm.core.localization.StringTable.*;
 public class FeatureModelSerializer implements JsonSerializer<IFeatureModel> {
     public JsonElement serialize(IFeatureModel featureModel, java.lang.reflect.Type typeOfSrc, JsonSerializationContext context) {
         JsonObject root = new JsonObject(), calculations = new JsonObject(), order = new JsonObject();
-        JsonArray struct = new JsonArray(), constraints = new JsonArray(), properties = new JsonArray(), comments = new JsonArray();
+        JsonArray struct = new JsonArray(), constraints = new JsonArray(), comments = new JsonArray();
 
         root.add(STRUCT, struct);
         root.add(CONSTRAINTS, constraints);
-        root.add(PROPERTIES, properties);
         root.add(CALCULATIONS, calculations);
         root.add(COMMENTS, comments);
         root.add(FEATURE_ORDER, order);
@@ -47,8 +42,6 @@ public class FeatureModelSerializer implements JsonSerializer<IFeatureModel> {
             addDescription(constraint, rule);
             createPropositionalConstraints(rule, constraint.getNode());
         }
-
-        createXmlPropertiesPart(properties, featureModel);
 
         calculations.addProperty(CALCULATE_AUTO, featureModel.getAnalyser().runCalculationAutomatically);
         calculations.addProperty(CALCULATE_FEATURES, featureModel.getAnalyser().calculateFeatures);
@@ -81,27 +74,6 @@ public class FeatureModelSerializer implements JsonSerializer<IFeatureModel> {
         }
 
         return root;
-    }
-
-    private JsonObject createFeaturePropertyContainerNode(String featureName, Set<Entry<String, Type, Object>> propertyEntries) {
-        final JsonObject result = new JsonObject();
-        result.addProperty("type", FEATURE);
-        result.addProperty(NAME, featureName);
-        JsonArray children = new JsonArray();
-        result.add("children", children);
-        for (final Entry<String, Type, Object> entry : propertyEntries) {
-            children.add(createPropertyEntriesNode(entry));
-        }
-        return result;
-    }
-
-    private JsonObject createPropertyEntriesNode(Entry<String, Type, Object> entry) {
-        final JsonObject propertyElement = new JsonObject();
-        propertyElement.addProperty("type", XmlPropertyLoader.PROPERTY);
-        propertyElement.addProperty(XmlPropertyLoader.KEY, entry.getKey());
-        propertyElement.addProperty(XmlPropertyLoader.VALUE, entry.getValue().toString());
-        propertyElement.addProperty(XmlPropertyLoader.TYPE, entry.getType().toString());
-        return propertyElement;
     }
 
     private void createPropositionalConstraints(JsonObject jsonNode, org.prop4j.Node node) {
@@ -205,24 +177,9 @@ public class FeatureModelSerializer implements JsonSerializer<IFeatureModel> {
         }
     }
 
-    private void createXmlPropertiesPart(JsonArray propertiesNode, IFeatureModel featureModel) {
-
-        if ((featureModel == null) || (propertiesNode == null)) {
-            throw new RuntimeException();
-        }
-
-        // Store per-feature properties
-        for (final IFeature feature : featureModel.getFeatures()) {
-            final String featureName = feature.getName();
-            final Set<Entry<String, Type, Object>> propertyEntries = feature.getCustomProperties().entrySet();
-            if (!propertyEntries.isEmpty()) {
-                propertiesNode.add(createFeaturePropertyContainerNode(featureName, propertyEntries));
-            }
-        }
-    }
-
     private void writeAttributes(JsonArray node, JsonObject fnod, IFeature feat) {
-        fnod.addProperty(NAME, feat.getName());
+        fnod.addProperty("uuid", feat.getName());
+        fnod.addProperty("name", de.ovgu.spldev.varied.common.util.FeatureUtils.getFeatureName(feat));
         if (feat.getStructure().isHidden()) {
             fnod.addProperty(HIDDEN, true);
         }

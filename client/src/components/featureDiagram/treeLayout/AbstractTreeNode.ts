@@ -51,7 +51,7 @@ function makeText(settings: Settings, selection: D3Selection, isGettingRectInfo:
         const bboxes: Rect[] = [];
         selection.append('text')
             .call(addFontStyle, settings)
-            .text(d => d.feature().name)
+            .text((d: GraphicalFeatureModelNode) => d.feature().name)
             .call(addStyle, textStyle, styles.node.hidden(settings))
             .each(function(this: SVGGraphicsElement) {
                 bboxes.push(this.getBBox());
@@ -89,7 +89,7 @@ export default class {
     enter(node: D3Selection): D3Selection {
         const nodeEnter = node.append('g')
                 .attr('class', 'node')
-                .attr('data-feature', (d: GraphicalFeatureModelNode) => d.feature().name)
+                .attr('data-feature-uuid', (d: GraphicalFeatureModelNode) => d.feature().uuid)
                 .call(translateTransform, (d: GraphicalFeatureModelNode) => this.x(d), (d: GraphicalFeatureModelNode) => this.y(d))
                 .attr('opacity', 0),
             rectAndText = nodeEnter.append('g')
@@ -101,7 +101,7 @@ export default class {
                 })
                 .on('dblclick', (d: GraphicalFeatureModelNode) => {
                     if (!this.isSelectMultipleFeatures)
-                        this.onShowOverlay({overlay: OverlayType.featurePanel, overlayProps: {featureName: d.feature().name}});
+                        this.onShowOverlay({overlay: OverlayType.featurePanel, overlayProps: {featureUUID: d.feature().uuid}});
                 });
 
         let bboxes = makeText(this.settings, rectAndText, false, this.getTextStyle()) as Rect[];
@@ -123,7 +123,7 @@ export default class {
                 .on('dblclick', (d: GraphicalFeatureModelNode) => this.onToggleFeatureGroup({feature: d.feature()}));
         this.treeLink.drawGroup(arcSegment, arcSlice, arcClick);
 
-        const expandFeature = (d: GraphicalFeatureModelNode) => d.feature().isCollapsed && this.onExpandFeatures({featureNames: [d.feature().name]});
+        const expandFeature = (d: GraphicalFeatureModelNode) => d.feature().isCollapsed && this.onExpandFeatures({featureUUIDs: [d.feature().uuid]});
         i = 0;
         bboxes = [];
         nodeEnter.insert('text', 'path.arcClick')

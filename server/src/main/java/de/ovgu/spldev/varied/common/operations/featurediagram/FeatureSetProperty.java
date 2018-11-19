@@ -15,11 +15,11 @@ public class FeatureSetProperty extends Operation {
     private String property, oldValue, value;
     private LinkedList<IFeatureStructure> oldMandatoryChildren;
 
-    public FeatureSetProperty(IFeatureModel featureModel, String feature, String property, String value, Object batchContext) throws InvalidOperationException {
+    public FeatureSetProperty(IFeatureModel featureModel, String featureUUID, String property, String value, Object batchContext) throws InvalidOperationException {
         if (batchContext != null && !BridgeUtils.equals(property, batchContext))
             throw new IllegalArgumentException("can not set different properties in one batch message");
 
-        this.feature = FeatureUtils.requireFeature(featureModel, feature);
+        this.feature = FeatureUtils.requireFeature(featureModel, featureUUID);
         this.property = property;
         this.value = value;
         if (!StringUtils.isOneOf(property, new String[]{"abstract", "hidden", "mandatory", "group"}))

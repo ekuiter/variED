@@ -11,8 +11,8 @@ public class FeatureSetDescription extends Operation {
     private IFeature feature;
     private String oldDescription, description;
 
-    public FeatureSetDescription(IFeatureModel featureModel, String feature, String description) throws InvalidOperationException {
-        this.feature = FeatureUtils.requireFeature(featureModel, feature);
+    public FeatureSetDescription(IFeatureModel featureModel, String featureUUID, String description) throws InvalidOperationException {
+        this.feature = FeatureUtils.requireFeature(featureModel, featureUUID);
         this.oldDescription = this.feature.getProperty().getDescription();
         this.description = description;
         if (!StringUtils.isPresent(description) && !BridgeUtils.equals(description, ""))

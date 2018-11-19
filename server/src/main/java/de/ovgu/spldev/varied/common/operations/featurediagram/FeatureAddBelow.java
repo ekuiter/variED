@@ -6,27 +6,22 @@ import de.ovgu.spldev.varied.common.operations.Operation;
 import de.ovgu.spldev.varied.common.util.BridgeUtils;
 import de.ovgu.spldev.varied.common.util.FeatureUtils;
 
-import static de.ovgu.spldev.varied.common.util.BridgeUtils.DEFAULT_FEATURE_LAYER_CAPTION;
-
 // adapted from CreateFeatureBelowOperation
 public class FeatureAddBelow extends Operation {
     private IFeatureModel featureModel;
     private IFeature feature;
     private IFeature newFeature;
+    private String newFeatureUUID;
 
-    public FeatureAddBelow(IFeatureModel featureModel, String belowFeature) throws InvalidOperationException {
+    public FeatureAddBelow(IFeatureModel featureModel, String belowFeatureUUID, String newFeatureUUID) throws InvalidOperationException {
         this.featureModel = featureModel;
-        this.feature = FeatureUtils.requireFeature(featureModel, belowFeature);
+        this.feature = FeatureUtils.requireFeature(featureModel, belowFeatureUUID);
+        this.newFeatureUUID = BridgeUtils.requireValidFeatureUUID(featureModel, newFeatureUUID);
     }
 
     protected void _apply() {
-        int number = 1;
-
-        while (BridgeUtils.getFeatureNames(featureModel).contains(DEFAULT_FEATURE_LAYER_CAPTION + number)) {
-            number++;
-        }
-
-        newFeature = BridgeUtils.createFeature(featureModel, DEFAULT_FEATURE_LAYER_CAPTION + number);
+        newFeature = BridgeUtils.createFeature(featureModel, newFeatureUUID);
+        FeatureUtils.setFeatureName(newFeature, newFeatureUUID); // TODO: choose a better default name
         featureModel.addFeature(newFeature);
         feature = featureModel.getFeature(feature.getName());
         feature.getStructure().addChild(newFeature.getStructure());

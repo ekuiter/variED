@@ -11,6 +11,7 @@ import {sendMessage, sendBatchMessage} from '../server/webSocket';
 import {ThunkAction} from 'redux-thunk';
 import {State} from './types';
 import {GraphicalFeature} from '../modeling/types';
+import uuidv4 from 'uuid/v4';
 
 const {propertyTypes, groupValueTypes} = constants.server;
 
@@ -44,16 +45,16 @@ const actions = {
             fitToScreen: createStandardAction('ui/featureDiagram/fitToScreen')<void>(),
             feature: {
                 setSelectMultiple: createStandardAction('ui/featureDiagram/feature/setSelectMultiple')<{isSelectMultipleFeatures: boolean}>(),
-                select: createStandardAction('ui/featureDiagram/feature/select')<{featureName: string}>(),
-                deselect: createStandardAction('ui/featureDiagram/feature/deselect')<{featureName: string}>(),
+                select: createStandardAction('ui/featureDiagram/feature/select')<{featureUUID: string}>(),
+                deselect: createStandardAction('ui/featureDiagram/feature/deselect')<{featureUUID: string}>(),
                 selectAll: createStandardAction('ui/featureDiagram/feature/selectAll')<void>(),
                 deselectAll: createStandardAction('ui/featureDiagram/feature/deselectAll')<void>(),
-                collapse: createStandardAction('ui/featureDiagram/feature/collapse')<{featureNames: string[]}>(),
-                expand: createStandardAction('ui/featureDiagram/feature/expand')<{featureNames: string[]}>(),
+                collapse: createStandardAction('ui/featureDiagram/feature/collapse')<{featureUUIDs: string[]}>(),
+                expand: createStandardAction('ui/featureDiagram/feature/expand')<{featureUUIDs: string[]}>(),
                 collapseAll: createStandardAction('ui/featureDiagram/feature/collapseAll')<void>(),
                 expandAll: createStandardAction('ui/featureDiagram/feature/expandAll')<void>(),
-                collapseBelow: createStandardAction('ui/featureDiagram/feature/collapseBelow')<{featureNames: string[]}>(),
-                expandBelow: createStandardAction('ui/featureDiagram/feature/expandBelow')<{featureNames: string[]}>()
+                collapseBelow: createStandardAction('ui/featureDiagram/feature/collapseBelow')<{featureUUIDs: string[]}>(),
+                expandBelow: createStandardAction('ui/featureDiagram/feature/expandBelow')<{featureUUIDs: string[]}>()
             }
         },
         overlay: {
@@ -69,56 +70,56 @@ const actions = {
         redo: createMessageAction(() => ({type: MessageType.REDO})),
         featureDiagram: {
             feature: {
-                addBelow: createMessageAction(({belowFeatureName}: {belowFeatureName: string}) =>
-                    ({type: MessageType.FEATURE_DIAGRAM_FEATURE_ADD_BELOW, belowFeature: belowFeatureName})),
-                addAbove: createMessageAction(({aboveFeatureNames}: {aboveFeatureNames: string[]}) =>
-                    ({type: MessageType.FEATURE_DIAGRAM_FEATURE_ADD_ABOVE, aboveFeatures: aboveFeatureNames})),
-                remove: createMessageAction(({featureNames}: {featureNames: string[]}) =>
-                    (featureNames.map(featureName => ({type: MessageType.FEATURE_DIAGRAM_FEATURE_REMOVE, feature: featureName})))),
-                removeBelow: createMessageAction(({featureNames}: {featureNames: string[]}) =>
-                    (featureNames.map(featureName => ({type: MessageType.FEATURE_DIAGRAM_FEATURE_REMOVE_BELOW, feature: featureName})))),
-                rename: createMessageAction(({oldFeatureName, newFeatureName}: {oldFeatureName: string, newFeatureName: string}) =>
-                    ({type: MessageType.FEATURE_DIAGRAM_FEATURE_RENAME, oldFeature: oldFeatureName, newFeature: newFeatureName})),
-                setDescription: createMessageAction(({featureName, description}: {featureName: string, description: string}) =>
-                    ({type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_DESCRIPTION, feature: featureName, description})),
+                addBelow: createMessageAction(({belowFeatureUUID}: {belowFeatureUUID: string}) =>
+                    ({type: MessageType.FEATURE_DIAGRAM_FEATURE_ADD_BELOW, belowFeatureUUID, newFeatureUUID: uuidv4()})),
+                addAbove: createMessageAction(({aboveFeatureUUIDs}: {aboveFeatureUUIDs: string[]}) =>
+                    ({type: MessageType.FEATURE_DIAGRAM_FEATURE_ADD_ABOVE, aboveFeatureUUIDs, newFeatureUUID: uuidv4()})),
+                remove: createMessageAction(({featureUUIDs}: {featureUUIDs: string[]}) =>
+                    (featureUUIDs.map(featureUUID => ({type: MessageType.FEATURE_DIAGRAM_FEATURE_REMOVE, featureUUID})))),
+                removeBelow: createMessageAction(({featureUUIDs}: {featureUUIDs: string[]}) =>
+                    (featureUUIDs.map(featureUUID => ({type: MessageType.FEATURE_DIAGRAM_FEATURE_REMOVE_BELOW, featureUUID})))),
+                rename: createMessageAction(({featureUUID, name}: {featureUUID: string, name: string}) =>
+                    ({type: MessageType.FEATURE_DIAGRAM_FEATURE_RENAME, featureUUID, name})),
+                setDescription: createMessageAction(({featureUUID, description}: {featureUUID: string, description: string}) =>
+                    ({type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_DESCRIPTION, featureUUID, description})),
                 properties: {
-                    setAbstract: createMessageAction(({featureNames, value}: {featureNames: string[], value: boolean}) =>
-                        featureNames.map(featureName => ({
+                    setAbstract: createMessageAction(({featureUUIDs, value}: {featureUUIDs: string[], value: boolean}) =>
+                        featureUUIDs.map(featureUUID => ({
                             type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
-                            feature: featureName, property: propertyTypes.abstract, value
+                            featureUUID, property: propertyTypes.abstract, value
                         }))),
-                    setHidden: createMessageAction(({featureNames, value}: {featureNames: string[], value: boolean}) =>
-                        featureNames.map(featureName => ({
+                    setHidden: createMessageAction(({featureUUIDs, value}: {featureUUIDs: string[], value: boolean}) =>
+                        featureUUIDs.map(featureUUID => ({
                             type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
-                            feature: featureName, property: propertyTypes.hidden, value
+                            featureUUID, property: propertyTypes.hidden, value
                         }))),
-                    setMandatory: createMessageAction(({featureNames, value}: {featureNames: string[], value: boolean}) =>
-                        featureNames.map(featureName => ({
+                    setMandatory: createMessageAction(({featureUUIDs, value}: {featureUUIDs: string[], value: boolean}) =>
+                        featureUUIDs.map(featureUUID => ({
                             type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
-                            feature: featureName, property: propertyTypes.mandatory, value
+                            featureUUID, property: propertyTypes.mandatory, value
                         }))),
                     toggleMandatory: createMessageAction(({feature}: {feature: GraphicalFeature}) => ({
                             type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
-                            feature: feature.name, property: propertyTypes.mandatory, value: !feature.isMandatory
+                            featureUUID: feature.uuid, property: propertyTypes.mandatory, value: !feature.isMandatory
                         })),
-                    setAnd: createMessageAction(({featureNames}: {featureNames: string[]}) =>
-                        featureNames.map(featureName => ({
+                    setAnd: createMessageAction(({featureUUIDs}: {featureUUIDs: string[]}) =>
+                        featureUUIDs.map(featureUUID => ({
                             type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
-                            feature: featureName, property: propertyTypes.group, value: groupValueTypes.and
+                            featureUUID, property: propertyTypes.group, value: groupValueTypes.and
                         }))),
-                    setOr: createMessageAction(({featureNames}: {featureNames: string[]}) =>
-                        featureNames.map(featureName => ({
+                    setOr: createMessageAction(({featureUUIDs}: {featureUUIDs: string[]}) =>
+                        featureUUIDs.map(featureUUID => ({
                             type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
-                            feature: featureName, property: propertyTypes.group, value: groupValueTypes.or
+                            featureUUID, property: propertyTypes.group, value: groupValueTypes.or
                         }))),
-                    setAlternative: createMessageAction(({featureNames}: {featureNames: string[]}) =>
-                        featureNames.map(featureName => ({
+                    setAlternative: createMessageAction(({featureUUIDs}: {featureUUIDs: string[]}) =>
+                        featureUUIDs.map(featureUUID => ({
                             type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
-                            feature: featureName, property: propertyTypes.group, value: groupValueTypes.alternative
+                            featureUUID, property: propertyTypes.group, value: groupValueTypes.alternative
                         }))),
                     toggleGroup: createMessageAction(({feature}: {feature: GraphicalFeature}) => ({
                             type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
-                            feature: feature.name, property: propertyTypes.group,
+                            featureUUID: feature.uuid, property: propertyTypes.group,
                             value: feature.isAnd
                                 ? groupValueTypes.or : feature.isOr
                                     ? groupValueTypes.alternative : groupValueTypes.and

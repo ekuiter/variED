@@ -11,8 +11,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.TreeMap;
 
-import static de.ovgu.spldev.varied.common.util.BridgeUtils.DEFAULT_FEATURE_LAYER_CAPTION;
-
 // adapted from CreateFeatureAboveOperation
 public class FeatureAddAbove extends Operation {
     private IFeatureModel featureModel;
@@ -23,18 +21,15 @@ public class FeatureAddAbove extends Operation {
     private boolean parentOr = false;
     private boolean parentAlternative = false;
 
-    public FeatureAddAbove(IFeatureModel featureModel, String[] aboveFeatures) throws InvalidOperationException {
-        if (aboveFeatures == null || aboveFeatures.length == 0)
+    public FeatureAddAbove(IFeatureModel featureModel, String[] aboveFeatureUUIDs, String newFeatureUUID) throws InvalidOperationException {
+        if (aboveFeatureUUIDs == null || aboveFeatureUUIDs.length == 0)
             throw new IllegalArgumentException("no features given");
         this.featureModel = featureModel;
-        this.selectedFeatures = FeatureUtils.requireSiblingFeatures(featureModel, aboveFeatures);
+        this.selectedFeatures = FeatureUtils.requireSiblingFeatures(featureModel, aboveFeatureUUIDs);
         FeatureUtils.sortSiblingFeatures(this.selectedFeatures);
         child = selectedFeatures.get(0);
-        int number = 0;
-        while (BridgeUtils.getFeatureNames(featureModel).contains(DEFAULT_FEATURE_LAYER_CAPTION + ++number)) {
-        }
-
-        newCompound = BridgeUtils.createFeature(featureModel, DEFAULT_FEATURE_LAYER_CAPTION + number);
+        newCompound = BridgeUtils.createFeature(featureModel, BridgeUtils.requireValidFeatureUUID(featureModel, newFeatureUUID));
+        FeatureUtils.setFeatureName(newCompound, newFeatureUUID); // TODO: choose a better default name
     }
 
     protected void _apply() {

@@ -13,20 +13,21 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 // Bridge as in: running the same code on the server and the client.
 // This class also reimplements some helper methods from FeatureIDE.
 public class BridgeUtils {
     public static final String DEFAULT_FEATURE_LAYER_CAPTION = "NewFeature";
 
-    public static IFeature createFeature(IFeatureModel featureModel, String name) {
+    public static IFeature createFeature(IFeatureModel featureModel, String featureUUID) {
         // Some trickery to make this work on the server (using FMFactoryManager)
         // as well as on the client (custom createFeature method).
         IFeature feature;
         try {
-            feature = Lang.$insert("featureModel.createFeature(name)");
+            feature = Lang.$insert("featureModel.createFeature(featureUUID)");
         } catch (UnsatisfiedLinkError e) {
-            feature = FMFactoryManager.getFactory(featureModel).createFeature(featureModel, name);
+            feature = FMFactoryManager.getFactory(featureModel).createFeature(featureModel, featureUUID);
         }
         return feature;
     }
@@ -42,18 +43,18 @@ public class BridgeUtils {
         return iterator;
     }
 
-    public static Set<String> getFeatureNames(IFeatureModel featureModel) {
-        HashSet<String> featureNames = new HashSet<>();
+    public static Set<String> getFeatureUUIDs(IFeatureModel featureModel) {
+        HashSet<String> featureUUIDs = new HashSet<>();
         for (IFeature feature : featureModel.getFeatures())
-            featureNames.add(feature.getName());
-        return featureNames;
+            featureUUIDs.add(feature.getName());
+        return featureUUIDs;
     }
 
-    public static List<String> getFeatureNames(List<IFeature> features) {
-        LinkedList<String> featureNames = new LinkedList<>();
+    public static List<String> getFeatureUUIDs(List<IFeature> features) {
+        LinkedList<String> featureUUIDs = new LinkedList<>();
         for (IFeature feature : features)
-            featureNames.add(feature.getName());
-        return featureNames;
+            featureUUIDs.add(feature.getName());
+        return featureUUIDs;
     }
 
     public static List<IFeature> convertToFeatureList(List<IFeatureStructure> featureStructures) {
@@ -98,6 +99,25 @@ public class BridgeUtils {
             return Lang.$insert("operation.constructor.name");
         } catch (UnsatisfiedLinkError e) {
             return operation.toString();
+        }
+    }
+
+    public static String requireValidFeatureUUID(IFeatureModel featureModel, String featureUUID) {
+        Set<String> featureUUIDs = getFeatureUUIDs(featureModel);
+        for (String _featureUUID : featureUUIDs)
+            if (featureUUID.equals(_featureUUID))
+                throw new RuntimeException("duplicate feature UUID");
+        try {
+            return Lang.$insert("featureUUID");
+        } catch (UnsatisfiedLinkError e) {
+            try {
+                if (UUID.fromString(featureUUID).toString().equals(featureUUID))
+                    return featureUUID;
+                else
+                    throw new IllegalArgumentException();
+            } catch (IllegalArgumentException e2) {
+                throw new RuntimeException("not a valid feature UUID");
+            }
         }
     }
 }

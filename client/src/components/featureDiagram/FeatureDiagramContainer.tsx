@@ -26,7 +26,7 @@ export default connect(
             ...props,
             featureDiagramLayout: collaborativeSession.layout,
             isSelectMultipleFeatures: collaborativeSession.isSelectMultipleFeatures,
-            selectedFeatureNames: collaborativeSession.selectedFeatureNames,
+            selectedFeatureUUIDs: collaborativeSession.selectedFeatureUUIDs,
             graphicalFeatureModel: getCurrentGraphicalFeatureModel(state)
         };
     }),

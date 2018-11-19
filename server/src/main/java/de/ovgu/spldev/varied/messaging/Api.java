@@ -187,15 +187,16 @@ public class Api {
 
     public static class FeatureDiagramFeatureAddBelow extends Message implements Message.IUndoable {
         @Expose
-        private String belowFeature;
+        private String belowFeatureUUID, newFeatureUUID;
 
-        public FeatureDiagramFeatureAddBelow(Artifact.Path artifactPath, String belowFeature) {
+        public FeatureDiagramFeatureAddBelow(Artifact.Path artifactPath, String belowFeatureUUID, String uuid) {
             super(TypeEnum.FEATURE_DIAGRAM_FEATURE_ADD_BELOW, artifactPath);
-            this.belowFeature = belowFeature;
+            this.belowFeatureUUID = belowFeatureUUID;
+            this.newFeatureUUID = newFeatureUUID;
         }
 
         public Operation getOperation(StateContext stateContext) throws Operation.InvalidOperationException {
-            return new FeatureAddBelow(((StateContext.FeatureModel) stateContext).getFeatureModel(), belowFeature);
+            return new FeatureAddBelow(((StateContext.FeatureModel) stateContext).getFeatureModel(), belowFeatureUUID, newFeatureUUID);
         }
 
         public IEncodable[] getResponse(StateContext stateContext) {
@@ -205,15 +206,19 @@ public class Api {
 
     public static class FeatureDiagramFeatureAddAbove extends Message implements Message.IUndoable {
         @Expose
-        private String[] aboveFeatures;
+        private String[] aboveFeatureUUIDs;
 
-        public FeatureDiagramFeatureAddAbove(Artifact.Path artifactPath, String[] aboveFeatures) {
+        @Expose
+        String newFeatureUUID;
+
+        public FeatureDiagramFeatureAddAbove(Artifact.Path artifactPath, String[] aboveFeatureUUIDs, String newFeatureUUID) {
             super(TypeEnum.FEATURE_DIAGRAM_FEATURE_ADD_ABOVE, artifactPath);
-            this.aboveFeatures = aboveFeatures;
+            this.aboveFeatureUUIDs = aboveFeatureUUIDs;
+            this.newFeatureUUID = newFeatureUUID;
         }
 
         public Operation getOperation(StateContext stateContext) throws Operation.InvalidOperationException {
-            return new FeatureAddAbove(((StateContext.FeatureModel) stateContext).getFeatureModel(), aboveFeatures);
+            return new FeatureAddAbove(((StateContext.FeatureModel) stateContext).getFeatureModel(), aboveFeatureUUIDs, newFeatureUUID);
         }
 
         public IEncodable[] getResponse(StateContext stateContext) {
@@ -223,15 +228,15 @@ public class Api {
 
     public static class FeatureDiagramFeatureRemove extends Message implements Message.IBatchUndoable {
         @Expose
-        private String feature;
+        private String featureUUID;
 
-        public FeatureDiagramFeatureRemove(Artifact.Path artifactPath, String feature) {
+        public FeatureDiagramFeatureRemove(Artifact.Path artifactPath, String featureUUID) {
             super(TypeEnum.FEATURE_DIAGRAM_FEATURE_REMOVE, artifactPath);
-            this.feature = feature;
+            this.featureUUID = featureUUID;
         }
 
         public Operation getOperation(StateContext stateContext) throws Operation.InvalidOperationException {
-            return new FeatureRemove(((StateContext.FeatureModel) stateContext).getFeatureModel(), feature);
+            return new FeatureRemove(((StateContext.FeatureModel) stateContext).getFeatureModel(), featureUUID);
         }
 
         public IEncodable[] getResponse(StateContext stateContext) {
@@ -241,11 +246,11 @@ public class Api {
 
     public static class FeatureDiagramFeatureRemoveBelow extends Message implements Message.IBatchUndoable {
         @Expose
-        private String feature;
+        private String featureUUID;
 
-        public FeatureDiagramFeatureRemoveBelow(Artifact.Path artifactPath, String feature) {
+        public FeatureDiagramFeatureRemoveBelow(Artifact.Path artifactPath, String featureUUID) {
             super(TypeEnum.FEATURE_DIAGRAM_FEATURE_REMOVE_BELOW, artifactPath);
-            this.feature = feature;
+            this.featureUUID = featureUUID;
         }
 
         public Operation getOperation(StateContext stateContext) throws Operation.InvalidOperationException {
@@ -253,7 +258,7 @@ public class Api {
         }
 
         public Operation getOperation(StateContext stateContext, Object batchContext) throws Operation.InvalidOperationException {
-            return new FeatureRemoveBelow(((StateContext.FeatureModel) stateContext).getFeatureModel(), feature, batchContext);
+            return new FeatureRemoveBelow(((StateContext.FeatureModel) stateContext).getFeatureModel(), featureUUID, batchContext);
         }
 
         public Object createBatchContext() {
@@ -271,41 +276,35 @@ public class Api {
 
     public static class FeatureDiagramFeatureRename extends Message implements Message.IEncodable, Message.IUndoable {
         @Expose
-        private String oldFeature, newFeature;
+        private String featureUUID, name;
 
-        public FeatureDiagramFeatureRename(Artifact.Path artifactPath, String oldFeature, String newFeature) {
+        public FeatureDiagramFeatureRename(Artifact.Path artifactPath, String featureUUID, String name) {
             super(TypeEnum.FEATURE_DIAGRAM_FEATURE_RENAME, artifactPath);
-            this.oldFeature = oldFeature;
-            this.newFeature = newFeature;
+            this.featureUUID = featureUUID;
+            this.name = name;
         }
 
         public Operation getOperation(StateContext stateContext) throws Operation.InvalidOperationException {
-            return new FeatureRename(((StateContext.FeatureModel) stateContext).getFeatureModel(), oldFeature, newFeature);
+            return new FeatureRename(((StateContext.FeatureModel) stateContext).getFeatureModel(), featureUUID, name);
         }
 
         public IEncodable[] getResponse(StateContext stateContext) {
-            return new Message.IEncodable[]{
-                    // TODO: this is currently broken whenever we un- or redo a rename message
-                    // (in that case, the client only gets the updated feature model)
-                    new FeatureDiagramFeatureRename(stateContext.getArtifactPath(), oldFeature, newFeature),
-                    new Api.FeatureDiagramFeatureModel(
-                            stateContext.getArtifactPath(), ((StateContext.FeatureModel) stateContext).getFeatureModel())
-            };
+            return FeatureModelUtils.toMessage((StateContext.FeatureModel) stateContext);
         }
     }
 
     public static class FeatureDiagramFeatureSetDescription extends Message implements Message.IUndoable {
         @Expose
-        private String feature, description;
+        private String featureUUID, description;
 
-        public FeatureDiagramFeatureSetDescription(Artifact.Path artifactPath, String feature, String description) {
+        public FeatureDiagramFeatureSetDescription(Artifact.Path artifactPath, String featureUUID, String description) {
             super(TypeEnum.FEATURE_DIAGRAM_FEATURE_SET_DESCRIPTION, artifactPath);
-            this.feature = feature;
+            this.featureUUID = featureUUID;
             this.description = description;
         }
 
         public Operation getOperation(StateContext stateContext) throws Operation.InvalidOperationException {
-            return new FeatureSetDescription(((StateContext.FeatureModel) stateContext).getFeatureModel(), feature, description);
+            return new FeatureSetDescription(((StateContext.FeatureModel) stateContext).getFeatureModel(), featureUUID, description);
         }
 
         public IEncodable[] getResponse(StateContext stateContext) {
@@ -315,11 +314,11 @@ public class Api {
 
     public static class FeatureDiagramFeatureSetProperty extends Message implements Message.IBatchUndoable {
         @Expose
-        private String feature, property, value;
+        private String featureUUID, property, value;
 
-        public FeatureDiagramFeatureSetProperty(Artifact.Path artifactPath, String feature, String property, String value) {
+        public FeatureDiagramFeatureSetProperty(Artifact.Path artifactPath, String featureUUID, String property, String value) {
             super(TypeEnum.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY, artifactPath);
-            this.feature = feature;
+            this.featureUUID = featureUUID;
             this.property = property;
             this.value = value;
         }
@@ -329,7 +328,7 @@ public class Api {
         }
 
         public Operation getOperation(StateContext stateContext, Object batchContext) throws Operation.InvalidOperationException {
-            return new FeatureSetProperty(((StateContext.FeatureModel) stateContext).getFeatureModel(), feature, property, value, batchContext);
+            return new FeatureSetProperty(((StateContext.FeatureModel) stateContext).getFeatureModel(), featureUUID, property, value, batchContext);
         }
 
         public Object createBatchContext() {

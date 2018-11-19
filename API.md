@@ -196,7 +196,7 @@ change in the future as well, if there is a more suitable representation.
 #### FEATURE_DIAGRAM_FEATURE_ADD_BELOW
 
 ```
-{"type": "FEATURE_DIAGRAM_FEATURE_ADD_BELOW", "artifactPath": {project: "project", artifact: "artifact"}, belowFeature: "feature"}
+{"type": "FEATURE_DIAGRAM_FEATURE_ADD_BELOW", "artifactPath": {project: "project", artifact: "artifact"}, belowFeatureUUID: "featureUUID", newFeatureUUID: "featureUUID"}
 ```
 
 An undoable message. Adds a new feature below the specified feature.
@@ -206,7 +206,7 @@ Returns the updated feature model.
 #### FEATURE_DIAGRAM_FEATURE_ADD_ABOVE
 
 ```
-{"type": "FEATURE_DIAGRAM_FEATURE_ADD_ABOVE", "artifactPath": {project: "project", artifact: "artifact"}, aboveFeatures: ["feature", ...]}
+{"type": "FEATURE_DIAGRAM_FEATURE_ADD_ABOVE", "artifactPath": {project: "project", artifact: "artifact"}, aboveFeatureUUIDs: ["featureUUID", ...], newFeatureUUID: "featureUUID"}
 ```
 
 An undoable message. Adds a new feature above the specified features.
@@ -216,7 +216,7 @@ Returns the updated feature model.
 #### FEATURE_DIAGRAM_FEATURE_REMOVE
 
 ```
-{"type": "FEATURE_DIAGRAM_FEATURE_REMOVE", "artifactPath": {project: "project", artifact: "artifact"}, feature: "feature"}
+{"type": "FEATURE_DIAGRAM_FEATURE_REMOVE", "artifactPath": {project: "project", artifact: "artifact"}, featureUUID: "featureUUID"}
 ```
 
 A batch undoable message. Removes the specified feature.
@@ -226,7 +226,7 @@ Returns the updated feature model.
 #### FEATURE_DIAGRAM_FEATURE_REMOVE_BELOW
 
 ```
-{"type": "FEATURE_DIAGRAM_FEATURE_REMOVE_BELOW", "artifactPath": {project: "project", artifact: "artifact"}, feature: "feature"}
+{"type": "FEATURE_DIAGRAM_FEATURE_REMOVE_BELOW", "artifactPath": {project: "project", artifact: "artifact"}, featureUUID: "featureUUID"}
 ```
 
 A batch undoable message. Removes the specified feature and all features below.
@@ -236,7 +236,7 @@ Returns the updated feature model.
 #### FEATURE_DIAGRAM_FEATURE_RENAME
 
 ```
-{"type": "FEATURE_DIAGRAM_FEATURE_RENAME", "artifactPath": {project: "project", artifact: "artifact"}, oldFeature: "featureA", newFeature: "featureB"}
+{"type": "FEATURE_DIAGRAM_FEATURE_RENAME", "artifactPath": {project: "project", artifact: "artifact"}, featureUUID: "featureUUID", name: "name"}
 ```
 
 A encodable and undoable message. Renames the specified feature.
@@ -247,7 +247,7 @@ describing the rename operation.
 #### FEATURE_DIAGRAM_FEATURE_SET_DESCRIPTION
 
 ```
-{"type": "FEATURE_DIAGRAM_FEATURE_SET_DESCRIPTION", "artifactPath": {project: "project", artifact: "artifact"}, feature: "feature", description: "..."}
+{"type": "FEATURE_DIAGRAM_FEATURE_SET_DESCRIPTION", "artifactPath": {project: "project", artifact: "artifact"}, featureUUID: "featureUUID", description: "..."}
 ```
 
 An undoable message. Sets the specified feature's description.
@@ -257,7 +257,7 @@ Returns the updated feature model.
 #### FEATURE_DIAGRAM_FEATURE_SET_PROPERTY
 
 ```
-{"type": "FEATURE_DIAGRAM_FEATURE_SET_PROPERTY", "artifactPath": {project: "project", artifact: "artifact"}, feature: "feature", property: "...", value: "..."}
+{"type": "FEATURE_DIAGRAM_FEATURE_SET_PROPERTY", "artifactPath": {project: "project", artifact: "artifact"}, featureUUID: "featureUUID", property: "...", value: "..."}
 ```
 
 A batch undoable message. Sets a property of the specified feature to a given

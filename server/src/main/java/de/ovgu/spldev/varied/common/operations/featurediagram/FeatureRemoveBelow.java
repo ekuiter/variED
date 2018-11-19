@@ -18,15 +18,15 @@ public class FeatureRemoveBelow extends BatchOperation {
     private LinkedList<IFeature> orList = new LinkedList<>();
     private LinkedList<IFeature> alternativeList = new LinkedList<>();
 
-    public FeatureRemoveBelow(IFeatureModel featureModel, String feature, Object batchContext) throws InvalidOperationException {
+    public FeatureRemoveBelow(IFeatureModel featureModel, String featureUUID, Object batchContext) throws InvalidOperationException {
         this.featureModel = featureModel;
 
         // do nothing if the feature has already been removed by another operation in a batch message
-        if (featureModel.getFeature(feature) == null && batchContext != null &&
-                ((LinkedList<String>) batchContext).contains(feature))
+        if (featureModel.getFeature(featureUUID) == null && batchContext != null &&
+                ((LinkedList<String>) batchContext).contains(featureUUID))
             return;
 
-        IFeature _feature = FeatureUtils.requireFeature(featureModel, feature);
+        IFeature _feature = FeatureUtils.requireFeature(featureModel, featureUUID);
         if (_feature.getStructure().isRoot())
             throw new InvalidOperationException("can not delete root feature and its children");
         final LinkedList<IFeature> list = new LinkedList<>();
@@ -57,7 +57,7 @@ public class FeatureRemoveBelow extends BatchOperation {
 
     public Object nextBatchContext(Object batchContext) {
         LinkedList<String> featuresToDelete = (LinkedList<String>) batchContext;
-        featuresToDelete.addAll(BridgeUtils.getFeatureNames(featureList));
+        featuresToDelete.addAll(BridgeUtils.getFeatureUUIDs(featureList));
         return featuresToDelete;
     }
 

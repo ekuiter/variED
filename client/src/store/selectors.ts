@@ -59,22 +59,22 @@ const currentGraphicalFeatureModelCollaborativeSessionKeySelector = <T>(key: str
 
 export const getGraphicalFeatureModel = createCachedSelector(
     graphicalFeatureModelCollaborativeSessionKeySelector('serializedFeatureModel'),
-    graphicalFeatureModelCollaborativeSessionKeySelector('collapsedFeatureNames'),
-    (serializedFeatureModel?: SerializedFeatureModel, collapsedFeatureNames?: string[]): GraphicalFeatureModel | undefined => {
+    graphicalFeatureModelCollaborativeSessionKeySelector('collapsedFeatureUUIDs'),
+    (serializedFeatureModel?: SerializedFeatureModel, collapsedFeatureUUIDs?: string[]): GraphicalFeatureModel | undefined => {
         logger.infoTagged({tag: 'redux'}, () => 'updating feature model selector');
-        if (!serializedFeatureModel || !collapsedFeatureNames)
+        if (!serializedFeatureModel || !collapsedFeatureUUIDs)
             return undefined;
-        return GraphicalFeatureModel.fromJSON(serializedFeatureModel).collapse(collapsedFeatureNames);
+        return GraphicalFeatureModel.fromJSON(serializedFeatureModel).collapse(collapsedFeatureUUIDs);
     }
 )((_state: State, artifactPath: ArtifactPath) => artifactPathToString(artifactPath));
 
 export const getCurrentGraphicalFeatureModel = createSelector(
     currentGraphicalFeatureModelCollaborativeSessionKeySelector('serializedFeatureModel'),
-    currentGraphicalFeatureModelCollaborativeSessionKeySelector('collapsedFeatureNames'),
-    (serializedFeatureModel?: SerializedFeatureModel, collapsedFeatureNames?: string[]): GraphicalFeatureModel | undefined => {
+    currentGraphicalFeatureModelCollaborativeSessionKeySelector('collapsedFeatureUUIDs'),
+    (serializedFeatureModel?: SerializedFeatureModel, collapsedFeatureUUIDs?: string[]): GraphicalFeatureModel | undefined => {
         logger.infoTagged({tag: 'redux'}, () => 'updating feature model selector');
-        if (!serializedFeatureModel || !collapsedFeatureNames)
+        if (!serializedFeatureModel || !collapsedFeatureUUIDs)
             return undefined;
-        return GraphicalFeatureModel.fromJSON(serializedFeatureModel).collapse(collapsedFeatureNames);
+        return GraphicalFeatureModel.fromJSON(serializedFeatureModel).collapse(collapsedFeatureUUIDs);
     }
 );

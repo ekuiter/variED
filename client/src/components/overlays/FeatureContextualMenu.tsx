@@ -16,7 +16,7 @@ type Props = FeatureComponentProps & {
     isOpen: boolean,
     isSelectMultipleFeatures: boolean,
     featureDiagramLayout: FeatureDiagramLayoutType,
-    selectedFeatureNames: string[],
+    selectedFeatureUUIDs: string[],
     onShowOverlay: OnShowOverlayFunction,
     onCollapseFeatures: OnCollapseFeaturesFunction,
     onCollapseFeaturesBelow: OnCollapseFeaturesBelowFunction,
@@ -38,12 +38,14 @@ type Props = FeatureComponentProps & {
 export default class extends FeatureComponent({doUpdate: true})<Props> {
     renderIfFeature(feature: GraphicalFeature) {
         const {
-                onDismiss, onDeselectAllFeatures, isSelectMultipleFeatures, selectedFeatureNames, graphicalFeatureModel
+                onDismiss, onDeselectAllFeatures, isSelectMultipleFeatures, selectedFeatureUUIDs, graphicalFeatureModel
             } = this.props,
             {gapSpace} = this.props.settings.featureDiagram.overlay;
+        if (!graphicalFeatureModel.hasElement(feature.uuid))
+            return null;
         return (
             <ContextualMenu
-                target={graphicalFeatureModel!.getElement(feature.name)!.querySelector('.rectAndText')}
+                target={graphicalFeatureModel!.getElement(feature.uuid)!.querySelector('.rectAndText')}
                 onDismiss={onDismiss}
                 hidden={!this.props.isOpen}
                 isBeakVisible={!isSelectMultipleFeatures}
@@ -53,26 +55,26 @@ export default class extends FeatureComponent({doUpdate: true})<Props> {
                         ? DirectionalHint.bottomCenter
                         : DirectionalHint.rightCenter}
                 items={isSelectMultipleFeatures
-                    ? commands.featureDiagram.feature.selectionItems(selectedFeatureNames, onDeselectAllFeatures,
+                    ? commands.featureDiagram.feature.selectionItems(selectedFeatureUUIDs, onDeselectAllFeatures,
                         this.props.onCollapseFeatures, this.props.onExpandFeatures, this.props.onCollapseFeaturesBelow,
                         this.props.onExpandFeaturesBelow, this.props.onAddFeatureAbove, this.props.onRemoveFeatures,
                         this.props.onRemoveFeaturesBelow, this.props.onSetFeatureAbstract, this.props.onSetFeatureHidden,
                         this.props.onSetFeatureMandatory, this.props.onSetFeatureAnd, this.props.onSetFeatureOr,
                         this.props.onSetFeatureAlternative, graphicalFeatureModel!)
                     : [
-                        commands.featureDiagram.feature.newMenu(feature.name, this.props.onAddFeatureBelow, this.props.onAddFeatureAbove, onDismiss),
+                        commands.featureDiagram.feature.newMenu(feature.uuid, this.props.onAddFeatureBelow, this.props.onAddFeatureAbove, onDismiss),
                         commands.featureDiagram.feature.removeMenu([feature], this.props.onRemoveFeatures, this.props.onRemoveFeaturesBelow, onDismiss),
                         commands.featureDiagram.feature.collapseMenu(
                             [feature], this.props.onCollapseFeatures, this.props.onExpandFeatures,
                             this.props.onCollapseFeaturesBelow, this.props.onExpandFeaturesBelow, onDismiss),
                         makeDivider(),
-                        commands.featureDiagram.feature.rename(feature.name, this.props.onShowOverlay),
-                        commands.featureDiagram.feature.setDescription(feature.name, this.props.onShowOverlay),
+                        commands.featureDiagram.feature.rename(feature.uuid, this.props.onShowOverlay),
+                        commands.featureDiagram.feature.setDescription(feature.uuid, this.props.onShowOverlay),
                         commands.featureDiagram.feature.properties([feature], this.props.onSetFeatureAbstract,
                             this.props.onSetFeatureHidden, this.props.onSetFeatureMandatory, this.props.onSetFeatureAnd,
                             this.props.onSetFeatureOr, this.props.onSetFeatureAlternative, onDismiss),
                         makeDivider(),
-                        commands.featureDiagram.feature.details(feature.name, this.props.onShowOverlay)
+                        commands.featureDiagram.feature.details(feature.uuid, this.props.onShowOverlay)
                     ]
                 }/>
         );

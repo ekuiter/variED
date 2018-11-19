@@ -3,6 +3,7 @@
   "homepage": "/",
   "private": true,
   "dependencies": {
+    "@types/uuid": "^3.4.4",
     "blob-polyfill": "^3.0.20180112",
     "blueimp-canvas-to-blob": "^3.14.0",
     "canvg": "^1.5.3",
@@ -30,7 +31,8 @@
     "reselect": "^4.0.0",
     "sockette": "^2.0.3",
     "svg2pdf.js": "1.2.1",
-    "typesafe-actions": "^2.0.4"
+    "typesafe-actions": "^2.0.4",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "@types/d3-hierarchy": "^1.1.4",

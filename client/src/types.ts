@@ -42,7 +42,7 @@ export enum OverlayType {
 };
 
 export interface OverlayProps {
-    featureName?: string,
+    featureUUID?: string,
     format?: FormatType
 };
 

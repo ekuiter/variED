@@ -17,7 +17,7 @@ describe('FeatureRenameDialog', () => {
                 isOpen={true}
                 onDismiss={mock}
                 graphicalFeatureModel={GraphicalFeatureModel.fromJSON(validFeatureModel)}
-                featureName="FeatureIDE"
+                featureUUID="FeatureIDE"
                 settings={defaultSettings}
                 onRenameFeature={onRenameFeature}/>
         );
@@ -31,7 +31,7 @@ describe('FeatureRenameDialog', () => {
     it('triggers a rename if a new name is entered', () => {
         const wrapper = shallow(featureRenameDialog);
         wrapper.find(TextFieldDialog).simulate('submit', 'new feature name');
-        expect(onRenameFeature).lastCalledWith({oldFeatureName: 'FeatureIDE', newFeatureName: 'new feature name'});
+        expect(onRenameFeature).lastCalledWith({featureUUID: 'FeatureIDE', name: 'new feature name'});
     });
 
     it('does nothing if the new name is the same as the old name', () => {
