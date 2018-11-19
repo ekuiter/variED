@@ -12,6 +12,7 @@ describe('FeatureContextualMenu', () => {
     const featureContextualMenu = (selectedFeatureUUIDs: string[] = []) => {
         const graphicalFeatureModel = GraphicalFeatureModel.fromJSON(validFeatureModel),
             mock = jest.fn();
+        graphicalFeatureModel.hasElement = jest.fn().mockReturnValue(true);
         graphicalFeatureModel.getElement = jest.fn().mockReturnValue({
             querySelector: () => '<target element>'
         });
