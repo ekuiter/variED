@@ -83,6 +83,10 @@ export async function sendBatchMessage(messages: Message[], artifactPath?: Artif
         return;
     if (messages.length === 1)
         await sendMessage(messages[0], artifactPath, delay);
-    else
+    else {
+        // TODO: re-enable batch messages
+        alert('batch messages are currently not available');
+        return;
         await sendMessage({type: MessageType.BATCH, messages}, artifactPath, delay);
+    }
 }
