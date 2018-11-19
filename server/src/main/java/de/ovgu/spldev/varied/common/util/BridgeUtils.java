@@ -4,7 +4,9 @@ import de.ovgu.featureide.fm.core.base.IFeature;
 import de.ovgu.featureide.fm.core.base.IFeatureModel;
 import de.ovgu.featureide.fm.core.base.IFeatureStructure;
 import de.ovgu.featureide.fm.core.base.impl.FMFactoryManager;
+import de.ovgu.spldev.varied.common.operations.Operation;
 import jsweet.util.Lang;
+import org.pmw.tinylog.Logger;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -33,7 +35,7 @@ public class BridgeUtils {
         Iterator<T> iterator;
         try {
             // JavaScript implementation of a descending iterator
-            iterator = Lang.$insert("(a => {let i = a.length - 1; return {next: () => i >= 0 ? a[i--] : null, hasNext: () => i >= 0};})(list)");
+            iterator = Lang.$insert("(() => {let i = list.length - 1; return {next: () => i >= 0 ? list[i--] : null, hasNext: () => i >= 0};})()");
         } catch (UnsatisfiedLinkError e) {
             iterator = list.descendingIterator();
         }
@@ -81,5 +83,21 @@ public class BridgeUtils {
     // Objects.equals
     public static boolean equals(Object a, Object b) {
         return (a == b) || (a != null && a.equals(b));
+    }
+
+    public static void log(String message) {
+        try {
+            Lang.$insert("(() => {if (!window.app.logger) console.warn('logger not accessible from BridgeUtils'); else window.app.logger.infoTagged({tag: 'bridge'}, () => message);})()");
+        } catch (UnsatisfiedLinkError e) {
+            Logger.debug(message);
+        }
+    }
+
+    public static String toString(Operation operation) {
+        try {
+            return Lang.$insert("operation.constructor.name");
+        } catch (UnsatisfiedLinkError e) {
+            return operation.toString();
+        }
     }
 }

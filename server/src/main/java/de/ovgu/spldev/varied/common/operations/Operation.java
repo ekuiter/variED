@@ -1,9 +1,12 @@
 package de.ovgu.spldev.varied.common.operations;
 
+import de.ovgu.spldev.varied.common.util.BridgeUtils;
+
 public abstract class Operation {
     private boolean applyWasSuccessful = true, undoWasSuccessful = true;
 
     public final void apply() throws InvalidOperationException {
+        BridgeUtils.log("applying operation " + BridgeUtils.toString(this));
         if (undoWasSuccessful) { // parentheses REQUIRED due to https://github.com/cincheo/jsweet/issues/501
             _apply();
         } else
@@ -11,6 +14,7 @@ public abstract class Operation {
     }
 
     public final void undo() throws InvalidOperationException {
+        BridgeUtils.log("undoing operation " + BridgeUtils.toString(this));
         if (applyWasSuccessful) {
             try {
                 _undo();

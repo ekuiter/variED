@@ -15,7 +15,7 @@ import {Provider} from 'react-redux';
 import reducer, {Store} from './store/reducer';
 import {initializeIcons} from 'office-ui-fabric-react/lib/Icons';
 import actions from './store/actions';
-import {LogLevel, setLogLevel} from './helpers/logger';
+import logger, {LogLevel, setLogLevel} from './helpers/logger';
 import {tryOperation, operations} from './modeling/operations';
 
 if (window.location.protocol !== 'http:')
@@ -26,8 +26,17 @@ initializeIcons('/assets/');
 const composeEnhancers = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store: Store = createStore(reducer, composeEnhancers(applyMiddleware(thunk)));
 
+// for debugging purposes
 declare var window: any;
-window.app = {setLogLevel, LogLevel, actions, store, operations, tryOperation}; // for debugging purposes
+window.app = {
+    logger, // accessed by BridgeUtils
+    setLogLevel,
+    LogLevel, // parameter for setLogLevel
+    actions, // can be dispatched with the store
+    store, // used by message delay simulation and tryOperation
+    operations, // parameter for tryOperation
+    tryOperation
+};
 
 ReactDOM.render((
     <Provider store={store}>

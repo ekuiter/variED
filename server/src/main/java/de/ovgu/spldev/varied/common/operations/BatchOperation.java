@@ -10,6 +10,7 @@ public abstract class BatchOperation extends Operation {
     private Iterator<Operation> operationIterator;
 
     public void addOperation(Operation operation) {
+        BridgeUtils.log("adding batch operation " + BridgeUtils.toString(operation));
         operations.add(operation);
     }
 
@@ -54,7 +55,8 @@ public abstract class BatchOperation extends Operation {
                 t = _t;
             }
             if (operation == null || !operation.applyWasSuccessful()) {
-                boolean found = operation == null; // if building the operations, undo all operations
+                BridgeUtils.log("an operation could not be applied, undoing all previously applied operations");
+                boolean found = operation == null;
                 for (final Iterator<Operation> it = BridgeUtils.descendingIterator(operations); it.hasNext(); ) {
                     Operation _operation = it.next();
                     if (found)
@@ -86,6 +88,7 @@ public abstract class BatchOperation extends Operation {
                 t = _t;
             }
             if (!operation.undoWasSuccessful()) {
+                BridgeUtils.log("an operation could not be undone, redoing all previously undone operations");
                 boolean found = false;
                 for (Operation _operation : operations) {
                     if (found)
