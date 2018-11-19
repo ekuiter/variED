@@ -82,13 +82,13 @@ public class Api {
             super(TypeEnum.UNDO, artifactPath);
         }
 
-        public boolean isValid(StateContext stateContext) {
+        public boolean isValid(StateContext stateContext) throws InvalidMessageException {
             if (!stateContext.getOperationStack().canUndo())
-                throw new RuntimeException("can not undo");
+                throw new InvalidMessageException("can not undo");
             return true;
         }
 
-        public IEncodable[] apply(StateContext stateContext) {
+        public IEncodable[] apply(StateContext stateContext) throws Operation.InvalidOperationException {
             stateContext.getOperationStack().undo();
             return FeatureModelUtils.toMessage((StateContext.FeatureModel) stateContext);
         }
@@ -99,13 +99,13 @@ public class Api {
             super(TypeEnum.REDO, artifactPath);
         }
 
-        public boolean isValid(StateContext stateContext) {
+        public boolean isValid(StateContext stateContext) throws InvalidMessageException {
             if (!stateContext.getOperationStack().canRedo())
-                throw new RuntimeException("can not redo");
+                throw new InvalidMessageException("can not redo");
             return true;
         }
 
-        public IEncodable[] apply(StateContext stateContext) {
+        public IEncodable[] apply(StateContext stateContext) throws Operation.InvalidOperationException {
             stateContext.getOperationStack().redo();
             return FeatureModelUtils.toMessage((StateContext.FeatureModel) stateContext);
         }
@@ -126,7 +126,7 @@ public class Api {
             LinkedList<IBatchUndoable> messages = new LinkedList<>();
             for (Message message : this.messages) {
                 if (!(message instanceof IBatchUndoable))
-                    throw new RuntimeException("expected batch undoable message, got type " +
+                    throw new InvalidMessageException("expected batch undoable message, got type " +
                             message.getClass().getName());
                 messages.add((IBatchUndoable) message);
             }
@@ -135,11 +135,11 @@ public class Api {
 
         public boolean isValid(StateContext stateContext) {
             if (messages == null || messages.length == 0)
-                throw new RuntimeException("no messages given");
+                throw new InvalidMessageException("no messages given");
             Class messageClass = messages[0].getClass();
             for (Message message : messages)
                 if (message.getClass() != messageClass)
-                    throw new RuntimeException("expected type " +
+                    throw new InvalidMessageException("expected type " +
                             messageClass.getName() + ", got type " + message.getClass().getName());
 
             boolean valid = true;
@@ -166,8 +166,8 @@ public class Api {
             this.messages = messages;
         }
 
-        public boolean isValid(StateContext stateContext) {
-            throw new RuntimeException("batch messages currently not available");
+        public boolean isValid(StateContext stateContext) throws InvalidMessageException {
+            throw new InvalidMessageException("batch messages currently not available");
         }
 
         public Operation getOperation(StateContext stateContext) {
@@ -194,7 +194,7 @@ public class Api {
             this.belowFeature = belowFeature;
         }
 
-        public Operation getOperation(StateContext stateContext) {
+        public Operation getOperation(StateContext stateContext) throws Operation.InvalidOperationException {
             return new FeatureAddBelow(((StateContext.FeatureModel) stateContext).getFeatureModel(), belowFeature);
         }
 
@@ -212,7 +212,7 @@ public class Api {
             this.aboveFeatures = aboveFeatures;
         }
 
-        public Operation getOperation(StateContext stateContext) {
+        public Operation getOperation(StateContext stateContext) throws Operation.InvalidOperationException {
             return new FeatureAddAbove(((StateContext.FeatureModel) stateContext).getFeatureModel(), aboveFeatures);
         }
 
@@ -230,7 +230,7 @@ public class Api {
             this.feature = feature;
         }
 
-        public Operation getOperation(StateContext stateContext) {
+        public Operation getOperation(StateContext stateContext) throws Operation.InvalidOperationException {
             return new FeatureRemove(((StateContext.FeatureModel) stateContext).getFeatureModel(), feature);
         }
 
@@ -248,11 +248,11 @@ public class Api {
             this.feature = feature;
         }
 
-        public Operation getOperation(StateContext stateContext) {
+        public Operation getOperation(StateContext stateContext) throws Operation.InvalidOperationException {
             return getOperation(stateContext, null);
         }
 
-        public Operation getOperation(StateContext stateContext, Object batchContext) {
+        public Operation getOperation(StateContext stateContext, Object batchContext) throws Operation.InvalidOperationException {
             return new FeatureRemoveBelow(((StateContext.FeatureModel) stateContext).getFeatureModel(), feature, batchContext);
         }
 
@@ -279,7 +279,7 @@ public class Api {
             this.newFeature = newFeature;
         }
 
-        public Operation getOperation(StateContext stateContext) {
+        public Operation getOperation(StateContext stateContext) throws Operation.InvalidOperationException {
             return new FeatureRename(((StateContext.FeatureModel) stateContext).getFeatureModel(), oldFeature, newFeature);
         }
 
@@ -304,7 +304,7 @@ public class Api {
             this.description = description;
         }
 
-        public Operation getOperation(StateContext stateContext) {
+        public Operation getOperation(StateContext stateContext) throws Operation.InvalidOperationException {
             return new FeatureSetDescription(((StateContext.FeatureModel) stateContext).getFeatureModel(), feature, description);
         }
 
@@ -324,11 +324,11 @@ public class Api {
             this.value = value;
         }
 
-        public Operation getOperation(StateContext stateContext) {
+        public Operation getOperation(StateContext stateContext) throws Operation.InvalidOperationException {
             return getOperation(stateContext, null);
         }
 
-        public Operation getOperation(StateContext stateContext, Object batchContext) {
+        public Operation getOperation(StateContext stateContext, Object batchContext) throws Operation.InvalidOperationException {
             return new FeatureSetProperty(((StateContext.FeatureModel) stateContext).getFeatureModel(), feature, property, value, batchContext);
         }
 

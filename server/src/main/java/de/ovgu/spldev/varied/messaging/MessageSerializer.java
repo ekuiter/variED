@@ -4,7 +4,6 @@ import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.typeadapters.RuntimeTypeAdapterFactory;
 import de.ovgu.featureide.fm.core.base.IFeatureModel;
-import de.ovgu.spldev.varied.Artifact;
 
 import javax.websocket.Decoder;
 import javax.websocket.Encoder;
@@ -77,7 +76,11 @@ public class MessageSerializer {
         }
 
         public Message.Type deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-            return new Message.Type(json.getAsJsonPrimitive().getAsString());
+            try {
+                return new Message.Type(json.getAsJsonPrimitive().getAsString());
+            } catch (Message.InvalidMessageException e) {
+                throw new JsonParseException(e);
+            }
         }
     }
 }

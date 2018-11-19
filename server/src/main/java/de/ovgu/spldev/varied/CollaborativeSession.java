@@ -65,11 +65,11 @@ public class CollaborativeSession {
             broadcast(message);
     }
 
-    public void onMessage(Message message) {
+    public void onMessage(Message message) throws Operation.InvalidOperationException, Message.InvalidMessageException {
         Logger.info("decoding message {}", message);
         Message.IDecodable decodableMessage = (Message.IDecodable) message;
         if (!decodableMessage.isValid(stateContext))
-            throw new RuntimeException("invalid message " + message);
+            throw new Message.InvalidMessageException("invalid message " + message);
         Message.IEncodable[] response = null;
         if (message instanceof Message.IApplicable) {
             Logger.info("processing applicable message {}", message);
@@ -85,7 +85,7 @@ public class CollaborativeSession {
                 response = undoableMessage.getResponse(stateContext);
             }
         } else
-            throw new RuntimeException("message can not be processed");
+            throw new Message.InvalidMessageException("message can not be processed");
         if (response != null) {
             Logger.info("broadcasting {} response message(s)", response.length);
             broadcast(response);

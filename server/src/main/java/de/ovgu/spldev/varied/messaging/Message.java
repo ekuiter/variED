@@ -20,11 +20,11 @@ abstract public class Message {
             this.typeEnum = typeEnum;
         }
 
-        public Type(String s) {
+        public Type(String s) throws InvalidMessageException {
             try {
                 this.typeEnum = Api.TypeEnum.valueOf(s);
             } catch (IllegalArgumentException e) {
-                throw new RuntimeException("invalid message type " + s);
+                throw new InvalidMessageException("invalid message type " + s);
             }
         }
 
@@ -88,19 +88,19 @@ abstract public class Message {
 
     // may be received by the server
     public interface IDecodable {
-        default boolean isValid(StateContext stateContext) {
+        default boolean isValid(StateContext stateContext) throws InvalidMessageException {
             return true;
         }
     }
 
     // may be received and applied (but not undone)
     public interface IApplicable extends IDecodable {
-        Message.IEncodable[] apply(StateContext stateContext);
+        Message.IEncodable[] apply(StateContext stateContext) throws Operation.InvalidOperationException;
     }
 
     // may be received, applied, undone and redone
     public interface IUndoable extends IDecodable {
-        Operation getOperation(StateContext stateContext);
+        Operation getOperation(StateContext stateContext) throws Operation.InvalidOperationException;
 
         default Message.IEncodable[] getResponse(StateContext stateContext) {
             return new Message.IEncodable[]{};
@@ -110,7 +110,7 @@ abstract public class Message {
     // may be received, applied, undone and redone as a single message,
     // but also as part of a batch message
     public interface IBatchUndoable extends IUndoable {
-        default Operation getOperation(StateContext stateContext, Object batchContext) {
+        default Operation getOperation(StateContext stateContext, Object batchContext) throws Operation.InvalidOperationException {
             return getOperation(stateContext);
         }
 
@@ -120,6 +120,12 @@ abstract public class Message {
 
         default Object nextBatchContext(Operation operation, Object batchContext) {
             return null;
+        }
+    }
+
+    public static class InvalidMessageException extends Exception {
+        public InvalidMessageException(String message) {
+            super(message);
         }
     }
 }

@@ -1,6 +1,7 @@
 package de.ovgu.spldev.varied;
 
 import com.google.gson.annotations.Expose;
+import de.ovgu.spldev.varied.common.operations.Operation;
 import de.ovgu.spldev.varied.messaging.Api;
 import de.ovgu.spldev.varied.messaging.Message;
 import me.atrox.haikunator.Haikunator;
@@ -62,12 +63,12 @@ public class User {
         return getName();
     }
 
-    public void onMessage(Message message) {
+    public void onMessage(Message message) throws Message.InvalidMessageException, Operation.InvalidOperationException {
         Objects.requireNonNull(message, "no message given");
         Logger.info("received message {} from user {}", message, this);
 
         if (message.getArtifactPath() == null)
-            throw new RuntimeException("no artifact path given");
+            throw new Message.InvalidMessageException("no artifact path given");
 
         // This essentially forces the server to handle only one message at a time.
         // This assumption simplifies multithreaded access to feature models, but limits server performance.
@@ -76,7 +77,7 @@ public class User {
             try {
                 Artifact artifact = ProjectManager.getInstance().getArtifact(message.getArtifactPath());
                 if (artifact == null)
-                    throw new RuntimeException("no artifact found for path " + message.getArtifactPath());
+                    throw new Message.InvalidMessageException("no artifact found for path " + message.getArtifactPath());
                 CollaborativeSession collaborativeSession = artifact.getCollaborativeSession();
                 Logger.debug("message concerns collaborative session {}", collaborativeSession);
 
@@ -98,7 +99,7 @@ public class User {
             }
         }
 
-        throw new RuntimeException("did not join collaborative session for given artifact path");
+        throw new Message.InvalidMessageException("did not join collaborative session for given artifact path");
     }
 
     public void joinCollaborativeSession(CollaborativeSession collaborativeSession) {

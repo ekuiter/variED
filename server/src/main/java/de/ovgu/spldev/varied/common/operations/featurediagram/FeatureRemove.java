@@ -19,11 +19,11 @@ public class FeatureRemove extends Operation {
     private boolean or = false;
     private boolean alternative = false;
 
-    public FeatureRemove(IFeatureModel featureModel, String feature) {
+    public FeatureRemove(IFeatureModel featureModel, String feature) throws InvalidOperationException {
         this.featureModel = featureModel;
         this.feature = FeatureUtils.requireFeature(featureModel, feature);
         if (this.feature.getStructure().isRoot() && this.feature.getStructure().getChildren().size() != 1)
-            throw new RuntimeException("can only delete root feature when it has exactly one child");
+            throw new InvalidOperationException("can only delete root feature when it has exactly one child");
     }
 
     protected void _apply() {

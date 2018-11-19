@@ -3,34 +3,36 @@ package de.ovgu.spldev.varied.common.util;
 import de.ovgu.featureide.fm.core.base.IFeature;
 import de.ovgu.featureide.fm.core.base.IFeatureModel;
 import de.ovgu.featureide.fm.core.base.IFeatureStructure;
+import de.ovgu.spldev.varied.common.operations.Operation;
 
 import java.util.LinkedList;
 
 public class FeatureUtils {
-    public static IFeature requireFeature(IFeatureModel featureModel, String feature) {
+    public static IFeature requireFeature(IFeatureModel featureModel, String feature) throws Operation.InvalidOperationException {
         if (!StringUtils.isPresent(feature))
-            throw new RuntimeException("no feature given");
+            throw new IllegalArgumentException("no feature given");
         IFeature _feature = featureModel.getFeature(feature);
         if (_feature == null)
-            throw new RuntimeException("invalid feature \"" + feature + "\"");
+            throw new Operation.InvalidOperationException("invalid feature \"" + feature + "\"");
         return _feature;
     }
 
-    public static LinkedList<IFeature> requireFeatures(IFeatureModel featureModel, String[] features) {
+    public static LinkedList<IFeature> requireFeatures(IFeatureModel featureModel, String[] features) throws Operation.InvalidOperationException {
         LinkedList<IFeature> _features = new LinkedList<>();
         for (String feature : features)
             _features.add(FeatureUtils.requireFeature(featureModel, feature));
         return _features;
     }
 
-    public static boolean requireSiblings(IFeatureModel featureModel, String[] features) {
+    public static LinkedList<IFeature> requireSiblingFeatures(IFeatureModel featureModel, String[] features) throws Operation.InvalidOperationException {
         if (features.length == 0)
-            return true;
-        IFeatureStructure parent = featureModel.getFeature(features[0]).getStructure().getParent();
-        for (String feature : features)
-            if (featureModel.getFeature(feature).getStructure().getParent() != parent)
-                throw new RuntimeException("the given features are not adjacent");
-        return true;
+            return new LinkedList<>();
+        LinkedList<IFeature> _features = requireFeatures(featureModel, features);
+        IFeatureStructure parent = _features.get(0).getStructure().getParent();
+        for (IFeature feature : _features)
+            if (feature.getStructure().getParent() != parent)
+                throw new Operation.InvalidOperationException("the given features are not adjacent");
+        return _features;
     }
 
     public static void sortSiblingFeatures(LinkedList<IFeature> features) {

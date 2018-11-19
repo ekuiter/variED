@@ -14,7 +14,7 @@ public class FeatureAddBelow extends Operation {
     private IFeature feature;
     private IFeature newFeature;
 
-    public FeatureAddBelow(IFeatureModel featureModel, String belowFeature) {
+    public FeatureAddBelow(IFeatureModel featureModel, String belowFeature) throws InvalidOperationException {
         this.featureModel = featureModel;
         this.feature = FeatureUtils.requireFeature(featureModel, belowFeature);
     }

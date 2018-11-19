@@ -11,12 +11,12 @@ public class FeatureSetDescription extends Operation {
     private IFeature feature;
     private String oldDescription, description;
 
-    public FeatureSetDescription(IFeatureModel featureModel, String feature, String description) {
+    public FeatureSetDescription(IFeatureModel featureModel, String feature, String description) throws InvalidOperationException {
         this.feature = FeatureUtils.requireFeature(featureModel, feature);
         this.oldDescription = this.feature.getProperty().getDescription();
         this.description = description;
         if (!StringUtils.isPresent(description) && !BridgeUtils.equals(description, ""))
-            throw new RuntimeException("no description given");
+            throw new IllegalArgumentException("no description given");
     }
 
     protected void _apply() {

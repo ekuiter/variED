@@ -7,7 +7,7 @@ import org.pmw.tinylog.Logger;
 public class OperationStack {
     private UndoRedoStack<Operation> operationUndoRedoStack = new UndoRedoStack<>();
 
-    public void apply(Operation operation) {
+    public void apply(Operation operation) throws Operation.InvalidOperationException {
         operation.apply();
         operationUndoRedoStack.push(operation);
     }
@@ -20,7 +20,7 @@ public class OperationStack {
         return operationUndoRedoStack.canRedo();
     }
 
-    public void undo() {
+    public void undo() throws Operation.InvalidOperationException {
         if (!operationUndoRedoStack.canUndo())
             throw new RuntimeException("can not undo");
         Operation operation = operationUndoRedoStack.peekUndoneValue();
@@ -29,7 +29,7 @@ public class OperationStack {
         operationUndoRedoStack.undo();
     }
 
-    public void redo() {
+    public void redo() throws Operation.InvalidOperationException {
         if (!operationUndoRedoStack.canRedo())
             throw new RuntimeException("can not redo");
         Operation operation = operationUndoRedoStack.peekRedoneValue();

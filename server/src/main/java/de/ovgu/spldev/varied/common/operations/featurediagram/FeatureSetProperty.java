@@ -15,20 +15,20 @@ public class FeatureSetProperty extends Operation {
     private String property, oldValue, value;
     private LinkedList<IFeatureStructure> oldMandatoryChildren;
 
-    public FeatureSetProperty(IFeatureModel featureModel, String feature, String property, String value, Object batchContext) {
+    public FeatureSetProperty(IFeatureModel featureModel, String feature, String property, String value, Object batchContext) throws InvalidOperationException {
         if (batchContext != null && !BridgeUtils.equals(property, batchContext))
-            throw new RuntimeException("can not set different properties in one batch message");
+            throw new IllegalArgumentException("can not set different properties in one batch message");
 
         this.feature = FeatureUtils.requireFeature(featureModel, feature);
         this.property = property;
         this.value = value;
         if (!StringUtils.isOneOf(property, new String[]{"abstract", "hidden", "mandatory", "group"}))
-            throw new RuntimeException("invalid property given");
+            throw new IllegalArgumentException("invalid property given");
         if (property.equals("group")) {
             if (!StringUtils.isOneOf(value, new String[]{"and", "or", "alternative"}))
-                throw new RuntimeException("invalid value given");
+                throw new IllegalArgumentException("invalid value given");
         } else if (!StringUtils.isOneOf(value, new String[]{"true", "false"}))
-            throw new RuntimeException("invalid value given");
+            throw new IllegalArgumentException("invalid value given");
     }
 
     private void setMandatoryChildrenToOptional() {
@@ -44,7 +44,7 @@ public class FeatureSetProperty extends Operation {
         oldMandatoryChildren.forEach(child -> child.setMandatory(true));
     }
 
-    protected void _apply() {
+    protected void _apply() throws InvalidOperationException {
         oldMandatoryChildren = new LinkedList<>();
         switch (property) {
             case "abstract":
@@ -59,11 +59,11 @@ public class FeatureSetProperty extends Operation {
                 oldValue = feature.getStructure().isMandatory() ? "true" : "false";
 
                 if (feature.getStructure().isRoot() && value.equals("false"))
-                    throw new RuntimeException("can not set the root feature as optional");
+                    throw new InvalidOperationException("can not set the root feature as optional");
 
                 IFeatureStructure parent = feature.getStructure().getParent();
                 if (parent != null && (parent.isOr() || parent.isAlternative()) && value.equals("true"))
-                    throw new RuntimeException("can not set a child of a or/alternative group as mandatory");
+                    throw new InvalidOperationException("can not set a child of a or/alternative group as mandatory");
 
                 feature.getStructure().setMandatory(value.equals("true"));
                 break;

@@ -23,12 +23,11 @@ public class FeatureAddAbove extends Operation {
     private boolean parentOr = false;
     private boolean parentAlternative = false;
 
-    public FeatureAddAbove(IFeatureModel featureModel, String[] aboveFeatures) {
+    public FeatureAddAbove(IFeatureModel featureModel, String[] aboveFeatures) throws InvalidOperationException {
         if (aboveFeatures == null || aboveFeatures.length == 0)
-            throw new RuntimeException("no features given");
+            throw new IllegalArgumentException("no features given");
         this.featureModel = featureModel;
-        this.selectedFeatures = FeatureUtils.requireFeatures(featureModel, aboveFeatures);
-        FeatureUtils.requireSiblings(featureModel, aboveFeatures);
+        this.selectedFeatures = FeatureUtils.requireSiblingFeatures(featureModel, aboveFeatures);
         FeatureUtils.sortSiblingFeatures(this.selectedFeatures);
         child = selectedFeatures.get(0);
         int number = 0;

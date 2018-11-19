@@ -1,5 +1,6 @@
 package de.ovgu.spldev.varied;
 
+import de.ovgu.spldev.varied.common.operations.Operation;
 import de.ovgu.spldev.varied.common.util.StringUtils;
 import de.ovgu.spldev.varied.messaging.Message;
 import org.pmw.tinylog.Logger;
@@ -57,7 +58,7 @@ public class UserManager {
             unregister(user);
     }
 
-    void onMessage(WebSocket webSocket, Message message) {
+    void onMessage(WebSocket webSocket, Message message) throws Operation.InvalidOperationException, Message.InvalidMessageException {
         // TODO: handle login/logout here
         User user = users.get(webSocket);
         if (user != null)

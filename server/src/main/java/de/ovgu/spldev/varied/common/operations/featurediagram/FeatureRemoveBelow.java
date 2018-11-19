@@ -18,7 +18,7 @@ public class FeatureRemoveBelow extends BatchOperation {
     private LinkedList<IFeature> orList = new LinkedList<>();
     private LinkedList<IFeature> alternativeList = new LinkedList<>();
 
-    public FeatureRemoveBelow(IFeatureModel featureModel, String feature, Object batchContext) {
+    public FeatureRemoveBelow(IFeatureModel featureModel, String feature, Object batchContext) throws InvalidOperationException {
         this.featureModel = featureModel;
 
         // do nothing if the feature has already been removed by another operation in a batch message
@@ -28,7 +28,7 @@ public class FeatureRemoveBelow extends BatchOperation {
 
         IFeature _feature = FeatureUtils.requireFeature(featureModel, feature);
         if (_feature.getStructure().isRoot())
-            throw new RuntimeException("can not delete root feature and its children");
+            throw new InvalidOperationException("can not delete root feature and its children");
         final LinkedList<IFeature> list = new LinkedList<>();
         list.add(_feature);
         getFeaturesToDelete(list);
@@ -46,7 +46,7 @@ public class FeatureRemoveBelow extends BatchOperation {
             }
         } else {
             final String containedFeatures = containedFeatureList.toString();
-            throw new RuntimeException("can not delete following features which are contained in constraints: " +
+            throw new InvalidOperationException("can not delete following features which are contained in constraints: " +
                     containedFeatures.substring(1, containedFeatures.length() - 1));
         }
     }
@@ -73,7 +73,7 @@ public class FeatureRemoveBelow extends BatchOperation {
         }
     }
 
-    protected void _undo() {
+    protected void _undo() throws InvalidOperationException {
         super._undo();
         // Set the right group types for the features
         for (final IFeature ifeature : andList) {

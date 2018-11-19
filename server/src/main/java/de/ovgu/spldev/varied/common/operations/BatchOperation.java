@@ -43,7 +43,7 @@ public abstract class BatchOperation extends Operation {
     }
 
     // if applying one operation fails, undo all applied operations to guarantee atomicity
-    protected void _apply() {
+    protected void _apply() throws InvalidOperationException {
         while (hasNextOperation()) {
             Operation operation = null;
             Throwable t = null;
@@ -61,22 +61,22 @@ public abstract class BatchOperation extends Operation {
                         try {
                             _operation.undo();
                         } catch (Throwable _t) {
-                            throw new RuntimeException("error while undoing an invalid operation");
+                            throw new InvalidOperationException("error while undoing an invalid operation");
                         }
                     if (_operation == operation)
                         found = true;
                 }
                 if (t == null)
-                    throw new RuntimeException("unknown error while applying operation");
+                    throw new InvalidOperationException("unknown error while applying operation");
                 else
-                    throw new RuntimeException(t);
+                    throw new InvalidOperationException(t);
             }
         }
         operationIterator = operations.iterator();
     }
 
     // if undoing one operation fails, redo all undone operations to guarantee atomicity
-    protected void _undo() {
+    protected void _undo() throws InvalidOperationException {
         for (final Iterator<Operation> it = BridgeUtils.descendingIterator(operations); it.hasNext(); ) {
             Operation operation = it.next();
             Throwable t = null;
@@ -92,15 +92,15 @@ public abstract class BatchOperation extends Operation {
                         try {
                             _operation.apply();
                         } catch (Throwable _t) {
-                            throw new RuntimeException("error while redoing an invalid operation");
+                            throw new InvalidOperationException("error while redoing an invalid operation");
                         }
                     if (_operation == operation)
                         found = true;
                 }
                 if (t == null)
-                    throw new RuntimeException("unknown error while undoing operation");
+                    throw new InvalidOperationException("unknown error while undoing operation");
                 else
-                    throw new RuntimeException(t);
+                    throw new InvalidOperationException(t);
             }
         }
     }
