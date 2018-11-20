@@ -13,7 +13,7 @@ import {Settings} from '../store/settings';
 import {FeatureDiagramLayoutType} from '../types';
 import {present} from '../helpers/present';
 import logger from '../helpers/logger';
-import {GraphicalFeatureNode, GraphicalFeature, FeatureType, SerializedFeatureModel, UUID, DESCRIPTION, TYPE, ABSTRACT, HIDDEN, MANDATORY, STRUCT, NAME, SerializedFeatureNode, SerializedConstraint, CONSTRAINTS} from './types';
+import {GraphicalFeatureNode, GraphicalFeature, FeatureType, SerializedFeatureModel, UUID, DESCRIPTION, TYPE, ABSTRACT, HIDDEN, MANDATORY, STRUCT, NAME, SerializedFeatureNode, SerializedConstraint, CONSTRAINTS, SerializedConstraintNode, ConstraintType, VAR} from './types';
 import {getViewportWidth, getViewportHeight} from '../helpers/withDimensions';
 
 export function getUUID(node: GraphicalFeatureNode): string {
@@ -93,12 +93,89 @@ d3Hierarchy.prototype.feature = function(this: GraphicalFeatureNode): GraphicalF
     });
 };
 
+export class GraphicalConstraint {
+    _string: string;
+
+    constructor(public serializedConstraint: SerializedConstraint,
+        public graphicalFeatureModel: GraphicalFeatureModel) {}
+
+    get root(): SerializedConstraintNode {
+        if (this.serializedConstraint.children.length !== 1)
+            throw new Error('constraint does not have one root');
+        return this.serializedConstraint.children[0];
+    }
+
+    _toString(): string {
+        const operatorMap: {[x: string]: string} = {
+            [ConstraintType.not]: '\u00AC',
+            [ConstraintType.disj]: '\u2228',
+            [ConstraintType.eq]: '\u21D4',
+            [ConstraintType.imp]: '\u21D2',
+            [ConstraintType.conj]: '\u2227',
+            [ConstraintType.atmost1]: 'atmost1 '
+        };
+
+        const orderMap: {[x: string]: number} = {
+            [ConstraintType.unknown]: -1,
+            [ConstraintType.not]: 0,
+            [ConstraintType.disj]: 4,
+            [ConstraintType.eq]: 2,
+            [ConstraintType.imp]: 3,
+            [ConstraintType.conj]: 5,
+            [ConstraintType.atmost1]: 1
+        };
+
+        // adapted from FeatureIDE fm.core's org/prop4j/NodeWriter.java
+        const literalToString = (node: SerializedConstraintNode): string => {
+                const feature = this.graphicalFeatureModel.getFeature(node[VAR]!);
+                return feature ? feature.name : node[VAR]!;
+            },
+            nodeToString = (node: SerializedConstraintNode, parentType: ConstraintType): string => {
+            if (node[TYPE] === ConstraintType.var)
+                return literalToString(node);
+
+            if (node[TYPE] === ConstraintType.not) {
+                const child = node.children![0];
+                if (child[TYPE] === ConstraintType.var)
+                    return operatorMap[ConstraintType.not] + literalToString(child);
+                if (child[TYPE] === ConstraintType.not)
+                    return nodeToString(child.children![0], parentType);
+            }
+
+            const children = node.children!,
+                operands = children.map(child => nodeToString(child, node[TYPE])),
+                operator = operatorMap[node[TYPE]];
+
+            if (node[TYPE] === ConstraintType.conj || node[TYPE] === ConstraintType.disj ||
+                node[TYPE] === ConstraintType.imp || node[TYPE] === ConstraintType.eq) {
+                const s = operands.join(` ${operator} `),
+                    orderParent = orderMap[parentType],
+                    orderChild = orderMap[node[TYPE]];
+                return orderParent > orderChild ||
+                    (orderParent === orderChild && orderParent === orderMap[ConstraintType.imp]) ? `(${s})` : s;
+            } else
+                return `${operator}(${operands.join(', ')})`;
+        }
+
+        return this._string = nodeToString(this.root, ConstraintType.unknown);
+    }
+
+    toString(): string {
+        return this._string || this._toString();
+    }
+
+    getKey(): string {
+        return Math.random().toString(); // TODO: return stringify(this.serializedConstraint);
+    }
+}
+
 class GraphicalFeatureModel {
     serializedFeatureModel: SerializedFeatureModel;
     collapsedFeatureUUIDs: string[] = [];
     _hierarchy: GraphicalFeatureNode;
     _actualNodes: GraphicalFeatureNode[];
-     _visibleNodes: GraphicalFeatureNode[];
+    _visibleNodes: GraphicalFeatureNode[];
+    _constraints: GraphicalConstraint[];
 
     // feature model as supplied by feature model messages from the server
     static fromJSON(serializedFeatureModel: SerializedFeatureModel): GraphicalFeatureModel {
@@ -129,6 +206,8 @@ class GraphicalFeatureModel {
             this._hierarchy = d3Hierarchy(this.structure) as GraphicalFeatureNode;
             this._actualNodes = this._hierarchy.descendants();
             this._visibleNodes = [];
+            this._constraints = this.serializedFeatureModel[CONSTRAINTS].map(
+                serializedConstraint => new GraphicalConstraint(serializedConstraint, this));
 
             const isVisible: (node: GraphicalFeatureNode) => boolean = memoize(node => {
                 if (isRoot(node))
@@ -166,11 +245,13 @@ class GraphicalFeatureModel {
         return this._actualNodes;
     }
 
-    get constraints(): SerializedConstraint[] {
-        return this.serializedFeatureModel[CONSTRAINTS];
+    get constraints(): GraphicalConstraint[] {
+        this.prepare();
+        return this._constraints;
     }
 
     getNode(featureUUID: string): GraphicalFeatureNode | undefined {
+        // TODO: use a map instead?
         return this.actualNodes.find(node => getUUID(node) === featureUUID);
     }
 
@@ -282,9 +363,9 @@ class GraphicalFeatureModel {
                 return collapsedFeatureUUIDs;
             }
     
-            const collapsibleNodeNames = collapsibleNodes.map(getUUID);
-            logger.info(() => `collapsing ${JSON.stringify(collapsibleNodeNames)}`);
-            collapsedFeatureUUIDs = collapsedFeatureUUIDs.concat(collapsibleNodeNames);
+            const collapsibleNodeUUIDs = collapsibleNodes.map(getUUID);
+            logger.info(() => `collapsing ${JSON.stringify(collapsibleNodeUUIDs)}`);
+            collapsedFeatureUUIDs = collapsedFeatureUUIDs.concat(collapsibleNodeUUIDs);
             const invisibleNodes = collapsibleNodes
                 .map(node => getNodesBelow(node).slice(1))
                 .reduce((acc, children) => acc.concat(children), []);

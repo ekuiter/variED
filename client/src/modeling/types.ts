@@ -25,7 +25,7 @@ export enum FeatureType {
     unknown = 'unknown'
 };
 
-enum ConstraintType {
+export enum ConstraintType {
     var = 'var',
     not = 'not',
     disj = 'disj',
@@ -47,7 +47,7 @@ export interface SerializedFeatureNode {
     children?: SerializedFeatureNode[]
 };
 
-interface SerializedConstraintNode {
+export interface SerializedConstraintNode {
     [TYPE]: ConstraintType,
     [VAR]?: string,
     children?: SerializedConstraintNode[]
