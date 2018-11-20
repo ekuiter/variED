@@ -1,10 +1,9 @@
 import React from 'react';
 import GraphicalFeatureModel from '../../modeling/GraphicalFeatureModel';
 import stringify from 'json-stable-stringify';
-import {StateDerivedProps} from '../../store/types';
 
-export function showConstraintView(props: StateDerivedProps) {
-    return props.graphicalFeatureModel && props.graphicalFeatureModel.constraints.length > 0;
+export function enableConstraintView(graphicalFeatureModel?: GraphicalFeatureModel): boolean {
+    return graphicalFeatureModel ? graphicalFeatureModel.constraints.length > 0 : false;
 }
 
 interface Props {
