@@ -8,7 +8,7 @@ import VerticalTreeLayout from './treeLayout/VerticalTreeLayout';
 import HorizontalTreeLayout from './treeLayout/HorizontalTreeLayout';
 import stringify from 'json-stable-stringify';
 import {cloneSettings, traverseSettings, Settings} from '../../store/settings';
-import {FeatureDiagramLayoutType} from '../../types';
+import {FeatureDiagramLayoutType, ArtifactPath} from '../../types';
 
 const layoutMap = {
     [FeatureDiagramLayoutType.verticalTree]: VerticalTreeLayout,
@@ -18,6 +18,7 @@ const layoutMap = {
 interface Props {
     featureDiagramLayout: FeatureDiagramLayoutType,
     settings: Settings,
+    currentArtifactPath: ArtifactPath,
     [x: string]: any
 };
 
@@ -36,6 +37,8 @@ export default class extends React.Component<Props> {
         // add debug flag to key (as it is managed outside of the featureDiagram settings,
         // but should also trigger a rerender)
         (clonedFeatureDiagramSettings as any).debug = settings.developer.debug;
+        // also, we completely rerender the feature diagram when switching feature models
+        (clonedFeatureDiagramSettings as any).currentArtifactPath = this.props.currentArtifactPath;        
         return stringify(clonedFeatureDiagramSettings);
     }
 

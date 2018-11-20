@@ -24,6 +24,7 @@ export default connect(
             return props;
         return {
             ...props,
+            currentArtifactPath: collaborativeSession.artifactPath,
             featureDiagramLayout: collaborativeSession.layout,
             isSelectMultipleFeatures: collaborativeSession.isSelectMultipleFeatures,
             selectedFeatureUUIDs: collaborativeSession.selectedFeatureUUIDs,
@@ -43,5 +44,8 @@ export default connect(
     })
 )((props: StateDerivedProps & {className?: string}) =>
     props.graphicalFeatureModel // TODO: distinguish between "not editing a feature model" and "editing a feature model which is being loaded"
-        ? <FeatureDiagram featureDiagramLayout={props.featureDiagramLayout!} settings={props.settings!} {...props}/>
+        ? <FeatureDiagram
+            featureDiagramLayout={props.featureDiagramLayout!}
+            currentArtifactPath={props.currentArtifactPath!}
+            settings={props.settings!} {...props}/>
         : i18n.getFunction('noCollaborativeSessions')(() => props.onShowOverlay!({overlay: OverlayType.commandPalette, overlayProps: {}})));

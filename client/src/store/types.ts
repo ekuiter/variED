@@ -93,6 +93,7 @@ export type OnToggleFeatureGroupFunction = (payload: {feature: GraphicalFeature}
 // This enforces the convention that a prop called 'on...' has the same type in all components.
 export type StateDerivedProps = Partial<{
     handleMessage: (message: Message) => void,
+    currentArtifactPath: ArtifactPath,
     artifactPaths: ArtifactPath[],
     collaborativeSessions: CollaborativeSession[],
     user: User,
