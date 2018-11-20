@@ -24,6 +24,9 @@ public class FeatureRemove extends Operation {
         this.feature = FeatureUtils.requireFeature(featureModel, featureUUID);
         if (this.feature.getStructure().isRoot() && this.feature.getStructure().getChildren().size() != 1)
             throw new InvalidOperationException("can only delete root feature when it has exactly one child");
+        this.feature.getStructure().setRelevantConstraints();
+        if (this.feature.getStructure().getRelevantConstraints().size() > 0)
+            throw new InvalidOperationException("can not delete feature because it is contained in constraints");
     }
 
     protected void _apply() {
@@ -56,15 +59,6 @@ public class FeatureRemove extends Operation {
         } else {
             deleted = featureModel.deleteFeature(feature);
         }
-
-        // Replace feature name in constraints
-        /*if (replacement != null) {
-            for (final IConstraint c : featureModel.getConstraints()) {
-                if (c.getContainedFeatures().contains(feature)) {
-                    c.getNode().replaceFeature(feature, replacement);
-                }
-            }
-        }*/
 
         // make sure after delete the group type of the parent is set to and if there is only one child left
         if (oldParent != null) {
@@ -103,15 +97,6 @@ public class FeatureRemove extends Operation {
             featureModel.getStructure().setRoot(feature.getStructure());
         }
         featureModel.addFeature(feature);
-
-        // Replace feature name in Constraints
-        /*if (replacement != null) {
-            for (final IConstraint c : featureModel.getConstraints()) {
-                if (c.getContainedFeatures().contains(replacement)) {
-                    c.getNode().replaceFeature(replacement, feature);
-                }
-            }
-        }*/
 
         // When deleting a child and leaving one child behind the group type will be changed to and. reverse to old group type
         if ((oldParent != null) && or) {

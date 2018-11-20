@@ -45,9 +45,7 @@ public class FeatureRemoveBelow extends BatchOperation {
                 addOperation(new FeatureRemove(featureModel, feat.getName()));
             }
         } else {
-            final String containedFeatures = containedFeatureList.toString();
-            throw new InvalidOperationException("can not delete following features which are contained in constraints: " +
-                    containedFeatures.substring(1, containedFeatures.length() - 1));
+            throw new InvalidOperationException("can not delete features because some are contained in constraints");
         }
     }
 
@@ -63,9 +61,10 @@ public class FeatureRemoveBelow extends BatchOperation {
 
     private void getFeaturesToDelete(List<IFeature> linkedList) {
         for (final IFeature feat : linkedList) {
-            /*if (!feat.getStructure().getRelevantConstraints().isEmpty()) {
+            feat.getStructure().setRelevantConstraints();
+            if (!feat.getStructure().getRelevantConstraints().isEmpty()) {
                 containedFeatureList.add(feat);
-            }*/
+            }
             if (feat.getStructure().hasChildren()) {
                 getFeaturesToDelete(BridgeUtils.convertToFeatureList(feat.getStructure().getChildren()));
             }

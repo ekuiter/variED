@@ -8,7 +8,7 @@
  * is not feasible though, and this approach is very lightweight.)
  */
 
-import {FeatureType, SerializedFeatureModel, STRUCT, SerializedFeatureNode, TYPE, NAME, DESCRIPTION, ABSTRACT, MANDATORY, HIDDEN, UUID} from './types';
+import {FeatureType, SerializedFeatureModel, STRUCT, SerializedFeatureNode, TYPE, NAME, DESCRIPTION, ABSTRACT, MANDATORY, HIDDEN, UUID, SerializedConstraint, SerializedConstraintNode, ConstraintType, VAR, CONSTRAINTS} from './types';
 import {FeatureUtils} from '../common/util/FeatureUtils';
 
 class IFeatureStructure {
@@ -20,6 +20,7 @@ class IFeatureStructure {
     mandatory: boolean = false;
     hidden: boolean = false;
     concrete: boolean = true;
+    partOfConstraints: IConstraint[] = [];
 
     addChild(newChild: IFeatureStructure): void {
         this.children.push(newChild);
@@ -78,7 +79,9 @@ class IFeatureStructure {
         return this.parent;
     }
     
-    // Collection<IConstraint> getRelevantConstraints();
+    getRelevantConstraints(): IConstraint[] {
+        return this.partOfConstraints;
+    }
 
     hasChildren(): boolean {
         return this.getChildrenCount() > 0;
@@ -193,7 +196,11 @@ class IFeatureStructure {
 		this.parent = newParent;
     }
     
-    // void setRelevantConstraints();
+    setRelevantConstraints(): void {
+        this.partOfConstraints = this.correspondingFeature.getFeatureModel().getConstraints()
+            .filter(constraint => constraint.getContainedFeatures().includes(this.correspondingFeature));
+    }
+
 	// void setRelevantConstraints(List<IConstraint> constraints);
 }
 
@@ -255,6 +262,7 @@ class IPropertyContainer {
 
 class IFeature {
     name: string;
+    featureModel: IFeatureModel;
     featureStructure: IFeatureStructure;
     property: IFeatureProperty;
     propertyContainer: IPropertyContainer;
@@ -265,7 +273,6 @@ class IFeature {
         return this.property;
     }
 
-    // IPropertyContainer getCustomProperties();
     getCustomProperties(): IPropertyContainer {
         return this.propertyContainer;
     }
@@ -275,17 +282,69 @@ class IFeature {
     }
 
     // String createTooltip(Object... objects);
-    // IFeatureModel getFeatureModel();
+
+    getFeatureModel(): IFeatureModel {
+        return this.featureModel;
+    }
+
 	// long getInternalId();
 
     getName(): string {
         return this.name;
     }
 
-    // void setName(String name);
     setName(name: string): void {
         this.name = name;
     }
+}
+
+class IConstraint {
+    serializedConstraint: SerializedConstraint;
+    containedFeatureList: IFeature[] = [];
+    featureModel: IFeatureModel;
+
+    static getContainedFeatureNames(node: SerializedConstraintNode): string[] {
+        if (node[TYPE] === ConstraintType.var)
+            return [node[VAR]!];
+        return node.children!.reduce((acc: string[], child) => acc.concat(this.getContainedFeatureNames(child)), []);
+    };
+
+	// IConstraint clone(IFeatureModel newFeatureModel);
+	// ConstraintAttribute getConstraintAttribute();
+
+    getContainedFeatures(): IFeature[] {
+        if (this.containedFeatureList.length === 0) {
+            this.setContainedFeatures();
+        }
+        return this.containedFeatureList;
+    }
+
+	// Collection<IFeature> getDeadFeatures();
+	// Collection<IFeature> getDeadFeatures(SatSolver solver, IFeatureModel featureModel, Collection<IFeature> exlcudeFeatuers);
+	// Collection<IFeature> getFalseOptional();
+	// Node getNode();
+	// void setNode(Node node);
+	// boolean hasHiddenFeatures();
+	// void setConstraintAttribute(ConstraintAttribute attribute, boolean notifyListeners);
+    // void setContainedFeatures();
+
+    setContainedFeatures(): void {
+        this.containedFeatureList.length = 0;
+        IConstraint.getContainedFeatureNames(this.serializedConstraint.children[0]).forEach(featureName => {
+            this.containedFeatureList.push(this.featureModel.getFeature(featureName)!);
+        });
+    }
+
+	// void setDeadFeatures(Iterable<IFeature> deadFeatures);
+	// boolean setFalseOptionalFeatures(IFeatureModel featureModel, Collection<IFeature> collection);
+	// String getDisplayName();
+	// void setFalseOptionalFeatures(Iterable<IFeature> foFeatures);
+	// void setDescription(String description);
+    // String getDescription();
+    // IFeatureModel getFeatureModel();
+	// long getInternalId();
+	// String getName();
+	// void setName(String name);
 }
 
 class IFeatureModelStructure {
@@ -336,6 +395,7 @@ class IFeatureModel {
     serializedFeatureModel: SerializedFeatureModel;
     featureTable: {[x: string]: IFeature} = {};
     structure: IFeatureModelStructure;
+    constraints: IConstraint[] = [];
 
     // used by BridgeUtils
     createFeature(name: string): IFeature {
@@ -344,6 +404,7 @@ class IFeatureModel {
             property = new IFeatureProperty(),
             propertyContainer = new IPropertyContainer();
         feature.name = name;
+        feature.featureModel = this;
         feature.featureStructure = featureStructure;
         feature.property = property;
         feature.propertyContainer = propertyContainer;
@@ -407,7 +468,10 @@ class IFeatureModel {
     // FeatureModelAnalyzer getAnalyser();
     // int getConstraintCount();
     // int getConstraintIndex(IConstraint constraint);
-    // List<IConstraint> getConstraints();
+
+    getConstraints(): IConstraint[] {
+        return this.constraints;
+    }
 
     getFeature(name: string): IFeature | null {
         return this.featureTable[name] || null;
@@ -466,6 +530,13 @@ class MutableFeatureModel extends IFeatureModel {
         mutableFeatureModel.serializedFeatureModel = serializedFeatureModel;
         featureModelStructure.correspondingFeatureModel = mutableFeatureModel;
     
+        mutableFeatureModel.constraints = serializedFeatureModel[CONSTRAINTS].map(serializedConstraint => {
+            const constraint = new IConstraint();
+            constraint.serializedConstraint = serializedConstraint;
+            constraint.featureModel = mutableFeatureModel;
+            return constraint;
+        });
+
         function parseFeatures(nodes: SerializedFeatureNode[], parent: IFeature | null): void {
             nodes.forEach(node => {
                 const type = node[TYPE],
