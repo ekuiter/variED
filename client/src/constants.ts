@@ -12,6 +12,11 @@ const constants = {
             maxCollapsibleNodes: (nodes: any[]) => nodes.length > 100 ? nodes.length / 10 : 1
         }
     },
+    constraint: {
+        featureStyle: {
+            color: '#050'
+        }
+    },
     views: {
         splitMiddle: 0.6
     },

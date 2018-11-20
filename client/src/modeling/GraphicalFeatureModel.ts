@@ -93,11 +93,12 @@ d3Hierarchy.prototype.feature = function(this: GraphicalFeatureNode): GraphicalF
     });
 };
 
-type ConstraintRenderer<T> = (graphicalFeatureModel: GraphicalFeatureModel, root: SerializedConstraintNode) => T;
+type ConstraintRenderer<T> = ((graphicalFeatureModel: GraphicalFeatureModel, root: SerializedConstraintNode) => T) & {cacheKey: string};
 
 // adapted from FeatureIDE fm.core's org/prop4j/NodeWriter.java
-export function createConstraintRenderer<T>({neutral, _return, returnFeature, join}:
-    {neutral: T, _return: (s: string) => T, returnFeature: (s: string) => T, join: (ts: T[], t: T) => T}): ConstraintRenderer<T> {
+export function createConstraintRenderer<T>({neutral, _return, returnFeature, join, cacheKey}:
+    {neutral: T, _return: (s: string) => T, returnFeature: (s: string, idx: number) => T,
+        join: (ts: T[], t: T) => T, cacheKey: string}): ConstraintRenderer<T> {
     const operatorMap: {[x: string]: string} = {
         [ConstraintType.not]: '\u00AC',
         [ConstraintType.disj]: '\u2228',
@@ -117,9 +118,11 @@ export function createConstraintRenderer<T>({neutral, _return, returnFeature, jo
         [ConstraintType.atmost1]: 1
     };
 
+    let i = 0;
+
     const renderLiteral = (graphicalFeatureModel: GraphicalFeatureModel, node: SerializedConstraintNode): T => {
             const feature = graphicalFeatureModel.getFeature(node[VAR]!);
-            return returnFeature(feature ? feature.name : node[VAR]!);
+            return returnFeature(feature ? feature.name : node[VAR]!, i++);
         },
         renderNode = (graphicalFeatureModel: GraphicalFeatureModel, node: SerializedConstraintNode, parentType: ConstraintType): T => {
         if (node[TYPE] === ConstraintType.var)
@@ -150,21 +153,28 @@ export function createConstraintRenderer<T>({neutral, _return, returnFeature, jo
             return join([_return(operator), _return('('), join(operands, _return(', ')), _return(')')], neutral);
     }
 
-    return (graphicalFeatureModel, root) => renderNode(graphicalFeatureModel, root, ConstraintType.unknown);
+    const constraintRenderer = (graphicalFeatureModel: GraphicalFeatureModel, root: SerializedConstraintNode) => {
+        i = 0;
+        return renderNode(graphicalFeatureModel, root, ConstraintType.unknown);
+    };
+    constraintRenderer.cacheKey = cacheKey;
+    return constraintRenderer;
 }
 
 const stringConstraintRenderer = createConstraintRenderer({
     neutral: '',
     _return: s => s,
     returnFeature: s => s,
-    join: (ts, t) => ts.join(t)
+    join: (ts, t) => ts.join(t),
+    cacheKey: 'string'
 });
 
 export class GraphicalConstraint {
-    _string: string;
+    _renderCache: {[x: string]: any} = {};
     _element: JSX.Element;
 
     constructor(public serializedConstraint: SerializedConstraint,
+        public index: number,
         public graphicalFeatureModel: GraphicalFeatureModel) {}
 
     get root(): SerializedConstraintNode {
@@ -174,15 +184,16 @@ export class GraphicalConstraint {
     }
 
     render<T>(constraintRenderer: ConstraintRenderer<T>): T {
-        return constraintRenderer(this.graphicalFeatureModel, this.root);
+        return this._renderCache[constraintRenderer.cacheKey] ||
+            (this._renderCache[constraintRenderer.cacheKey] = constraintRenderer(this.graphicalFeatureModel, this.root));
     }
 
     toString(): string {
-        return this._string || (this._string = this.render(stringConstraintRenderer));
+        return this.render(stringConstraintRenderer);
     }
 
     getKey(): string {
-        return Math.random().toString(); // TODO: return stringify(this.serializedConstraint);
+        return this.index.toString();
     }
 }
 
@@ -224,7 +235,7 @@ class GraphicalFeatureModel {
             this._actualNodes = this._hierarchy.descendants();
             this._visibleNodes = [];
             this._constraints = this.serializedFeatureModel[CONSTRAINTS].map(
-                serializedConstraint => new GraphicalConstraint(serializedConstraint, this));
+                (serializedConstraint, idx) => new GraphicalConstraint(serializedConstraint, idx, this));
 
             const isVisible: (node: GraphicalFeatureNode) => boolean = memoize(node => {
                 if (isRoot(node))

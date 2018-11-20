@@ -159,3 +159,7 @@ textarea {
     border-radius: 10px;
     font-size: 1.2em;
 }
+
+.constraint {
+    line-height: 21px;
+}

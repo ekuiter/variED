@@ -1,5 +1,7 @@
 import React from 'react';
-import GraphicalFeatureModel from '../../modeling/GraphicalFeatureModel';
+import GraphicalFeatureModel, {GraphicalConstraint} from '../../modeling/GraphicalFeatureModel';
+import {DetailsList, IColumn, SelectionMode} from 'office-ui-fabric-react/lib/DetailsList';
+import i18n from 'src/i18n';
 import Constraint from './Constraint';
 
 export function enableConstraintView(graphicalFeatureModel?: GraphicalFeatureModel): boolean {
@@ -10,18 +12,25 @@ interface Props {
     graphicalFeatureModel: GraphicalFeatureModel
 };
 
-const concatTimes = <T extends {}>(a: T[], t = 5): T[] => t == 0 ? a : concatTimes(a.concat(a), t - 1); // TODO
-
 export default class extends React.Component<Props> {
     render(): JSX.Element {
+        const columns: IColumn[] = [{
+            key: 'constraint',
+            name: i18n.t('constraint.constraint'),
+            minWidth: 0,
+            isRowHeader: true,
+            onRender: (constraint: GraphicalConstraint) => (
+                <Constraint key={constraint.getKey()} constraint={constraint}/>
+            )
+        }];
+
         return (
-            <div>
-                <ul>
-                    {concatTimes(this.props.graphicalFeatureModel.constraints).map(constraint => (
-                        <Constraint key={constraint.getKey()} constraint={constraint}/>
-                    ))}
-                </ul>
-            </div>
+            <DetailsList
+                items={this.props.graphicalFeatureModel.constraints}
+                columns={columns}
+                compact={true}
+                selectionMode={SelectionMode.none}
+                isHeaderVisible={false}/>
         );
     }
 }

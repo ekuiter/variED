@@ -138,6 +138,9 @@ const translationMap = {
             delay: 'Developer: Simulate message delay'
         }
     },
+    constraint: {
+        constraint: 'Constraint'
+    },
     overlays: {
         palette: {
             notFound: 'Nothing found.',
