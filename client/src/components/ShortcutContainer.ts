@@ -75,7 +75,11 @@ export default connect(
         'featureDiagram.feature.remove',
         (props: StateDerivedProps) => ifFeatureModel(props) && (props.isSelectMultipleFeatures || ifFloatingFeature(props)),
         async ({props}: {props: StateDerivedProps}) => {
-            const {disabled, action} = removeCommand(props.graphicalFeatureModel!.getFeatures(props.selectedFeatureUUIDs!), props.onRemoveFeatures!);
+            const {disabled, action} = removeCommand(
+                props.graphicalFeatureModel!.getFeatures(
+                    props.isSelectMultipleFeatures
+                    ? props.selectedFeatureUUIDs!
+                    : [props.overlayProps!.featureUUID!]), props.onRemoveFeatures!);
             if (!disabled) {
                 await action();
                 props.onHideOverlay!({overlay: props.overlay!});

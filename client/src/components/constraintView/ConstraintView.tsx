@@ -1,7 +1,7 @@
 import React from 'react';
 import GraphicalFeatureModel, {GraphicalConstraint} from '../../modeling/GraphicalFeatureModel';
 import {DetailsList, IColumn, SelectionMode} from 'office-ui-fabric-react/lib/DetailsList';
-import i18n from 'src/i18n';
+import i18n from '../../i18n';
 import Constraint from './Constraint';
 
 export function enableConstraintView(graphicalFeatureModel?: GraphicalFeatureModel): boolean {
