@@ -83,7 +83,7 @@ export const defaultSettings: Settings = {
         delay: 0
     },
     views: {
-        splitDirection: 'horizontal',
+        splitDirection: 'vertical',
         splitAt: 1
     },
     featureDiagram: {

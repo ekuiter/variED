@@ -16,8 +16,9 @@ import ConstraintViewContainer from './constraintView/ConstraintViewContainer';
 import logger from '../helpers/logger';
 import {getCurrentCollaborativeSession, isFeatureDiagramCollaborativeSession, getCurrentGraphicalFeatureModel} from '../store/selectors';
 import {showConstraintView} from './constraintView/ConstraintView';
-import withDimensions from 'src/helpers/withDimensions';
-import {wait} from 'src/helpers/wait';
+import withDimensions from '../helpers/withDimensions';
+import {wait} from '../helpers/wait';
+import constants from '../constants';
 
 interface Props {
     width: number,
@@ -59,8 +60,8 @@ class AppContainer extends React.Component<StateDerivedProps & Props> {
                     if (!wasSwitched)
                         this.props.onSetSetting!({
                             path: 'views.splitAt',
-                            value: this.props.settings!.views.splitAt === 1 ? 0.5 :
-                                this.props.settings!.views.splitAt === 0.5 ? 0 : 1
+                            value: this.props.settings!.views.splitAt === 1 ? constants.views.splitMiddle :
+                                this.props.settings!.views.splitAt === constants.views.splitMiddle ? 0 : 1
                         });
                 });
             wasDragged = isDragging = wasSwitched = false;

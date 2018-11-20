@@ -36,11 +36,11 @@ describe('FeatureCallout', () => {
         );
     };
 
-    beforeEach(() => {
+    beforeAll(() => {
         GraphicalFeatureModel.getSvg = jest.fn(() => ({
             getBoundingClientRect: () => ({x: 0, y: 0, width: 1000, height: 1000})
         }));
-    })
+    });
 
     it('renders information for a feature with a description', () => {
         const wrapper = featureCallout();

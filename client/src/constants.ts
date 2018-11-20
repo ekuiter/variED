@@ -11,6 +11,9 @@ const constants = {
             maxCollapsibleNodes: (nodes: any[]) => nodes.length > 100 ? nodes.length / 10 : 1
         }
     },
+    views: {
+        splitMiddle: 0.6
+    },
     overlays: {
         aboutPanel: {
             githubUri: 'https://github.com/ekuiter/variED',

@@ -26,6 +26,7 @@
 .ms-Fabric.fabricRoot .content > * {
     flex: 1 1 auto;
     box-sizing: border-box;
+    overflow: scroll;
 }
 
 .ms-Fabric.fabricRoot .content > .handler {

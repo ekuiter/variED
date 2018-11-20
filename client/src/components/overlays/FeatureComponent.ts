@@ -13,6 +13,17 @@ export interface FeatureComponentProps {
     settings: Settings
 };
 
+function contains(a: DOMRect, b: DOMRect): boolean {
+    return b.x >= a.x && b.x + b.width <= a.x + a.width &&
+        b.y >= a.y && b.y + b.height <= a.y + a.height;
+}
+
+export function isFeatureOffscreen(element: Element) {
+    const svgRect = GraphicalFeatureModel.getSvg().getBoundingClientRect() as DOMRect,
+            elementRect = element.getBoundingClientRect() as DOMRect;
+    return !contains(svgRect, elementRect);
+}
+
 export default ({doUpdate = false} = {}) =>
     class <Props extends FeatureComponentProps> extends React.Component<Props> {
         interval: number;

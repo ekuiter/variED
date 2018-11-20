@@ -7,7 +7,7 @@ import {DirectionalHint} from 'office-ui-fabric-react/lib/Callout';
 import {ContextualMenu} from 'office-ui-fabric-react/lib/ContextualMenu';
 import commands, {makeDivider} from '../commands';
 import {FeatureDiagramLayoutType} from '../../types';
-import FeatureComponent, {FeatureComponentProps} from './FeatureComponent';
+import FeatureComponent, {FeatureComponentProps, isFeatureOffscreen} from './FeatureComponent';
 import {OnShowOverlayFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnDeselectAllFeaturesFunction, OnRemoveFeaturesFunction, OnAddFeatureAboveFunction, OnAddFeatureBelowFunction, OnRemoveFeaturesBelowFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureMandatoryFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction} from '../../store/types';
 import {GraphicalFeature} from '../../modeling/types';
 
@@ -43,11 +43,12 @@ export default class extends FeatureComponent({doUpdate: true})<Props> {
             {gapSpace} = this.props.settings.featureDiagram.overlay;
         if (!graphicalFeatureModel.hasElement(feature.uuid))
             return null;
+        const element = graphicalFeatureModel.getElement(feature.uuid)!;
         return (
             <ContextualMenu
-                target={graphicalFeatureModel!.getElement(feature.uuid)!.querySelector('.rectAndText')}
+                target={element.querySelector('.rectAndText')}
                 onDismiss={onDismiss}
-                hidden={!this.props.isOpen}
+                hidden={!this.props.isOpen || isFeatureOffscreen(element)}
                 isBeakVisible={!isSelectMultipleFeatures}
                 gapSpace={isSelectMultipleFeatures ? 2 * gapSpace : gapSpace}
                 directionalHint={
