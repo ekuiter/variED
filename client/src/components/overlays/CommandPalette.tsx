@@ -4,7 +4,7 @@ import {OnShowOverlayFunction, OnUndoFunction, OnRedoFunction, OnSetFeatureDiagr
 import {getShortcutText} from '../../shortcuts';
 import {OverlayType, Omit, FeatureDiagramLayoutType, FormatType, isArtifactPathEqual, ArtifactPath} from '../../types';
 import Palette, {PaletteItem, PaletteAction, getKey} from '../../helpers/Palette';
-import {canExport} from '../featureDiagram/export';
+import {canExport} from '../featureDiagramView/export';
 import GraphicalFeatureModel from '../../modeling/GraphicalFeatureModel';
 import {arrayUnique} from '../../helpers/array';
 import defer from '../../helpers/defer';

@@ -9,7 +9,7 @@ import {PrimaryButton} from 'office-ui-fabric-react/lib/Button';
 import FontComboBox from '../../helpers/FontComboBox';
 import SpinButton from '../../helpers/SpinButton';
 import {Settings} from '../../store/settings';
-import {doExport} from '../featureDiagram/export';
+import {doExport} from '../featureDiagramView/export';
 import {FeatureDiagramLayoutType} from '../../types';
 import {FormatType} from '../../types';
 import {OnSetSettingFunction} from '../../store/types';

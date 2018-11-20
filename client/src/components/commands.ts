@@ -8,7 +8,7 @@ import i18n from '../i18n';
 import {FeatureDiagramLayoutType, OverlayType, FormatType} from '../types';
 import {ContextualMenuItemType} from 'office-ui-fabric-react/lib/ContextualMenu';
 import {getShortcutText} from '../shortcuts';
-import {canExport} from './featureDiagram/export';
+import {canExport} from './featureDiagramView/export';
 import {OnShowOverlayFunction, OnCollapseFeaturesFunction, OnExpandFeaturesFunction, OnSetFeatureDiagramLayoutFunction, OnFitToScreenFunction, OnDeselectAllFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesBelowFunction, OnSetSelectMultipleFeaturesFunction, OnSelectAllFeaturesFunction, OnCollapseAllFeaturesFunction, OnExpandAllFeaturesFunction, OnRemoveFeaturesFunction, OnUndoFunction, OnRedoFunction, OnAddFeatureBelowFunction, OnAddFeatureAboveFunction, OnRemoveFeaturesBelowFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureMandatoryFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction} from '../store/types';
 import GraphicalFeatureModel from '../modeling/GraphicalFeatureModel';
 import {GraphicalFeature} from '../modeling/types';

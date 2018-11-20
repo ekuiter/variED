@@ -8,7 +8,7 @@
 import {hierarchy as d3Hierarchy} from 'd3-hierarchy';
 import constants from '../constants';
 import memoize from '../helpers/memoize';
-import {estimateHierarchySize} from '../components/featureDiagram/treeLayout/estimation';
+import {estimateHierarchySize} from '../components/featureDiagramView/treeLayout/estimation';
 import {Settings} from '../store/settings';
 import {FeatureDiagramLayoutType} from '../types';
 import {present} from '../helpers/present';

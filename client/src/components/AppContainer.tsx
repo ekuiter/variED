@@ -4,7 +4,7 @@
 
 import React from 'react';
 import {openWebSocket} from '../server/webSocket';
-import FeatureDiagramContainer from './featureDiagram/FeatureDiagramContainer';
+import FeatureDiagramViewContainer from './featureDiagramView/FeatureDiagramViewContainer';
 import {connect} from 'react-redux';
 import {Fabric} from 'office-ui-fabric-react/lib/Fabric';
 import OverlayContainer from './overlays/OverlayContainer';
@@ -27,7 +27,7 @@ class AppContainer extends React.Component<StateDerivedProps> {
                     <CommandBarContainer/>
                 </div>
                 <div className={'content ' + this.props.settings!.views.splitDirection}>
-                    <FeatureDiagramContainer/>
+                    <FeatureDiagramViewContainer/>
                     <ConstraintViewContainer/>
                 </div>
                 <OverlayContainer/>

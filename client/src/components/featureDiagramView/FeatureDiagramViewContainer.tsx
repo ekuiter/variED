@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import FeatureDiagram from './FeatureDiagram';
+import FeatureDiagramView from './FeatureDiagramView';
 import {connect} from 'react-redux';
 import {getCurrentCollaborativeSession, isFeatureDiagramCollaborativeSession, getCurrentGraphicalFeatureModel} from '../../store/selectors';
 import actions from '../../store/actions';
@@ -13,7 +13,7 @@ import i18n from '../../i18n';
 import {OverlayType} from '../../types';
 
 export default connect(
-    logger.mapStateToProps('FeatureDiagramContainer', (state: State): StateDerivedProps => {
+    logger.mapStateToProps('FeatureDiagramViewContainer', (state: State): StateDerivedProps => {
         const collaborativeSession = getCurrentCollaborativeSession(state),
             props: StateDerivedProps = {
                 settings: state.settings,
@@ -44,7 +44,7 @@ export default connect(
     })
 )((props: StateDerivedProps & {className?: string}) =>
     props.graphicalFeatureModel // TODO: distinguish between "not editing a feature model" and "editing a feature model which is being loaded"
-        ? <FeatureDiagram
+        ? <FeatureDiagramView
             featureDiagramLayout={props.featureDiagramLayout!}
             currentArtifactPath={props.currentArtifactPath!}
             settings={props.settings!} {...props}/>
