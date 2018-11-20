@@ -11,7 +11,9 @@ import OverlayContainer from './overlays/OverlayContainer';
 import CommandBarContainer from './CommandBarContainer';
 import ShortcutContainer from './ShortcutContainer';
 import actions from '../store/actions';
-import {StateDerivedProps} from '../store/types';
+import {StateDerivedProps, State} from '../store/types';
+import ConstraintViewContainer from './constraintView/ConstraintViewContainer';
+import logger from '../helpers/logger';
 
 class AppContainer extends React.Component<StateDerivedProps> {
     componentDidMount() {
@@ -24,7 +26,10 @@ class AppContainer extends React.Component<StateDerivedProps> {
                 <div className="header">
                     <CommandBarContainer/>
                 </div>
-                <FeatureDiagramContainer className="content"/>
+                <div className={'content ' + this.props.settings!.views.splitDirection}>
+                    <FeatureDiagramContainer/>
+                    <ConstraintViewContainer/>
+                </div>
                 <OverlayContainer/>
                 <ShortcutContainer/>
             </Fabric>
@@ -33,7 +38,9 @@ class AppContainer extends React.Component<StateDerivedProps> {
 }
 
 export default connect(
-    undefined,
+    logger.mapStateToProps('AppContainer', (state: State): StateDerivedProps => ({
+        settings: state.settings
+    })),
     (dispatch): StateDerivedProps => ({
         handleMessage: message => dispatch(actions.server.receive(message))
     })

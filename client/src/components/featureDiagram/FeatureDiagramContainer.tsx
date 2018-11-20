@@ -41,7 +41,7 @@ export default connect(
         onToggleFeatureGroup: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.toggleGroup(payload)),
         onToggleFeatureMandatory: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.toggleMandatory(payload)),
     })
-)((props: StateDerivedProps & {className: string}) =>
+)((props: StateDerivedProps & {className?: string}) =>
     props.graphicalFeatureModel // TODO: distinguish between "not editing a feature model" and "editing a feature model which is being loaded"
         ? <FeatureDiagram featureDiagramLayout={props.featureDiagramLayout!} settings={props.settings!} {...props}/>
         : i18n.getFunction('noCollaborativeSessions')(() => props.onShowOverlay!({overlay: OverlayType.commandPalette, overlayProps: {}})));

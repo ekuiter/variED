@@ -15,6 +15,7 @@ export const DESCRIPTION = 'description';
 export const MANDATORY = 'mandatory';
 export const ABSTRACT = 'abstract';
 export const HIDDEN = 'hidden';
+export const VAR = 'var';
 
 export enum FeatureType {
     feature = 'feature',
@@ -24,7 +25,18 @@ export enum FeatureType {
     unknown = 'unknown'
 };
 
-export interface SerializedFeatureModelNode {
+enum ConstraintType {
+    var = 'var',
+    not = 'not',
+    disj = 'disj',
+    eq = 'eq',
+    imp = 'imp',
+    conj = 'conj',
+    atmost1 = 'atmost1',
+    unknown = 'unknown'
+};
+
+export interface SerializedFeatureNode {
     [TYPE]: FeatureType,
     [NAME]: string,
     [UUID]: string,
@@ -32,22 +44,33 @@ export interface SerializedFeatureModelNode {
     [MANDATORY]?: boolean,
     [ABSTRACT]?: boolean,
     [DESCRIPTION]?: string,
-    children?: SerializedFeatureModelNode[]
+    children?: SerializedFeatureNode[]
+};
+
+interface SerializedConstraintNode {
+    [TYPE]: ConstraintType,
+    [VAR]?: string,
+    children?: SerializedConstraintNode[]
+};
+
+export interface SerializedConstraint {
+    [TYPE]: 'rule',
+    children: SerializedConstraintNode[]
 };
 
 export interface SerializedFeatureModel {
-    [STRUCT]: SerializedFeatureModelNode[],
+    [STRUCT]: SerializedFeatureNode[],
+    [CONSTRAINTS]: SerializedConstraint[],
     // ignored for now
-    [CONSTRAINTS]: never,
     [CALCULATIONS]: never,
     [COMMENTS]: never,
     [FEATURE_ORDER]: never
 };
 
-export type FeaturePropertyKey = string | ((node: GraphicalFeatureModelNode) => string);
+export type FeaturePropertyKey = string | ((node: GraphicalFeatureNode) => string);
 
 export interface GraphicalFeature {
-    node: GraphicalFeatureModelNode,
+    node: GraphicalFeatureNode,
     uuid: string,
     name: string,
     type: FeatureType,
@@ -67,15 +90,15 @@ export interface GraphicalFeature {
     getNumberOfFeaturesBelow: () => number
 };
 
-type Datum = SerializedFeatureModelNode; // accessible as node.data
+type Datum = SerializedFeatureNode; // accessible as node.data
 
-export type GraphicalFeatureModelNode = HierarchyPointNode<Datum> & {
-    children?: GraphicalFeatureModelNode[];
-    actualChildren?: GraphicalFeatureModelNode[];
+export type GraphicalFeatureNode = HierarchyPointNode<Datum> & {
+    children?: GraphicalFeatureNode[];
+    actualChildren?: GraphicalFeatureNode[];
     _feature: GraphicalFeature;
     feature: () => GraphicalFeature;
 }
 
-export type NodeCoordinateFunction = (node: GraphicalFeatureModelNode) => number;
-export type NodeCoordinateForAxisFunction = (node: GraphicalFeatureModelNode, axis: string) => number;
-export type NodePointFunction = (node: GraphicalFeatureModelNode) => Point;
+export type NodeCoordinateFunction = (node: GraphicalFeatureNode) => number;
+export type NodeCoordinateForAxisFunction = (node: GraphicalFeatureNode, axis: string) => number;
+export type NodePointFunction = (node: GraphicalFeatureNode) => Point;

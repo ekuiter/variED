@@ -7,7 +7,7 @@ import HorizontalTreeLink from './HorizontalTreeLink';
 import HorizontalTreeNode from './HorizontalTreeNode';
 import {estimateRectHeight, estimateXOffset, estimateYOffset} from './estimation';
 import {FeatureDiagramLayoutType} from '../../../types';
-import {GraphicalFeatureModelNode} from '../../../modeling/types';
+import {GraphicalFeatureNode} from '../../../modeling/types';
 
 export default class extends AbstractTreeLayout {
     widestTextOnLayer = {};
@@ -25,16 +25,16 @@ export default class extends AbstractTreeLayout {
         return estimateYOffset(this.props.settings, sgn, FeatureDiagramLayoutType.horizontalTree);
     }
 
-    getSeparationFn(_estimateTextWidth: (node: GraphicalFeatureModelNode) => number): (a: GraphicalFeatureModelNode, b: GraphicalFeatureModelNode) => number {
+    getSeparationFn(_estimateTextWidth: (node: GraphicalFeatureNode) => number): (a: GraphicalFeatureNode, b: GraphicalFeatureNode) => number {
         return () => estimateRectHeight(this.props.settings) +
             this.props.settings.featureDiagram.treeLayout.horizontal.marginY;
     }
 
-    createLayoutHook(nodes: GraphicalFeatureModelNode[]): void {
+    createLayoutHook(nodes: GraphicalFeatureNode[]): void {
         this.updateWidestTextOnLayer(nodes);
     }
 
-    getWidestTextOnLayer(node: GraphicalFeatureModelNode): number {
+    getWidestTextOnLayer(node: GraphicalFeatureNode): number {
         // This fixes a bug when removing many nodes at once, and the tree no longer
         // has a node of the specified depth. In that case, we just use the node's
         // estimated width to achieve a smooth transition (this only occurs on node exits).
@@ -43,7 +43,7 @@ export default class extends AbstractTreeLayout {
         return this.widestTextOnLayer[node.depth];
     }
 
-    updateWidestTextOnLayer(nodes: GraphicalFeatureModelNode[]): void {
+    updateWidestTextOnLayer(nodes: GraphicalFeatureNode[]): void {
         this.widestTextOnLayer = {};
         nodes.forEach(node => {
             const estimatedTextWidth = this.treeNode.estimateTextWidth(node);

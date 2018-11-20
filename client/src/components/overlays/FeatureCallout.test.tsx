@@ -13,7 +13,8 @@ describe('FeatureCallout', () => {
             mock = jest.fn();
         graphicalFeatureModel.hasElement = jest.fn().mockReturnValue(true);
         graphicalFeatureModel.getElement = jest.fn().mockReturnValue({
-            querySelector: () => '<target element>'
+            querySelector: () => '<target element>',
+            getBoundingClientRect: () => ({x: 10, y: 10, width: 100, height: 100})
         });
         return shallow(
             <FeatureCallout
@@ -34,6 +35,12 @@ describe('FeatureCallout', () => {
                 onRemoveFeaturesBelow={mock}/>
         );
     };
+
+    beforeEach(() => {
+        GraphicalFeatureModel.getSvg = jest.fn(() => ({
+            getBoundingClientRect: () => ({x: 0, y: 0, width: 1000, height: 1000})
+        }));
+    })
 
     it('renders information for a feature with a description', () => {
         const wrapper = featureCallout();

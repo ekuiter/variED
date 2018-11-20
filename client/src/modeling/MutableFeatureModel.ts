@@ -8,7 +8,7 @@
  * is not feasible though, and this approach is very lightweight.)
  */
 
-import {FeatureType, SerializedFeatureModel, STRUCT, SerializedFeatureModelNode, TYPE, NAME, DESCRIPTION, ABSTRACT, MANDATORY, HIDDEN, UUID} from './types';
+import {FeatureType, SerializedFeatureModel, STRUCT, SerializedFeatureNode, TYPE, NAME, DESCRIPTION, ABSTRACT, MANDATORY, HIDDEN, UUID} from './types';
 import {FeatureUtils} from '../common/util/FeatureUtils';
 
 class IFeatureStructure {
@@ -466,7 +466,7 @@ class MutableFeatureModel extends IFeatureModel {
         mutableFeatureModel.serializedFeatureModel = serializedFeatureModel;
         featureModelStructure.correspondingFeatureModel = mutableFeatureModel;
     
-        function parseFeatures(nodes: SerializedFeatureModelNode[], parent: IFeature | null): void {
+        function parseFeatures(nodes: SerializedFeatureNode[], parent: IFeature | null): void {
             nodes.forEach(node => {
                 const type = node[TYPE],
                     uuid = node[UUID],
@@ -506,7 +506,7 @@ class MutableFeatureModel extends IFeatureModel {
 
     // serializes feature model back to JSON (to allow storing in Redux)
     toJSON(): SerializedFeatureModel {
-        function writeAttributes(node: SerializedFeatureModelNode, feature: IFeature): SerializedFeatureModelNode {
+        function writeAttributes(node: SerializedFeatureNode, feature: IFeature): SerializedFeatureNode {
             if (feature.getStructure().isHidden())
                 node[HIDDEN] = true;
             if (feature.getStructure().isMandatory() &&
@@ -521,7 +521,7 @@ class MutableFeatureModel extends IFeatureModel {
             return node;
         }
 
-        function serializeFeature(feature: IFeature | null): SerializedFeatureModelNode {
+        function serializeFeature(feature: IFeature | null): SerializedFeatureNode {
             if (feature == null)
                 throw new Error('no feature given');
             const children = feature.getStructure().getChildren()

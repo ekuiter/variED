@@ -1,8 +1,3 @@
-.treeLayout {
-    width: 100%;
-    height: 100%;
-}
-
 .treeLayout .node .rectAndText {
     cursor: pointer;
 }

@@ -28,7 +28,6 @@ export interface State {
     collaborativeSessions: CollaborativeSession[],
     artifactPaths: ArtifactPath[],
     currentArtifactPath?: ArtifactPath
-    // TODO: allow split screen
 };
 
 export const initialState: State = {

@@ -12,6 +12,10 @@ export interface Settings {
         debug: boolean, // whether to show detailed logs and the estimated bounding box and node anchors for feature diagrams
         delay: number // simulate message delay when developing on localhost
     },
+    views: {
+        splitDirection: 'horizontal' | 'vertical', // at which axis to split views
+        splitAt: number, // percentage of left/top view from 0 to 1
+    },
     featureDiagram: {
         // settings paths that should NOT trigger a rerender of the feature diagram
         doNotRerenderForPaths: string[],
@@ -77,6 +81,10 @@ export const defaultSettings: Settings = {
     developer: {
         debug: false,
         delay: 0
+    },
+    views: {
+        splitDirection: 'horizontal',
+        splitAt: 0.5
     },
     featureDiagram: {
         doNotRerenderForPaths: ['treeLayout.useTransitions', 'treeLayout.transitionDuration'],

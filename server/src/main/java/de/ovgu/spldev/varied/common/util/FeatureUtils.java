@@ -7,8 +7,6 @@ import de.ovgu.featureide.fm.core.base.IPropertyContainer;
 import de.ovgu.spldev.varied.common.operations.Operation;
 
 import java.util.LinkedList;
-import java.util.Set;
-import java.util.UUID;
 
 public class FeatureUtils {
     public static String NAME_PROPERTY = "variED_name";

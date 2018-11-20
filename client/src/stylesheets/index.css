@@ -11,6 +11,31 @@
 
 .ms-Fabric.fabricRoot .content {
     flex: 1 1 auto;
+    display: flex;
+    align-items: stretch;
+}
+
+.ms-Fabric.fabricRoot .content.vertical {
+    flex-direction: column;
+}
+
+.ms-Fabric.fabricRoot .content.horizontal {
+    flex-direction: row;
+}
+
+.ms-Fabric.fabricRoot .content > * {
+    flex-basis: 0;
+    flex-grow: 1;
+    min-width: 0;
+    min-height: 0;
+}
+
+.ms-Fabric.fabricRoot .content.vertical > * + * {
+    border-top: 5px solid #f4f4f4;
+}
+
+.ms-Fabric.fabricRoot .content.horizontal > * + * {
+    border-left: 5px solid #f4f4f4;
 }
 
 .ms-Spinner {

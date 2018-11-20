@@ -10,7 +10,6 @@ import {defaultSettings, getNewSettings} from './settings';
 import {OverlayType, isMessageType, MessageType, isFloatingFeatureOverlay, OverlayProps, isArtifactPathEqual, ArtifactPath, Message} from '../types';
 import {setAdd, setRemove, SetOperationFunction, arrayReplace} from '../helpers/array';
 import {getGraphicalFeatureModel, isEditingFeatureModel, getCollaborativeSession, getCurrentGraphicalFeatureModel, getCurrentCollaborativeSession, isFeatureDiagramCollaborativeSession} from './selectors';
-import {getViewportWidth, getViewportHeight} from '../helpers/withDimensions';
 import actions, {Action, SERVER_SEND_MESSAGE} from './actions';
 import {getType, isActionOf} from 'typesafe-actions';
 import {State, initialState, CollaborativeSession, FeatureDiagramCollaborativeSession, initialFeatureDiagramCollaborativeSessionState} from './types';
@@ -84,8 +83,7 @@ function getFeatureUUIDsBelowWithActualChildren(state: State, artifactPath: Arti
 
 function fitToScreen(state: State, collaborativeSession: CollaborativeSession): string[] {
     return getGraphicalFeatureModel(state, collaborativeSession.artifactPath)!.getFittingFeatureUUIDs(
-        state.settings, (<FeatureDiagramCollaborativeSession>collaborativeSession).layout,
-        getViewportWidth(), getViewportHeight());
+        state.settings, (<FeatureDiagramCollaborativeSession>collaborativeSession).layout);
 }
 
 function serverSendReducer(state: State, action: AnyAction): State {

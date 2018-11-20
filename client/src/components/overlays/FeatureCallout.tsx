@@ -10,6 +10,7 @@ import {FeatureDiagramLayoutType} from '../../types';
 import FeatureComponent, {FeatureComponentProps} from './FeatureComponent';
 import {OnShowOverlayFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnRemoveFeaturesFunction, OnAddFeatureBelowFunction, OnAddFeatureAboveFunction, OnRemoveFeaturesBelowFunction} from '../../store/types';
 import {GraphicalFeature} from '../../modeling/types';
+import GraphicalFeatureModel from '../../modeling/GraphicalFeatureModel';
 
 type Props = FeatureComponentProps & {
     onDismiss: () => void,
@@ -26,16 +27,24 @@ type Props = FeatureComponentProps & {
     onAddFeatureAbove: OnAddFeatureAboveFunction
 };
 
+function contains(a: DOMRect, b: DOMRect): boolean {
+    return b.x >= a.x && b.x + b.width <= a.x + a.width &&
+        b.y >= a.y && b.y + b.height <= a.y + a.height;
+}
+
 export default class extends FeatureComponent({doUpdate: true})<Props> {
     renderIfFeature(feature: GraphicalFeature) {
         const {onDismiss, graphicalFeatureModel} = this.props,
             {gapSpace, width} = this.props.settings.featureDiagram.overlay;
         if (!graphicalFeatureModel.hasElement(feature.uuid))
             return null;
+        const element = graphicalFeatureModel.getElement(feature.uuid)!,
+            svgRect = GraphicalFeatureModel.getSvg().getBoundingClientRect() as DOMRect,
+            elementRect = element.getBoundingClientRect() as DOMRect;
         return (
-            <Callout target={graphicalFeatureModel!.getElement(feature.uuid)!.querySelector('.rectAndText')}
+            <Callout target={element.querySelector('.rectAndText')}
                 onDismiss={onDismiss}
-                hidden={!this.props.isOpen}
+                hidden={!this.props.isOpen || !contains(svgRect, elementRect)}
                 gapSpace={gapSpace}
                 calloutWidth={width}
                 directionalHint={

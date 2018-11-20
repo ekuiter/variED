@@ -4,14 +4,14 @@
 
 import AbstractTreeNode from './AbstractTreeNode';
 import {StyleDescriptor} from '../../../helpers/svg';
-import {GraphicalFeatureModelNode} from '../../../modeling/types';
+import {GraphicalFeatureNode} from '../../../modeling/types';
 
 export default class extends AbstractTreeNode {
-    x(node: GraphicalFeatureModelNode): number {
+    x(node: GraphicalFeatureNode): number {
         return node.x;
     }
 
-    y(node: GraphicalFeatureModelNode): number {
+    y(node: GraphicalFeatureNode): number {
         return node.y * this.settings.featureDiagram.treeLayout.vertical.layerHeight;
     }
 

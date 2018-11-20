@@ -13,30 +13,31 @@ import {Settings} from '../store/settings';
 import {FeatureDiagramLayoutType} from '../types';
 import {present} from '../helpers/present';
 import logger from '../helpers/logger';
-import {GraphicalFeatureModelNode, GraphicalFeature, FeatureType, SerializedFeatureModel, UUID, DESCRIPTION, TYPE, ABSTRACT, HIDDEN, MANDATORY, STRUCT, NAME} from './types';
+import {GraphicalFeatureNode, GraphicalFeature, FeatureType, SerializedFeatureModel, UUID, DESCRIPTION, TYPE, ABSTRACT, HIDDEN, MANDATORY, STRUCT, NAME, SerializedFeatureNode, SerializedConstraint, CONSTRAINTS} from './types';
+import {getViewportWidth, getViewportHeight} from '../helpers/withDimensions';
 
-export function getUUID(node: GraphicalFeatureModelNode): string {
+export function getUUID(node: GraphicalFeatureNode): string {
     return node.data[UUID];
 }
 
-function isRoot(node: GraphicalFeatureModelNode): boolean {
+function isRoot(node: GraphicalFeatureNode): boolean {
     return !node.parent;
 }
 
-function isCollapsed(node: GraphicalFeatureModelNode): boolean {
+function isCollapsed(node: GraphicalFeatureNode): boolean {
     return !!(!node.children && node.actualChildren);
 }
 
-function hasChildren(node: GraphicalFeatureModelNode): boolean {
+function hasChildren(node: GraphicalFeatureNode): boolean {
     return !!(node.children && node.children.length > 0);
 }
 
-function hasActualChildren(node: GraphicalFeatureModelNode): boolean {
+function hasActualChildren(node: GraphicalFeatureNode): boolean {
     return !!(node.actualChildren && node.actualChildren.length > 0);
 }
 
-function eachNodeBelow(node: GraphicalFeatureModelNode, callback: (node: GraphicalFeatureModelNode) => void): void {
-    var current, currentNode: GraphicalFeatureModelNode | undefined = node, next = [node], children, i, n;
+function eachNodeBelow(node: GraphicalFeatureNode, callback: (node: GraphicalFeatureNode) => void): void {
+    var current, currentNode: GraphicalFeatureNode | undefined = node, next = [node], children, i, n;
     do {
         current = next.reverse();
         next = [];
@@ -50,13 +51,13 @@ function eachNodeBelow(node: GraphicalFeatureModelNode, callback: (node: Graphic
     } while (next.length);
 }
 
-function getNodesBelow(node: GraphicalFeatureModelNode): GraphicalFeatureModelNode[] {
-    var nodes: GraphicalFeatureModelNode[] = [];
+function getNodesBelow(node: GraphicalFeatureNode): GraphicalFeatureNode[] {
+    var nodes: GraphicalFeatureNode[] = [];
     eachNodeBelow(node, node => nodes.push(node));
     return nodes;
 }
 
-d3Hierarchy.prototype.feature = function(this: GraphicalFeatureModelNode): GraphicalFeature {
+d3Hierarchy.prototype.feature = function(this: GraphicalFeatureNode): GraphicalFeature {
     return this._feature || (this._feature = {
         node: this,
         uuid: getUUID(this),
@@ -95,9 +96,9 @@ d3Hierarchy.prototype.feature = function(this: GraphicalFeatureModelNode): Graph
 class GraphicalFeatureModel {
     serializedFeatureModel: SerializedFeatureModel;
     collapsedFeatureUUIDs: string[] = [];
-    _hierarchy: GraphicalFeatureModelNode;
-    _actualNodes: GraphicalFeatureModelNode[];
-     _visibleNodes: GraphicalFeatureModelNode[];
+    _hierarchy: GraphicalFeatureNode;
+    _actualNodes: GraphicalFeatureNode[];
+     _visibleNodes: GraphicalFeatureNode[];
 
     // feature model as supplied by feature model messages from the server
     static fromJSON(serializedFeatureModel: SerializedFeatureModel): GraphicalFeatureModel {
@@ -117,7 +118,7 @@ class GraphicalFeatureModel {
         return this;
     }
 
-    get structure() {
+    get structure(): SerializedFeatureNode {
         if (!this.serializedFeatureModel[STRUCT] || this.serializedFeatureModel[STRUCT].length !== 1)
             throw new Error('feature model has no structure');
         return this.serializedFeatureModel[STRUCT][0];
@@ -125,17 +126,17 @@ class GraphicalFeatureModel {
 
     prepare(): void {
         if (!this._hierarchy) {
-            this._hierarchy = d3Hierarchy(this.structure) as GraphicalFeatureModelNode;
+            this._hierarchy = d3Hierarchy(this.structure) as GraphicalFeatureNode;
             this._actualNodes = this._hierarchy.descendants();
             this._visibleNodes = [];
 
-            const isVisible: (node: GraphicalFeatureModelNode) => boolean = memoize(node => {
+            const isVisible: (node: GraphicalFeatureNode) => boolean = memoize(node => {
                 if (isRoot(node))
                     return true;
                 if (isCollapsed(node.parent!))
                     return false;
                 return isVisible(node.parent!);
-            }, (node: GraphicalFeatureModelNode) => getUUID(node));
+            }, (node: GraphicalFeatureNode) => getUUID(node));
 
             this._actualNodes.forEach(node => {
                 // store children nodes (because they are changed on collapse)
@@ -150,22 +151,26 @@ class GraphicalFeatureModel {
         }
     }
 
-    get hierarchy(): GraphicalFeatureModelNode {
+    get hierarchy(): GraphicalFeatureNode {
         this.prepare();
         return this._hierarchy;
     }
 
-    get visibleNodes(): GraphicalFeatureModelNode[] {
+    get visibleNodes(): GraphicalFeatureNode[] {
         this.prepare();
         return this._visibleNodes;
     }
 
-    get actualNodes(): GraphicalFeatureModelNode[] {
+    get actualNodes(): GraphicalFeatureNode[] {
         this.prepare();
         return this._actualNodes;
     }
 
-    getNode(featureUUID: string): GraphicalFeatureModelNode | undefined {
+    get constraints(): SerializedConstraint[] {
+        return this.serializedFeatureModel[CONSTRAINTS];
+    }
+
+    getNode(featureUUID: string): GraphicalFeatureNode | undefined {
         return this.actualNodes.find(node => getUUID(node) === featureUUID);
     }
 
@@ -174,7 +179,7 @@ class GraphicalFeatureModel {
         return node ? node.feature() : undefined;
     }
 
-    getNodes(featureUUIDs: string[]): GraphicalFeatureModelNode[] {
+    getNodes(featureUUIDs: string[]): GraphicalFeatureNode[] {
         return featureUUIDs
             .map(featureUUID => this.getNode(featureUUID))
             .filter(present);
@@ -213,6 +218,16 @@ class GraphicalFeatureModel {
         return svg[0];
     }
 
+    static getWidth(settings: Settings): number {
+        return getViewportWidth() *
+            (settings.views.splitDirection === 'horizontal' ? settings.views.splitAt : 1);
+    }
+
+    static getHeight(settings: Settings): number {
+        return getViewportHeight() *
+            (settings.views.splitDirection === 'vertical' ? settings.views.splitAt : 1);
+    }
+
     getVisibleFeatureUUIDs(): string[] {
         return this.visibleNodes.map(getUUID);
     }
@@ -238,7 +253,8 @@ class GraphicalFeatureModel {
     }
 
     // returns features which, when collapsed, make the feature model fit to the given screen size
-    getFittingFeatureUUIDs(settings: Settings, featureDiagramLayout: FeatureDiagramLayoutType, width: number, height: number): string[] {
+    getFittingFeatureUUIDs(settings: Settings, featureDiagramLayout: FeatureDiagramLayoutType,
+        width = GraphicalFeatureModel.getWidth(settings), height = GraphicalFeatureModel.getHeight(settings)): string[] {
         const fontFamily = settings.featureDiagram.font.family,
             fontSize = settings.featureDiagram.font.size,
             widthPadding = 2 * settings.featureDiagram.treeLayout.node.paddingX +

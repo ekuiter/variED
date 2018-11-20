@@ -7,7 +7,7 @@ import {Settings} from '../../../store/settings';
 import {attrIfPresent, drawCurve, drawLine, ArcPathFunction, Style} from '../../../helpers/svg';
 import {estimateRectWidth} from './estimation';
 import {Point, D3Selection, Rect} from '../../../types';
-import {GraphicalFeatureModelNode, NodePointFunction} from '../../../modeling/types';
+import {GraphicalFeatureNode, NodePointFunction} from '../../../modeling/types';
 
 function leftSideX(x: number, rectInfo: Rect): number {
     return x + rectInfo.x;
@@ -22,12 +22,12 @@ function sideY(y: number, rectInfo: Rect): number {
 }
 
 export default class extends AbstractTreeLink {
-    groupAnchor(node: GraphicalFeatureModelNode): Point {
+    groupAnchor(node: GraphicalFeatureNode): Point {
         const rectInfo = this.getRectInfo();
         return {x: rightSide(this.settings, 0, rectInfo, this.estimateTextWidth(node)), y: sideY(0, rectInfo)};
     }
 
-    collapseAnchor(node: GraphicalFeatureModelNode): Partial<Point> {
+    collapseAnchor(node: GraphicalFeatureNode): Partial<Point> {
         return {
             x: rightSide(this.settings, 0, this.getRectInfo(), this.estimateTextWidth(node)) +
                 this.settings.featureDiagram.font.size / 2
@@ -54,7 +54,7 @@ export default class extends AbstractTreeLink {
         const settings = this.settings,
             g = (!selector ? selection.append('g') : selection.select(selector))
                 .call(attrIfPresent, 'class', klass),
-            _to = (d: GraphicalFeatureModelNode) => {
+            _to = (d: GraphicalFeatureNode) => {
                 const {x, y} = to(d);
                 return {
                     x: Math.max(x, from(d).x - settings.featureDiagram.treeLayout.horizontal.layerMargin),
@@ -63,7 +63,7 @@ export default class extends AbstractTreeLink {
             };
         drawLine(g, !selector ? undefined : 'path.innerLine', {
             klass: 'innerLine', from: _to, to, style,
-            fn: innerLine => innerLine.attr('opacity', (d: GraphicalFeatureModelNode) => d.parent!.children![0] === d ? 1 : 0)
+            fn: innerLine => innerLine.attr('opacity', (d: GraphicalFeatureNode) => d.parent!.children![0] === d ? 1 : 0)
         });
         drawCurve(g, !selector ? undefined : 'path.curve', {
             klass: 'curve', from, to: _to, style,
@@ -71,14 +71,14 @@ export default class extends AbstractTreeLink {
         });
     };
 
-    from(node: GraphicalFeatureModelNode, _phase?: string): Point {
+    from(node: GraphicalFeatureNode, _phase?: string): Point {
         return {
             x: leftSideX(this.nodeX(node), this.getRectInfo()),
             y: sideY(this.nodeY(node), this.getRectInfo())
         };
     }
 
-    to(node: GraphicalFeatureModelNode, phase?: string): Point {
+    to(node: GraphicalFeatureNode, phase?: string): Point {
         const rectInfo = this.getRectInfo();
         const parent = node.parent!; // we only draw links for non-root nodes, so node always has a parent
         return phase === 'enter' ? {

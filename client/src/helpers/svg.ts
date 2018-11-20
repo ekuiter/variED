@@ -6,7 +6,7 @@
 import {Point, D3Selection, Func} from '../types';
 import {ValueMap} from 'd3-selection-multi';
 import logger from './logger';
-import {FeaturePropertyKey, NodeCoordinateFunction, GraphicalFeatureModelNode, NodePointFunction} from '../modeling/types';
+import {FeaturePropertyKey, NodeCoordinateFunction, GraphicalFeatureNode, NodePointFunction} from '../modeling/types';
 
 export type Style = ValueMap<any, any>;
 export interface StyleDescriptor {
@@ -72,7 +72,7 @@ export function updateRect(selection: D3Selection, {x, y, klass, width, height, 
 }
 
 export function translateTransform(selection: D3Selection, x: NodeCoordinateFunction, y: NodeCoordinateFunction): void {
-    selection.attr('transform', (d: GraphicalFeatureModelNode) => `translate(${toPath(x(d), y(d))})`);
+    selection.attr('transform', (d: GraphicalFeatureNode) => `translate(${toPath(x(d), y(d))})`);
 }
 
 export function drawLine(selection: D3Selection, selector: string | undefined,
@@ -82,7 +82,7 @@ export function drawLine(selection: D3Selection, selector: string | undefined,
         .call(attrIfPresent, 'class', klass)
         .call(styleIfPresent, style)
         .call(fnIfPresent, fn)
-        .attr('d', (d: GraphicalFeatureModelNode) => toD(MOVE, toPath(from(d)), LINE, toPath(to(d))));
+        .attr('d', (d: GraphicalFeatureNode) => toD(MOVE, toPath(from(d)), LINE, toPath(to(d))));
 }
 
 export function drawCurve(selection: D3Selection, selector: string | undefined,
@@ -92,7 +92,7 @@ export function drawCurve(selection: D3Selection, selector: string | undefined,
         .call(attrIfPresent, 'class', klass)
         .call(styleIfPresent, style)
         .call(fnIfPresent, fn)
-        .attr('d', (d: GraphicalFeatureModelNode) => {
+        .attr('d', (d: GraphicalFeatureNode) => {
             const _from = from(d), _to = to(d);
             if (_from.x - inset < _to.x)
                 logger.warn(() => 'too much inset or wrong order of points');
@@ -112,7 +112,7 @@ export function drawCircle(selection: D3Selection, selector: string | undefined,
         .call(fnIfPresent, fn)
         .call(selection => {
             if (center)
-                selection.attr('transform', (d: GraphicalFeatureModelNode) => `translate(${toPath(center(d))})`);
+                selection.attr('transform', (d: GraphicalFeatureNode) => `translate(${toPath(center(d))})`);
         });
 }
 
@@ -144,7 +144,7 @@ export function addStyle(selection: D3Selection, ...styleDescriptors: StyleDescr
         if (typeof property !== 'undefined')
             Object.keys(styles).forEach(key =>
                 selection
-                    .filter((node: GraphicalFeatureModelNode) => node.feature().getPropertyString(property!) === key)
+                    .filter((node: GraphicalFeatureNode) => node.feature().getPropertyString(property!) === key)
                     .call(selection => selection.attrs(styles[key])));
         else
             selection.attrs(styleDescriptor);
