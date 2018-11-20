@@ -93,8 +93,76 @@ d3Hierarchy.prototype.feature = function(this: GraphicalFeatureNode): GraphicalF
     });
 };
 
+type ConstraintRenderer<T> = (graphicalFeatureModel: GraphicalFeatureModel, root: SerializedConstraintNode) => T;
+
+// adapted from FeatureIDE fm.core's org/prop4j/NodeWriter.java
+export function createConstraintRenderer<T>({neutral, _return, returnFeature, join}:
+    {neutral: T, _return: (s: string) => T, returnFeature: (s: string) => T, join: (ts: T[], t: T) => T}): ConstraintRenderer<T> {
+    const operatorMap: {[x: string]: string} = {
+        [ConstraintType.not]: '\u00AC',
+        [ConstraintType.disj]: '\u2228',
+        [ConstraintType.eq]: '\u21D4',
+        [ConstraintType.imp]: '\u21D2',
+        [ConstraintType.conj]: '\u2227',
+        [ConstraintType.atmost1]: 'atmost1 '
+    };
+
+    const orderMap: {[x: string]: number} = {
+        [ConstraintType.unknown]: -1,
+        [ConstraintType.not]: 0,
+        [ConstraintType.disj]: 4,
+        [ConstraintType.eq]: 2,
+        [ConstraintType.imp]: 3,
+        [ConstraintType.conj]: 5,
+        [ConstraintType.atmost1]: 1
+    };
+
+    const renderLiteral = (graphicalFeatureModel: GraphicalFeatureModel, node: SerializedConstraintNode): T => {
+            const feature = graphicalFeatureModel.getFeature(node[VAR]!);
+            return returnFeature(feature ? feature.name : node[VAR]!);
+        },
+        renderNode = (graphicalFeatureModel: GraphicalFeatureModel, node: SerializedConstraintNode, parentType: ConstraintType): T => {
+        if (node[TYPE] === ConstraintType.var)
+            return renderLiteral(graphicalFeatureModel, node);
+
+        if (node[TYPE] === ConstraintType.not) {
+            const child = node.children![0];
+            if (child[TYPE] === ConstraintType.var)
+                return join([_return(operatorMap[ConstraintType.not]), renderLiteral(graphicalFeatureModel, child)], neutral);
+            if (child[TYPE] === ConstraintType.not)
+                return renderNode(graphicalFeatureModel, child.children![0], parentType);
+        }
+
+        const children = node.children!,
+            operands = children.map(child => renderNode(graphicalFeatureModel, child, node[TYPE])),
+            operator = operatorMap[node[TYPE]];
+
+        if (node[TYPE] === ConstraintType.conj || node[TYPE] === ConstraintType.disj ||
+            node[TYPE] === ConstraintType.imp || node[TYPE] === ConstraintType.eq) {
+            const result = join(operands, _return(` ${operator} `)),
+                orderParent = orderMap[parentType],
+                orderChild = orderMap[node[TYPE]];
+            return orderParent > orderChild ||
+                (orderParent === orderChild && orderParent === orderMap[ConstraintType.imp])
+                ? join([_return('('), result, _return(')')], neutral)
+                : result;
+        } else
+            return join([_return(operator), _return('('), join(operands, _return(', ')), _return(')')], neutral);
+    }
+
+    return (graphicalFeatureModel, root) => renderNode(graphicalFeatureModel, root, ConstraintType.unknown);
+}
+
+const stringConstraintRenderer = createConstraintRenderer({
+    neutral: '',
+    _return: s => s,
+    returnFeature: s => s,
+    join: (ts, t) => ts.join(t)
+});
+
 export class GraphicalConstraint {
     _string: string;
+    _element: JSX.Element;
 
     constructor(public serializedConstraint: SerializedConstraint,
         public graphicalFeatureModel: GraphicalFeatureModel) {}
@@ -105,63 +173,12 @@ export class GraphicalConstraint {
         return this.serializedConstraint.children[0];
     }
 
-    _toString(): string {
-        const operatorMap: {[x: string]: string} = {
-            [ConstraintType.not]: '\u00AC',
-            [ConstraintType.disj]: '\u2228',
-            [ConstraintType.eq]: '\u21D4',
-            [ConstraintType.imp]: '\u21D2',
-            [ConstraintType.conj]: '\u2227',
-            [ConstraintType.atmost1]: 'atmost1 '
-        };
-
-        const orderMap: {[x: string]: number} = {
-            [ConstraintType.unknown]: -1,
-            [ConstraintType.not]: 0,
-            [ConstraintType.disj]: 4,
-            [ConstraintType.eq]: 2,
-            [ConstraintType.imp]: 3,
-            [ConstraintType.conj]: 5,
-            [ConstraintType.atmost1]: 1
-        };
-
-        // adapted from FeatureIDE fm.core's org/prop4j/NodeWriter.java
-        const literalToString = (node: SerializedConstraintNode): string => {
-                const feature = this.graphicalFeatureModel.getFeature(node[VAR]!);
-                return feature ? feature.name : node[VAR]!;
-            },
-            nodeToString = (node: SerializedConstraintNode, parentType: ConstraintType): string => {
-            if (node[TYPE] === ConstraintType.var)
-                return literalToString(node);
-
-            if (node[TYPE] === ConstraintType.not) {
-                const child = node.children![0];
-                if (child[TYPE] === ConstraintType.var)
-                    return operatorMap[ConstraintType.not] + literalToString(child);
-                if (child[TYPE] === ConstraintType.not)
-                    return nodeToString(child.children![0], parentType);
-            }
-
-            const children = node.children!,
-                operands = children.map(child => nodeToString(child, node[TYPE])),
-                operator = operatorMap[node[TYPE]];
-
-            if (node[TYPE] === ConstraintType.conj || node[TYPE] === ConstraintType.disj ||
-                node[TYPE] === ConstraintType.imp || node[TYPE] === ConstraintType.eq) {
-                const s = operands.join(` ${operator} `),
-                    orderParent = orderMap[parentType],
-                    orderChild = orderMap[node[TYPE]];
-                return orderParent > orderChild ||
-                    (orderParent === orderChild && orderParent === orderMap[ConstraintType.imp]) ? `(${s})` : s;
-            } else
-                return `${operator}(${operands.join(', ')})`;
-        }
-
-        return this._string = nodeToString(this.root, ConstraintType.unknown);
+    render<T>(constraintRenderer: ConstraintRenderer<T>): T {
+        return constraintRenderer(this.graphicalFeatureModel, this.root);
     }
 
     toString(): string {
-        return this._string || this._toString();
+        return this._string || (this._string = this.render(stringConstraintRenderer));
     }
 
     getKey(): string {
