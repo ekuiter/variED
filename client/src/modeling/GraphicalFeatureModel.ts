@@ -204,6 +204,7 @@ class GraphicalFeatureModel {
     _actualNodes: GraphicalFeatureNode[];
     _visibleNodes: GraphicalFeatureNode[];
     _constraints: GraphicalConstraint[];
+    _UUIDsToFeatures: {[x: string]: GraphicalFeatureNode} = {};
 
     // feature model as supplied by feature model messages from the server
     static fromJSON(serializedFeatureModel: SerializedFeatureModel): GraphicalFeatureModel {
@@ -254,6 +255,8 @@ class GraphicalFeatureModel {
 
                 if (isVisible(node))
                     this._visibleNodes.push(node);
+
+                this._UUIDsToFeatures[getUUID(node)] = node;
             });
         }
     }
@@ -279,8 +282,8 @@ class GraphicalFeatureModel {
     }
 
     getNode(featureUUID: string): GraphicalFeatureNode | undefined {
-        // TODO: use a map instead?
-        return this.actualNodes.find(node => getUUID(node) === featureUUID);
+        this.prepare();
+        return this._UUIDsToFeatures[featureUUID];
     }
 
     getFeature(featureUUID: string): GraphicalFeature | undefined {
