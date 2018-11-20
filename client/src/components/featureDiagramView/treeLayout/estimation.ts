@@ -46,47 +46,47 @@ export function estimateYOffset(settings: Settings, sgn: number, _layout: Featur
 // estimates minimum size of the given hierarchy without layouting it
 // and proposes features that can be collapsed to reduce the size
 export function estimateHierarchySize(nodes: GraphicalFeatureNode[], collapsedFeatureUUIDs: string[], featureDiagramLayout: FeatureDiagramLayoutType,
-    {fontFamily, fontSize, widthPadding, rectHeight, getUUID}:
-    {fontFamily: string, fontSize: number, widthPadding: number, rectHeight: number, getUUID: (node: GraphicalFeatureNode) => string}):
+    {fontFamily, fontSize, widthPadding, rectHeight, getUUID, scale}:
+    {fontFamily: string, fontSize: number, widthPadding: number, rectHeight: number, getUUID: (node: GraphicalFeatureNode) => string, scale: number}):
     {estimatedSize: number, collapsibleNodes: GraphicalFeatureNode[]} {
 
     const maxCollapsibleNodes = constants.featureDiagram.fitToScreen.maxCollapsibleNodes(nodes),
-        minLayerSizes: {depth: number, size: number}[] = [], collapsibleNodesPerLayer: GraphicalFeatureNode[][] = [];
+        layerSizes: {depth: number, size: number}[] = [], collapsibleNodesPerLayer: GraphicalFeatureNode[][] = [];
     let layerNum = -1;
     logger.infoBeginCollapsed(() => `estimating size for ${nodes.length} feature(s) (${collapsedFeatureUUIDs.length} collapsed), ` +
         `may collapse up to ${maxCollapsibleNodes} feature(s)`);
-    const logLayer = (layerNum: number) => layerNum >= 0 && logger.info(() => `layer ${minLayerSizes[layerNum].depth} ` +
-        `has estimated size ${minLayerSizes[layerNum].size.toFixed(0)}px, may collapse ${JSON.stringify(collapsibleNodesPerLayer[layerNum].map(getUUID))}`);
+    const logLayer = (layerNum: number) => layerNum >= 0 && logger.info(() => `layer ${layerSizes[layerNum].depth} ` +
+        `has estimated size ${layerSizes[layerNum].size.toFixed(0)}px, may collapse ${JSON.stringify(collapsibleNodesPerLayer[layerNum].map(getUUID))}`);
     
     nodes.forEach(node => {
         if (node.depth > layerNum) {
             logLayer(layerNum);
             layerNum = node.depth;
-            minLayerSizes.push({depth: node.depth, size: 0});
+            layerSizes.push({depth: node.depth, size: 0});
             collapsibleNodesPerLayer.push([]);
         }
         if (collapsibleNodesPerLayer[node.depth].length < maxCollapsibleNodes &&
             !collapsedFeatureUUIDs.includes(getUUID(node)))
             collapsibleNodesPerLayer[node.depth].push(node);
-        minLayerSizes[node.depth].size +=
-            featureDiagramLayout === FeatureDiagramLayoutType.verticalTree
+        layerSizes[node.depth].size +=
+            (featureDiagramLayout === FeatureDiagramLayoutType.verticalTree
                 ? measureTextWidth(fontFamily, fontSize, getUUID(node)) + widthPadding
-                : rectHeight;
+                : rectHeight) * scale;
     });
     
     logLayer(layerNum);
     layerNum++;
-    minLayerSizes.sort((a, b) => b.size - a.size);
+    layerSizes.sort((a, b) => b.size - a.size);
     let collapsibleNodes: GraphicalFeatureNode[] = [];
     for (let i = 0; i < layerNum; i++) {
-        if (minLayerSizes[i].depth === 0)
+        if (layerSizes[i].depth <= 1) // do not collapse the root feature
             continue;
-        collapsibleNodes = collapsibleNodes.concat(collapsibleNodesPerLayer[minLayerSizes[i].depth - 1]);
-        logger.info(() => `maximum size ${minLayerSizes[i].size.toFixed(0)}px estimated for layer ${minLayerSizes[i].depth}, ` +
+        collapsibleNodes = collapsibleNodes.concat(collapsibleNodesPerLayer[layerSizes[i].depth - 1]);
+        logger.info(() => `maximum size ${layerSizes[i].size.toFixed(0)}px estimated for layer ${layerSizes[i].depth}, ` +
             `suggest to collapse ${JSON.stringify(collapsibleNodes.map(getUUID))}`);
         break;
     }
 
     logger.infoEnd();
-    return {estimatedSize: minLayerSizes[0].size, collapsibleNodes};
+    return {estimatedSize: layerSizes[0].size, collapsibleNodes};
 }

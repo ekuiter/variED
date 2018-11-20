@@ -6,6 +6,7 @@
 
 import objectPath from 'object-path';
 import objectPathImmutable from 'object-path-immutable';
+import {getViewportWidth, getViewportHeight} from '../helpers/withDimensions';
 
 export interface Settings {
     developer: {
@@ -83,8 +84,8 @@ export const defaultSettings: Settings = {
         delay: 0
     },
     views: {
-        splitDirection: 'vertical',
-        splitAt: 1
+        splitDirection: getViewportWidth() > getViewportHeight() ? 'horizontal' : 'vertical',
+        splitAt: 0.6
     },
     featureDiagram: {
         doNotRerenderForPaths: ['treeLayout.useTransitions', 'treeLayout.transitionDuration'],

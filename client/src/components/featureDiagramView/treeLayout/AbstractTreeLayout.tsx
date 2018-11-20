@@ -18,7 +18,7 @@ import AbstractTreeLink from './AbstractTreeLink';
 import {OnShowOverlayFunction, OnHideOverlayFunction, OnSetSelectMultipleFeaturesFunction, OnSelectFeatureFunction, OnDeselectFeatureFunction, OnExpandFeaturesFunction, OnDeselectAllFeaturesFunction, OnToggleFeatureGroupFunction, OnToggleFeatureMandatoryFunction} from '../../../store/types';
 import logger from '../../../helpers/logger';
 import {GraphicalFeatureNode, NodeCoordinateForAxisFunction} from '../../../modeling/types';
-import defer from '../../../helpers/defer';
+import constants from '../../../constants';
 
 const tag = 'feature diagram';
 
@@ -246,9 +246,12 @@ export default class extends React.Component<AbstractTreeLayoutProps> {
             });
 
         if (isCreating || (fitOnResize && isResize))
-            defer(() => svgRoot.call(zoom.scaleTo, Math.min(1,
-                GraphicalFeatureModel.getWidth(settings) / estimatedBboxWidth,
-                GraphicalFeatureModel.getHeight(settings) / estimatedBboxHeight)))();
+            svgRoot.call(zoom.scaleTo, Math.max(
+                Math.min(1,
+                    this.svgRef.current!.getBoundingClientRect().width / estimatedBboxWidth,
+                    this.svgRef.current!.getBoundingClientRect().height / estimatedBboxHeight),
+                constants.featureDiagram.minimumInitialZoom
+            ));
 
         if (isCreating)
             this.treeNode.createSvgHook(g);

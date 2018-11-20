@@ -5,6 +5,7 @@
 
 const constants = {
     featureDiagram: {
+        minimumInitialZoom: 0.6,
         fitToScreen: {
             minWidth: 500,
             minHeight: 500,

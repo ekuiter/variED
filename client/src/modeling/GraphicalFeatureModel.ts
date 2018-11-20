@@ -254,7 +254,8 @@ class GraphicalFeatureModel {
 
     // returns features which, when collapsed, make the feature model fit to the given screen size
     getFittingFeatureUUIDs(settings: Settings, featureDiagramLayout: FeatureDiagramLayoutType,
-        width = GraphicalFeatureModel.getWidth(settings), height = GraphicalFeatureModel.getHeight(settings)): string[] {
+        width = GraphicalFeatureModel.getWidth(settings), height = GraphicalFeatureModel.getHeight(settings),
+        scale = 0.5): string[] {
         const fontFamily = settings.featureDiagram.font.family,
             fontSize = settings.featureDiagram.font.size,
             widthPadding = 2 * settings.featureDiagram.treeLayout.node.paddingX +
@@ -271,7 +272,7 @@ class GraphicalFeatureModel {
         while (true) {
             const {estimatedSize, collapsibleNodes} = estimateHierarchySize(
                 nodes, collapsedFeatureUUIDs, featureDiagramLayout,
-                {fontFamily, fontSize, widthPadding, rectHeight, getUUID});
+                {fontFamily, fontSize, widthPadding, rectHeight, getUUID, scale});
             logger.info(() => `estimated ${estimatedDimension} ${Math.round(estimatedSize)}px when collapsing ${JSON.stringify(collapsedFeatureUUIDs)}`);
     
             if ((featureDiagramLayout === FeatureDiagramLayoutType.verticalTree ? estimatedSize <= width : estimatedSize <= height) ||
