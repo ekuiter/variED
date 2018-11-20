@@ -2,7 +2,7 @@
  * Manages the feature diagram of the feature model that is currently edited.
  */
 
-import React from 'react';
+import React, {CSSProperties} from 'react';
 import FeatureDiagramView from './FeatureDiagramView';
 import {connect} from 'react-redux';
 import {getCurrentCollaborativeSession, isFeatureDiagramCollaborativeSession, getCurrentGraphicalFeatureModel} from '../../store/selectors';
@@ -42,7 +42,7 @@ export default connect(
         onToggleFeatureGroup: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.toggleGroup(payload)),
         onToggleFeatureMandatory: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.toggleMandatory(payload)),
     })
-)((props: StateDerivedProps & {className?: string}) =>
+)((props: StateDerivedProps & {className?: string, style?: CSSProperties}) =>
     props.graphicalFeatureModel // TODO: distinguish between "not editing a feature model" and "editing a feature model which is being loaded"
         ? <FeatureDiagramView
             featureDiagramLayout={props.featureDiagramLayout!}

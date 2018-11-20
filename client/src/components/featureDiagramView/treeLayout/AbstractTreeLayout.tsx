@@ -3,7 +3,7 @@
  * The layout direction (vertical or horizontal) remains unspecified.
  */
 
-import React from 'react';
+import React, {CSSProperties} from 'react';
 import {tree as d3Tree} from 'd3-hierarchy';
 import {event as d3Event, select as d3Select} from 'd3-selection';
 import {zoom as d3Zoom} from 'd3-zoom';
@@ -27,7 +27,8 @@ export interface AbstractTreeLayoutProps {
     debug: boolean,
     width?: number,
     height?: number,
-    className: string,
+    className?: string,
+    style?: CSSProperties,
     fitOnResize: boolean,
     settings: Settings,
     overlay: OverlayType,
@@ -95,6 +96,7 @@ export default class extends React.Component<AbstractTreeLayoutProps> {
     render(): JSX.Element {
         return (
             <svg className={'treeLayout' + (this.props.className ? ` ${this.props.className}` : '')}
+                style={this.props.style}
                 ref={this.svgRef}/>
         );
     }
@@ -200,6 +202,9 @@ export default class extends React.Component<AbstractTreeLayoutProps> {
                 .on('click', () => {
                     if (this.props.isSelectMultipleFeatures && d3Event.target.tagName === 'svg')
                         this.props.onDeselectAllFeatures();
+                    if (!this.props.isSelectMultipleFeatures && d3Event.target.tagName === 'svg' &&
+                        isFloatingFeatureOverlay(this.props.overlay))
+                        this.props.onHideOverlay({overlay: this.props.overlay});
                 }),
             g = isCreating ? svgRoot.append('g') : svgRoot.select('g');
 

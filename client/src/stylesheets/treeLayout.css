@@ -1,3 +1,7 @@
+.ms-Fabric.fabricRoot .content.vertical .treeLayout {
+    width: 100%; /* prevent flickering in Google Chrome 70 */
+}
+
 .treeLayout .node .rectAndText {
     cursor: pointer;
 }

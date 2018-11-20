@@ -84,7 +84,7 @@ export const defaultSettings: Settings = {
     },
     views: {
         splitDirection: 'horizontal',
-        splitAt: 0.5
+        splitAt: 1
     },
     featureDiagram: {
         doNotRerenderForPaths: ['treeLayout.useTransitions', 'treeLayout.transitionDuration'],

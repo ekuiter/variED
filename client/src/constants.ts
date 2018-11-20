@@ -33,7 +33,7 @@ const constants = {
     },
     helpers: {
         withDimensions: {
-            throttleResize: 10 // limits number of window resize events to one per ... ms (avoids unnecessary rendering)
+            throttleResize: 50 // limits number of window resize events to one per ... ms (avoids unnecessary rendering)
         },
         fontComboBox: {
             suggestedFonts: [
