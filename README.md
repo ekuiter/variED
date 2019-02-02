@@ -47,7 +47,7 @@ The only dependency required for building is [JDK
 build process.
 
 - `./gradlew build` builds a WAR file that can be deployed on Java servlet
-  containers, the `variED.sh` script runs the WAR file in Apache Tomcat
+  containers, the `variED.sh` or `variED.bat` script runs the WAR file in Apache Tomcat
 - `yarn start` inside the `client` directory runs the client on
   `http://localhost:3000`
 - `./gradlew server:run` runs the server on `http://localhost:8080`
@@ -99,8 +99,10 @@ yarn, ESLint/TSLint and Debugger for Chrome plugins is recommended.
 Open the `server` directory in IntelliJ and choose *Import Gradle project*.
 Choose to *use local gradle distribution* and supply the Gradle home, e.g.
 `/usr/local/Cellar/gradle/4.9/libexec` (on macOS, this can be determined with
-`brew info gradle`). Add a *Gradle* run configuration with Gradle project
-`server` and task `run` to run the server from within IntelliJ.
+`brew info gradle`). On Windows, use
+`C:\Users\...\.gradle\wrapper\dists\gradle-...-bin\...\gradle-...`.
+Add a *Gradle* run configuration with Gradle project `server` and task `run`
+to run the server from within IntelliJ.
 
 ### License
 
