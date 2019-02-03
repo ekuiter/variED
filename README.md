@@ -75,6 +75,10 @@ modeling.
 
 The client-server interface is described in [API.md](API.md).
 
+The Clojure kernel has 
+[documentation](https://s3.eu-central-1.amazonaws.com/de.ovgu.spldev.varied/kernel-documentation/index.html) 
+available. 
+
 Parts of the server code are reused in the client (`common` package) by
 transpiling them to JavaScript. Because of this, classes in the `common` package
 may only use certain APIs (`java.util.*`, a subset of the FeatureIDE API
