@@ -1,28 +1,29 @@
-def lein
-
-if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
-    lein = 'lein.bat'
-} else {
-    lein = 'lein'
-}
-
 task uberjar(type:Exec) {
-    executable lein
-    args = ['uberjar']
+    if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
+        commandLine 'lein.bat', 'uberjar'
+    } else {
+        commandLine 'bash', 'lein', 'uberjar'
+    }
 }
 
 task check(type:Exec) {
-    executable lein
-    args = ['test']
+    if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
+        commandLine 'lein.bat', 'test'
+    } else {
+        commandLine 'bash', 'lein', 'test'
+    }
 }
 
 task doc(type:Exec) {
-    executable lein
-    args = ['codox']
+    if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
+        commandLine 'lein.bat', 'codox'
+    } else {
+        commandLine 'bash', 'lein', 'codox'
+    }
 }
 
 // As of now, this has to be run MANUALLY if the kernel changed.
-task buildUberjar {
+task build {
     dependsOn 'uberjar'
     doLast {
         copy {
@@ -32,14 +33,12 @@ task buildUberjar {
     }
 }
 
-task build {
-    dependsOn 'buildUberjar'
-    dependsOn 'doc'
-}
-
 task clean(type:Exec) {
-    executable lein
-    args = ['clean']
+    if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
+        commandLine 'lein.bat', 'clean'
+    } else {
+        commandLine 'bash', 'lein', 'clean'
+    }
     doLast {
         delete '../server/lib/kernel-SNAPSHOT-standalone.jar'
         delete '../build/kernel-documentation'

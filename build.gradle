@@ -1,4 +1,4 @@
-task build {
+task stage {
     dependsOn ':clean'
     dependsOn ':kernel:clean'
     dependsOn ':client:clean'
@@ -21,7 +21,10 @@ tasks.getByPath(':kernel:build').mustRunAfter ':server:clean'
 tasks.getByPath(':client:build').mustRunAfter ':kernel:build'
 tasks.getByPath(':server:build').mustRunAfter ':client:build'
 
-task stage(dependsOn: 'build')
+task build {
+    dependsOn 'stage'
+    dependsOn ':kernel:doc'
+}
 
 task clean {
     doLast {

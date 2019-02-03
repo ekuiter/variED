@@ -76,9 +76,8 @@ task copyWebappRunner {
     }
 }
 
-build.mustRunAfter ':kernel:build'
 build.mustRunAfter ':client:build'
-build.dependsOn ':kernel:buildUberjar', 'war', 'copyWebappRunner'
+build.dependsOn ':kernel:build', 'war', 'copyWebappRunner'
 task run(dependsOn: 'appRun')
 
 // As of now, this has to be run MANUALLY if any common classes changed.
