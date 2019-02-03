@@ -1,4 +1,4 @@
-(defproject kernel "1.0-SNAPSHOT"
+(defproject kernel "SNAPSHOT"
   :description
   "Collaborative real-time feature modeling kernel for variED.
   Exposes a simple API that may be consumed by client and server to generate and
@@ -16,4 +16,6 @@
             :url  "https://github.com/ekuiter/variED/blob/master/LICENSE.txt"}
   :dependencies [[org.clojure/clojure "1.10.0"]]
   :plugins [[lein-codox "0.10.5" :scope "test"]]
-  :codox {:metadata {:doc/format :markdown}})
+  :codox {:metadata {:doc/format :markdown}
+          :output-path "../build/kernel-documentation"
+          :source-uri "https://github.com/ekuiter/variED/blob/{git-commit}/kernel/{filepath}#L{line}"})
