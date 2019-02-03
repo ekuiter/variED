@@ -1,11 +1,11 @@
-(ns core.primitive-operation
+(ns kernel.core.primitive-operation
   "Primitive operation, PO for short.
   Primitive operations create or update only one object in a feature model at a time.
-  They are building blocks for more complex compound operations ([[core.compound-operation]]).
+  They are building blocks for more complex compound operations ([[kernel.core.compound-operation]]).
 
-  Primitive operations are also used to detect conflicts for competing operations ([[core.conflict-relation]])."
-  (:require helpers
-            [core.feature-model :as FM]))
+  Primitive operations are also used to detect conflicts for competing operations ([[kernel.core.conflict-relation]])."
+  (:require [kernel.helpers :as helpers]
+            [kernel.core.feature-model :as FM]))
 
 ; getters
 
@@ -59,7 +59,7 @@
 
 (defn create-feature
   "Creates a new feature in the feature tree that is assumed to have the default
-  values defined in [[core.feature-model]].
+  values defined in [[kernel.core.feature-model]].
   Newly created features are not part of the feature tree until explicitly inserted."
   []
   {:type :create-feature
@@ -93,7 +93,7 @@
 
 (defn assert-no-child-added
   "Asserts that no competing operations add children to the targeted feature.
-  Required to ensure the preconditions of [[core.compound-operation/remove-feature]].
+  Required to ensure the preconditions of [[kernel.core.compound-operation/remove-feature]].
   This assertion operation has no actual execution effect on the feature model,
   it only affects the conflict detection."
   [ID]
@@ -115,7 +115,7 @@
           Update operations are inverted by swapping their old and new values.
 
           Assert operations are kept unchanged as discussed in
-          [[core.compound-operation/remove-feature]]."
+          [[kernel.core.compound-operation/remove-feature]]."
           (fn [PO] (PO :type)))
 
 (defmethod invert :create-feature [_PO]

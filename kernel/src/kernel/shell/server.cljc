@@ -1,15 +1,15 @@
-(ns shell.server
+(ns kernel.shell.server
   "Server site control.
 
   Generates and receives messages at the server site.
   Modifies the global context.
   Site control operations are assumed to run atomically in a single thread,
   no synchronization is performed."
-  (:require [core.vector-clock :as VC]
-            [core.garbage-collector :as GC]
-            [shell.site :as site]
-            [core.message :as message])
-  (:use shell.context))
+  (:require [kernel.core.vector-clock :as VC]
+            [kernel.core.garbage-collector :as GC]
+            [kernel.core.message :as message]
+            [kernel.shell.site :as site]
+            [kernel.shell.context :refer [*context* initialize-context]]))
 
 ; constructors
 

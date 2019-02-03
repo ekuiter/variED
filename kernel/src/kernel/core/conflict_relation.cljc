@@ -1,5 +1,5 @@
-(ns core.conflict-relation
-  "Conflict relation used by the MOVIC algorithm ([[core.movic]] to detect conflicts between competing operations.
+(ns kernel.core.conflict-relation
+  "Conflict relation used by the MOVIC algorithm ([[kernel.core.movic]] to detect conflicts between competing operations.
 
   The default conflict relation of the MOVIC algorithm is not suitable for feature modeling as it does not
   consider the particular structure and rules for consistent feature models.
@@ -17,13 +17,13 @@
   The conflict detection results are stored in a conflict cache to improve performance
   (because conflicting? is implemented recursively)."
   (:require [clojure.set :as set]
-            [core.history-buffer :as HB]
-            [core.causal-dag :as CDAG]
-            [core.conflict-cache :as CC]
-            [core.feature-model :as FM]
-            [core.primitive-operation :as PO]
-            [core.compound-operation :as CO]
-            [core.topological-sort :as topological-sort]))
+            [kernel.core.history-buffer :as HB]
+            [kernel.core.causal-dag :as CDAG]
+            [kernel.core.conflict-cache :as CC]
+            [kernel.core.feature-model :as FM]
+            [kernel.core.primitive-operation :as PO]
+            [kernel.core.compound-operation :as CO]
+            [kernel.core.topological-sort :as topological-sort]))
 
 (defn CO-conflict-reducer
   "For each primitive operation from one compound operation CO-x, checks whether applying
@@ -50,7 +50,7 @@
     the other sets the new root feature to optional.
   - The *assert-no-child-added rule* flags two updates as conflict if one asserts that no feature
     children may be added by the other, but the other adds feature children nonetheless
-    (see [[core.compound-operation/remove-feature]]).
+    (see [[kernel.core.compound-operation/remove-feature]]).
 
   All rules included here are checked in a short-circuiting way, so they may build upon each other,
   and they should return true if a conflict is present.
@@ -153,7 +153,7 @@
 
 (defn CO-semantically-conflicting?
   "Determines whether two compound operations are in semantic conflict, according
-  to the rules defined in [[core.feature-model/semantic-rules]]."
+  to the rules defined in [[kernel.core.feature-model/semantic-rules]]."
   [FM+preceding-CO-a+CO-a+preceding-CO-b+CO-b]
   (when (some #(% FM+preceding-CO-a+CO-a+preceding-CO-b+CO-b) (FM/semantic-rules))
     (CC/make-conflict "complex semantics rule")))

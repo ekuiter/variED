@@ -1,4 +1,4 @@
-(ns core.conflict-cache
+(ns kernel.core.conflict-cache
   "Conflict Cache, CC for short.
   Caches all conflicts a site detected.
 

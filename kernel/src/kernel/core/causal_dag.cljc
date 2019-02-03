@@ -1,9 +1,9 @@
-(ns core.causal-dag
+(ns kernel.core.causal-dag
   "Causal Directed Acyclic Graph, CDAG for short.
   The CDAG captures compound operations' dependencies.
 
   Nodes in the CDAG are operations.
-  Two operations A and B are connected if and only if `(preceding? A B)` with [[core.compound-operation/preceding?]].
+  Two operations A and B are connected if and only if `(preceding? A B)` with [[kernel.core.compound-operation/preceding?]].
 
   The CDAG is required to obtain all causally preceding operations (CP) efficiently for a given operation.
   Further, it is used to obtain all causally immediate preceding operations (CIP).
@@ -22,8 +22,8 @@
 
   If no garbage collection is performed, the CDAG might grow quadratically with time."
   (:require [clojure.set :as set]
-            [core.compound-operation :as CO]
-            [core.history-buffer :as HB]))
+            [kernel.core.compound-operation :as CO]
+            [kernel.core.history-buffer :as HB]))
 
 ; constructor
 

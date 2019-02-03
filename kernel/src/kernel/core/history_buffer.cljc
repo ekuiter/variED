@@ -1,4 +1,4 @@
-(ns core.history-buffer
+(ns kernel.core.history-buffer
   "History Buffer, HB for short.
   Serves as a central storage for operation metadata.
   Only a performance optimization and not essential.
@@ -14,8 +14,8 @@
   is *not* ordered.
 
   Without garbage collection, the history buffer may grow linearly over time."
-  (:require [core.vector-clock :as VC]
-            [core.compound-operation :as CO]))
+  (:require [kernel.core.vector-clock :as VC]
+            [kernel.core.compound-operation :as CO]))
 
 ; constructor
 

@@ -1,4 +1,4 @@
-(ns core.garbage-collector
+(ns kernel.core.garbage-collector
   "Garbage Collector, GC for short.
   Periodically prunes a site's data structures to keep them as small as possible.
 
@@ -12,13 +12,13 @@
   vector clock from every site.
 
   The garbage collector's data grows in O(n) where n is the number of sites in the system."
-  (:require [core.vector-clock :as VC]
-            [core.history-buffer :as HB]
-            [core.causal-dag :as CDAG]
-            [core.conflict-cache :as CC]
-            [core.topological-sort :as topological-sort]
-            [core.movic :as MOVIC]
-            [core.compound-operation :as CO]))
+  (:require [kernel.core.vector-clock :as VC]
+            [kernel.core.history-buffer :as HB]
+            [kernel.core.causal-dag :as CDAG]
+            [kernel.core.conflict-cache :as CC]
+            [kernel.core.topological-sort :as topological-sort]
+            [kernel.core.movic :as MOVIC]
+            [kernel.core.compound-operation :as CO]))
 
 ; constructor
 
@@ -31,7 +31,7 @@
 
 (defn eligible?
   "Returns whether an operation may be garbage collected in O(n) for n sites
-  (considering [[core.vector-clock/_<]] as O(1)).
+  (considering [[kernel.core.vector-clock/_<]] as O(1)).
   An operation may be garbage collected if and only if it has been causally-succeeded
   by every site in the system.
   In that case, that operation can never again cause a conflict and is safe to discard.

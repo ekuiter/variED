@@ -10,12 +10,17 @@
   Run `lein test` to run the integration tests.
   Run `lein codox` to generate this documentation.
 
-  As an introduction, refer to the `api` namespace."
+  As an introduction, refer to the `kernel.api` namespace."
   :url "https://github.com/ekuiter/variED"
   :license {:name "LGPL v3"
             :url  "https://github.com/ekuiter/variED/blob/master/LICENSE.txt"}
   :dependencies [[org.clojure/clojure "1.10.0"]]
   :plugins [[lein-codox "0.10.5" :scope "test"]]
-  :codox {:metadata {:doc/format :markdown}
+  :codox {:metadata    {:doc/format :markdown}
           :output-path "../build/kernel-documentation"
-          :source-uri "https://github.com/ekuiter/variED/blob/{git-commit}/kernel/{filepath}#L{line}"})
+          :source-uri  "https://github.com/ekuiter/variED/blob/{git-commit}/kernel/{filepath}#L{line}"}
+  :profiles {:client {:dependencies [[org.clojure/clojurescript "1.10.516"]]
+                      :plugins      [[lein-cljsbuild "1.1.7"]]
+                      :cljsbuild    {:builds [{:source-paths ["src"]
+                                               :compiler     {:optimizations :advanced
+                                                              :output-to "../client/src/kernel.js"}}]}}})

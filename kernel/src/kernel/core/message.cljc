@@ -1,4 +1,4 @@
-(ns core.message
+(ns kernel.core.message
   "Defines what kinds of messages are exchanged among sites.
 
   There are three kinds of messages:
@@ -13,7 +13,7 @@
 
   Every message forwarded by the server contains the server's own vector clock.
   This is required for garbage collection, as the server also has to receive
-  an operation for it to be [[core.garbage-collector/eligible?]].
+  an operation for it to be [[kernel.core.garbage-collector/eligible?]].
   This is particularly important when only one client is connected to the server,
   so that the client does not immediately garbage collect its own operations.")
 

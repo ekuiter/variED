@@ -1,10 +1,10 @@
-(ns integration-tests
-  (:require [core.compound-operation :as CO]
-            [core.history-buffer :as HB]
-            [core.feature-model :as FM])
-  (:use clojure.test
-        fixtures
-        simulator))
+(ns kernel.integration-tests
+  (:require [clojure.test :refer :all]
+            [kernel.core.compound-operation :as CO]
+            [kernel.core.history-buffer :as HB]
+            [kernel.core.feature-model :as FM]
+            [kernel.fixtures :refer :all]
+            [kernel.simulator :refer :all]))
 
 (deftest single-user
   (testing "simple example of single-user application"

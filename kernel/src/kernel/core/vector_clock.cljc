@@ -1,4 +1,4 @@
-(ns core.vector-clock
+(ns kernel.core.vector-clock
   "Vector Clock, VC for short.
   Vector clocks are used to track causality of operations in the system.
 

@@ -1,5 +1,5 @@
-(ns core.topological-sort
-  "Sorts a set of compatible operations topologically according to [[core.compound-operation/preceding?]].
+(ns kernel.core.topological-sort
+  "Sorts a set of compatible operations topologically according to [[kernel.core.compound-operation/preceding?]].
 
   Sometimes, a site has to apply a given set of operations to a feature model.
   The order of operations matters, but there is a solution if the operations are pairwise compatible.
@@ -15,9 +15,9 @@
 
   Algorithm adapted from rosettacode.org."
   (:require [clojure.set :as set]
-            [core.causal-dag :as CDAG]
-            [core.history-buffer :as HB]
-            [core.compound-operation :as CO]))
+            [kernel.core.causal-dag :as CDAG]
+            [kernel.core.history-buffer :as HB]
+            [kernel.core.compound-operation :as CO]))
 
 (defn single-dependency-map
   "Constructs a single-key dependence, represented as a map from

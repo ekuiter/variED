@@ -1,4 +1,4 @@
-(ns api
+(ns kernel.api
   "API of the kernel.
 
   This API is exposed to consumers (i.e., client and server sites).
@@ -24,7 +24,7 @@
   - Unless otherwise specified, *periodically* and *for a while* can refer to
     arbitrary periods of time, although it would be reasonable to use the same
     time periods at all sites.
-  - The system is considered frozen whenever [[client-receive-message!]] reports
+  - The system is considered frozen whenever [[clientReceiveMessage]] reports
     conflicts. The system is only un-frozen when all conflicts are resolved.
   - When a client wants to leave, no special API call is necessary.
     It can simply discard all its metadata and notify the server
@@ -35,50 +35,50 @@
   - The server does not generate messages itself (apart from occasional
     explicit heartbeats).
   - For more information on the individual operations, refer to
-    [[core.compound-operation]]."
-  (:require [core.compound-operation :as CO]
-            [shell.client :as client]
-            [shell.server :as server])
-  (:use shell.context))
+    [[kernel.core.compound-operation]]."
+  (:require [kernel.core.compound-operation :as CO]
+            [kernel.shell.client :as client]
+            [kernel.shell.server :as server]
+            [kernel.shell.context :refer [*context*]]))
 
 ; client API
 
-(defn client-initialize!
+(defn ^:export clientInitialize
   "When a client first enters the system, it announces itself at the server.
   The server assigns it a site identifier and an initial context, which the
-  client must call client-initialize! with."
+  client must call clientInitialize with."
   [site-ID context]
   (client/initialize-context-star-topology! site-ID context))
 
-(defn client-generate-operation!
+(defn ^:export clientGenerateOperation
   "At any time the system is not frozen, the client may call
-  client-generate-operation! with a valid PO sequence (see operations API)
+  clientGenerateOperation with a valid PO sequence (see operations API)
   to generate and immediately apply a new operation.
   **TODO**: Right now, the PO sequence is *not* sanity-checked, so the
   client is responsible to respect basic consistency rules (e.g., only
   submit operations that make sense on the current feature model).
-  client-generate-operation! returns a feature model that the client may
+  clientGenerateOperation returns a feature model that the client may
   consume. It also returns an operation message that the client must send
   to the server."
   [PO-sequence]
   (client/generate-operation! PO-sequence))
 
-(defn client-generate-inverse-operation!
+(defn ^:export clientGenerateInverseOperation
   "**TODO**: Generate inverse operations."
   []
   (client/generate-inverse-operation!))
 
-(defn client-generate-heartbeat!
+(defn ^:export clientGenerateHeartbeat
   "If no operations have been generated for a while (and when no other API
   calls are in progress and the system is not frozen), the client must call
-  client-generate-heartbeat! and send the resulting message to the server.
+  clientGenerateHeartbeat and send the resulting message to the server.
   This is to ensure smooth garbage collection."
   []
   (client/generate-heartbeat!))
 
-(defn client-receive-message!
+(defn ^:export clientReceiveMessage
   "When a message arrives from the server, the client must call
-  client-receive-message! with the received message.
+  clientReceiveMessage with the received message.
   The call returns either a new feature model that may be consumed by the
   client, or **TODO** information about how emerged conflicts may be resolved.
   **TODO**: When a conflict occurs, before un-freezing the system, all
@@ -86,37 +86,37 @@
   [message]
   (client/receive-message! message))
 
-(defn client-GC!
+(defn ^:export clientGC
   "Periodically (and when no other API calls are in progress and the system
-  is not frozen), the client must call client-GC!."
+  is not frozen), the client must call clientGC."
   []
   (client/GC!))
 
-; server API
+; server API (not exported to the client)
 
-(defn server-initialize!
+(defn serverInitialize
   "When a client first enters the system and requests to edit a given feature
-  model, the server must call server-initialize! with said feature model."
+  model, the server must call serverInitialize with said feature model."
   [initial-FM]
   (server/initialize-context-star-topology! initial-FM))
 
-(defn server-generate-heartbeat!
+(defn serverGenerateHeartbeat
   "If the server has not forwarded any operations for a while (and when no other API
   calls are in progress and the system is not frozen), the server must call
-  server-generate-heartbeat! and send the resulting message to all client sites.
+  serverGenerateHeartbeat and send the resulting message to all client sites.
   This may happen for example when only one client site is connected."
   []
   (server/generate-heartbeat!))
 
-(defn server-forward-message!
+(defn serverForwardMessage
   "After receiving a message from a client, the server must call
-  server-forward-message! with the received message.
+  serverForwardMessage with the received message.
   The returned message is then forwarded to all sites but the original site."
   [message]
   (server/forward-message! message))
 
-(defn server-site-joined!
-  "Whenever a new site requests to join, the server must call server-site-joined!
+(defn serverSiteJoined
+  "Whenever a new site requests to join, the server must call serverSiteJoined
   and send the returned initial context to the site. It also has to forward the
   returned heartbeat message to all other sites immediately.
   The new site's identifier may be chosen by the client or server site, as
@@ -134,76 +134,82 @@
   [site-ID]
   (server/site-joined! site-ID))
 
-(defn server-site-left!
-  "When a site leaves, the server must call server-site-left! and forward
+(defn serverSiteLeft
+  "When a site leaves, the server must call serverSiteLeft and forward
   the returned leave message to all other sites immediately."
   [site-ID]
   (server/site-left! site-ID))
 
-(defn server-GC!
+(defn serverGC
   "Periodically (and when no other API calls are in progress and the system
-  is not frozen), the server must call server-GC!."
+  is not frozen), the server must call serverGC."
   []
   (server/GC!))
 
 ; operations API
 
-(defn operation-compose
+(defn ^:export operationCompose
   "Composes multiple compound operations into one compound operation."
   [& PO-sequences]
   (apply CO/compose-PO-sequences PO-sequences))
 
-(defn operation-create-feature-below!
+(defn ^:export operationCreateFeatureBelow
   "Creates a feature below another feature."
   [parent-ID]
   (CO/create-feature-below (*context* :FM) parent-ID))
 
-(defn operation-create-feature-above!
+(defn ^:export operationCreateFeatureAbove
   "Creates a feature above a set of sibling features."
   [& IDs]
   (apply CO/create-feature-above (*context* :FM) IDs))
 
-(defn operation-remove-feature-subtree!
+(defn ^:export operationRemoveFeatureSubtree
   "Removes an entire feature subtree rooted at a feature."
   [ID]
   (CO/remove-feature-subtree (*context* :FM) ID))
 
-(defn operation-move-feature-subtree!
+(defn ^:export operationMoveFeatureSubtree
   "Moves an entire feature subtree rooted at a feature below another feature."
   [ID parent-ID]
   (CO/move-feature-subtree (*context* :FM) ID parent-ID))
 
-(defn operation-remove-feature!
+(defn ^:export operationRemoveFeature
   "Removes a single feature."
   [ID]
   (CO/remove-feature (*context* :FM) ID))
 
-(defn operation-set-feature-optional?!
+(defn ^:export operationSetFeatureOptional
   "Sets the optional attribute of a feature."
   [ID optional?]
   (CO/set-feature-optional? (*context* :FM) ID optional?))
 
-(defn operation-set-feature-group-type!
+(defn ^:export operationSetFeatureGroupType
   "Sets the group type attribute of a feature."
   [ID group-type]
   (CO/set-feature-group-type (*context* :FM) ID group-type))
 
-(defn operation-set-feature-property!
+(defn ^:export operationSetFeatureProperty
   "Sets some additional property of a feature."
   [ID property value]
   (CO/set-feature-property (*context* :FM) ID property value))
 
-(defn operation-create-constraint!
+(defn ^:export operationCreateConstraint
   "Creates a constraint and initializes it with a given propositional formula."
   [formula]
   (CO/create-constraint (*context* :FM) formula))
 
-(defn operation-set-constraint!
+(defn ^:export operationSetConstraint
   "Sets the propositional formula of a constraint."
   [ID formula]
   (CO/set-constraint (*context* :FM) ID formula))
 
-(defn operation-remove-constraint!
+(defn ^:export operationRemoveConstraint
   "Removes a constraint."
   [ID]
   (CO/remove-constraint (*context* :FM) ID))
+
+(defn ^:export inspectContext
+  "Returns the global context.
+  For debugging only."
+  []
+  *context*)

@@ -1,4 +1,4 @@
-(ns shell.context
+(ns kernel.shell.context
   "Global site context.
   Contains all state managed by a particular site.
 

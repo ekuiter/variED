@@ -1,20 +1,20 @@
-(ns shell.site
+(ns kernel.shell.site
   "Site control shared both by clients and the server.
 
   Generates and receives messages at a site.
   Modifies the global context.
   Site control operations are assumed to run atomically in a single thread,
   no synchronization is performed."
-  (:require [core.vector-clock :as VC]
-            [core.history-buffer :as HB]
-            [core.causal-dag :as CDAG]
-            [core.conflict-cache :as CC]
-            [core.topological-sort :as topological-sort]
-            [core.movic :as MOVIC]
-            [core.garbage-collector :as GC]
-            [core.compound-operation :as CO]
-            [core.message :as message])
-  (:use shell.context))
+  (:require [kernel.core.vector-clock :as VC]
+            [kernel.core.history-buffer :as HB]
+            [kernel.core.causal-dag :as CDAG]
+            [kernel.core.conflict-cache :as CC]
+            [kernel.core.topological-sort :as topological-sort]
+            [kernel.core.movic :as MOVIC]
+            [kernel.core.garbage-collector :as GC]
+            [kernel.core.compound-operation :as CO]
+            [kernel.core.message :as message]
+            [kernel.shell.context :refer [*context*]]))
 
 (defn initialize-context-mesh-topology
   "Initializes global context for a new site in a mesh topology.

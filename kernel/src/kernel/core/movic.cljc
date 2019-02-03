@@ -1,4 +1,4 @@
-(ns core.movic
+(ns kernel.core.movic
   "The MOVIC algorithm introduced by Sun and Chen, 2002 for handling conflicting operations.
 
   The MOVIC algorithm judges all received operations for conflict potential and groups
@@ -6,7 +6,7 @@
   The constructed MCGS is guaranteed to converge across all sites.
 
   The algorithm is copied verbatim from Sun and Chen, 2002, with one major exception:
-  A different conflict/compatible relation is used ([[core.conflict-relation]])
+  A different conflict/compatible relation is used ([[kernel.core.conflict-relation]])
   which has been designed specifically for detecting feature modeling conflicts.
 
   Also, we do not distinguish different objects in a document as Sun and Chen, but
@@ -14,8 +14,8 @@
   This is because features may have arbitrary complex relationships which can not simply
   be divided in unrelated objects."
   (:require [clojure.set :as set]
-            [core.history-buffer :as HB]
-            [core.conflict-relation :as conflict-relation]))
+            [kernel.core.history-buffer :as HB]
+            [kernel.core.conflict-relation :as conflict-relation]))
 
 ; constructor
 

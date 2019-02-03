@@ -1,4 +1,4 @@
-(ns core.feature-model
+(ns kernel.core.feature-model
   "Feature Model, FM for short.
   Implements a feature model representation and mutation operators.
 

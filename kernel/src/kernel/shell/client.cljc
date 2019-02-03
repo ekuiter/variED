@@ -1,21 +1,21 @@
-(ns shell.client
+(ns kernel.shell.client
   "Client site control.
 
   Generates and receives messages at a client site.
   Modifies the global context.
   Site control operations are assumed to run atomically in a single thread,
   no synchronization is performed."
-  (:require helpers
-            [core.vector-clock :as VC]
-            [core.causal-dag :as CDAG]
-            [core.history-buffer :as HB]
-            [core.conflict-cache :as CC]
-            [core.movic :as MOVIC]
-            [core.garbage-collector :as GC]
-            [shell.site :as site]
-            [core.compound-operation :as CO]
-            [core.message :as message])
-  (:use shell.context))
+  (:require [kernel.helpers :as helpers]
+            [kernel.core.vector-clock :as VC]
+            [kernel.core.causal-dag :as CDAG]
+            [kernel.core.history-buffer :as HB]
+            [kernel.core.conflict-cache :as CC]
+            [kernel.core.movic :as MOVIC]
+            [kernel.core.garbage-collector :as GC]
+            [kernel.core.compound-operation :as CO]
+            [kernel.core.message :as message]
+            [kernel.shell.site :as site]
+            [kernel.shell.context :refer [*context* initialize-context]]))
 
 ; constructors
 

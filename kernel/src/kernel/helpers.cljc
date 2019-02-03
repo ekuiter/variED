@@ -1,4 +1,4 @@
-(ns helpers
+(ns kernel.helpers
   "Host-specific helper functions.
 
   Utilizes reader conditionals to provide different code when compiling

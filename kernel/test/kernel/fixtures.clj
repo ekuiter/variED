@@ -1,5 +1,5 @@
-(ns fixtures
-  (:require [core.feature-model :as FM]))
+(ns kernel.fixtures
+  (:require [kernel.core.feature-model :as FM]))
 
 (defn example-FM
   "Expressed specific to the implementation, here in the simple hash table approach."

@@ -1,18 +1,18 @@
-(ns core.compound-operation
+(ns kernel.core.compound-operation
   "Compound Operation, CO for short.
-  Compound operations are sequences of primitive operations ([[core.primitive-operation]]).
+  Compound operations are sequences of primitive operations ([[kernel.core.primitive-operation]]).
   They correspond to feature modeling operations.
 
   They are considered atomic as they have to be sent and received together (so that no
   other operations interleave). Compound operations also serve as input to the MOVIC
-  algorithm ([[core.movic]]) to determine conflicts.
+  algorithm ([[kernel.core.movic]]) to determine conflicts.
 
   We provide an initial set of compound operations which may be extended. Below we give
   some guidance when designing new compound operations.
 
   Compound operations have preconditions which should hold when the operation is generated
   (which is easy), but also whenever it is applied on another site's feature model - this has
-  to be ensured by the conflict detection ([[core.conflict-relation]]).
+  to be ensured by the conflict detection ([[kernel.core.conflict-relation]]).
   For example, create-feature-above requires the supplied features to be siblings.
 
   Some compound operations (e.g., create-feature-above) use information from the current
@@ -34,7 +34,7 @@
   two updates targeting the same attribute can be merged into one.
   In this initial set of compound operations, we use local simplification to filter
   nop primitive operations from compound operations, as they have no effect to the
-  feature model ([[core.primitive-operation/remove-nop]]).
+  feature model ([[kernel.core.primitive-operation/remove-nop]]).
 
   Some of the compound operations' preconditions introduce false-positives.
   For example, concurrent create-feature-above root and remove-feature root is considered
@@ -48,9 +48,9 @@
   This means it is impossible to reorder feature siblings or constraints, or to create
   sibling features. We could introduce a reordering operation that treats concurrent
   writes to the same group of children as conflicts."
-  (:require [core.vector-clock :as VC]
-            [core.feature-model :as FM]
-            [core.primitive-operation :as PO]))
+  (:require [kernel.core.vector-clock :as VC]
+            [kernel.core.feature-model :as FM]
+            [kernel.core.primitive-operation :as PO]))
 
 ; constructor
 
@@ -190,7 +190,7 @@
   otherwise concurrently added or removed child features may not be handled as expected.
   Removing child features provokes a conflict with the updates in the children's parents.
   Adding child features, however, does not conflict with this operation by default, this is
-  forced by an assert operation ([[core.primitive-operation/assert-no-child-added]]).
+  forced by an assert operation ([[kernel.core.primitive-operation/assert-no-child-added]]).
   Also, the feature's parent must be the same as in the generation context.
   This is guaranteed because remove-feature also sets the feature's parent to :graveyard
   and this conflicts with any other updates on the feature's parent.

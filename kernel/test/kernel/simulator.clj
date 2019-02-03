@@ -1,13 +1,13 @@
-(ns simulator
+(ns kernel.simulator
   "Provides utilities to simulate collaborative feature modeling activities."
-  (:require [core.history-buffer :as HB]
-            [core.garbage-collector :as GC]
-            [shell.client :as client]
-            [shell.server :as server]
-            [shell.site :as site]
-            [core.compound-operation :as CO])
-  (:use clojure.test
-        shell.context))
+  (:require [clojure.test :refer :all]
+            [kernel.core.history-buffer :as HB]
+            [kernel.core.garbage-collector :as GC]
+            [kernel.shell.client :as client]
+            [kernel.shell.server :as server]
+            [kernel.shell.site :as site]
+            [kernel.core.compound-operation :as CO]
+            [kernel.shell.context :refer [*context*]]))
 
 (def ^:dynamic *contexts*
   "Captures all state in the simulation system.
