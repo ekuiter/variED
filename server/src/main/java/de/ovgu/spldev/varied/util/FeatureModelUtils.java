@@ -10,12 +10,14 @@ import java.nio.file.Path;
 import java.util.UUID;
 
 public class FeatureModelUtils {
-    private static void renameFeaturesToFeatureUUIDs(IFeatureModel featureModel) {
+    private static void renameFeaturesToFeatureIDs(IFeatureModel featureModel) {
         de.ovgu.featureide.fm.core.base.FeatureUtils.getFeatureNames(featureModel).forEach(featureName -> {
             FeatureUtils.setFeatureName(featureModel.getFeature(featureName), featureName);
             if (!featureModel.getRenamingsManager().renameFeature(featureName, UUID.randomUUID().toString()))
-                throw new RuntimeException("could not rename feature " + featureName + " to UUID");
+                throw new RuntimeException("could not rename feature " + featureName + " to ID");
         });
+        featureModel.getConstraints().forEach(constraint ->
+                FeatureUtils.setConstraintID(constraint, UUID.randomUUID()));
     }
 
     public static IFeatureModel loadFeatureModel(Path path) {
@@ -23,7 +25,7 @@ public class FeatureModelUtils {
         IFeatureModel featureModel = FeatureModelManager.load(path).getObject();
         if (featureModel == null)
             throw new RuntimeException("no valid feature model found at path " + path);
-        renameFeaturesToFeatureUUIDs(featureModel);
+        renameFeaturesToFeatureIDs(featureModel);
         return featureModel;
     }
 
@@ -35,7 +37,7 @@ public class FeatureModelUtils {
         IFeatureModel featureModel = FeatureModelManager.load(source, fileName);
         if (featureModel == null)
             throw new RuntimeException("feature model could not be loaded");
-        renameFeaturesToFeatureUUIDs(featureModel);
+        renameFeaturesToFeatureIDs(featureModel);
         return featureModel;
     }
 }
