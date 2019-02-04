@@ -4,10 +4,6 @@ import de.ovgu.featureide.fm.core.base.IFeatureModel;
 import de.ovgu.featureide.fm.core.base.impl.FMFormatManager;
 import de.ovgu.featureide.fm.core.io.IPersistentFormat;
 import de.ovgu.featureide.fm.core.io.manager.FeatureModelManager;
-import de.ovgu.spldev.varied.StateContext;
-import de.ovgu.spldev.varied.util.FeatureUtils;
-import de.ovgu.spldev.varied.messaging.Api;
-import de.ovgu.spldev.varied.messaging.Message;
 import org.pmw.tinylog.Logger;
 
 import java.nio.file.Path;
@@ -41,9 +37,5 @@ public class FeatureModelUtils {
             throw new RuntimeException("feature model could not be loaded");
         renameFeaturesToFeatureUUIDs(featureModel);
         return featureModel;
-    }
-
-    public static Message.IEncodable[] toMessage(StateContext.FeatureModel stateContext) {
-        return new Message.IEncodable[]{new Api.FeatureDiagramFeatureModel(stateContext.getArtifactPath(), stateContext.getFeatureModel())};
     }
 }

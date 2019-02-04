@@ -19,68 +19,80 @@ public class WebSocket {
     private Session session;
     private UUID siteID;
 
+    // This essentially forces the server to handle only one message at a time.
+    // This assumption simplifies multithreaded access to feature models, but limits server performance.
+    private static final Object lock = new Object();
+
     @OnOpen
     public void onOpen(@PathParam("siteID") String _siteID, Session session) {
-        try {
-            Logger.debug("WebSocket opened", siteID);
-            this.session = session;
+        synchronized (lock) {
             try {
-                UUID siteID = _siteID.equals("new") ? null : UUID.fromString(_siteID);
-                session.setMaxIdleTimeout(0); // this is not always respected by the servlet container!
-                this.siteID = CollaboratorManager.getInstance().register(this, siteID);
+                Logger.debug("WebSocket opened", siteID);
+                this.session = session;
+                try {
+                    UUID siteID = _siteID.equals("new") ? null : UUID.fromString(_siteID);
+                    session.setMaxIdleTimeout(0); // this is not always respected by the servlet container!
+                    this.siteID = CollaboratorManager.getInstance().register(this, siteID);
+                } catch (Throwable t) {
+                    send(new Api.Error(t));
+                    session.close();
+                }
             } catch (Throwable t) {
-                send(new Api.Error(t));
-                session.close();
+                Logger.error(t);
             }
-        } catch (Throwable t) {
-            Logger.error(t);
         }
     }
 
     @OnClose
     public void onClose() {
-        Logger.debug("WebSocket closed for site {}", siteID);
+        synchronized (lock) {
+            Logger.debug("WebSocket closed for site {}", siteID);
+        }
     }
 
     @OnMessage
     public void onMessage(Message message) {
-        try {
+        synchronized (lock) {
             try {
-                Logger.debug("WebSocket received {}", message);
-                CollaboratorManager.getInstance().onMessage(siteID, message);
-            } catch (Throwable t) {
-                send(new Api.Error(t));
+                try {
+                    Logger.debug("WebSocket received {}", message);
+                    CollaboratorManager.getInstance().onMessage(siteID, message);
+                } catch (Throwable t) {
+                    send(new Api.Error(t));
+                }
+            } catch (SendException e) {
+                Logger.error(e);
             }
-        } catch (SendException e) {
-            Logger.error(e);
         }
     }
 
     @OnError
     public void onError(Throwable t) {
-        try {
-            Logger.debug("WebSocket error:");
-            Logger.debug(t);
-            // Most likely cause is a user closing their browser. Check to see if
-            // the root cause is EOF and if it is ignore it.
-            // Protect against infinite loops. (see Apache Tomcat examples)
-            int count = 0;
-            Throwable root = t;
-            while (root.getCause() != null && count < 20) {
-                root = root.getCause();
-                count++;
+        synchronized (lock) {
+            try {
+                Logger.debug("WebSocket error:");
+                Logger.debug(t);
+                // Most likely cause is a user closing their browser. Check to see if
+                // the root cause is EOF and if it is ignore it.
+                // Protect against infinite loops. (see Apache Tomcat examples)
+                int count = 0;
+                Throwable root = t;
+                while (root.getCause() != null && count < 20) {
+                    root = root.getCause();
+                    count++;
+                }
+                // If this is triggered by the user closing their browser ignore it. Else, close the socket.
+                if (!(root instanceof EOFException)) {
+                    Logger.debug("closing WebSocket due to unexpected error");
+                    session.close(new CloseReason(CloseReason.CloseCodes.CLOSED_ABNORMALLY, t.toString()));
+                }
+            } catch (Throwable t2) {
+                Logger.error(t2);
             }
-            // If this is triggered by the user closing their browser ignore it. Else, close the socket.
-            if (!(root instanceof EOFException)) {
-                Logger.debug("closing WebSocket due to unexpected error");
-                session.close(new CloseReason(CloseReason.CloseCodes.CLOSED_ABNORMALLY, t.toString()));
-            }
-        } catch (Throwable t2) {
-            Logger.error(t2);
         }
     }
 
-    public void send(Message.IEncodable message) throws SendException {
+    void send(Message.IEncodable message) throws SendException {
         try {
             Logger.debug("WebSocket sending {}", message);
             session.getBasicRemote().sendObject(message);

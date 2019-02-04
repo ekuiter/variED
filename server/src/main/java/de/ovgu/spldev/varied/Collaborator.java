@@ -21,7 +21,6 @@ public class Collaborator {
 
     private static Haikunator haikunator = new HaikunatorBuilder().setDelimiter(" ").setTokenLength(0).build();
     private Set<CollaborativeSession> collaborativeSessions = new HashSet<>();
-    private static final Object lock = new Object();
 
     private static String generateName() {
         return haikunator.haikunate() + " (anonymous)";
@@ -91,33 +90,29 @@ public class Collaborator {
         if (message.getArtifactPath() == null)
             throw new Message.InvalidMessageException("no artifact path given");
 
-        // This essentially forces the server to handle only one message at a time.
-        // This assumption simplifies multithreaded access to feature models, but limits server performance.
-        synchronized (lock) {
-            Logger.debug("entering locked region");
-            try {
-                Artifact artifact = ProjectManager.getInstance().getArtifact(message.getArtifactPath());
-                if (artifact == null)
-                    throw new Message.InvalidMessageException("no artifact found for path " + message.getArtifactPath());
-                CollaborativeSession collaborativeSession = artifact.getCollaborativeSession();
-                Logger.debug("message concerns collaborative session {}", collaborativeSession);
+        Logger.debug("entering locked region");
+        try {
+            Artifact artifact = ProjectManager.getInstance().getArtifact(message.getArtifactPath());
+            if (artifact == null)
+                throw new Message.InvalidMessageException("no artifact found for path " + message.getArtifactPath());
+            CollaborativeSession collaborativeSession = artifact.getCollaborativeSession();
+            Logger.debug("message concerns collaborative session {}", collaborativeSession);
 
-                if (message.isType(Api.TypeEnum.JOIN_REQUEST) || message.isType(Api.TypeEnum.LEAVE_REQUEST)) {
-                    if (message.isType(Api.TypeEnum.JOIN_REQUEST))
-                        joinCollaborativeSession(collaborativeSession);
-                    if (message.isType(Api.TypeEnum.LEAVE_REQUEST))
-                        leaveCollaborativeSession(collaborativeSession);
+            if (message.isType(Api.TypeEnum.JOIN_REQUEST) || message.isType(Api.TypeEnum.LEAVE_REQUEST)) {
+                if (message.isType(Api.TypeEnum.JOIN_REQUEST))
+                    joinCollaborativeSession(collaborativeSession);
+                if (message.isType(Api.TypeEnum.LEAVE_REQUEST))
+                    leaveCollaborativeSession(collaborativeSession);
+                return;
+            }
+
+            for (CollaborativeSession _collaborativeSession : collaborativeSessions)
+                if (_collaborativeSession == collaborativeSession) {
+                    collaborativeSession.onMessage(this, message);
                     return;
                 }
-
-                for (CollaborativeSession _collaborativeSession : collaborativeSessions)
-                    if (_collaborativeSession == collaborativeSession) {
-                        collaborativeSession.onMessage(this, message);
-                        return;
-                    }
-            } finally {
-                Logger.debug("leaving locked region");
-            }
+        } finally {
+            Logger.debug("leaving locked region");
         }
 
         throw new Message.InvalidMessageException("did not join collaborative session for given artifact path");

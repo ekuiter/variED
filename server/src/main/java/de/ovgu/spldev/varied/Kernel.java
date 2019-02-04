@@ -51,34 +51,34 @@ public class Kernel {
     }
 
     Kernel(IFeatureModel initialFeatureModel) {
-        callKernel("serverInitialize", initialFeatureModel); // TODO: feature model format!
+        callKernel("serverInitialize", true /*initialFeatureModel*/); // TODO: feature model format!
         storeContext();
     }
 
-    Object generateHeartbeat() {
+    String generateHeartbeat() {
         restoreContext();
-        Object heartbeatMessage = callKernel("serverGenerateHeartbeat");
+        String heartbeatMessage = (String) callKernel("serverGenerateHeartbeat");
         storeContext();
         return heartbeatMessage;
     }
 
-    Object forwardMessage(Object message) {
+    String forwardMessage(String message) {
         restoreContext();
-        Object newMessage = callKernel("serverForwardMessage", message);
+        String newMessage = (String) callKernel("serverForwardMessage", message);
         storeContext();
         return newMessage;
     }
 
-    Object[] siteJoined(UUID siteID) {
+    String[] siteJoined(UUID siteID) {
         restoreContext();
-        Object[] contextAndHeartbeatMessage = (Object[]) callKernel("serverSiteJoined", siteID.toString());
+        String[] contextAndHeartbeatMessage = (String[]) callKernel("serverSiteJoined", siteID.toString());
         storeContext();
         return contextAndHeartbeatMessage;
     }
 
-    Object siteLeft(UUID siteID) {
+    String siteLeft(UUID siteID) {
         restoreContext();
-        Object leaveMessage = callKernel("serverSiteLeft", siteID.toString());
+        String leaveMessage = (String) callKernel("serverSiteLeft", siteID.toString());
         storeContext();
         return leaveMessage;
     }

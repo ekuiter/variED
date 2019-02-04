@@ -62,16 +62,16 @@ public class Api {
         Object context;
 
         public Initialize(Artifact.Path artifactPath, Object context) {
-            super(TypeEnum.KERNEL, artifactPath);
+            super(TypeEnum.INITIALIZE, artifactPath);
             this.context = context;
         }
     }
 
     public static class Kernel extends Message implements Message.IEncodable, Message.IDecodable {
         @Expose
-        public Object message;
+        public String message;
 
-        public Kernel(Artifact.Path artifactPath, Object message) {
+        public Kernel(Artifact.Path artifactPath, String message) {
             super(TypeEnum.KERNEL, artifactPath);
             this.message = message;
         }

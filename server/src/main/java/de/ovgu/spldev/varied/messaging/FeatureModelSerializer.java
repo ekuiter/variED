@@ -170,7 +170,7 @@ public class FeatureModelSerializer implements JsonSerializer<IFeatureModel> {
 
     }
 
-    protected void addDescription(IConstraint constraint, JsonObject fnod) {
+    private void addDescription(IConstraint constraint, JsonObject fnod) {
         final String description = constraint.getDescription();
         if ((description != null) && !description.trim().isEmpty()) {
             fnod.addProperty(DESCRIPTION, description.replace("\r", ""));

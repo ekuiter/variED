@@ -39,7 +39,8 @@
   (:require [kernel.core.compound-operation :as CO]
             [kernel.shell.client :as client]
             [kernel.shell.server :as server]
-            [kernel.shell.context :refer [*context* set-context]]))
+            [kernel.shell.context :refer [*context* set-context]]
+            [kernel.helpers :as helpers]))
 
 ; client API
 
@@ -48,7 +49,7 @@
   The server assigns it a site identifier and an initial context, which the
   client must call clientInitialize with."
   [site-ID context]
-  (client/initialize-context-star-topology! site-ID context))
+  (client/initialize-context-star-topology! site-ID (helpers/decode context)))
 
 (defn ^:export clientGenerateOperation
   "At any time the system is not frozen, the client may call
@@ -61,12 +62,14 @@
   consume. It also returns an operation message that the client must send
   to the server."
   [PO-sequence]
-  (into-array (client/generate-operation! PO-sequence)))
+  (let [[next-FM operation] (client/generate-operation! (helpers/decode PO-sequence))]
+    (into-array [next-FM                                    ; TODO: expose the right feature model format
+                 (helpers/encode operation)])))
 
 (defn ^:export clientGenerateInverseOperation
   "**TODO**: Generate inverse operations."
   []
-  (client/generate-inverse-operation!))
+  (helpers/encode (client/generate-inverse-operation!)))
 
 (defn ^:export clientGenerateHeartbeat
   "If no operations have been generated for a while (and when no other API
@@ -74,7 +77,7 @@
   clientGenerateHeartbeat and send the resulting message to the server.
   This is to ensure smooth garbage collection."
   []
-  (client/generate-heartbeat!))
+  (helpers/encode (client/generate-heartbeat!)))
 
 (defn ^:export clientReceiveMessage
   "When a message arrives from the server, the client must call
@@ -84,7 +87,7 @@
   **TODO**: When a conflict occurs, before un-freezing the system, all
   conflicting operations have to be completely purged from the system."
   [message]
-  (client/receive-message! message))
+  (client/receive-message! (helpers/decode message)))       ; TODO: expose right FM format
 
 (defn ^:export clientGC
   "Periodically (and when no other API calls are in progress and the system
@@ -98,7 +101,7 @@
   "When a client first enters the system and requests to edit a given feature
   model, the server must call serverInitialize with said feature model."
   [initial-FM]
-  (server/initialize-context-star-topology! initial-FM))
+  (server/initialize-context-star-topology! initial-FM))    ; TODO: consume right FM format
 
 (defn serverGenerateHeartbeat
   "If the server has not forwarded any operations for a while (and when no other API
@@ -106,14 +109,14 @@
   serverGenerateHeartbeat and send the resulting message to all client sites.
   This may happen for example when only one client site is connected."
   []
-  (server/generate-heartbeat!))
+  (helpers/encode (server/generate-heartbeat!)))
 
 (defn serverForwardMessage
   "After receiving a message from a client, the server must call
   serverForwardMessage with the received message.
   The returned message is then forwarded to all sites but the original site."
   [message]
-  (server/forward-message! message))
+  (helpers/encode (server/forward-message! (helpers/decode message))))
 
 (defn serverSiteJoined
   "Whenever a new site requests to join, the server must call serverSiteJoined
@@ -132,13 +135,15 @@
   efficient to generate this heartbeat message directly at the server (which
   is equivalent) and forward it everyone else immediately."
   [site-ID]
-  (into-array (server/site-joined! site-ID)))
+  (let [[context heartbeat-message] (server/site-joined! site-ID)]
+    (into-array [(helpers/encode context)
+                 (helpers/encode heartbeat-message)])))
 
 (defn serverSiteLeft
   "When a site leaves, the server must call serverSiteLeft and forward
   the returned leave message to all other sites immediately."
   [site-ID]
-  (server/site-left! site-ID))
+  (helpers/encode (server/site-left! site-ID)))
 
 (defn serverGC
   "Periodically (and when no other API calls are in progress and the system
@@ -151,67 +156,68 @@
 (defn ^:export operationCompose
   "Composes multiple compound operations into one compound operation."
   [& PO-sequences]
-  (apply CO/compose-PO-sequences PO-sequences))
+  (helpers/encode (apply CO/compose-PO-sequences (map helpers/decode PO-sequences))))
 
 (defn ^:export operationCreateFeatureBelow
   "Creates a feature below another feature."
   [parent-ID]
-  (CO/create-feature-below (*context* :FM) parent-ID))
+  (helpers/encode (CO/create-feature-below (*context* :FM) parent-ID)))
 
 (defn ^:export operationCreateFeatureAbove
   "Creates a feature above a set of sibling features."
   [& IDs]
-  (apply CO/create-feature-above (*context* :FM) IDs))
+  (helpers/encode (apply CO/create-feature-above (*context* :FM) IDs)))
 
 (defn ^:export operationRemoveFeatureSubtree
   "Removes an entire feature subtree rooted at a feature."
   [ID]
-  (CO/remove-feature-subtree (*context* :FM) ID))
+  (helpers/encode (CO/remove-feature-subtree (*context* :FM) ID)))
 
 (defn ^:export operationMoveFeatureSubtree
   "Moves an entire feature subtree rooted at a feature below another feature."
   [ID parent-ID]
-  (CO/move-feature-subtree (*context* :FM) ID parent-ID))
+  (helpers/encode (CO/move-feature-subtree (*context* :FM) ID parent-ID)))
 
 (defn ^:export operationRemoveFeature
   "Removes a single feature."
   [ID]
-  (CO/remove-feature (*context* :FM) ID))
+  (helpers/encode (CO/remove-feature (*context* :FM) ID)))
 
 (defn ^:export operationSetFeatureOptional
   "Sets the optional attribute of a feature."
   [ID optional?]
-  (CO/set-feature-optional? (*context* :FM) ID optional?))
+  (helpers/encode (CO/set-feature-optional? (*context* :FM) ID optional?)))
 
 (defn ^:export operationSetFeatureGroupType
   "Sets the group type attribute of a feature."
-  [ID group-type]
-  (CO/set-feature-group-type (*context* :FM) ID group-type))
+  [ID group-type-str]
+  (helpers/encode (CO/set-feature-group-type (*context* :FM) ID (keyword group-type-str))))
 
 (defn ^:export operationSetFeatureProperty
   "Sets some additional property of a feature."
-  [ID property value]
-  (CO/set-feature-property (*context* :FM) ID property value))
+  [ID property-str value]
+  (helpers/encode (CO/set-feature-property (*context* :FM) ID (:keyword property-str) value)))
 
 (defn ^:export operationCreateConstraint
   "Creates a constraint and initializes it with a given propositional formula."
   [formula]
-  (CO/create-constraint (*context* :FM) formula))
+  (helpers/encode (CO/create-constraint (*context* :FM) formula))) ; TODO: find right formula format
 
 (defn ^:export operationSetConstraint
   "Sets the propositional formula of a constraint."
-  [ID formula]
-  (CO/set-constraint (*context* :FM) ID formula))
+  [ID formula]                                              ; TODO: find right formula format
+  (helpers/encode (CO/set-constraint (*context* :FM) ID formula)))
 
 (defn ^:export operationRemoveConstraint
   "Removes a constraint."
   [ID]
-  (CO/remove-constraint (*context* :FM) ID))
+  (helpers/encode (CO/remove-constraint (*context* :FM) ID)))
 
 (defn ^:export contextGet
   "Returns the global context.
   For debugging only."
   []
+  ; do not encode the context as it should not be sent over the wire
   *context*)
 
 (defn ^:export contextSet

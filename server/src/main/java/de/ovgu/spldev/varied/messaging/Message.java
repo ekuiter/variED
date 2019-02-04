@@ -3,9 +3,7 @@ package de.ovgu.spldev.varied.messaging;
 import com.google.gson.annotations.Expose;
 import com.google.gson.typeadapters.RuntimeTypeAdapterFactory;
 import de.ovgu.spldev.varied.Artifact;
-import de.ovgu.spldev.varied.StateContext;
 import de.ovgu.spldev.varied.util.StringUtils;
-import de.ovgu.spldev.varied.common.operations.Operation;
 
 import java.util.stream.Stream;
 
@@ -36,13 +34,13 @@ abstract public class Message {
             return Stream.of(Api.TypeEnum.values()).map(Api.TypeEnum::toString).toArray(String[]::new);
         }
 
-        public static RuntimeTypeAdapterFactory<Message> registerSubtypes(RuntimeTypeAdapterFactory<Message> runtimeTypeAdapterFactory) {
+        static RuntimeTypeAdapterFactory<Message> registerSubtypes(RuntimeTypeAdapterFactory<Message> runtimeTypeAdapterFactory) {
             for (String type : getTypes())
                 try {
                     Class klass = Class.forName(StringUtils.toClassName(Api.class.getName() + "$", type));
                     if (IDecodable.class.isAssignableFrom(klass))
                         runtimeTypeAdapterFactory = runtimeTypeAdapterFactory.registerSubtype(klass, type);
-                } catch (ClassNotFoundException e) {
+                } catch (ClassNotFoundException ignored) {
                 }
             return runtimeTypeAdapterFactory;
         }
@@ -68,9 +66,7 @@ abstract public class Message {
         return artifactPath;
     }
 
-    Message(Type type, Artifact.Path artifactPath) {
-        this.type = type;
-        this.artifactPath = artifactPath;
+    Message() {
     }
 
     Message(Api.TypeEnum typeEnum, Artifact.Path artifactPath) {
@@ -88,39 +84,6 @@ abstract public class Message {
 
     // may be received by the server
     public interface IDecodable {
-        default boolean isValid(StateContext stateContext) throws InvalidMessageException {
-            return true;
-        }
-    }
-
-    // may be received and applied (but not undone)
-    public interface IApplicable extends IDecodable {
-        Message.IEncodable[] apply(StateContext stateContext) throws Operation.InvalidOperationException;
-    }
-
-    // may be received, applied, undone and redone
-    public interface IUndoable extends IDecodable {
-        Operation getOperation(StateContext stateContext) throws Operation.InvalidOperationException;
-
-        default Message.IEncodable[] getResponse(StateContext stateContext) {
-            return new Message.IEncodable[]{};
-        }
-    }
-
-    // may be received, applied, undone and redone as a single message,
-    // but also as part of a batch message
-    public interface IBatchUndoable extends IUndoable {
-        default Operation getOperation(StateContext stateContext, Object batchContext) throws Operation.InvalidOperationException {
-            return getOperation(stateContext);
-        }
-
-        default Object createBatchContext() {
-            return null;
-        }
-
-        default Object nextBatchContext(Operation operation, Object batchContext) {
-            return null;
-        }
     }
 
     public static class InvalidMessageException extends Exception {

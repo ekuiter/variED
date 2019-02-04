@@ -1,4 +1,4 @@
-task buildServer(type: Exec) {
+task _buildServer(type: Exec) {
     if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
         commandLine 'lein.bat', 'uberjar'
     } else {
@@ -30,15 +30,19 @@ task doc(type: Exec) {
     }
 }
 
-// As of now, this has to be run MANUALLY if the kernel changed.
-task build {
-    dependsOn 'buildServer', 'buildClient'
+task buildServer {
+    dependsOn '_buildServer'
     doLast {
         copy {
             from 'target/kernel-SNAPSHOT-standalone.jar'
             into '../server/lib'
         }
     }
+}
+
+// As of now, this has to be run MANUALLY if the kernel changed.
+task build {
+    dependsOn 'buildServer', 'buildClient'
 }
 
 task clean(type: Exec) {

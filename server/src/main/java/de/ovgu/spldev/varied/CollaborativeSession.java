@@ -9,7 +9,6 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -78,15 +77,15 @@ public abstract class CollaborativeSession {
                 return false;
 
             Api.Kernel kernelMessage = (Api.Kernel) message;
-            Object newMessage = kernel.forwardMessage(kernelMessage.message);
+            String newMessage = kernel.forwardMessage(kernelMessage.message);
             super.broadcastToOthers(new Api.Kernel(artifactPath, newMessage), collaborator);
             return true;
         }
 
         protected void _join(Collaborator newCollaborator) {
             UUID siteID = newCollaborator.getSiteID();
-            Object[] contextAndHeartbeatMessage = kernel.siteJoined(siteID);
-            Object context = contextAndHeartbeatMessage[0],
+            String[] contextAndHeartbeatMessage = kernel.siteJoined(siteID);
+            String context = contextAndHeartbeatMessage[0],
                     heartbeatMessage = contextAndHeartbeatMessage[1];
             newCollaborator.send(new Api.Initialize(artifactPath, context));
             super.broadcastToOthers(new Api.Kernel(artifactPath, heartbeatMessage), newCollaborator);
@@ -94,7 +93,7 @@ public abstract class CollaborativeSession {
 
         protected void _leave(Collaborator oldCollaborator) {
             UUID siteID = oldCollaborator.getSiteID();
-            Object leaveMessage = kernel.siteLeft(siteID);
+            String leaveMessage = kernel.siteLeft(siteID);
             super.broadcastToOthers(new Api.Kernel(artifactPath, leaveMessage), oldCollaborator);
         }
     }
