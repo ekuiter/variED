@@ -1,52 +1,69 @@
 package de.ovgu.spldev.varied;
 
 import com.google.gson.annotations.Expose;
-import de.ovgu.spldev.varied.common.operations.Operation;
 import de.ovgu.spldev.varied.messaging.Api;
 import de.ovgu.spldev.varied.messaging.Message;
 import me.atrox.haikunator.Haikunator;
 import me.atrox.haikunator.HaikunatorBuilder;
 import org.pmw.tinylog.Logger;
 
-import java.util.ArrayList;
-import java.util.Objects;
-import java.util.function.Supplier;
+import java.util.*;
 
-public class User {
+public class Collaborator {
+    @Expose
+    private UUID siteID;
+
     @Expose
     private String name;
 
     private WebSocket webSocket;
+    private Queue<Message.IEncodable> outgoingQueue = new LinkedList<>();
+
     private static Haikunator haikunator = new HaikunatorBuilder().setDelimiter(" ").setTokenLength(0).build();
-    private ArrayList<CollaborativeSession> collaborativeSessions = new ArrayList<>();
+    private Set<CollaborativeSession> collaborativeSessions = new HashSet<>();
     private static final Object lock = new Object();
 
     private static String generateName() {
-        Supplier<String> generator = () -> haikunator.haikunate() + " (anonymous)";
-        UserManager userManager = UserManager.getInstance();
-        String name = generator.get();
-        while (!userManager.isNameAvailable(name))
-            name = generator.get();
-        return name;
+        return haikunator.haikunate() + " (anonymous)";
     }
 
-    public User(WebSocket webSocket) {
-        this(generateName(), webSocket);
+    Collaborator(WebSocket webSocket) {
+        this(UUID.randomUUID(), generateName(), webSocket);
     }
 
-    public User(String name, WebSocket webSocket) {
+    private Collaborator(UUID siteID, String name, WebSocket webSocket) {
+        this.siteID = siteID;
         this.name = name;
         this.webSocket = webSocket;
     }
 
-    public void send(Message.IEncodable message) {
-        Logger.info("sending message {} to user {}", message, this);
+    private void _send(Message.IEncodable message) throws WebSocket.SendException {
+        Logger.info("sending message {} to collaborator {}", message, this);
         webSocket.send(message);
     }
 
-    public void sendInitialInformation() {
-        Logger.info("sending initial information to user {}", this);
-        send(new Api.UserInfo(this));
+    void sendPending() {
+        Logger.info("sending {} queued messages to collaborator {}", outgoingQueue.size(), this);
+        while (outgoingQueue.peek() != null) {
+            Message.IEncodable message = outgoingQueue.peek();
+            try {
+                _send(message);
+            } catch (WebSocket.SendException e) {
+                return;
+            }
+            outgoingQueue.remove();
+        }
+    }
+
+    void send(Message.IEncodable message) {
+        Logger.info("queueing message {} for collaborator {}", message, this);
+        outgoingQueue.add(message);
+        sendPending();
+    }
+
+    void sendInitialInformation() {
+        Logger.info("sending initial information to collaborator {}", this);
+        send(new Api.CollaboratorInfo(siteID));
         for (Artifact artifact : ProjectManager.getInstance().getArtifacts())
             send(new Api.ArtifactInfo(artifact.getPath()));
     }
@@ -55,17 +72,21 @@ public class User {
         return name;
     }
 
-    public WebSocket getWebSocket() {
-        return webSocket;
+    UUID getSiteID() {
+        return siteID;
     }
 
     public String toString() {
-        return getName();
+        return getSiteID().toString();
     }
 
-    public void onMessage(Message message) throws Message.InvalidMessageException, Operation.InvalidOperationException {
+    public void setWebSocket(WebSocket webSocket) {
+        this.webSocket = webSocket;
+    }
+
+    void onMessage(Message message) throws Message.InvalidMessageException {
         Objects.requireNonNull(message, "no message given");
-        Logger.info("received message {} from user {}", message, this);
+        Logger.info("received message {} from collaborator {}", message, this);
 
         if (message.getArtifactPath() == null)
             throw new Message.InvalidMessageException("no artifact path given");
@@ -81,17 +102,17 @@ public class User {
                 CollaborativeSession collaborativeSession = artifact.getCollaborativeSession();
                 Logger.debug("message concerns collaborative session {}", collaborativeSession);
 
-                if (message.isType(Api.TypeEnum.JOIN) || message.isType(Api.TypeEnum.LEAVE)) {
-                    if (message.isType(Api.TypeEnum.JOIN))
+                if (message.isType(Api.TypeEnum.JOIN_REQUEST) || message.isType(Api.TypeEnum.LEAVE_REQUEST)) {
+                    if (message.isType(Api.TypeEnum.JOIN_REQUEST))
                         joinCollaborativeSession(collaborativeSession);
-                    if (message.isType(Api.TypeEnum.LEAVE))
+                    if (message.isType(Api.TypeEnum.LEAVE_REQUEST))
                         leaveCollaborativeSession(collaborativeSession);
                     return;
                 }
 
                 for (CollaborativeSession _collaborativeSession : collaborativeSessions)
                     if (_collaborativeSession == collaborativeSession) {
-                        collaborativeSession.onMessage(message);
+                        collaborativeSession.onMessage(this, message);
                         return;
                     }
             } finally {

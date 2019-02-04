@@ -9,7 +9,7 @@
             [kernel.core.garbage-collector :as GC]
             [kernel.core.message :as message]
             [kernel.shell.site :as site]
-            [kernel.shell.context :refer [*context* initialize-context]]))
+            [kernel.shell.context :refer [*context* set-context]]))
 
 ; constructors
 
@@ -35,8 +35,7 @@
   "Initializes global context for the server site in a star topology.
   Resets the global context."
   [initial-FM]
-  (initialize-context (initialize-context-star-topology initial-FM))
-  nil)
+  (set-context (initialize-context-star-topology initial-FM)))
 
 ; server API
 
@@ -75,6 +74,8 @@
     (swap! (*context* :VC) #(VC/_merge (VC/increment % :server) site-VC))
     (swap! (*context* :GC) #(GC/insert % :server (GC-filter @(*context* :VC))))
     (swap! (*context* :GC) #(GC/insert % (message/get-site-ID message) (message/get-VC message)))
+    ; if a site re-joins, it is online again (but passed a completely new context)
+    (swap! (*context* :offline-sites) #(disj % site-ID))
     [{:VC      site-VC
       :CDAG    @(*context* :CDAG)
       :base-FM @(*context* :base-FM)

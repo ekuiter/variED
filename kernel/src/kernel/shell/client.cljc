@@ -15,7 +15,7 @@
             [kernel.core.compound-operation :as CO]
             [kernel.core.message :as message]
             [kernel.shell.site :as site]
-            [kernel.shell.context :refer [*context* initialize-context]]))
+            [kernel.shell.context :refer [*context* set-context]]))
 
 ; constructors
 
@@ -46,8 +46,7 @@
   "Initializes global context for a new client site in a star topology.
   Resets the global context."
   [site-ID context]
-  (initialize-context (initialize-context-star-topology site-ID context))
-  nil)
+  (set-context (initialize-context-star-topology site-ID context)))
 
 ; client API
 

@@ -5,7 +5,7 @@ import de.ovgu.featureide.fm.core.base.impl.FMFormatManager;
 import de.ovgu.featureide.fm.core.io.IPersistentFormat;
 import de.ovgu.featureide.fm.core.io.manager.FeatureModelManager;
 import de.ovgu.spldev.varied.StateContext;
-import de.ovgu.spldev.varied.common.util.FeatureUtils;
+import de.ovgu.spldev.varied.util.FeatureUtils;
 import de.ovgu.spldev.varied.messaging.Api;
 import de.ovgu.spldev.varied.messaging.Message;
 import org.pmw.tinylog.Logger;

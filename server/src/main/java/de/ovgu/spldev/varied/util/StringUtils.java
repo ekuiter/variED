@@ -1,4 +1,4 @@
-package de.ovgu.spldev.varied.common.util;
+package de.ovgu.spldev.varied.util;
 
 import java.util.Arrays;
 

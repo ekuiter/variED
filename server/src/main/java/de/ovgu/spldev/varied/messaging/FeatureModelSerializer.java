@@ -179,7 +179,7 @@ public class FeatureModelSerializer implements JsonSerializer<IFeatureModel> {
 
     private void writeAttributes(JsonArray node, JsonObject fnod, IFeature feat) {
         fnod.addProperty("uuid", feat.getName());
-        fnod.addProperty("name", de.ovgu.spldev.varied.common.util.FeatureUtils.getFeatureName(feat));
+        fnod.addProperty("name", de.ovgu.spldev.varied.util.FeatureUtils.getFeatureName(feat));
         if (feat.getStructure().isHidden()) {
             fnod.addProperty(HIDDEN, true);
         }

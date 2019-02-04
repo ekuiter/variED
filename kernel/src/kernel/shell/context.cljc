@@ -25,7 +25,8 @@
 
 (declare ^:dynamic *context*)
 
-(defn initialize-context
-  "Initializes a site's global context."
-  [initial-context]
-  (def ^:dynamic *context* initial-context))
+(defn set-context
+  "Sets a site's global context."
+  [context]
+  (def ^:dynamic *context* context)
+  nil)

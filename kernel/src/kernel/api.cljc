@@ -39,7 +39,7 @@
   (:require [kernel.core.compound-operation :as CO]
             [kernel.shell.client :as client]
             [kernel.shell.server :as server]
-            [kernel.shell.context :refer [*context*]]))
+            [kernel.shell.context :refer [*context* set-context]]))
 
 ; client API
 
@@ -61,7 +61,7 @@
   consume. It also returns an operation message that the client must send
   to the server."
   [PO-sequence]
-  (client/generate-operation! PO-sequence))
+  (into-array (client/generate-operation! PO-sequence)))
 
 (defn ^:export clientGenerateInverseOperation
   "**TODO**: Generate inverse operations."
@@ -132,7 +132,7 @@
   efficient to generate this heartbeat message directly at the server (which
   is equivalent) and forward it everyone else immediately."
   [site-ID]
-  (server/site-joined! site-ID))
+  (into-array (server/site-joined! site-ID)))
 
 (defn serverSiteLeft
   "When a site leaves, the server must call serverSiteLeft and forward
@@ -208,8 +208,14 @@
   [ID]
   (CO/remove-constraint (*context* :FM) ID))
 
-(defn ^:export inspectContext
+(defn ^:export contextGet
   "Returns the global context.
   For debugging only."
   []
   *context*)
+
+(defn ^:export contextSet
+  "Returns the global context.
+  For debugging only."
+  [context]
+  (set-context context))

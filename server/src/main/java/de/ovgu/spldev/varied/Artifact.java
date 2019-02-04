@@ -3,7 +3,7 @@ package de.ovgu.spldev.varied;
 import com.google.gson.annotations.Expose;
 import de.ovgu.featureide.fm.core.base.IFeatureModel;
 import de.ovgu.spldev.varied.util.FeatureModelUtils;
-import de.ovgu.spldev.varied.common.util.StringUtils;
+import de.ovgu.spldev.varied.util.StringUtils;
 
 import java.util.Objects;
 
@@ -69,7 +69,7 @@ public abstract class Artifact {
     }
 
     public static class FeatureModel extends Artifact {
-        private IFeatureModel featureModel;
+        private IFeatureModel initialFeatureModel;
         private CollaborativeSession collaborativeSession;
 
         FeatureModel(Project project, String name, String source) {
@@ -84,14 +84,14 @@ public abstract class Artifact {
             this(project, name, FeatureModelUtils.loadFeatureModel(path));
         }
 
-        FeatureModel(Project project, String name, IFeatureModel featureModel) {
+        FeatureModel(Project project, String name, IFeatureModel initialFeatureModel) {
             super(project, name);
-            this.featureModel = featureModel;
+            this.initialFeatureModel = initialFeatureModel;
         }
 
         public CollaborativeSession getCollaborativeSession() {
             if (this.collaborativeSession == null)
-                this.collaborativeSession = new CollaborativeSession(new StateContext.FeatureModel(getPath(), featureModel));
+                this.collaborativeSession = new CollaborativeSession.FeatureModel(getPath(), initialFeatureModel);
             return collaborativeSession;
         }
     }
