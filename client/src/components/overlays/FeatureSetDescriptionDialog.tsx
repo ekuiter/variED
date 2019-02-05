@@ -27,7 +27,7 @@ export default class extends FeatureComponent()<Props> {
                 title={i18n.t('overlays.featureSetDescriptionDialog.title')}
                 submitText={i18n.t('overlays.featureSetDescriptionDialog.rename')}
                 defaultValue={feature.description}
-                onSubmit={description => this.props.onSetFeatureDescription({featureUUID: feature.uuid, description})}
+                onSubmit={description => this.props.onSetFeatureDescription({featureID: feature.ID, description})}
                 submitOnEnter={false}
                 dialogProps={{styles: largeDialogStyle}}
                 textFieldProps={{multiline: true, rows: 5}}/>

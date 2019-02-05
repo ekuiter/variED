@@ -38,15 +38,15 @@ export default class extends FeatureComponent()<Props> {
     onRenderFooterContent = () => (
         <CommandBar
             items={transparentItems([
-                commands.featureDiagram.feature.newMenu(this.props.featureUUID!, this.props.onAddFeatureBelow, this.props.onAddFeatureAbove, this.props.onDismissed, true),
+                commands.featureDiagram.feature.newMenu(this.props.featureID!, this.props.onAddFeatureBelow, this.props.onAddFeatureAbove, this.props.onDismissed, true),
                 commands.featureDiagram.feature.removeMenu([this.feature], this.props.onRemoveFeatures, this.props.onRemoveFeaturesBelow, this.props.onDismissed, true)
             ])}
             overflowItems={[
                 commands.featureDiagram.feature.collapseMenu(
                     [this.feature], this.props.onCollapseFeatures, this.props.onExpandFeatures,
                     this.props.onCollapseFeaturesBelow, this.props.onExpandFeaturesBelow, this.props.onDismissed),
-                commands.featureDiagram.feature.rename(this.props.featureUUID!, this.props.onShowOverlay),
-                commands.featureDiagram.feature.setDescription(this.props.featureUUID!, this.props.onShowOverlay),
+                commands.featureDiagram.feature.rename(this.props.featureID!, this.props.onShowOverlay),
+                commands.featureDiagram.feature.setDescription(this.props.featureID!, this.props.onShowOverlay),
                 commands.featureDiagram.feature.properties([this.feature], this.props.onSetFeatureAbstract,
                     this.props.onSetFeatureHidden, this.props.onSetFeatureMandatory, this.props.onSetFeatureAnd,
                     this.props.onSetFeatureOr, this.props.onSetFeatureAlternative, this.props.onDismissed)

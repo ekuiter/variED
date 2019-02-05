@@ -24,43 +24,43 @@ export const invalidFeatureModel2 = <any>{
 export const validFeatureModel = <SerializedFeatureModel>{
     'struct': [
         {
-            'uuid': 'Eclipse',
+            'ID': 'Eclipse',
             'name': 'Eclipse',
             'mandatory': true,
             'description': 'this is a feature which has a description text',
             'type': 'and',
             'children': [
-                {'type': 'feature', 'uuid': 'JDT', 'name': 'JDT'},
-                {'type': 'feature', 'uuid': 'CDT', 'name': 'CDT'},
-                {'type': 'feature', 'uuid': 'AJDT', 'name': 'AJDT'},
+                {'type': 'feature', 'ID': 'JDT', 'name': 'JDT'},
+                {'type': 'feature', 'ID': 'CDT', 'name': 'CDT'},
+                {'type': 'feature', 'ID': 'AJDT', 'name': 'AJDT'},
                 {
-                    'uuid': 'FeatureModeling',
+                    'ID': 'FeatureModeling',
                     'name': 'FeatureModeling',
                     'type': 'and',
                     'children': [
-                        {'type': 'feature', 'uuid': 'CIDE', 'name': 'CIDE'},
-                        {'type': 'feature', 'uuid': 'FAMILIAR', 'name': 'FAMILIAR'},
+                        {'type': 'feature', 'ID': 'CIDE', 'name': 'CIDE'},
+                        {'type': 'feature', 'ID': 'FAMILIAR', 'name': 'FAMILIAR'},
                         {
-                            'uuid': 'FeatureIDE',
+                            'ID': 'FeatureIDE',
                             'name': 'FeatureIDE',
                             'description': 'A sample description',
                             'type': 'or',
                             'children': [
-                                {'type': 'feature', 'uuid': 'AHEAD', 'name': 'AHEAD'},
-                                {'type': 'feature', 'uuid': 'FeatureHouse', 'name': 'FeatureHouse'},
-                                {'type': 'feature', 'uuid': 'FeatureCpp', 'name': 'FeatureCpp'},
-                                {'type': 'feature', 'uuid': 'DeltaJ', 'name': 'DeltaJ'},
-                                {'type': 'feature', 'uuid': 'AspectJ', 'name': 'AspectJ'},
-                                {'type': 'feature', 'uuid': 'Munge', 'name': 'Munge'},
-                                {'type': 'feature', 'uuid': 'Antenna', 'name': 'Antenna'},
-                                {'type': 'feature', 'uuid': 'DeltaMontiArc', 'name': 'DeltaMontiArc'}
+                                {'type': 'feature', 'ID': 'AHEAD', 'name': 'AHEAD'},
+                                {'type': 'feature', 'ID': 'FeatureHouse', 'name': 'FeatureHouse'},
+                                {'type': 'feature', 'ID': 'FeatureCpp', 'name': 'FeatureCpp'},
+                                {'type': 'feature', 'ID': 'DeltaJ', 'name': 'DeltaJ'},
+                                {'type': 'feature', 'ID': 'AspectJ', 'name': 'AspectJ'},
+                                {'type': 'feature', 'ID': 'Munge', 'name': 'Munge'},
+                                {'type': 'feature', 'ID': 'Antenna', 'name': 'Antenna'},
+                                {'type': 'feature', 'ID': 'DeltaMontiArc', 'name': 'DeltaMontiArc'}
                             ]
                         },
-                        {'type': 'feature', 'uuid': 'ExtendedFM', 'name': 'ExtendedFM'},
-                        {'type': 'feature', 'uuid': 'MoSoPoLiTe', 'name': 'MoSoPoLiTe'}
+                        {'type': 'feature', 'ID': 'ExtendedFM', 'name': 'ExtendedFM'},
+                        {'type': 'feature', 'ID': 'MoSoPoLiTe', 'name': 'MoSoPoLiTe'}
                     ]
                 },
-                {'type': 'feature', 'uuid': 'DeltaJEclipsePlugin', 'name': 'DeltaJEclipsePlugin'}
+                {'type': 'feature', 'ID': 'DeltaJEclipsePlugin', 'name': 'DeltaJEclipsePlugin'}
             ]
         }
     ],

@@ -16,8 +16,8 @@ export interface FeatureDiagramCollaborativeSession extends CollaborativeSession
     serializedFeatureModel: SerializedFeatureModel,
     layout: FeatureDiagramLayoutType,
     isSelectMultipleFeatures: boolean,
-    selectedFeatureUUIDs: string[],
-    collapsedFeatureUUIDs: string[]
+    selectedfeatureIDs: string[],
+    collapsedfeatureIDs: string[]
 };
 
 export interface State {
@@ -47,23 +47,23 @@ export const initialFeatureDiagramCollaborativeSessionState =
         serializedFeatureModel,
         layout: FeatureDiagramLayoutType.verticalTree,
         isSelectMultipleFeatures: false,
-        selectedFeatureUUIDs: [],
-        collapsedFeatureUUIDs: []
+        selectedfeatureIDs: [],
+        collapsedfeatureIDs: []
     });
 
-export type OnSelectFeatureFunction = (payload: {featureUUID: string}) => void;
-export type OnDeselectFeatureFunction = (payload: {featureUUID: string}) => void;
+export type OnSelectFeatureFunction = (payload: {featureID: string}) => void;
+export type OnDeselectFeatureFunction = (payload: {featureID: string}) => void;
 export type OnSelectAllFeaturesFunction = () => void;
 export type OnDeselectAllFeaturesFunction = () => void;
 export type OnCollapseAllFeaturesFunction = () => void;
 export type OnExpandAllFeaturesFunction = () => void;
 export type OnSetFeatureDiagramLayoutFunction = (payload: {layout: FeatureDiagramLayoutType}) => void;
 export type OnSetSelectMultipleFeaturesFunction = (payload: {isSelectMultipleFeatures: boolean}) => void;
-export type OnCollapseFeaturesFunction = (payload: {featureUUIDs: string[]}) => void;
-export type OnExpandFeaturesFunction = (payload: {featureUUIDs: string[]}) => void;
-export type OnCollapseFeaturesBelowFunction = (payload: {featureUUIDs: string[]}) => void;
-export type OnExpandFeaturesBelowFunction = (payload: {featureUUIDs: string[]}) => void;
-export type OnShowOverlayFunction = (payload: {overlay: OverlayType, overlayProps: OverlayProps, selectOneFeatureUUID?: string}) => void;
+export type OnCollapseFeaturesFunction = (payload: {featureIDs: string[]}) => void;
+export type OnExpandFeaturesFunction = (payload: {featureIDs: string[]}) => void;
+export type OnCollapseFeaturesBelowFunction = (payload: {featureIDs: string[]}) => void;
+export type OnExpandFeaturesBelowFunction = (payload: {featureIDs: string[]}) => void;
+export type OnShowOverlayFunction = (payload: {overlay: OverlayType, overlayProps: OverlayProps, selectOnefeatureID?: string}) => void;
 export type OnHideOverlayFunction = (payload: {overlay: OverlayType}) => void;
 export type OnFitToScreenFunction = () => void;
 export type OnSetSettingFunction = (payload: {path: string, value: any}) => void;
@@ -74,19 +74,19 @@ export type OnJoinFunction = (payload: {artifactPath: ArtifactPath}) => Promise<
 export type OnLeaveFunction = (payload: {artifactPath: ArtifactPath}) => Promise<void>;
 export type OnUndoFunction = () => Promise<void>;
 export type OnRedoFunction = () => Promise<void>;
-export type OnAddFeatureBelowFunction = (payload: {belowFeatureUUID: string}) => Promise<void>;
-export type OnAddFeatureAboveFunction = (payload: {aboveFeatureUUIDs: string[]}) => Promise<void>;
-export type OnRemoveFeaturesFunction = (payload: {featureUUIDs: string[]}) => Promise<void>;
-export type OnRemoveFeaturesBelowFunction = (payload: {featureUUIDs: string[]}) => Promise<void>;
-export type OnRenameFeatureFunction = (payload: {featureUUID: string, name: string}) => Promise<void>;
-export type OnSetFeatureDescriptionFunction = (payload: {featureUUID: string, description: string}) => Promise<void>;
-export type OnSetFeatureAbstractFunction = (payload: {featureUUIDs: string[], value: boolean}) => Promise<void>;
-export type OnSetFeatureHiddenFunction = (payload: {featureUUIDs: string[], value: boolean}) => Promise<void>;
-export type OnSetFeatureMandatoryFunction = (payload: {featureUUIDs: string[], value: boolean}) => Promise<void>;
+export type OnAddFeatureBelowFunction = (payload: {belowfeatureID: string}) => Promise<void>;
+export type OnAddFeatureAboveFunction = (payload: {abovefeatureIDs: string[]}) => Promise<void>;
+export type OnRemoveFeaturesFunction = (payload: {featureIDs: string[]}) => Promise<void>;
+export type OnRemoveFeaturesBelowFunction = (payload: {featureIDs: string[]}) => Promise<void>;
+export type OnRenameFeatureFunction = (payload: {featureID: string, name: string}) => Promise<void>;
+export type OnSetFeatureDescriptionFunction = (payload: {featureID: string, description: string}) => Promise<void>;
+export type OnSetFeatureAbstractFunction = (payload: {featureIDs: string[], value: boolean}) => Promise<void>;
+export type OnSetFeatureHiddenFunction = (payload: {featureIDs: string[], value: boolean}) => Promise<void>;
+export type OnSetFeatureMandatoryFunction = (payload: {featureIDs: string[], value: boolean}) => Promise<void>;
 export type OnToggleFeatureMandatoryFunction = (payload: {feature: Feature}) => Promise<void>;
-export type OnSetFeatureAndFunction = (payload: {featureUUIDs: string[]}) => Promise<void>;
-export type OnSetFeatureOrFunction = (payload: {featureUUIDs: string[]}) => Promise<void>;
-export type OnSetFeatureAlternativeFunction = (payload: {featureUUIDs: string[]}) => Promise<void>;
+export type OnSetFeatureAndFunction = (payload: {featureIDs: string[]}) => Promise<void>;
+export type OnSetFeatureOrFunction = (payload: {featureIDs: string[]}) => Promise<void>;
+export type OnSetFeatureAlternativeFunction = (payload: {featureIDs: string[]}) => Promise<void>;
 export type OnToggleFeatureGroupFunction = (payload: {feature: Feature}) => Promise<void>;
 
 // Props that may derived from the state to use in React components.
@@ -101,7 +101,7 @@ export type StateDerivedProps = Partial<{
     settings: Settings,
     featureDiagramLayout: FeatureDiagramLayoutType,
     isSelectMultipleFeatures: boolean,
-    selectedFeatureUUIDs: string[],
+    selectedfeatureIDs: string[],
     featureModel: FeatureModel,
     overlay: OverlayType,
     overlayProps: OverlayProps,

@@ -89,7 +89,7 @@ export default class {
     enter(node: D3Selection): D3Selection {
         const nodeEnter = node.append('g')
                 .attr('class', 'node')
-                .attr('data-feature-uuid', (d: FeatureNode) => d.feature().uuid)
+                .attr('data-feature-id', (d: FeatureNode) => d.feature().ID)
                 .call(translateTransform, (d: FeatureNode) => this.x(d), (d: FeatureNode) => this.y(d))
                 .attr('opacity', 0),
             rectAndText = nodeEnter.append('g')
@@ -101,7 +101,7 @@ export default class {
                 })
                 .on('dblclick', (d: FeatureNode) => {
                     if (!this.isSelectMultipleFeatures)
-                        this.onShowOverlay({overlay: OverlayType.featurePanel, overlayProps: {featureUUID: d.feature().uuid}});
+                        this.onShowOverlay({overlay: OverlayType.featurePanel, overlayProps: {featureID: d.feature().ID}});
                 });
 
         let bboxes = makeText(this.settings, rectAndText, false, this.getTextStyle()) as Rect[];
@@ -123,7 +123,7 @@ export default class {
                 .on('dblclick', (d: FeatureNode) => this.onToggleFeatureGroup({feature: d.feature()}));
         this.treeLink.drawGroup(arcSegment, arcSlice, arcClick);
 
-        const expandFeature = (d: FeatureNode) => d.feature().isCollapsed && this.onExpandFeatures({featureUUIDs: [d.feature().uuid]});
+        const expandFeature = (d: FeatureNode) => d.feature().isCollapsed && this.onExpandFeatures({featureIDs: [d.feature().ID]});
         i = 0;
         bboxes = [];
         nodeEnter.insert('text', 'path.arcClick')

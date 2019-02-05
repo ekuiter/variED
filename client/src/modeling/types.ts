@@ -10,7 +10,7 @@ export const COMMENTS = 'comments';
 export const FEATURE_ORDER = 'featureOrder';
 export const TYPE = 'type';
 export const NAME = 'name';
-export const UUID = 'uuid';
+export const ID = 'ID';
 export const DESCRIPTION = 'description';
 export const MANDATORY = 'mandatory';
 export const ABSTRACT = 'abstract';
@@ -39,7 +39,7 @@ export enum ConstraintType {
 export interface SerializedFeatureNode {
     [TYPE]: FeatureType,
     [NAME]: string,
-    [UUID]: string,
+    [ID]: string,
     [HIDDEN]?: boolean,
     [MANDATORY]?: boolean,
     [ABSTRACT]?: boolean,
@@ -71,7 +71,7 @@ export type FeaturePropertyKey = string | ((node: FeatureNode) => string);
 
 export interface Feature {
     node: FeatureNode,
-    uuid: string,
+    ID: string,
     name: string,
     type: FeatureType,
     description?: string,

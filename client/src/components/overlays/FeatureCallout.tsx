@@ -30,9 +30,9 @@ export default class extends FeatureComponent({doUpdate: true})<Props> {
     renderIfFeature(feature: Feature) {
         const {onDismiss, featureModel} = this.props,
             {gapSpace, width} = this.props.settings.featureDiagram.overlay;
-        if (!featureModel.hasElement(feature.uuid))
+        if (!featureModel.hasElement(feature.ID))
             return null;
-        const element = featureModel.getElement(feature.uuid)!;
+        const element = featureModel.getElement(feature.ID)!;
         return (
             <Callout target={element.querySelector('.rectAndText')}
                 onDismiss={onDismiss}
@@ -54,14 +54,14 @@ export default class extends FeatureComponent({doUpdate: true})<Props> {
                         : <div className="inner empty"/>}
                     <CommandBar
                         items={[
-                            commands.featureDiagram.feature.newMenu(feature.uuid, this.props.onAddFeatureBelow, this.props.onAddFeatureAbove, onDismiss, true),
+                            commands.featureDiagram.feature.newMenu(feature.ID, this.props.onAddFeatureBelow, this.props.onAddFeatureAbove, onDismiss, true),
                             commands.featureDiagram.feature.removeMenu([feature], this.props.onRemoveFeatures, this.props.onRemoveFeaturesBelow, onDismiss, true),
                             commands.featureDiagram.feature.collapseMenu(
                                 [feature], this.props.onCollapseFeatures, this.props.onExpandFeatures,
                                 this.props.onCollapseFeaturesBelow, this.props.onExpandFeaturesBelow, onDismiss, true),
                         ]}
                         farItems={[
-                            commands.featureDiagram.feature.details(feature.uuid, this.props.onShowOverlay)
+                            commands.featureDiagram.feature.details(feature.ID, this.props.onShowOverlay)
                         ]}/>
                 </div>
             </Callout>

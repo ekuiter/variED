@@ -41,22 +41,22 @@ function getNewCollaborativeSessions(state: State, artifactPath: ArtifactPath,
 }
 
 function removeObsoleteFeaturesFromFeatureList(state: State, artifactPath: ArtifactPath, key: string): State {
-    const featureUUIDList = getCollaborativeSession(state, artifactPath)[key],
-        actualFeatureUUIDs = getFeatureModel(state, artifactPath)!.getActualFeatureUUIDs(),
-        obsoleteFeatureUUIDs = featureUUIDList.filter((featureUUID: string) => !actualFeatureUUIDs.includes(featureUUID));
-    return obsoleteFeatureUUIDs.length > 0
+    const featureIDList = getCollaborativeSession(state, artifactPath)[key],
+        actualfeatureIDs = getFeatureModel(state, artifactPath)!.getActualfeatureIDs(),
+        obsoletefeatureIDs = featureIDList.filter((featureID: string) => !actualfeatureIDs.includes(featureID));
+    return obsoletefeatureIDs.length > 0
         ? getNewState(state, 'collaborativeSessions',
             getNewCollaborativeSessions(state, artifactPath, (collaborativeSession: CollaborativeSession) =>
-                ({...collaborativeSession, [key]: featureUUIDList.filter((featureUUID: string) => !obsoleteFeatureUUIDs.includes(featureUUID))})))
+                ({...collaborativeSession, [key]: featureIDList.filter((featureID: string) => !obsoletefeatureIDs.includes(featureID))})))
         : state;
 }
 
 function hideOverlayForObsoleteFeature(state: State): State {
     if (!isEditingFeatureModel(state))
         return state;
-    const visibleFeatureUUIDs = getCurrentFeatureModel(state)!.getVisibleFeatureUUIDs();
-    return state.overlay !== OverlayType.none && state.overlayProps.featureUUID &&
-        !visibleFeatureUUIDs.includes(state.overlayProps.featureUUID)
+    const visiblefeatureIDs = getCurrentFeatureModel(state)!.getVisiblefeatureIDs();
+    return state.overlay !== OverlayType.none && state.overlayProps.featureID &&
+        !visiblefeatureIDs.includes(state.overlayProps.featureID)
         ? updateOverlay(state, OverlayType.none, {})
         : state;
 }
@@ -70,19 +70,19 @@ function updateOverlay(state: State, overlay: OverlayType, overlayProps: Overlay
         return getNewState(state, 'overlay', overlay, 'overlayProps', overlayProps,
             'collaborativeSessions',
             getNewCollaborativeSessions(state, state.currentArtifactPath!, (collaborativeSession: CollaborativeSession) =>
-                ({...collaborativeSession, selectedFeatureUUIDs: []})));
+                ({...collaborativeSession, selectedfeatureIDs: []})));
     else
         return getNewState(state, 'overlay', overlay, 'overlayProps', overlayProps);
 }
 
-function getFeatureUUIDsBelowWithActualChildren(state: State, artifactPath: ArtifactPath, featureUUIDs: string[]): string[] {
-    return featureUUIDs.map(featureUUID =>
-        getFeatureModel(state, artifactPath)!.getFeatureUUIDsBelowWithActualChildren(featureUUID))
+function getfeatureIDsBelowWithActualChildren(state: State, artifactPath: ArtifactPath, featureIDs: string[]): string[] {
+    return featureIDs.map(featureID =>
+        getFeatureModel(state, artifactPath)!.getfeatureIDsBelowWithActualChildren(featureID))
         .reduce((acc, children) => acc.concat(children), []);
 }
 
 function fitToScreen(state: State, collaborativeSession: CollaborativeSession): string[] {
-    return getFeatureModel(state, collaborativeSession.artifactPath)!.getFittingFeatureUUIDs(
+    return getFeatureModel(state, collaborativeSession.artifactPath)!.getFittingfeatureIDs(
         state.settings, (<FeatureDiagramCollaborativeSession>collaborativeSession).layout);
 }
 
@@ -151,12 +151,12 @@ function serverReceiveReducer(state: State, action: Action): State {
                         getNewCollaborativeSessions(state, action.payload.artifactPath!,
                             (collaborativeSession: CollaborativeSession) => ({
                                 ...collaborativeSession,
-                                collapsedFeatureUUIDs: fitToScreen(state, getCollaborativeSession(state, action.payload.artifactPath!))
+                                collapsedfeatureIDs: fitToScreen(state, getCollaborativeSession(state, action.payload.artifactPath!))
                             })));
                 }
-                state = removeObsoleteFeaturesFromFeatureList(state, action.payload.artifactPath!, 'collapsedFeatureUUIDs');
+                state = removeObsoleteFeaturesFromFeatureList(state, action.payload.artifactPath!, 'collapsedfeatureIDs');
                 // TODO: warn user that selection change
-                state = removeObsoleteFeaturesFromFeatureList(state, action.payload.artifactPath!, 'selectedFeatureUUIDs');
+                state = removeObsoleteFeaturesFromFeatureList(state, action.payload.artifactPath!, 'selectedfeatureIDs');
                 // state: warn user that overlay was hidden
                 state = hideOverlayForObsoleteFeature(state);
                 return state;
@@ -206,7 +206,7 @@ function uiReducer(state: State, action: Action): State {
                 ? getNewState(state, 'collaborativeSessions',
                     getNewCollaborativeSessions(state, state.currentArtifactPath!, (collaborativeSession: CollaborativeSession) => ({
                         ...collaborativeSession,
-                        collapsedFeatureUUIDs: fitToScreen(state, collaborativeSession)
+                        collapsedfeatureIDs: fitToScreen(state, collaborativeSession)
                     })),
                     'settings', getNewSettings(state.settings, 'featureDiagram.forceRerender', +new Date()))
                 : state;
@@ -217,7 +217,7 @@ function uiReducer(state: State, action: Action): State {
                     getNewCollaborativeSessions(state, state.currentArtifactPath!, (collaborativeSession: CollaborativeSession) => ({
                         ...collaborativeSession,
                         isSelectMultipleFeatures: action.payload.isSelectMultipleFeatures,
-                        selectedFeatureUUIDs: []
+                        selectedfeatureIDs: []
                     })))
                 : state;
 
@@ -226,9 +226,9 @@ function uiReducer(state: State, action: Action): State {
                 ? getNewState(state, 'collaborativeSessions',
                     getNewCollaborativeSessions(state, state.currentArtifactPath!, (collaborativeSession: CollaborativeSession) => ({
                         ...collaborativeSession,
-                        selectedFeatureUUIDs: setAdd(
-                            (<FeatureDiagramCollaborativeSession>collaborativeSession).selectedFeatureUUIDs,
-                            action.payload.featureUUID)
+                        selectedfeatureIDs: setAdd(
+                            (<FeatureDiagramCollaborativeSession>collaborativeSession).selectedfeatureIDs,
+                            action.payload.featureID)
                     })))
                 : state;
 
@@ -236,12 +236,12 @@ function uiReducer(state: State, action: Action): State {
             return isEditingFeatureModel(state)
                 ? getNewState(state, 'collaborativeSessions',
                     getNewCollaborativeSessions(state, state.currentArtifactPath!, (collaborativeSession: CollaborativeSession) => {
-                        const selectedFeatureUUIDs = setRemove(
-                            (<FeatureDiagramCollaborativeSession>collaborativeSession).selectedFeatureUUIDs,
-                            action.payload.featureUUID);
-                        return selectedFeatureUUIDs.length > 0
-                            ? {...collaborativeSession, selectedFeatureUUIDs}
-                            : {...collaborativeSession, selectedFeatureUUIDs, isSelectMultipleFeatures: false};
+                        const selectedfeatureIDs = setRemove(
+                            (<FeatureDiagramCollaborativeSession>collaborativeSession).selectedfeatureIDs,
+                            action.payload.featureID);
+                        return selectedfeatureIDs.length > 0
+                            ? {...collaborativeSession, selectedfeatureIDs}
+                            : {...collaborativeSession, selectedfeatureIDs, isSelectMultipleFeatures: false};
                     }))
                 : state;
 
@@ -250,7 +250,7 @@ function uiReducer(state: State, action: Action): State {
                 ? getNewState(state, 'collaborativeSessions',
                     getNewCollaborativeSessions(state, state.currentArtifactPath!, (collaborativeSession: CollaborativeSession) => ({
                         ...collaborativeSession,
-                        selectedFeatureUUIDs: getCurrentFeatureModel(state)!.getVisibleFeatureUUIDs(),
+                        selectedfeatureIDs: getCurrentFeatureModel(state)!.getVisiblefeatureIDs(),
                         isSelectMultipleFeatures: true
                     })))
                 : state;
@@ -260,7 +260,7 @@ function uiReducer(state: State, action: Action): State {
                 ? getNewState(state, 'collaborativeSessions',
                     getNewCollaborativeSessions(state, state.currentArtifactPath!, (collaborativeSession: CollaborativeSession) => ({
                         ...collaborativeSession,
-                        selectedFeatureUUIDs: [],
+                        selectedfeatureIDs: [],
                         isSelectMultipleFeatures: false
                     })))
                 : state;
@@ -272,9 +272,9 @@ function uiReducer(state: State, action: Action): State {
                 ? getNewState(state, 'collaborativeSessions',
                     getNewCollaborativeSessions(state, state.currentArtifactPath!, (collaborativeSession: CollaborativeSession) => ({
                         ...collaborativeSession,
-                        collapsedFeatureUUIDs: setOperation(
-                            (<FeatureDiagramCollaborativeSession>collaborativeSession).collapsedFeatureUUIDs,
-                            action.payload.featureUUIDs)
+                        collapsedfeatureIDs: setOperation(
+                            (<FeatureDiagramCollaborativeSession>collaborativeSession).collapsedfeatureIDs,
+                            action.payload.featureIDs)
                     })))
                     : state;
 
@@ -283,7 +283,7 @@ function uiReducer(state: State, action: Action): State {
                 ? getNewState(state, 'collaborativeSessions',
                     getNewCollaborativeSessions(state, state.currentArtifactPath!, (collaborativeSession: CollaborativeSession) => ({
                         ...collaborativeSession,
-                        collapsedFeatureUUIDs: getCurrentFeatureModel(state)!.getFeatureUUIDsWithActualChildren()
+                        collapsedfeatureIDs: getCurrentFeatureModel(state)!.getfeatureIDsWithActualChildren()
                     })))
                 : state;
 
@@ -292,7 +292,7 @@ function uiReducer(state: State, action: Action): State {
                 ? getNewState(state, 'collaborativeSessions',
                     getNewCollaborativeSessions(state, state.currentArtifactPath!, (collaborativeSession: CollaborativeSession) => ({
                         ...collaborativeSession,
-                        collapsedFeatureUUIDs: []
+                        collapsedfeatureIDs: []
                     })))
                 : state;
 
@@ -303,9 +303,9 @@ function uiReducer(state: State, action: Action): State {
                 ? getNewState(state, 'collaborativeSessions',
                     getNewCollaborativeSessions(state, state.currentArtifactPath!, (collaborativeSession: CollaborativeSession) => ({
                         ...collaborativeSession,
-                        collapsedFeatureUUIDs: setOperation(
-                            (<FeatureDiagramCollaborativeSession>collaborativeSession).collapsedFeatureUUIDs,
-                            getFeatureUUIDsBelowWithActualChildren(state, state.currentArtifactPath!, action.payload.featureUUIDs))
+                        collapsedfeatureIDs: setOperation(
+                            (<FeatureDiagramCollaborativeSession>collaborativeSession).collapsedfeatureIDs,
+                            getfeatureIDsBelowWithActualChildren(state, state.currentArtifactPath!, action.payload.featureIDs))
                     })))
                     : state;
 
@@ -314,7 +314,7 @@ function uiReducer(state: State, action: Action): State {
             if (action.payload.selectOneFeature)
                 state = getNewState(state, 'collaborativeSessions',
                 getNewCollaborativeSessions(state, state.currentArtifactPath!, (collaborativeSession: CollaborativeSession) =>
-                    ({...collaborativeSession, selectedFeatureUUIDs: [action.payload.selectOneFeature]})));
+                    ({...collaborativeSession, selectedfeatureIDs: [action.payload.selectOneFeature]})));
             return state;
 
         case getType(actions.ui.overlay.hide):

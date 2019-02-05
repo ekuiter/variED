@@ -39,7 +39,7 @@ const CommandBarContainer = (props: StateDerivedProps) => (
                             commands.featureDiagram.feature.selectAll(props.onSelectAllFeatures!),
                             commands.featureDiagram.feature.deselectAll(props.onDeselectAllFeatures!),
                             commands.featureDiagram.feature.selection(
-                                props.isSelectMultipleFeatures!, props.onSetSelectMultipleFeatures!, props.selectedFeatureUUIDs!,
+                                props.isSelectMultipleFeatures!, props.onSetSelectMultipleFeatures!, props.selectedfeatureIDs!,
                                 props.onDeselectAllFeatures!, props.onCollapseFeatures!, props.onExpandFeatures!,
                                 props.onCollapseFeaturesBelow!, props.onExpandFeaturesBelow!, props.onAddFeatureAbove!,
                                 props.onRemoveFeatures!, props.onRemoveFeaturesBelow!, props.onSetFeatureAbstract!,
@@ -102,7 +102,7 @@ export default connect(
             ...props,
             featureDiagramLayout: collaborativeSession.layout,
             isSelectMultipleFeatures: collaborativeSession.isSelectMultipleFeatures,
-            selectedFeatureUUIDs: collaborativeSession.selectedFeatureUUIDs,
+            selectedfeatureIDs: collaborativeSession.selectedfeatureIDs,
             users: collaborativeSession.users,
             featureModel: getCurrentFeatureModel(state)
         };

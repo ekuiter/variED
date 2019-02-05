@@ -26,7 +26,7 @@ export default class extends FeatureComponent()<Props> {
                 defaultValue={feature.name}
                 onSubmit={newFeatureName => {
                     if (newFeatureName && feature.name !== newFeatureName)
-                        this.props.onRenameFeature({featureUUID: feature.uuid, name: newFeatureName});
+                        this.props.onRenameFeature({featureID: feature.ID, name: newFeatureName});
                     else
                         ;//TODO: show error
                 }}/>

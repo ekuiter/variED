@@ -27,7 +27,7 @@ export default connect(
             currentArtifactPath: collaborativeSession.artifactPath,
             featureDiagramLayout: collaborativeSession.layout,
             isSelectMultipleFeatures: collaborativeSession.isSelectMultipleFeatures,
-            selectedFeatureUUIDs: collaborativeSession.selectedFeatureUUIDs,
+            selectedfeatureIDs: collaborativeSession.selectedfeatureIDs,
             featureModel: getCurrentFeatureModel(state)
         };
     }),

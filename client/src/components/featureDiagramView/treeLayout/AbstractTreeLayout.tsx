@@ -34,7 +34,7 @@ export interface AbstractTreeLayoutProps {
     overlay: OverlayType,
     overlayProps: OverlayProps,
     isSelectMultipleFeatures: boolean,
-    selectedFeatureUUIDs: string[],
+    selectedfeatureIDs: string[],
     onShowOverlay: OnShowOverlayFunction,
     onHideOverlay: OnHideOverlayFunction,
     onSetSelectMultipleFeatures: OnSetSelectMultipleFeaturesFunction,
@@ -88,8 +88,8 @@ export default class extends React.Component<AbstractTreeLayoutProps> {
                 this.props.width !== prevProps.width ||
                 this.props.height !== prevProps.height);
 
-        if (this.props.selectedFeatureUUIDs !== prevProps.selectedFeatureUUIDs ||
-            this.props.overlayProps.featureUUID !== prevProps.overlayProps.featureUUID)
+        if (this.props.selectedfeatureIDs !== prevProps.selectedfeatureIDs ||
+            this.props.overlayProps.featureID !== prevProps.overlayProps.featureID)
             this.updateSelection();
     }
 
@@ -102,47 +102,47 @@ export default class extends React.Component<AbstractTreeLayoutProps> {
     }
     
     getKeyFn(kind: string): (d: FeatureNode) => string {
-        return d => `${kind}_${d.feature().uuid}_${d.feature().name}`;
+        return d => `${kind}_${d.feature().ID}_${d.feature().name}`;
     }
 
     toggleSelectedNode(node: FeatureNode): void {
-        if (this.props.selectedFeatureUUIDs.includes(node.feature().uuid))
-            this.props.onDeselectFeature({featureUUID: node.feature().uuid});
+        if (this.props.selectedfeatureIDs.includes(node.feature().ID))
+            this.props.onDeselectFeature({featureID: node.feature().ID});
         else
-            this.props.onSelectFeature({featureUUID: node.feature().uuid});
+            this.props.onSelectFeature({featureID: node.feature().ID});
     }
 
     setActiveNode(overlay: OverlayType | 'select', activeNode: FeatureNode): void {
-        const featureUUID = activeNode.feature().uuid;
+        const featureID = activeNode.feature().ID;
         if (this.props.isSelectMultipleFeatures) {
             if (overlay === OverlayType.featureCallout || overlay === 'select') {
                 this.toggleSelectedNode(activeNode);
                 if (this.props.overlay === OverlayType.featureContextualMenu &&
-                    this.props.overlayProps.featureUUID === featureUUID)
+                    this.props.overlayProps.featureID === featureID)
                     this.props.onHideOverlay({overlay: OverlayType.featureContextualMenu});
             }
             else if (overlay === OverlayType.featureContextualMenu &&
-                this.props.selectedFeatureUUIDs.includes(featureUUID))
-                this.props.onShowOverlay({overlay, overlayProps: {featureUUID}});
+                this.props.selectedfeatureIDs.includes(featureID))
+                this.props.onShowOverlay({overlay, overlayProps: {featureID}});
         } else {
             if (overlay !== 'select' && isFloatingFeatureOverlay(overlay))
-                this.props.onShowOverlay({overlay, overlayProps: {featureUUID},selectOneFeatureUUID: featureUUID});
+                this.props.onShowOverlay({overlay, overlayProps: {featureID},selectOnefeatureID: featureID});
             else if (overlay === 'select') {
                 this.props.onSetSelectMultipleFeatures({isSelectMultipleFeatures: true});
-                this.props.onSelectFeature({featureUUID});
+                this.props.onSelectFeature({featureID});
             }
         }
     }
 
     updateCoordinates(key: string, nodes: FeatureNode[]): void {
         this[key] = {};
-        nodes.forEach(node => this[key][node.feature().uuid] = {x: this.treeNode.x(node), y: this.treeNode.y(node)});
+        nodes.forEach(node => this[key][node.feature().ID] = {x: this.treeNode.x(node), y: this.treeNode.y(node)});
     }
 
     getParentCoordinateFn(key: string): NodeCoordinateForAxisFunction {
         return (node, axis) => {
             if (!node.feature().isRoot) {
-                const coords = this[key][node.parent!.feature().uuid];
+                const coords = this[key][node.parent!.feature().ID];
                 return coords ? coords[axis] : this.treeNode[axis](node.parent);
             } else
                 return this.treeNode[axis](node);
@@ -327,8 +327,8 @@ export default class extends React.Component<AbstractTreeLayoutProps> {
 
     updateSelection(): void {
         const {node} = this.joinData(false, false, true);
-        node.filter(d => this.props.selectedFeatureUUIDs.includes(d.feature().uuid)).attr('class', 'node selected');
-        node.filter(d => !this.props.selectedFeatureUUIDs.includes(d.feature().uuid)).attr('class', 'node');
-        node.filter(d => this.props.overlayProps.featureUUID === d.feature().uuid).attr('class', 'node selected');
+        node.filter(d => this.props.selectedfeatureIDs.includes(d.feature().ID)).attr('class', 'node selected');
+        node.filter(d => !this.props.selectedfeatureIDs.includes(d.feature().ID)).attr('class', 'node');
+        node.filter(d => this.props.overlayProps.featureID === d.feature().ID).attr('class', 'node selected');
     }
 }

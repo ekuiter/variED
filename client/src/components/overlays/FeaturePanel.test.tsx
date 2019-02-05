@@ -8,7 +8,7 @@ import i18n from '../../i18n';
 import {defaultSettings} from '../../store/settings';
 
 describe('FeaturePanel', () => {
-    const featurePanel = (featureUUID = 'FeatureIDE') => {
+    const featurePanel = (featureID = 'FeatureIDE') => {
         const featureModel = FeatureModel.fromJSON(validFeatureModel),
             mock = jest.fn();
         return shallow(
@@ -21,7 +21,7 @@ describe('FeaturePanel', () => {
                 onCollapseFeaturesBelow={mock}
                 onExpandFeaturesBelow={mock}
                 featureModel={featureModel}
-                featureUUID={featureUUID}
+                featureID={featureID}
                 settings={defaultSettings}
                 onAddFeatureAbove={mock}
                 onAddFeatureBelow={mock}

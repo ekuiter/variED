@@ -154,7 +154,7 @@ const OverlayContainer = (props: StateDerivedProps) => (
             onExpandFeaturesBelow={props.onExpandFeaturesBelow!}
             featureModel={props.featureModel!}
             isSelectMultipleFeatures={props.isSelectMultipleFeatures!}
-            selectedFeatureUUIDs={props.selectedFeatureUUIDs!}
+            selectedfeatureIDs={props.selectedfeatureIDs!}
             onAddFeatureAbove={props.onAddFeatureAbove!}
             onAddFeatureBelow={props.onAddFeatureBelow!}
             onRemoveFeatures={props.onRemoveFeatures!}
@@ -185,7 +185,7 @@ export default connect(
             ...props,
             featureDiagramLayout: collaborativeSession.layout,
             isSelectMultipleFeatures: collaborativeSession.isSelectMultipleFeatures,
-            selectedFeatureUUIDs: collaborativeSession.selectedFeatureUUIDs,
+            selectedfeatureIDs: collaborativeSession.selectedfeatureIDs,
             featureModel: getCurrentFeatureModel(state)
         };
     }),

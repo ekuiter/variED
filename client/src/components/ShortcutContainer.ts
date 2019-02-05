@@ -29,7 +29,7 @@ export default connect(
         return {
             ...props,
             isSelectMultipleFeatures: collaborativeSession.isSelectMultipleFeatures,
-            selectedFeatureUUIDs: collaborativeSession.selectedFeatureUUIDs,
+            selectedfeatureIDs: collaborativeSession.selectedfeatureIDs,
             featureModel: getCurrentFeatureModel(state)
         };
     }),
@@ -67,7 +67,7 @@ export default connect(
         'featureDiagram.feature.new',
         (props: StateDerivedProps) => ifFeatureModel(props) && ifSingleFloatingFeature(props),
         async ({props}: {props: StateDerivedProps}) => {
-            await props.onAddFeatureBelow!({belowFeatureUUID: props.overlayProps!.featureUUID!});
+            await props.onAddFeatureBelow!({belowfeatureID: props.overlayProps!.featureID!});
             props.onHideOverlay!({overlay: props.overlay!});
         }),
 
@@ -78,8 +78,8 @@ export default connect(
             const {disabled, action} = removeCommand(
                 props.featureModel!.getFeatures(
                     props.isSelectMultipleFeatures
-                    ? props.selectedFeatureUUIDs!
-                    : [props.overlayProps!.featureUUID!]), props.onRemoveFeatures!);
+                    ? props.selectedfeatureIDs!
+                    : [props.overlayProps!.featureID!]), props.onRemoveFeatures!);
             if (!disabled) {
                 await action();
                 props.onHideOverlay!({overlay: props.overlay!});
@@ -89,12 +89,12 @@ export default connect(
     getShortcutKeyBinding(
         'featureDiagram.feature.rename',
         (props: StateDerivedProps) => ifFeatureModel(props) && ifSingleFloatingFeature(props),
-        ({props}: {props: StateDerivedProps}) => props.onShowOverlay!({overlay: OverlayType.featureRenameDialog, overlayProps: {featureUUID: props.overlayProps!.featureUUID}})),
+        ({props}: {props: StateDerivedProps}) => props.onShowOverlay!({overlay: OverlayType.featureRenameDialog, overlayProps: {featureID: props.overlayProps!.featureID}})),
 
     getShortcutKeyBinding(
         'featureDiagram.feature.details',
         (props: StateDerivedProps) => ifFeatureModel(props) && ifSingleFloatingFeature(props),
-        ({props}: {props: StateDerivedProps}) => props.onShowOverlay!({overlay: OverlayType.featurePanel, overlayProps: {featureUUID: props.overlayProps!.featureUUID}})),
+        ({props}: {props: StateDerivedProps}) => props.onShowOverlay!({overlay: OverlayType.featurePanel, overlayProps: {featureID: props.overlayProps!.featureID}})),
 
     getShortcutKeyBinding(
         'featureDiagram.feature.collapse',
@@ -105,7 +105,7 @@ export default connect(
                 return;
             }
             const {disabled, action} = collapseCommand(
-                props.featureModel!.getFeatures(props.selectedFeatureUUIDs!),
+                props.featureModel!.getFeatures(props.selectedfeatureIDs!),
                 props.onCollapseFeatures!, props.onExpandFeatures!,
                 !ifGlobal(props) ? (() => props.onHideOverlay!({overlay: props.overlay!})) : undefined);
             if (!disabled)
@@ -121,7 +121,7 @@ export default connect(
                 return;
             }
             const {disabled, action} = collapseCommand(
-                props.featureModel!.getFeatures(props.selectedFeatureUUIDs!),
+                props.featureModel!.getFeatures(props.selectedfeatureIDs!),
                 props.onCollapseFeatures!, props.onExpandFeatures!,
                 !ifGlobal(props) ? (() => props.onHideOverlay!({overlay: props.overlay!})) : undefined);
             if (!disabled)

@@ -13,11 +13,11 @@ import {Settings} from '../store/settings';
 import {FeatureDiagramLayoutType} from '../types';
 import {present} from '../helpers/present';
 import logger from '../helpers/logger';
-import {FeatureNode, Feature, FeatureType, SerializedFeatureModel, UUID, DESCRIPTION, TYPE, ABSTRACT, HIDDEN, MANDATORY, STRUCT, NAME, SerializedFeatureNode, SerializedConstraint, CONSTRAINTS, SerializedConstraintNode, ConstraintType, VAR} from './types';
+import {FeatureNode, Feature, FeatureType, SerializedFeatureModel, ID, DESCRIPTION, TYPE, ABSTRACT, HIDDEN, MANDATORY, STRUCT, NAME, SerializedFeatureNode, SerializedConstraint, CONSTRAINTS, SerializedConstraintNode, ConstraintType, VAR} from './types';
 import {getViewportWidth, getViewportHeight} from '../helpers/withDimensions';
 
-export function getUUID(node: FeatureNode): string {
-    return node.data[UUID];
+export function getID(node: FeatureNode): string {
+    return node.data[ID];
 }
 
 function isRoot(node: FeatureNode): boolean {
@@ -60,7 +60,7 @@ function getNodesBelow(node: FeatureNode): FeatureNode[] {
 d3Hierarchy.prototype.feature = function(this: FeatureNode): Feature {
     return this._feature || (this._feature = {
         node: this,
-        uuid: getUUID(this),
+        ID: getID(this),
         name: this.data[NAME],
         type: this.data[TYPE],
         description: this.data[DESCRIPTION],
@@ -199,12 +199,12 @@ export class Constraint {
 
 class FeatureModel {
     serializedFeatureModel: SerializedFeatureModel;
-    collapsedFeatureUUIDs: string[] = [];
+    collapsedfeatureIDs: string[] = [];
     _hierarchy: FeatureNode;
     _actualNodes: FeatureNode[];
     _visibleNodes: FeatureNode[];
     _constraints: Constraint[];
-    _UUIDsToFeatures: {[x: string]: FeatureNode} = {};
+    _IDsToFeatures: {[x: string]: FeatureNode} = {};
 
     // feature model as supplied by feature model messages from the server
     static fromJSON(serializedFeatureModel: SerializedFeatureModel): FeatureModel {
@@ -217,10 +217,10 @@ class FeatureModel {
         return this.serializedFeatureModel;
     }
 
-    collapse(collapsedFeatureUUIDs: string[]): FeatureModel {
+    collapse(collapsedfeatureIDs: string[]): FeatureModel {
         if (this._hierarchy)
             throw new Error('feature model already initialized');
-        this.collapsedFeatureUUIDs = collapsedFeatureUUIDs;
+        this.collapsedfeatureIDs = collapsedfeatureIDs;
         return this;
     }
 
@@ -244,19 +244,19 @@ class FeatureModel {
                 if (isCollapsed(node.parent!))
                     return false;
                 return isVisible(node.parent!);
-            }, (node: FeatureNode) => getUUID(node));
+            }, (node: FeatureNode) => getID(node));
 
             this._actualNodes.forEach(node => {
                 // store children nodes (because they are changed on collapse)
                 node.actualChildren = node.children;
 
-                if (this.collapsedFeatureUUIDs.find(featureUUID => getUUID(node) === featureUUID))
+                if (this.collapsedfeatureIDs.find(featureID => getID(node) === featureID))
                     node.children = undefined;
 
                 if (isVisible(node))
                     this._visibleNodes.push(node);
 
-                this._UUIDsToFeatures[getUUID(node)] = node;
+                this._IDsToFeatures[getID(node)] = node;
             });
         }
     }
@@ -281,43 +281,43 @@ class FeatureModel {
         return this._constraints;
     }
 
-    getNode(featureUUID: string): FeatureNode | undefined {
+    getNode(featureID: string): FeatureNode | undefined {
         this.prepare();
-        return this._UUIDsToFeatures[featureUUID];
+        return this._IDsToFeatures[featureID];
     }
 
-    getFeature(featureUUID: string): Feature | undefined {
-        const node = this.getNode(featureUUID);
+    getFeature(featureID: string): Feature | undefined {
+        const node = this.getNode(featureID);
         return node ? node.feature() : undefined;
     }
 
-    getNodes(featureUUIDs: string[]): FeatureNode[] {
-        return featureUUIDs
-            .map(featureUUID => this.getNode(featureUUID))
+    getNodes(featureIDs: string[]): FeatureNode[] {
+        return featureIDs
+            .map(featureID => this.getNode(featureID))
             .filter(present);
     }
 
-    getFeatures(featureUUIDs: string[]): Feature[] {
-        return featureUUIDs
-            .map(featureUUID => this.getFeature(featureUUID))
+    getFeatures(featureIDs: string[]): Feature[] {
+        return featureIDs
+            .map(featureID => this.getFeature(featureID))
             .filter(present);
     }
 
-    hasElement(featureUUID: string): boolean {
+    hasElement(featureID: string): boolean {
         return Array
-            .from(document.querySelectorAll('[data-feature-uuid]'))
-            .filter(node => node.getAttribute('data-feature-uuid') === featureUUID)
+            .from(document.querySelectorAll('[data-feature-id]'))
+            .filter(node => node.getAttribute('data-feature-id') === featureID)
             .length === 1;
     }
 
-    getElement(featureUUID: string): Element | undefined {
+    getElement(featureID: string): Element | undefined {
         // Operate under the assumption that we only render ONE feature model, and that it is THIS feature model.
         // This way we don't need to propagate a concrete feature diagram instance.
         const elements = Array
-            .from(document.querySelectorAll('[data-feature-uuid]'))
-            .filter(node => node.getAttribute('data-feature-uuid') === featureUUID);
+            .from(document.querySelectorAll('[data-feature-id]'))
+            .filter(node => node.getAttribute('data-feature-id') === featureID);
         if (elements.length > 1)
-            throw new Error(`multiple features "${featureUUID}" found - ` +
+            throw new Error(`multiple features "${featureID}" found - ` +
                 'getElement supports only one feature model on the page');
         return elements.length === 1 ? elements[0] : undefined;
     }
@@ -340,32 +340,32 @@ class FeatureModel {
             (settings.views.splitDirection === 'vertical' ? settings.views.splitAt : 1);
     }
 
-    getVisibleFeatureUUIDs(): string[] {
-        return this.visibleNodes.map(getUUID);
+    getVisiblefeatureIDs(): string[] {
+        return this.visibleNodes.map(getID);
     }
 
-    getActualFeatureUUIDs(): string[] {
-        return this.actualNodes.map(getUUID);
+    getActualfeatureIDs(): string[] {
+        return this.actualNodes.map(getID);
     }
 
-    getFeatureUUIDsWithActualChildren(): string[] {
-        return this.actualNodes.filter(hasActualChildren).map(getUUID);
+    getfeatureIDsWithActualChildren(): string[] {
+        return this.actualNodes.filter(hasActualChildren).map(getID);
     }
 
-    getFeatureUUIDsBelowWithActualChildren(featureUUID: string): string[] {
-        const node = this.getNode(featureUUID);
-        return node ? getNodesBelow(node).filter(hasActualChildren).map(getUUID) : [];
+    getfeatureIDsBelowWithActualChildren(featureID: string): string[] {
+        const node = this.getNode(featureID);
+        return node ? getNodesBelow(node).filter(hasActualChildren).map(getID) : [];
     }
 
-    isSiblingFeatures(featureUUIDs: string[]): boolean {
+    isSiblingFeatures(featureIDs: string[]): boolean {
         const parents = this
-            .getNodes(featureUUIDs)
+            .getNodes(featureIDs)
             .map(node => node.parent);
         return parents.every(parent => parent === parents[0]);
     }
 
     // returns features which, when collapsed, make the feature model fit to the given screen size
-    getFittingFeatureUUIDs(settings: Settings, featureDiagramLayout: FeatureDiagramLayoutType,
+    getFittingfeatureIDs(settings: Settings, featureDiagramLayout: FeatureDiagramLayoutType,
         width = FeatureModel.getWidth(settings), height = FeatureModel.getHeight(settings),
         scale = 0.5): string[] {
         const fontFamily = settings.featureDiagram.font.family,
@@ -376,27 +376,27 @@ class FeatureModel {
                 2 * settings.featureDiagram.treeLayout.node.paddingY +
                 2 * settings.featureDiagram.treeLayout.node.strokeWidth,
             estimatedDimension = featureDiagramLayout === FeatureDiagramLayoutType.verticalTree ? 'width' : 'height';
-        let nodes = this.actualNodes, collapsedFeatureUUIDs: string[] = [];
+        let nodes = this.actualNodes, collapsedfeatureIDs: string[] = [];
         width = Math.max(width, constants.featureDiagram.fitToScreen.minWidth);
         height = Math.max(height, constants.featureDiagram.fitToScreen.minHeight);
         logger.infoBeginCollapsed(() => `[fit to screen] fitting feature model to ${estimatedDimension} ${FeatureDiagramLayoutType.verticalTree ? width : height}px`);
 
         while (true) {
             const {estimatedSize, collapsibleNodes} = estimateHierarchySize(
-                nodes, collapsedFeatureUUIDs, featureDiagramLayout,
-                {fontFamily, fontSize, widthPadding, rectHeight, getUUID, scale});
-            logger.info(() => `estimated ${estimatedDimension} ${Math.round(estimatedSize)}px when collapsing ${JSON.stringify(collapsedFeatureUUIDs)}`);
+                nodes, collapsedfeatureIDs, featureDiagramLayout,
+                {fontFamily, fontSize, widthPadding, rectHeight, getID, scale});
+            logger.info(() => `estimated ${estimatedDimension} ${Math.round(estimatedSize)}px when collapsing ${JSON.stringify(collapsedfeatureIDs)}`);
     
             if ((featureDiagramLayout === FeatureDiagramLayoutType.verticalTree ? estimatedSize <= width : estimatedSize <= height) ||
                 collapsibleNodes.length === 0) {
-                logger.info(() => `feature model fitted by collapsing ${collapsedFeatureUUIDs.length} feature(s)`);
+                logger.info(() => `feature model fitted by collapsing ${collapsedfeatureIDs.length} feature(s)`);
                 logger.infoEnd();
-                return collapsedFeatureUUIDs;
+                return collapsedfeatureIDs;
             }
     
-            const collapsibleNodeUUIDs = collapsibleNodes.map(getUUID);
-            logger.info(() => `collapsing ${JSON.stringify(collapsibleNodeUUIDs)}`);
-            collapsedFeatureUUIDs = collapsedFeatureUUIDs.concat(collapsibleNodeUUIDs);
+            const collapsibleNodeIDs = collapsibleNodes.map(getID);
+            logger.info(() => `collapsing ${JSON.stringify(collapsibleNodeIDs)}`);
+            collapsedfeatureIDs = collapsedfeatureIDs.concat(collapsibleNodeIDs);
             const invisibleNodes = collapsibleNodes
                 .map(node => getNodesBelow(node).slice(1))
                 .reduce((acc, children) => acc.concat(children), []);
@@ -405,7 +405,7 @@ class FeatureModel {
     }
 
     toString() {
-        return `FeatureModel ${JSON.stringify(this.getVisibleFeatureUUIDs())}`;
+        return `FeatureModel ${JSON.stringify(this.getVisiblefeatureIDs())}`;
     }
 }
 

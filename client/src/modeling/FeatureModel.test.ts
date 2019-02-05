@@ -1,4 +1,4 @@
-import FeatureModel, {getUUID} from './FeatureModel';
+import FeatureModel, {getID} from './FeatureModel';
 import {validFeatureModel, invalidFeatureModel2} from '../fixtures';
 import {hierarchy as d3Hierarchy} from 'd3-hierarchy';
 
@@ -11,7 +11,7 @@ describe('feature', () => {
     it('is cached in a node in the hierarchy', () => {
         expect(featureModel.hierarchy._feature).toBeUndefined();
         const feature = featureModel.hierarchy.feature();
-        expect(featureModel.hierarchy._feature.uuid).toBe('Eclipse');
+        expect(featureModel.hierarchy._feature.ID).toBe('Eclipse');
         featureModel.hierarchy.feature();
         expect(featureModel.hierarchy._feature).toBe(feature);
     });
@@ -50,18 +50,18 @@ describe('feature', () => {
 });
 
 describe('FeatureModel', () => {
-    const createFeatureModel = (serializedFeatureModel = validFeatureModel, collapsedFeatureUUIDs = ['FeatureIDE']) =>
-        FeatureModel.fromJSON(serializedFeatureModel).collapse(collapsedFeatureUUIDs);
+    const createFeatureModel = (serializedFeatureModel = validFeatureModel, collapsedfeatureIDs = ['FeatureIDE']) =>
+        FeatureModel.fromJSON(serializedFeatureModel).collapse(collapsedfeatureIDs);
 
     it('creates a representation of a feature model', () => {
-        const collapsedFeatureUUIDs: string[] = [],
-            featureModel = createFeatureModel(validFeatureModel, collapsedFeatureUUIDs);
+        const collapsedfeatureIDs: string[] = [],
+            featureModel = createFeatureModel(validFeatureModel, collapsedfeatureIDs);
         expect(featureModel.serializedFeatureModel).toBe(validFeatureModel);
-        expect(featureModel.collapsedFeatureUUIDs).toBe(collapsedFeatureUUIDs);
+        expect(featureModel.collapsedfeatureIDs).toBe(collapsedfeatureIDs);
     });
 
     it('retrieves a feature model\'s structure', () => {
-        expect(createFeatureModel().structure.uuid).toBe('Eclipse');
+        expect(createFeatureModel().structure.ID).toBe('Eclipse');
     });
 
     it('errors on invalid structure', () => {
@@ -84,20 +84,20 @@ describe('FeatureModel', () => {
 
     it('retrieves visible nodes', () => {
         const visibleNodes = createFeatureModel().visibleNodes;
-        expect(visibleNodes.map(getUUID)).toContain('Eclipse');
-        expect(visibleNodes.map(getUUID)).toContain('FeatureIDE');
-        expect(visibleNodes.map(getUUID)).not.toContain('FeatureHouse');
+        expect(visibleNodes.map(getID)).toContain('Eclipse');
+        expect(visibleNodes.map(getID)).toContain('FeatureIDE');
+        expect(visibleNodes.map(getID)).not.toContain('FeatureHouse');
     });
 
     it('retrieves actual nodes', () => {
         const actualNodes = createFeatureModel().actualNodes;
-        expect(actualNodes.map(getUUID)).toContain('Eclipse');
-        expect(actualNodes.map(getUUID)).toContain('FeatureIDE');
-        expect(actualNodes.map(getUUID)).toContain('FeatureHouse');
+        expect(actualNodes.map(getID)).toContain('Eclipse');
+        expect(actualNodes.map(getID)).toContain('FeatureIDE');
+        expect(actualNodes.map(getID)).toContain('FeatureHouse');
     });
 
     it('retrieves a node', () => {
-        expect(getUUID(createFeatureModel().getNode('FeatureIDE')!)).toBe('FeatureIDE');
+        expect(getID(createFeatureModel().getNode('FeatureIDE')!)).toBe('FeatureIDE');
     });
 
     it('does not retrieve an invalid node', () => {
@@ -105,7 +105,7 @@ describe('FeatureModel', () => {
     });
 
     it('retrieves a feature', () => {
-        expect(createFeatureModel().getFeature('FeatureIDE')!.uuid).toBe('FeatureIDE');
+        expect(createFeatureModel().getFeature('FeatureIDE')!.ID).toBe('FeatureIDE');
     });
 
     it('does not retrieve an invalid feature', () => {
@@ -113,24 +113,24 @@ describe('FeatureModel', () => {
     });
 
     it('retrieves visible feature names', () => {
-        const visibleFeatureUUIDs = createFeatureModel().getVisibleFeatureUUIDs();
-        expect(visibleFeatureUUIDs).toContain('Eclipse');
-        expect(visibleFeatureUUIDs).toContain('FeatureIDE');
-        expect(visibleFeatureUUIDs).not.toContain('FeatureHouse');
+        const visiblefeatureIDs = createFeatureModel().getVisiblefeatureIDs();
+        expect(visiblefeatureIDs).toContain('Eclipse');
+        expect(visiblefeatureIDs).toContain('FeatureIDE');
+        expect(visiblefeatureIDs).not.toContain('FeatureHouse');
     });
 
     it('retrieves actual feature names', () => {
-        const actualFeatureUUIDs = createFeatureModel().getActualFeatureUUIDs();
-        expect(actualFeatureUUIDs).toContain('Eclipse');
-        expect(actualFeatureUUIDs).toContain('FeatureIDE');
-        expect(actualFeatureUUIDs).toContain('FeatureHouse');
+        const actualfeatureIDs = createFeatureModel().getActualfeatureIDs();
+        expect(actualfeatureIDs).toContain('Eclipse');
+        expect(actualfeatureIDs).toContain('FeatureIDE');
+        expect(actualfeatureIDs).toContain('FeatureHouse');
     });
 
     it('retrieves feature names with actual children', () => {
-        const featureUUIDsWithActualChildren = createFeatureModel().getFeatureUUIDsWithActualChildren();
-        expect(featureUUIDsWithActualChildren).toContain('Eclipse');
-        expect(featureUUIDsWithActualChildren).toContain('FeatureIDE');
-        expect(featureUUIDsWithActualChildren).not.toContain('FeatureHouse');
+        const featureIDsWithActualChildren = createFeatureModel().getfeatureIDsWithActualChildren();
+        expect(featureIDsWithActualChildren).toContain('Eclipse');
+        expect(featureIDsWithActualChildren).toContain('FeatureIDE');
+        expect(featureIDsWithActualChildren).not.toContain('FeatureHouse');
     });
 
     it('checks whether features are siblings', () => {

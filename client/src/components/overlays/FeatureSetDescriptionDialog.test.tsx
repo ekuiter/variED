@@ -17,7 +17,7 @@ describe('FeatureSetDescriptionDialog', () => {
                 isOpen={true}
                 onDismiss={mock}
                 featureModel={FeatureModel.fromJSON(validFeatureModel)}
-                featureUUID="FeatureIDE"
+                featureID="FeatureIDE"
                 settings={defaultSettings}
                 onSetFeatureDescription={onSetFeatureDescription}/>
         );
@@ -31,6 +31,6 @@ describe('FeatureSetDescriptionDialog', () => {
     it('triggers a rename if a new name is entered', () => {
         const wrapper = shallow(featureSetDescriptionDialog);
         wrapper.find(TextFieldDialog).simulate('submit', 'new description');
-        expect(onSetFeatureDescription).lastCalledWith({featureUUID: 'FeatureIDE', description: 'new description'});
+        expect(onSetFeatureDescription).lastCalledWith({featureID: 'FeatureIDE', description: 'new description'});
     });
 });

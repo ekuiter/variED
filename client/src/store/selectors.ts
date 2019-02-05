@@ -59,22 +59,22 @@ const currentFeatureModelCollaborativeSessionKeySelector = <T>(key: string) => (
 
 export const getFeatureModel = createCachedSelector(
     featureModelCollaborativeSessionKeySelector('serializedFeatureModel'),
-    featureModelCollaborativeSessionKeySelector('collapsedFeatureUUIDs'),
-    (serializedFeatureModel?: SerializedFeatureModel, collapsedFeatureUUIDs?: string[]): FeatureModel | undefined => {
+    featureModelCollaborativeSessionKeySelector('collapsedfeatureIDs'),
+    (serializedFeatureModel?: SerializedFeatureModel, collapsedfeatureIDs?: string[]): FeatureModel | undefined => {
         logger.infoTagged({tag: 'redux'}, () => 'updating feature model selector');
-        if (!serializedFeatureModel || !collapsedFeatureUUIDs)
+        if (!serializedFeatureModel || !collapsedfeatureIDs)
             return undefined;
-        return FeatureModel.fromJSON(serializedFeatureModel).collapse(collapsedFeatureUUIDs);
+        return FeatureModel.fromJSON(serializedFeatureModel).collapse(collapsedfeatureIDs);
     }
 )((_state: State, artifactPath: ArtifactPath) => artifactPathToString(artifactPath));
 
 export const getCurrentFeatureModel = createSelector(
     currentFeatureModelCollaborativeSessionKeySelector('serializedFeatureModel'),
-    currentFeatureModelCollaborativeSessionKeySelector('collapsedFeatureUUIDs'),
-    (serializedFeatureModel?: SerializedFeatureModel, collapsedFeatureUUIDs?: string[]): FeatureModel | undefined => {
+    currentFeatureModelCollaborativeSessionKeySelector('collapsedfeatureIDs'),
+    (serializedFeatureModel?: SerializedFeatureModel, collapsedfeatureIDs?: string[]): FeatureModel | undefined => {
         logger.infoTagged({tag: 'redux'}, () => 'updating feature model selector');
-        if (!serializedFeatureModel || !collapsedFeatureUUIDs)
+        if (!serializedFeatureModel || !collapsedfeatureIDs)
             return undefined;
-        return FeatureModel.fromJSON(serializedFeatureModel).collapse(collapsedFeatureUUIDs);
+        return FeatureModel.fromJSON(serializedFeatureModel).collapse(collapsedfeatureIDs);
     }
 );
