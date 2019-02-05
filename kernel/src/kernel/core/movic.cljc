@@ -15,7 +15,8 @@
   be divided in unrelated objects."
   (:require [clojure.set :as set]
             [kernel.core.history-buffer :as HB]
-            [kernel.core.conflict-relation :as conflict-relation]))
+            [kernel.core.conflict-relation :as conflict-relation]
+            [kernel.helpers :refer [log]]))
 
 ; constructor
 
@@ -55,6 +56,7 @@
   The CDAG, HB, base-FM and CC& arguments are passed down as context for the conflict detection.
   The history buffer is used to obtain operation metadata for conflict detection."
   [MCGSi-1 Oi CDAG HB base-FM CC&]
+  (log "running MOVIC algorithm, starting with" (count MCGSi-1) "maximum compatible groups")
 
   ; step 1: initialization
   (let [MCGSi-1& (atom MCGSi-1)

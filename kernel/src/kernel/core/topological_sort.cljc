@@ -17,7 +17,8 @@
   (:require [clojure.set :as set]
             [kernel.core.causal-dag :as CDAG]
             [kernel.core.history-buffer :as HB]
-            [kernel.core.compound-operation :as CO]))
+            [kernel.core.compound-operation :as CO]
+            [kernel.helpers :refer [log]]))
 
 (defn single-dependency-map
   "Constructs a single-key dependence, represented as a map from
@@ -67,6 +68,7 @@
   First, sorts the operations topologically with [[CO-topological-sort]],
   then applies the operations in that order."
   [CDAG HB FM CO-IDs]
+  (log "applying a set of" (count CO-IDs) "compatible operations on a feature model")
   (->> CO-IDs
        (CO-topological-sort CDAG)
        (HB/lookup* HB)

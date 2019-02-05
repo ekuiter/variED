@@ -15,7 +15,8 @@
 
   Without garbage collection, the history buffer may grow linearly over time."
   (:require [kernel.core.vector-clock :as VC]
-            [kernel.core.compound-operation :as CO]))
+            [kernel.core.compound-operation :as CO]
+            [kernel.helpers :refer [log]]))
 
 ; constructor
 
@@ -51,6 +52,7 @@
 (defn insert
   "Inserts a newly received operation into the history buffer in O(1)."
   [HB CO]
+  (log "inserting operation into history buffer with" (count HB) "operations")
   (assoc HB (CO/get-ID CO) CO))
 
 (defn _remove

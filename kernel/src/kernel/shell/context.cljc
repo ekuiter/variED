@@ -20,13 +20,14 @@
 
   This variable may be rebound to simulate different, interacting sites.
   On a single site (i.e., in production), the context is not rebound
-  (but modified using atoms).")
-
+  (but modified using atoms)."
+  (:require [kernel.helpers :refer [log]]))
 
 (declare ^:dynamic *context*)
 
 (defn set-context
   "Sets a site's global context."
   [context]
+  (log "context switch")
   (def ^:dynamic *context* context)
   nil)

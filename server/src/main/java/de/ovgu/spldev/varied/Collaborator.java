@@ -37,12 +37,11 @@ public class Collaborator {
     }
 
     private void _send(Message.IEncodable message) throws WebSocket.SendException {
-        Logger.info("sending message {} to collaborator {}", message, this);
+        Logger.info("sending {} message to collaborator {}", ((Message) message).getType(), this);
         webSocket.send(message);
     }
 
     void sendPending() {
-        Logger.info("sending {} queued messages to collaborator {}", outgoingQueue.size(), this);
         while (outgoingQueue.peek() != null) {
             Message.IEncodable message = outgoingQueue.peek();
             try {
@@ -55,7 +54,6 @@ public class Collaborator {
     }
 
     void send(Message.IEncodable message) {
-        Logger.info("queueing message {} for collaborator {}", message, this);
         outgoingQueue.add(message);
         sendPending();
     }
@@ -85,45 +83,40 @@ public class Collaborator {
 
     void onMessage(Message message) throws Message.InvalidMessageException {
         Objects.requireNonNull(message, "no message given");
-        Logger.info("received message {} from collaborator {}", message, this);
+        Logger.info("received {} message from collaborator {}", message.getType(), this);
 
         if (message.getArtifactPath() == null)
             throw new Message.InvalidMessageException("no artifact path given");
 
-        Logger.debug("entering locked region");
-        try {
-            Artifact artifact = ProjectManager.getInstance().getArtifact(message.getArtifactPath());
-            if (artifact == null)
-                throw new Message.InvalidMessageException("no artifact found for path " + message.getArtifactPath());
-            CollaborativeSession collaborativeSession = artifact.getCollaborativeSession();
-            Logger.debug("message concerns collaborative session {}", collaborativeSession);
+        Artifact artifact = ProjectManager.getInstance().getArtifact(message.getArtifactPath());
+        if (artifact == null)
+            throw new Message.InvalidMessageException("no artifact found for path " + message.getArtifactPath());
+        CollaborativeSession collaborativeSession = artifact.getCollaborativeSession();
+        Logger.debug("message concerns collaborative session {}", collaborativeSession);
 
-            if (message.isType(Api.TypeEnum.JOIN_REQUEST) || message.isType(Api.TypeEnum.LEAVE_REQUEST)) {
-                if (message.isType(Api.TypeEnum.JOIN_REQUEST))
-                    joinCollaborativeSession(collaborativeSession);
-                if (message.isType(Api.TypeEnum.LEAVE_REQUEST))
-                    leaveCollaborativeSession(collaborativeSession);
+        if (message.isType(Api.TypeEnum.JOIN_REQUEST) || message.isType(Api.TypeEnum.LEAVE_REQUEST)) {
+            if (message.isType(Api.TypeEnum.JOIN_REQUEST))
+                joinCollaborativeSession(collaborativeSession);
+            if (message.isType(Api.TypeEnum.LEAVE_REQUEST))
+                leaveCollaborativeSession(collaborativeSession);
+            return;
+        }
+
+        for (CollaborativeSession _collaborativeSession : collaborativeSessions)
+            if (_collaborativeSession == collaborativeSession) {
+                collaborativeSession.onMessage(this, message);
                 return;
             }
-
-            for (CollaborativeSession _collaborativeSession : collaborativeSessions)
-                if (_collaborativeSession == collaborativeSession) {
-                    collaborativeSession.onMessage(this, message);
-                    return;
-                }
-        } finally {
-            Logger.debug("leaving locked region");
-        }
 
         throw new Message.InvalidMessageException("did not join collaborative session for given artifact path");
     }
 
-    public void joinCollaborativeSession(CollaborativeSession collaborativeSession) {
+    private void joinCollaborativeSession(CollaborativeSession collaborativeSession) {
         collaborativeSession.join(this);
         collaborativeSessions.add(collaborativeSession);
     }
 
-    public void leaveCollaborativeSession(CollaborativeSession collaborativeSession) {
+    private void leaveCollaborativeSession(CollaborativeSession collaborativeSession) {
         collaborativeSession.leave(this);
         collaborativeSessions.remove(collaborativeSession);
     }

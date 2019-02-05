@@ -16,15 +16,18 @@
   As the conflict detection also considers conflict-succeeding operations a conflict,
   those operations will also be stored in the conflict cache.
 
-  Without garbage collection, the conflict cache may grow quadratically with time.")
+  Without garbage collection, the conflict cache may grow quadratically with time."
+  (:require [kernel.helpers :refer [log]]))
 
 ; Conflict record
 
 (defrecord Conflict [reason])
 
-(def make-conflict
+(defn make-conflict
   "Creates a new Conflict record that includes a reason for a conflict."
-  ->Conflict)
+  [reason]
+  (log "conflict detected, reason:" reason)
+  (->Conflict reason))
 
 (defn conflict?
   "Returns whether a given object is a Conflict record."
@@ -55,6 +58,7 @@
   Otherwise, returns nil.
   Requires previous check whether the cache is [[hittable?]]."
   [CC CO-ID-a CO-ID-b]
+  (log "conflict cache hit for" CO-ID-a "and" CO-ID-b)
   ((CC :conflicts) (hash-set CO-ID-a CO-ID-b)))
 
 (defn with-most-recent
@@ -67,6 +71,7 @@
 (defn insert
   "Inserts a new conflict for two operations into the conflict cache in O(1)."
   [CC CO-ID-a CO-ID-b conflict]
+  (log "conflict cache written for" CO-ID-a "and" CO-ID-b "- cache now contains" (count (CC :conflicts)) "conflicts")
   (update CC :conflicts #(assoc % (hash-set CO-ID-a CO-ID-b) conflict)))
 
 (defn _remove

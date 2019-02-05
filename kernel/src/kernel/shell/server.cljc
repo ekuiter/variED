@@ -9,7 +9,8 @@
             [kernel.core.garbage-collector :as GC]
             [kernel.core.message :as message]
             [kernel.shell.site :as site]
-            [kernel.shell.context :refer [*context* set-context]]))
+            [kernel.shell.context :refer [*context* set-context]]
+            [kernel.helpers :refer [log]]))
 
 ; constructors
 
@@ -27,6 +28,7 @@
   is the maximum of all its received operation's vector clocks (save for its
   own vector clock coordinate)."
   [initial-FM]
+  (log "initializing server context")
   (-> (site/initialize-context-mesh-topology :server initial-FM)
       (assoc :GC (atom {:server (VC/initialize)}))
       (assoc :offline-sites (atom #{}))))
@@ -44,6 +46,7 @@
   Only required to improve the performance of garbage collection.
   Only sent explicitly if no messages have been forwarded for a while."
   []
+  (log "generating heartbeat message")
   (swap! (*context* :VC) #(VC/increment % :server))         ; not strictly necessary as we ignore this coordinate
   (let [message (message/make-heartbeat (GC-filter @(*context* :VC)) :server)]
     (swap! (*context* :GC) #(GC/insert % (message/get-site-ID message) (message/get-VC message)))
@@ -55,6 +58,7 @@
   (as other sites have already been notified about the leaving site).
   Returns the message that is to be forwarded."
   [message]
+  (log "forwarding message from" (message/get-site-ID message))
   (let [new-message (message/update-VC message #(reduce VC/remove-site % @(*context* :offline-sites)))]
     (site/receive-message! new-message)                     ; ignore returned feature model on the server
     (generate-heartbeat!)
@@ -69,6 +73,7 @@
   (effectively simulating that the first message received by the site is this very heartbeat).
   Returns the new site's initial context and the generated heartbeat message."
   [site-ID]
+  (log "new site" site-ID "has joined, generating initial context and heartbeat message")
   (let [site-VC (VC/increment (GC-filter @(*context* :VC)) site-ID)
         message (message/make-heartbeat site-VC site-ID)]
     (swap! (*context* :VC) #(VC/_merge (VC/increment % :server) site-VC))
@@ -95,6 +100,7 @@
   **TODO**: Garbage collect the list of offline sites after every user has seen the leave
   (e.g., attach this to a heartbeat that everyone has to succeed)."
   [site-ID]
+  (log "site" site-ID "has left, generating leave message")
   (let [message (message/make-leave site-ID)]
     (site/receive-leave! message)
     (swap! (*context* :offline-sites) #(conj % site-ID))

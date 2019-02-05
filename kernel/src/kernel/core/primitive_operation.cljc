@@ -4,7 +4,7 @@
   They are building blocks for more complex compound operations ([[kernel.core.compound-operation]]).
 
   Primitive operations are also used to detect conflicts for competing operations ([[kernel.core.conflict-relation]])."
-  (:require [kernel.helpers :as helpers]
+  (:require [kernel.helpers :as helpers :refer [log]]
             [kernel.core.feature-model :as FM]))
 
 ; getters
@@ -50,6 +50,7 @@
   Is filtered out when building a compound operation.
   Useful for nullifying the effect of an operation when inverting it."
   []
+  (log "PO (nop)")
   nil)
 
 (defn remove-nop
@@ -62,13 +63,16 @@
   values defined in [[kernel.core.feature-model]].
   Newly created features are not part of the feature tree until explicitly inserted."
   []
-  {:type :create-feature
-   :ID   (helpers/generate-ID)})
+  (let [ID (helpers/generate-ID)]
+    (log "PO (create-feature" ID ")")
+    {:type :create-feature
+     :ID   ID}))
 
 (defn update-feature
   "Updates a single attribute of a feature.
   For conflict detection and undo/redo, it is also necessary to store an attribute's old value for every update."
   [ID attribute old-value new-value]
+  (log "PO (update-feature" ID attribute old-value new-value ")")
   {:type      :update-feature
    :ID        ID
    :attribute attribute
@@ -78,13 +82,16 @@
 (defn create-constraint
   "Creates a new constraint."
   []
-  {:type :create-constraint
-   :ID   (helpers/generate-ID)})
+  (let [ID (helpers/generate-ID)]
+    (log "PO (create-constraint" ID ")")
+    {:type :create-constraint
+     :ID   ID}))
 
 (defn update-constraint
   "Updates a single attribute of a constraint.
   For conflict detection and undo/redo, it is also necessary to store an attribute's old value for every update."
   [ID attribute old-value new-value]
+  (log "PO (update-constraint" ID attribute old-value new-value ")")
   {:type      :update-constraint
    :ID        ID
    :attribute attribute
@@ -97,6 +104,7 @@
   This assertion operation has no actual execution effect on the feature model,
   it only affects the conflict detection."
   [ID]
+  (log "PO (assert-no-child-added" ID ")")
   {:type :assert-no-child-added
    :ID   ID})
 

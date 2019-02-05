@@ -5,7 +5,7 @@
   Modifies the global context.
   Site control operations are assumed to run atomically in a single thread,
   no synchronization is performed."
-  (:require [kernel.helpers :as helpers]
+  (:require [kernel.helpers :as helpers :refer [log]]
             [kernel.core.vector-clock :as VC]
             [kernel.core.causal-dag :as CDAG]
             [kernel.core.history-buffer :as HB]
@@ -32,6 +32,7 @@
     MCGS    :MCGS
     FM      :FM
     GC      :GC}]
+  (log "initializing client context")
   {:site-ID site-ID
    :VC      (atom VC)
    :CDAG    (atom CDAG)
@@ -71,6 +72,7 @@
 
   Returns the (updated) current feature model and the generated operation message."
   [PO-sequence]
+  (log "generating next feature model and operation message from" (count PO-sequence) "primitive operations")
   (swap! (*context* :VC) #(VC/increment % (*context* :site-ID)))
   (let [CO (CO/make PO-sequence (helpers/generate-ID) @(*context* :VC))
         operation (message/make-operation CO (*context* :site-ID))]
@@ -96,6 +98,7 @@
   "Generates a heartbeat message at a client site.
   Only required to improve the performance of garbage collection."
   []
+  (log "generating heartbeat message")
   (swap! (*context* :VC) #(VC/increment % (*context* :site-ID)))
   (let [message (message/make-heartbeat @(*context* :VC) (*context* :site-ID))]
     (swap! (*context* :GC) #(GC/insert % (message/get-site-ID message) (message/get-VC message)))

@@ -23,7 +23,8 @@
   If no garbage collection is performed, the CDAG might grow quadratically with time."
   (:require [clojure.set :as set]
             [kernel.core.compound-operation :as CO]
-            [kernel.core.history-buffer :as HB]))
+            [kernel.core.history-buffer :as HB]
+            [kernel.helpers :refer [log]]))
 
 ; constructor
 
@@ -60,10 +61,12 @@
   Calculates the CIP by filtering the CP and removing any operations that are succeeded by any other
   operation in the CP, yielding the maximum elements of the CP or the transitive reduction."
   [CDAG HB CO]
+  (log "inserting operation into causal directed acyclic graph with" (count (get-CO-IDs CDAG)) "nodes")
   (let [CO-CP (reduce #(if (CO/preceding? (HB/lookup HB %2) CO) (conj %1 %2) %1) #{} (get-CO-IDs CDAG))
         CO-CIP (set/select (fn [CO-ID']
                              (not-any? #(CO/preceding? (HB/lookup HB CO-ID') (HB/lookup HB %1)) CO-CP))
                            CO-CP)]
+    (log "found" (count CO-CP) "causally preceding and" (count CO-CIP) "causally immediately preceding operations")
     (-> CDAG
         (assoc-in [:CPs (CO/get-ID CO)] CO-CP)
         (assoc-in [:CIPs (CO/get-ID CO)] CO-CIP))))

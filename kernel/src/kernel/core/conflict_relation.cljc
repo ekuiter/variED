@@ -23,7 +23,8 @@
             [kernel.core.feature-model :as FM]
             [kernel.core.primitive-operation :as PO]
             [kernel.core.compound-operation :as CO]
-            [kernel.core.topological-sort :as topological-sort]))
+            [kernel.core.topological-sort :as topological-sort]
+            [kernel.helpers :refer [log]]))
 
 (defn CO-conflict-reducer
   "For each primitive operation from one compound operation CO-x, checks whether applying
@@ -136,6 +137,7 @@
   all primitive operations contained in CO-x to produce a final
   `base-FM+preceding-CO-y+CO-y+preceding-CO-x+CO-x`."
   [CO-x CO-y CDAG HB base-FM arg continue]
+  (log "checking whether" (CO/get-ID CO-x) "causes a syntactic conflict after" (CO/get-ID CO-y) "has already been applied")
   (let [CP-x (CDAG/get-CP CDAG (CO/get-ID CO-x))
         CP-y (CDAG/get-CP CDAG (CO/get-ID CO-y))
         base-FM+preceding-CO-y
@@ -155,6 +157,7 @@
   "Determines whether two compound operations are in semantic conflict, according
   to the rules defined in [[kernel.core.feature-model/semantic-rules]]."
   [FM+preceding-CO-a+CO-a+preceding-CO-b+CO-b]
+  (log "checking for semantic conflicts")
   (when (some #(% FM+preceding-CO-a+CO-a+preceding-CO-b+CO-b) (FM/semantic-rules))
     (CC/make-conflict "complex semantics rule")))
 
@@ -250,13 +253,15 @@
           conflict)
         false))))
 
-(def conflicting?
+(defn conflicting?
   "Determines whether two compound operations are in conflict with each other.
   This may only be the case for concurrent operations, as causally ordered
   operations can be guaranteed compatible at generation time.
   This relation should be irreflexive and symmetric. It is not generally transitive.
   When called with a newly arrived operation, it should be the second one to allow for optimization."
-  cached-conflicting*?)
+  [CO-a CO-b CDAG HB base-FM CC&]
+  (log "determining conflict relation for" (CO/get-ID CO-a) "and" (CO/get-ID CO-b))
+  (cached-conflicting*? CO-a CO-b CDAG HB base-FM CC&))
 
 (def compatible?
   "Determines whether two operations are compatible with each other.

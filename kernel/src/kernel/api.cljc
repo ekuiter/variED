@@ -213,15 +213,19 @@
   [ID]
   (helpers/encode (CO/remove-constraint (*context* :FM) ID)))
 
-(defn ^:export contextGet
+(defn ^:export getContext
   "Returns the global context.
   For debugging only."
   []
   ; do not encode the context as it should not be sent over the wire
   *context*)
 
-(defn ^:export contextSet
+(defn ^:export setContext
   "Returns the global context.
   For debugging only."
   [context]
   (set-context context))
+
+(defn ^:export setLoggerFunction
+  [logger-fn]
+  (helpers/set-logger-fn logger-fn))

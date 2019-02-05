@@ -89,6 +89,10 @@ public abstract class Artifact {
             this.initialFeatureModel = initialFeatureModel;
         }
 
+        public IFeatureModel getInitialFeatureModel() {
+            return initialFeatureModel;
+        }
+
         public CollaborativeSession getCollaborativeSession() {
             if (this.collaborativeSession == null)
                 this.collaborativeSession = new CollaborativeSession.FeatureModel(getPath(), initialFeatureModel);

@@ -18,7 +18,8 @@
             [kernel.core.conflict-cache :as CC]
             [kernel.core.topological-sort :as topological-sort]
             [kernel.core.movic :as MOVIC]
-            [kernel.core.compound-operation :as CO]))
+            [kernel.core.compound-operation :as CO]
+            [kernel.helpers :refer [log]]))
 
 ; constructor
 
@@ -68,7 +69,9 @@
   operation succeeding the hole would also not be eligible because it if it was,
   the hole would have been as well."
   [GC CDAG HB base-FM CC MCGS]
+  (log "running garbage collector")
   (let [eligible-CO-IDs (HB/_filter HB (partial eligible? GC))]
+    (log "found" (count eligible-CO-IDs) "operations eligible for garbage collection")
     {:CDAG    (reduce CDAG/_remove CDAG eligible-CO-IDs)
      :HB      (reduce HB/_remove HB eligible-CO-IDs)
      :base-FM (topological-sort/apply-compatible* CDAG HB base-FM eligible-CO-IDs)

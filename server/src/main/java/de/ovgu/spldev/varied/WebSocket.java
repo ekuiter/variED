@@ -55,7 +55,6 @@ public class WebSocket {
         synchronized (lock) {
             try {
                 try {
-                    Logger.debug("WebSocket received {}", message);
                     CollaboratorManager.getInstance().onMessage(siteID, message);
                 } catch (Throwable t) {
                     send(new Api.Error(t));
@@ -94,7 +93,6 @@ public class WebSocket {
 
     void send(Message.IEncodable message) throws SendException {
         try {
-            Logger.debug("WebSocket sending {}", message);
             session.getBasicRemote().sendObject(message);
         } catch (Exception e) {
             throw new SendException(e);

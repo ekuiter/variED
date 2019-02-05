@@ -14,7 +14,8 @@
             [kernel.core.garbage-collector :as GC]
             [kernel.core.compound-operation :as CO]
             [kernel.core.message :as message]
-            [kernel.shell.context :refer [*context*]]))
+            [kernel.shell.context :refer [*context*]]
+            [kernel.helpers :refer [log]]))
 
 (defn initialize-context-mesh-topology
   "Initializes global context for a new site in a mesh topology.
@@ -36,6 +37,9 @@
   feature model. Otherwise, returns :conflict."
   [MCGS CDAG HB base-FM]
   (if (= (count MCGS) 1)
+    (log "no conflict occured, producing feature model")
+    (log "conflicts occured," (count MCGS) "maximum compatible groups created"))
+  (if (= (count MCGS) 1)
     (topological-sort/apply-compatible* CDAG HB base-FM (first MCGS))
     :conflict))
 
@@ -47,6 +51,7 @@
   HB and CC have been updated.
   Returns the (updated) current feature model."
   [message]
+  (log "receiving operation message from" (message/get-site-ID message))
   (let [CO (message/operation->CO message)]
     (swap! (*context* :VC) #(VC/_merge (VC/increment % (*context* :site-ID)) (CO/get-VC CO)))
     (swap! (*context* :CDAG) #(CDAG/insert % @(*context* :HB) CO))
@@ -63,6 +68,7 @@
   "Receives a heartbeat message at a site.
   Updates the global context and returns the current feature model."
   [message]
+  (log "receiving heartbeat message from" (message/get-site-ID message))
   (swap! (*context* :VC) #(VC/_merge (VC/increment % (*context* :site-ID)) (message/get-VC message)))
   (swap! (*context* :GC) #(GC/insert % (message/get-site-ID message) (message/get-VC message)))
   (*context* :FM))
@@ -71,6 +77,7 @@
   "Receives a leave message at a site.
   Updates the global context and returns the current feature model."
   [message]
+  (log "receiving leave message from" (message/get-site-ID message))
   (let [site-ID (message/get-site-ID message)]
     (swap! (*context* :VC) #(VC/remove-site % site-ID))
     (swap! (*context* :HB) #(HB/remove-site % site-ID))

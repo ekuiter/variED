@@ -8,6 +8,14 @@
              (:require [cognitect.transit :as transit])]
       :cljs [(:require [cognitect.transit :as transit])]))
 
+(def ^:dynamic *logger-fn* (fn [_]))
+
+(defn set-logger-fn [logger-fn]
+  (def ^:dynamic *logger-fn* logger-fn))
+
+(defn log [& args]
+    (*logger-fn* (clojure.string/join " " args)))
+
 (defn generate-ID
   "Identifiers generated in the system must be unique.
   For simplicity, we utilize pseudo randomly generated UUIDs (version 4).

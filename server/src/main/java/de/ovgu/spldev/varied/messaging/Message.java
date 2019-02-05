@@ -66,6 +66,10 @@ abstract public class Message {
         return artifactPath;
     }
 
+    public Type getType() {
+        return type;
+    }
+
     Message() {
     }
 

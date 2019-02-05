@@ -1,6 +1,7 @@
 package de.ovgu.spldev.varied;
 
 import de.ovgu.featureide.fm.core.base.IFeatureModel;
+import de.ovgu.spldev.varied.kernel.Kernel;
 import de.ovgu.spldev.varied.messaging.Api;
 import de.ovgu.spldev.varied.messaging.Message;
 import org.pmw.tinylog.Logger;
@@ -69,7 +70,7 @@ public abstract class CollaborativeSession {
         FeatureModel(Artifact.Path artifactPath, IFeatureModel initialFeatureModel) {
             super(artifactPath);
             Objects.requireNonNull(initialFeatureModel, "no initial feature model given");
-            this.kernel = new Kernel(initialFeatureModel);
+            this.kernel = new Kernel(artifactPath, initialFeatureModel);
         }
 
         protected boolean _onMessage(Collaborator collaborator, Message.IDecodable message) {
