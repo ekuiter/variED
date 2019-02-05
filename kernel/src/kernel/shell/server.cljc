@@ -87,7 +87,7 @@
       :HB      @(*context* :HB)
       :CC      @(*context* :CC)
       :MCGS    @(*context* :MCGS)
-      :FM      @(*context* :FM)
+      :FM      @(*context* :FM)                             ; TODO: optimize this away
       :GC      @(*context* :GC)}
      (message/with-server-VC message (GC-filter @(*context* :VC)))]))
 
