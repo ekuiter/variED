@@ -17,6 +17,7 @@
   :dependencies [[org.clojure/clojure "1.10.0"]
                  [com.cognitect/transit-clj "0.8.313"]]
   :plugins [[lein-codox "0.10.5" :scope "test"]]
+  :aot :all
   :codox {:metadata    {:doc/format :markdown}
           :output-path "../build/kernel-documentation"
           :source-uri  "https://github.com/ekuiter/variED/blob/{git-commit}/kernel/{filepath}#L{line}"}

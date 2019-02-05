@@ -16,7 +16,6 @@ import reducer, {Store} from './store/reducer';
 import {initializeIcons} from 'office-ui-fabric-react/lib/Icons';
 import actions from './store/actions';
 import logger, {LogLevel, setLogLevel} from './helpers/logger';
-import {tryOperation, operations} from './modeling/operations';
 
 if (window.location.protocol !== 'http:')
     window.location.protocol = 'http:'; // TODO: hack until we support WSS
@@ -33,9 +32,7 @@ window.app = {
     setLogLevel,
     LogLevel, // parameter for setLogLevel
     actions, // can be dispatched with the store
-    store, // used by message delay simulation and tryOperation
-    operations, // parameter for tryOperation
-    tryOperation
+    store // used by message delay simulation and tryOperation
 };
 
 ReactDOM.render((

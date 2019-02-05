@@ -48,7 +48,8 @@
   This means it is impossible to reorder feature siblings or constraints, or to create
   sibling features. We could introduce a reordering operation that treats concurrent
   writes to the same group of children as conflicts."
-  (:require [kernel.core.vector-clock :as VC]
+  (:require [clojure.string :as string]
+            [kernel.core.vector-clock :as VC]
             [kernel.core.feature-model :as FM]
             [kernel.core.primitive-operation :as PO]
             [kernel.helpers :refer [log]]))
@@ -152,7 +153,7 @@
   This is guaranteed automatically by the fact that competing concurrent updates
   on any parent cause conflicts (because both operations set the parent)."
   [FM & IDs]
-  (log "CO (create-feature-above" (clojure.string/join " " IDs) ")")
+  (log "CO (create-feature-above" (string/join " " IDs) ")")
   (let [parent-ID (FM/get-feature-parent-ID FM (first IDs))
         PO-create-feature (PO/create-feature)
         ID (PO/get-ID PO-create-feature)]

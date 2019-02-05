@@ -1,12 +1,12 @@
 package de.ovgu.spldev.varied.kernel;
 
 import clojure.java.api.Clojure;
-import clojure.lang.IFn;
-import clojure.lang.PersistentHashMap;
+import clojure.lang.*;
 import de.ovgu.featureide.fm.core.base.IFeatureModel;
 import de.ovgu.spldev.varied.Artifact;
 import org.pmw.tinylog.Logger;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -32,6 +32,10 @@ public class Kernel {
 
     static PersistentHashMap toPersistentHashMap(HashMap hashMap) {
         return (PersistentHashMap) Clojure.var("clojure.core", "into").invoke(PersistentHashMap.EMPTY, hashMap);
+    }
+
+    static PersistentVector toPersistentVector(ArrayList arrayList) {
+        return (PersistentVector) Clojure.var("clojure.core", "into").invoke(PersistentVector.EMPTY, arrayList);
     }
 
     private Object callKernel(String function, Object... args) {

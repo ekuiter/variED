@@ -1,21 +1,22 @@
 package de.ovgu.spldev.varied.kernel;
 
 import clojure.lang.PersistentHashMap;
+import clojure.lang.PersistentVector;
 import de.ovgu.featureide.fm.core.base.FeatureUtils;
 import de.ovgu.featureide.fm.core.base.IConstraint;
 import de.ovgu.featureide.fm.core.base.IFeature;
 import de.ovgu.featureide.fm.core.base.IFeatureModel;
+import org.prop4j.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 public class FeatureModelFormat {
-    static PersistentHashMap toKernel(IFeatureModel featureModel) {
+    public static PersistentHashMap toKernel(IFeatureModel featureModel) {
         HashMap<Object, Object> featureModelMap = new HashMap<>(),
                 featuresMap = new HashMap<>(),
                 constraintsMap = new HashMap<>();
-        featureModelMap.put(Kernel.keyword("features"), featuresMap);
-        featureModelMap.put(Kernel.keyword("constraints"), constraintsMap);
 
         featureModel.getFeatures().forEach(feature -> {
             final List<IFeature> children = FeatureUtils.convertToFeatureList(feature.getStructure().getChildren());
@@ -41,74 +42,58 @@ public class FeatureModelFormat {
                 featureMap.put(Kernel.keyword("description"), description.replace("\r", ""));
             } else
                 featureMap.put(Kernel.keyword("description"), null);
-            featuresMap.put(feature.getName(), featureMap);
+            featuresMap.put(feature.getName(), Kernel.toPersistentHashMap(featureMap));
         });
 
         for (final IConstraint constraint : featureModel.getConstraints()) {
             HashMap<Object, Object> constraintMap = new HashMap<>();
-            // TODO: proper format for constraints
-            constraintMap.put(Kernel.keyword("formula"), constraint.toString());
+            ArrayList<Object> formulaList = new ArrayList<>();
+            createConstraint(formulaList, constraint.getNode());
+            if (formulaList.size() != 1)
+                throw new RuntimeException("constraint serialization failed");
+            constraintMap.put(Kernel.keyword("formula"), formulaList.get(0));
             constraintMap.put(Kernel.keyword("graveyarded?"), false);
-            constraintsMap.put(de.ovgu.spldev.varied.util.FeatureUtils.getConstraintID(constraint).toString(), constraintMap);
-            //createPropositionalConstraints(rule, constraint.getNode());
+            constraintsMap.put(de.ovgu.spldev.varied.util.FeatureUtils.getConstraintID(constraint).toString(),
+                    Kernel.toPersistentHashMap(constraintMap));
         }
 
+        featureModelMap.put(Kernel.keyword("features"), Kernel.toPersistentHashMap(featuresMap));
+        featureModelMap.put(Kernel.keyword("constraints"), Kernel.toPersistentHashMap(constraintsMap));
         return Kernel.toPersistentHashMap(featureModelMap);
     }
 
-    /*private static void createPropositionalConstraints(JsonObject jsonNode, org.prop4j.Node node) {
-        if (node == null) {
+    private static void createConstraint(ArrayList<Object> formulaList, org.prop4j.Node node) {
+        if (node == null)
             return;
-        }
 
-        JsonArray children = new JsonArray();
-        if (jsonNode.has("children"))
-            children = jsonNode.getAsJsonArray("children");
-        else
-            jsonNode.add("children", children);
-
-        final JsonObject op;
+        final ArrayList<Object> op = new ArrayList<>();
         if (node instanceof Literal) {
             final Literal literal = (Literal) node;
-            if (!literal.positive) {
-                JsonObject opNot = new JsonObject();
-                opNot.addProperty("type", NOT);
-                children.add(opNot);
-                jsonNode = opNot;
-                children = new JsonArray();
-                jsonNode.add("children", children);
+            if (literal.positive)
+                formulaList.add(String.valueOf(literal.var));
+            else {
+                ArrayList<Object> opNot = new ArrayList<>();
+                opNot.add(Kernel.keyword("not"));
+                opNot.add(String.valueOf(literal.var));
+                formulaList.add(Kernel.toPersistentVector(opNot));
             }
-            op = new JsonObject();
-            op.addProperty("type", VAR);
-            op.addProperty(VAR, String.valueOf(literal.var));
-            children.add(op);
             return;
-        } else if (node instanceof Or) {
-            op = new JsonObject();
-            op.addProperty("type", DISJ);
-        } else if (node instanceof Equals) {
-            op = new JsonObject();
-            op.addProperty("type", EQ);
-        } else if (node instanceof Implies) {
-            op = new JsonObject();
-            op.addProperty("type", IMP);
-        } else if (node instanceof And) {
-            op = new JsonObject();
-            op.addProperty("type", CONJ);
-        } else if (node instanceof Not) {
-            op = new JsonObject();
-            op.addProperty("type", NOT);
-        } else if (node instanceof AtMost) {
-            op = new JsonObject();
-            op.addProperty("type", ATMOST1);
-        } else {
-            op = new JsonObject();
-            op.addProperty("type", UNKNOWN);
-        }
-        children.add(op);
+        } else if (node instanceof Or)
+            op.add(Kernel.keyword("disj"));
+        else if (node instanceof Equals)
+            op.add(Kernel.keyword("eq"));
+        else if (node instanceof Implies)
+            op.add(Kernel.keyword("imp"));
+        else if (node instanceof And)
+            op.add(Kernel.keyword("conj"));
+        else if (node instanceof Not)
+            op.add(Kernel.keyword("not"));
+        else
+            throw new RuntimeException("unknown operator " + node.getClass() + " encountered");
 
-        for (final org.prop4j.Node child : node.getChildren()) {
-            createPropositionalConstraints(op, child);
-        }
-    }*/
+        for (final org.prop4j.Node child : node.getChildren())
+            createConstraint(op, child);
+
+        formulaList.add(Kernel.toPersistentVector(op));
+    }
 }

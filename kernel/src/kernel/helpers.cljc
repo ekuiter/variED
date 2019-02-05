@@ -5,16 +5,13 @@
   as Clojure (:clj) and ClojureScript (:cljs)."
   #?@(:clj  [(:import (java.util UUID)
                       [java.io ByteArrayInputStream ByteArrayOutputStream])
-             (:require [cognitect.transit :as transit])]
-      :cljs [(:require [cognitect.transit :as transit])]))
+             (:require [clojure.string :as string]
+                       [cognitect.transit :as transit])]
+      :cljs [(:require [clojure.string :as string]
+                       [cognitect.transit :as transit])]))
 
 (def ^:dynamic *logger-fn* (fn [_]))
-
-(defn set-logger-fn [logger-fn]
-  (def ^:dynamic *logger-fn* logger-fn))
-
-(defn log [& args]
-    (*logger-fn* (clojure.string/join " " args)))
+(def ^:dynamic *semantic-rules* '())
 
 (defn generate-ID
   "Identifiers generated in the system must be unique.
@@ -40,3 +37,18 @@
              (transit/read reader))
      :cljs (let [reader (transit/reader :json)]
                 (transit/read reader str))))
+
+(defn set-logger-fn [logger-fn]
+  (def ^:dynamic *logger-fn* logger-fn)
+  nil)
+
+(defn set-semantic-rules [semantic-rules]
+  (def ^:dynamic *semantic-rules* (map #(fn [FM] (% (encode FM))) semantic-rules))
+  nil)
+
+(defn log [& args]
+  (*logger-fn* (string/join " " args))
+  nil)
+
+(defn semantic-rules []
+  *semantic-rules*)

@@ -35,7 +35,10 @@
   - The server does not generate messages itself (apart from occasional
     explicit heartbeats).
   - For more information on the individual operations, refer to
-    [[kernel.core.compound-operation]]."
+    [[kernel.core.compound-operation]].
+
+  Data structures that are intended to be sent over the wire to other sites are
+  serialized with [Transit](https://github.com/cognitect/transit-format)."
   (:require [kernel.core.compound-operation :as CO]
             [kernel.shell.client :as client]
             [kernel.shell.server :as server]
@@ -62,8 +65,8 @@
   consume. It also returns an operation message that the client must send
   to the server."
   [PO-sequence]
-  (let [[next-FM operation] (client/generate-operation! (helpers/decode PO-sequence))]
-    (into-array [next-FM                                    ; TODO: expose the right feature model format
+  (let [[next-FM operation] (client/generate-operation! PO-sequence)]
+    (into-array [next-FM
                  (helpers/encode operation)])))
 
 (defn ^:export clientGenerateInverseOperation
@@ -87,7 +90,7 @@
   **TODO**: When a conflict occurs, before un-freezing the system, all
   conflicting operations have to be completely purged from the system."
   [message]
-  (client/receive-message! (helpers/decode message)))       ; TODO: expose right FM format
+  (client/receive-message! (helpers/decode message)))
 
 (defn ^:export clientGC
   "Periodically (and when no other API calls are in progress and the system
@@ -101,7 +104,7 @@
   "When a client first enters the system and requests to edit a given feature
   model, the server must call serverInitialize with said feature model."
   [initial-FM]
-  (server/initialize-context-star-topology! initial-FM))    ; TODO: consume right FM format
+  (server/initialize-context-star-topology! initial-FM))
 
 (defn serverGenerateHeartbeat
   "If the server has not forwarded any operations for a while (and when no other API
@@ -156,76 +159,84 @@
 (defn ^:export operationCompose
   "Composes multiple compound operations into one compound operation."
   [& PO-sequences]
-  (helpers/encode (apply CO/compose-PO-sequences (map helpers/decode PO-sequences))))
+  (apply CO/compose-PO-sequences PO-sequences))
 
 (defn ^:export operationCreateFeatureBelow
   "Creates a feature below another feature."
   [parent-ID]
-  (helpers/encode (CO/create-feature-below (*context* :FM) parent-ID)))
+  (CO/create-feature-below (*context* :FM) parent-ID))
 
 (defn ^:export operationCreateFeatureAbove
   "Creates a feature above a set of sibling features."
   [& IDs]
-  (helpers/encode (apply CO/create-feature-above (*context* :FM) IDs)))
+  (apply CO/create-feature-above (*context* :FM) IDs))
 
 (defn ^:export operationRemoveFeatureSubtree
   "Removes an entire feature subtree rooted at a feature."
   [ID]
-  (helpers/encode (CO/remove-feature-subtree (*context* :FM) ID)))
+  (CO/remove-feature-subtree (*context* :FM) ID))
 
 (defn ^:export operationMoveFeatureSubtree
   "Moves an entire feature subtree rooted at a feature below another feature."
   [ID parent-ID]
-  (helpers/encode (CO/move-feature-subtree (*context* :FM) ID parent-ID)))
+  (CO/move-feature-subtree (*context* :FM) ID parent-ID))
 
 (defn ^:export operationRemoveFeature
   "Removes a single feature."
   [ID]
-  (helpers/encode (CO/remove-feature (*context* :FM) ID)))
+  (CO/remove-feature (*context* :FM) ID))
 
 (defn ^:export operationSetFeatureOptional
   "Sets the optional attribute of a feature."
   [ID optional?]
-  (helpers/encode (CO/set-feature-optional? (*context* :FM) ID optional?)))
+  (CO/set-feature-optional? (*context* :FM) ID optional?))
 
 (defn ^:export operationSetFeatureGroupType
   "Sets the group type attribute of a feature."
   [ID group-type-str]
-  (helpers/encode (CO/set-feature-group-type (*context* :FM) ID (keyword group-type-str))))
+  (CO/set-feature-group-type (*context* :FM) ID (keyword group-type-str)))
 
 (defn ^:export operationSetFeatureProperty
   "Sets some additional property of a feature."
   [ID property-str value]
-  (helpers/encode (CO/set-feature-property (*context* :FM) ID (:keyword property-str) value)))
+  (CO/set-feature-property (*context* :FM) ID (:keyword property-str) value))
 
 (defn ^:export operationCreateConstraint
   "Creates a constraint and initializes it with a given propositional formula."
   [formula]
-  (helpers/encode (CO/create-constraint (*context* :FM) formula))) ; TODO: find right formula format
+  (CO/create-constraint (*context* :FM) formula))
 
 (defn ^:export operationSetConstraint
   "Sets the propositional formula of a constraint."
-  [ID formula]                                              ; TODO: find right formula format
-  (helpers/encode (CO/set-constraint (*context* :FM) ID formula)))
+  [ID formula]
+  (CO/set-constraint (*context* :FM) ID formula))
 
 (defn ^:export operationRemoveConstraint
   "Removes a constraint."
   [ID]
-  (helpers/encode (CO/remove-constraint (*context* :FM) ID)))
+  (CO/remove-constraint (*context* :FM) ID))
 
 (defn ^:export getContext
   "Returns the global context.
-  For debugging only."
+  May be used to switch between different contexts, e.g., when editing different feature models."
   []
-  ; do not encode the context as it should not be sent over the wire
   *context*)
 
 (defn ^:export setContext
   "Returns the global context.
-  For debugging only."
+  May be used to switch between different contexts, e.g., when editing different feature models."
   [context]
   (set-context context))
 
 (defn ^:export setLoggerFunction
+  "Sets a function that is used to allow for verbose logging.
+  logger-fn is expected to take one string argument and not return anything."
   [logger-fn]
   (helpers/set-logger-fn logger-fn))
+
+(defn ^:export setSemanticRulesFunction
+  "Sets a sequence of functions that are used to check semantic consistency of a feature model.
+  Each function is expected to take an encoded feature model and return true if the feature
+  model is inconsistent, false otherwise."
+  [semantic-rules-fn]
+  (helpers/set-semantic-rules semantic-rules-fn))

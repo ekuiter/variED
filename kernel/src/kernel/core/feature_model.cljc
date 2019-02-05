@@ -21,7 +21,8 @@
   The constraints are a hash table from constraint identifiers to attribute-value
   pairs with the following attributes:
 
-  - *formula*: a propositional formula (in an arbitrary representation)
+  - *formula*: a propositional formula (represented as vectors of feature IDs and operators,
+    including :not, :disj, :conj, :eq, and :imp)
   - *graveyarded?*: boolean, whether the constraint is removed or not
 
   All interactions with the feature model happen through a defined API, so the implementation
@@ -40,7 +41,9 @@
   The passed feature model, however, does not have to be checked. The implementation may assume that
   the passed feature model is valid and free of any inconsistencies.
   Provided that all other parameters are then valid, the implementation is expected to again return
-  a consistent modified feature model.")
+  a consistent modified feature model."
+  (:require [kernel.helpers :as helpers]
+            [clojure.set :as set]))
 
 ; constructor
 
@@ -137,10 +140,18 @@
   [FM ID]
   (get-in FM [:constraints ID :graveyarded?]))
 
+(defn referenced-feature-ID-set [formula]
+  (if (vector? formula)
+    (reduce #(set/union %1 (referenced-feature-ID-set %2))
+            #{} (subvec formula 1))
+    #{formula}))
+
 (defn get-constraint-referenced-feature-IDs
-  "**TODO**: Returns a set of all identifiers of features referenced in a constraint's propositional formula."
-  [_FM _ID]
-  #{})
+  "Returns a set of all identifiers of features referenced in a constraint's propositional formula."
+  [FM ID]
+  (if-let [formula (get-constraint-formula FM ID)]
+    (referenced-feature-ID-set formula)
+    #{}))
 
 ; mutations
 
@@ -287,4 +298,4 @@
   Here, this sequence is hard-coded. More effort is needed to dynamically en- or disable semantic
   rules because this has to be synchronized across all sites."
   []
-  '())
+  (helpers/semantic-rules))

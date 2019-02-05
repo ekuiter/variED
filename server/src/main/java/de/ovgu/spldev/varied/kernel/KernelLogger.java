@@ -21,8 +21,8 @@ class KernelLogger implements IFn {
     }
 
     @Override
-    public Object invoke(Object o) {
-        Logger.trace("KERNEL [" + artifactPath + "] " + o);
+    public Object invoke(Object str) {
+        Logger.trace("KERNEL [" + artifactPath + "] " + str);
         return null;
     }
 
