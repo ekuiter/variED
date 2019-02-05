@@ -67,10 +67,10 @@ export interface SerializedFeatureModel {
     [FEATURE_ORDER]: never
 };
 
-export type FeaturePropertyKey = string | ((node: GraphicalFeatureNode) => string);
+export type FeaturePropertyKey = string | ((node: FeatureNode) => string);
 
-export interface GraphicalFeature {
-    node: GraphicalFeatureNode,
+export interface Feature {
+    node: FeatureNode,
     uuid: string,
     name: string,
     type: FeatureType,
@@ -92,13 +92,13 @@ export interface GraphicalFeature {
 
 type Datum = SerializedFeatureNode; // accessible as node.data
 
-export type GraphicalFeatureNode = HierarchyPointNode<Datum> & {
-    children?: GraphicalFeatureNode[];
-    actualChildren?: GraphicalFeatureNode[];
-    _feature: GraphicalFeature;
-    feature: () => GraphicalFeature;
+export type FeatureNode = HierarchyPointNode<Datum> & {
+    children?: FeatureNode[];
+    actualChildren?: FeatureNode[];
+    _feature: Feature;
+    feature: () => Feature;
 }
 
-export type NodeCoordinateFunction = (node: GraphicalFeatureNode) => number;
-export type NodeCoordinateForAxisFunction = (node: GraphicalFeatureNode, axis: string) => number;
-export type NodePointFunction = (node: GraphicalFeatureNode) => Point;
+export type NodeCoordinateFunction = (node: FeatureNode) => number;
+export type NodeCoordinateForAxisFunction = (node: FeatureNode, axis: string) => number;
+export type NodePointFunction = (node: FeatureNode) => Point;

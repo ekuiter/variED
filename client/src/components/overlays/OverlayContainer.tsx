@@ -12,7 +12,7 @@ import SettingsPanel from './SettingsPanel';
 import AboutPanel from './AboutPanel';
 import FeaturePanel from './FeaturePanel';
 import actions from '../../store/actions';
-import {getCurrentCollaborativeSession, isFeatureDiagramCollaborativeSession, getCurrentGraphicalFeatureModel} from '../../store/selectors';
+import {getCurrentCollaborativeSession, isFeatureDiagramCollaborativeSession, getCurrentFeatureModel} from '../../store/selectors';
 import FeatureRenameDialog from './FeatureRenameDialog';
 import FeatureSetDescriptionDialog from './FeatureSetDescriptionDialog';
 import FeatureCallout from './FeatureCallout';
@@ -30,7 +30,7 @@ const OverlayContainer = (props: StateDerivedProps) => (
             collaborativeSessions={props.collaborativeSessions!}
             isOpen={props.overlay === OverlayType.commandPalette}
             featureDiagramLayout={props.featureDiagramLayout}
-            graphicalFeatureModel={props.graphicalFeatureModel}
+            featureModel={props.featureModel}
             onDismiss={() => props.onHideOverlay!({overlay: OverlayType.commandPalette})}
             onShowOverlay={props.onShowOverlay!}
             onJoin={props.onJoin!}
@@ -81,7 +81,7 @@ const OverlayContainer = (props: StateDerivedProps) => (
             onExpandFeatures={props.onExpandFeatures!}
             onCollapseFeaturesBelow={props.onCollapseFeaturesBelow!}
             onExpandFeaturesBelow={props.onExpandFeaturesBelow!}
-            graphicalFeatureModel={props.graphicalFeatureModel!}
+            featureModel={props.featureModel!}
             settings={props.settings!}
             onAddFeatureAbove={props.onAddFeatureAbove!}
             onAddFeatureBelow={props.onAddFeatureBelow!}
@@ -99,7 +99,7 @@ const OverlayContainer = (props: StateDerivedProps) => (
         <FeatureRenameDialog
             isOpen={true}
             onDismiss={() => props.onHideOverlay!({overlay: OverlayType.featureRenameDialog})}
-            graphicalFeatureModel={props.graphicalFeatureModel!}
+            featureModel={props.featureModel!}
             settings={props.settings!}
             onRenameFeature={props.onRenameFeature!}
             {...props.overlayProps}/>}
@@ -108,7 +108,7 @@ const OverlayContainer = (props: StateDerivedProps) => (
         <FeatureSetDescriptionDialog
             isOpen={true}
             onDismiss={() => props.onHideOverlay!({overlay: OverlayType.featureSetDescriptionDialog})}
-            graphicalFeatureModel={props.graphicalFeatureModel!}
+            featureModel={props.featureModel!}
             settings={props.settings!}
             onSetFeatureDescription={props.onSetFeatureDescription!}
             {...props.overlayProps}/>}
@@ -133,7 +133,7 @@ const OverlayContainer = (props: StateDerivedProps) => (
             onExpandFeatures={props.onExpandFeatures!}
             onCollapseFeaturesBelow={props.onCollapseFeaturesBelow!}
             onExpandFeaturesBelow={props.onExpandFeaturesBelow!}
-            graphicalFeatureModel={props.graphicalFeatureModel!}
+            featureModel={props.featureModel!}
             onAddFeatureAbove={props.onAddFeatureAbove!}
             onAddFeatureBelow={props.onAddFeatureBelow!}
             onRemoveFeatures={props.onRemoveFeatures!}
@@ -152,7 +152,7 @@ const OverlayContainer = (props: StateDerivedProps) => (
             onExpandFeatures={props.onExpandFeatures!}
             onCollapseFeaturesBelow={props.onCollapseFeaturesBelow!}
             onExpandFeaturesBelow={props.onExpandFeaturesBelow!}
-            graphicalFeatureModel={props.graphicalFeatureModel!}
+            featureModel={props.featureModel!}
             isSelectMultipleFeatures={props.isSelectMultipleFeatures!}
             selectedFeatureUUIDs={props.selectedFeatureUUIDs!}
             onAddFeatureAbove={props.onAddFeatureAbove!}
@@ -186,7 +186,7 @@ export default connect(
             featureDiagramLayout: collaborativeSession.layout,
             isSelectMultipleFeatures: collaborativeSession.isSelectMultipleFeatures,
             selectedFeatureUUIDs: collaborativeSession.selectedFeatureUUIDs,
-            graphicalFeatureModel: getCurrentGraphicalFeatureModel(state)
+            featureModel: getCurrentFeatureModel(state)
         };
     }),
     (dispatch): StateDerivedProps => ({

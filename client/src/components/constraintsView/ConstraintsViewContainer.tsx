@@ -1,21 +1,21 @@
 import React from 'react';
 import {State, StateDerivedProps} from '../../store/types';
-import {getCurrentCollaborativeSession, isFeatureDiagramCollaborativeSession, getCurrentGraphicalFeatureModel} from '../../store/selectors';
+import {getCurrentCollaborativeSession, isFeatureDiagramCollaborativeSession, getCurrentFeatureModel} from '../../store/selectors';
 import logger from '../../helpers/logger';
 import {connect} from 'react-redux';
-import ConstraintView, {enableConstraintView} from './ConstraintView';
+import ConstraintsView, {enableConstraintsView} from './ConstraintsView';
 
 export default connect(
-    logger.mapStateToProps('ConstraintViewContainer', (state: State): StateDerivedProps => {
+    logger.mapStateToProps('ConstraintsViewContainer', (state: State): StateDerivedProps => {
         const collaborativeSession = getCurrentCollaborativeSession(state);
         if (!collaborativeSession || !isFeatureDiagramCollaborativeSession(collaborativeSession))
             return {};
         return {
-            graphicalFeatureModel: getCurrentGraphicalFeatureModel(state)
+            featureModel: getCurrentFeatureModel(state)
         };
     }),
     (dispatch): StateDerivedProps => ({})
 )((props: StateDerivedProps) =>
-    enableConstraintView(props.graphicalFeatureModel)
-        ? <ConstraintView graphicalFeatureModel={props.graphicalFeatureModel!}/>
+    enableConstraintsView(props.featureModel)
+        ? <ConstraintsView featureModel={props.featureModel!}/>
         : null);

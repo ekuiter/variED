@@ -12,18 +12,18 @@ import {Settings} from '../../../store/settings';
 import {updateRect} from '../../../helpers/svg';
 import '../../../stylesheets/treeLayout.css';
 import {D3Selection, Bbox, OverlayType, isFloatingFeatureOverlay, OverlayProps} from '../../../types';
-import GraphicalFeatureModel from '../../../modeling/GraphicalFeatureModel';
+import FeatureModel from '../../../modeling/FeatureModel';
 import AbstractTreeNode from './AbstractTreeNode';
 import AbstractTreeLink from './AbstractTreeLink';
 import {OnShowOverlayFunction, OnHideOverlayFunction, OnSetSelectMultipleFeaturesFunction, OnSelectFeatureFunction, OnDeselectFeatureFunction, OnExpandFeaturesFunction, OnDeselectAllFeaturesFunction, OnToggleFeatureGroupFunction, OnToggleFeatureMandatoryFunction} from '../../../store/types';
 import logger from '../../../helpers/logger';
-import {GraphicalFeatureNode, NodeCoordinateForAxisFunction} from '../../../modeling/types';
+import {FeatureNode, NodeCoordinateForAxisFunction} from '../../../modeling/types';
 import constants from '../../../constants';
 
 const tag = 'feature diagram';
 
 export interface AbstractTreeLayoutProps {
-    graphicalFeatureModel: GraphicalFeatureModel,
+    featureModel: FeatureModel,
     debug: boolean,
     width?: number,
     height?: number,
@@ -78,7 +78,7 @@ export default class extends React.Component<AbstractTreeLayoutProps> {
     }
 
     componentDidUpdate(prevProps: AbstractTreeLayoutProps): void {
-        const updateD3OnPropChange = ['graphicalFeatureModel', 'width', 'height', 'fitOnResize', 'settings'];
+        const updateD3OnPropChange = ['featureModel', 'width', 'height', 'fitOnResize', 'settings'];
         this.treeNode.settings = this.treeLink.settings = this.props.settings;
         this.treeNode.isSelectMultipleFeatures = this.props.isSelectMultipleFeatures;
         this.treeNode.debug = this.props.debug;
@@ -101,18 +101,18 @@ export default class extends React.Component<AbstractTreeLayoutProps> {
         );
     }
     
-    getKeyFn(kind: string): (d: GraphicalFeatureNode) => string {
+    getKeyFn(kind: string): (d: FeatureNode) => string {
         return d => `${kind}_${d.feature().uuid}_${d.feature().name}`;
     }
 
-    toggleSelectedNode(node: GraphicalFeatureNode): void {
+    toggleSelectedNode(node: FeatureNode): void {
         if (this.props.selectedFeatureUUIDs.includes(node.feature().uuid))
             this.props.onDeselectFeature({featureUUID: node.feature().uuid});
         else
             this.props.onSelectFeature({featureUUID: node.feature().uuid});
     }
 
-    setActiveNode(overlay: OverlayType | 'select', activeNode: GraphicalFeatureNode): void {
+    setActiveNode(overlay: OverlayType | 'select', activeNode: FeatureNode): void {
         const featureUUID = activeNode.feature().uuid;
         if (this.props.isSelectMultipleFeatures) {
             if (overlay === OverlayType.featureCallout || overlay === 'select') {
@@ -134,7 +134,7 @@ export default class extends React.Component<AbstractTreeLayoutProps> {
         }
     }
 
-    updateCoordinates(key: string, nodes: GraphicalFeatureNode[]): void {
+    updateCoordinates(key: string, nodes: FeatureNode[]): void {
         this[key] = {};
         nodes.forEach(node => this[key][node.feature().uuid] = {x: this.treeNode.x(node), y: this.treeNode.y(node)});
     }
@@ -149,8 +149,8 @@ export default class extends React.Component<AbstractTreeLayoutProps> {
         };
     }
 
-    getSeparationFn(_estimateTextWidth: (node: GraphicalFeatureNode) => number):
-        (a: GraphicalFeatureNode, b: GraphicalFeatureNode) => number {
+    getSeparationFn(_estimateTextWidth: (node: FeatureNode) => number):
+        (a: FeatureNode, b: FeatureNode) => number {
         throw new Error('abstract method not implemented');
     }
 
@@ -162,17 +162,17 @@ export default class extends React.Component<AbstractTreeLayoutProps> {
         throw new Error('abstract method not implemented');
     }
 
-    createLayoutHook(_nodes: GraphicalFeatureNode[]): void {
+    createLayoutHook(_nodes: FeatureNode[]): void {
     }
 
-    createLayout({graphicalFeatureModel, settings}: {graphicalFeatureModel: GraphicalFeatureModel, settings: Settings}, isSelectionChange: boolean):
-        {nodes: GraphicalFeatureNode[], estimatedBbox?: Bbox} {
+    createLayout({featureModel, settings}: {featureModel: FeatureModel, settings: Settings}, isSelectionChange: boolean):
+        {nodes: FeatureNode[], estimatedBbox?: Bbox} {
         const estimateTextWidth = this.treeNode.estimateTextWidth.bind(this.treeNode),
-            hierarchy = graphicalFeatureModel.hierarchy,
+            hierarchy = featureModel.hierarchy,
             tree = d3Tree()
                 .nodeSize(settings.featureDiagram.treeLayout.node.size)
                 .separation(this.getSeparationFn(estimateTextWidth)),
-            nodes = graphicalFeatureModel.visibleNodes;
+            nodes = featureModel.visibleNodes;
 
         if (isSelectionChange)
             return {nodes};
@@ -180,10 +180,10 @@ export default class extends React.Component<AbstractTreeLayoutProps> {
         tree(hierarchy);
         this.createLayoutHook(nodes);
 
-        const findNode = (compareFn: (a: GraphicalFeatureNode, b: GraphicalFeatureNode) => boolean) =>
+        const findNode = (compareFn: (a: FeatureNode, b: FeatureNode) => boolean) =>
                 nodes.reduce((acc, d) => compareFn(acc, d) ? acc : d),
-            estimateX = (d: GraphicalFeatureNode, sgn: number) => this.treeNode.x(d) + this.estimateXOffset(sgn, estimateTextWidth(d)),
-            estimateY = (d: GraphicalFeatureNode, sgn: number) => this.treeNode.y(d) + this.estimateYOffset(sgn),
+            estimateX = (d: FeatureNode, sgn: number) => this.treeNode.x(d) + this.estimateXOffset(sgn, estimateTextWidth(d)),
+            estimateY = (d: FeatureNode, sgn: number) => this.treeNode.y(d) + this.estimateYOffset(sgn),
             estimatedBbox: Bbox = [[
                 estimateX(findNode((a, b) => estimateX(a, -1) < estimateX(b, -1)), -1),
                 estimateY(findNode((a, b) => estimateY(a, -1) < estimateY(b, -1)), -1)
@@ -259,16 +259,16 @@ export default class extends React.Component<AbstractTreeLayoutProps> {
         return g;
     }
 
-    joinNodes(nodes: GraphicalFeatureNode[], svgRoot: D3Selection): D3Selection {
+    joinNodes(nodes: FeatureNode[], svgRoot: D3Selection): D3Selection {
         return svgRoot.selectAll('.node').data(nodes, this.getKeyFn('node'));
     }
 
-    joinLinks(nodes: GraphicalFeatureNode[], svgRoot: D3Selection): D3Selection {
+    joinLinks(nodes: FeatureNode[], svgRoot: D3Selection): D3Selection {
         return svgRoot.selectAll('.link').data(nodes.slice(1), this.getKeyFn('link'));
     }
 
     joinData(isCreating: boolean, isResize = false, isSelectionChange = false):
-        {node: D3Selection, linkInBack: D3Selection, linkInFront: D3Selection, nodes: GraphicalFeatureNode[]} {
+        {node: D3Selection, linkInBack: D3Selection, linkInFront: D3Selection, nodes: FeatureNode[]} {
         const {nodes, estimatedBbox} = this.createLayout(this.props, isSelectionChange);
         if (!isSelectionChange)
             logger.infoTagged({tag}, () => 'estimated bounding box ' +

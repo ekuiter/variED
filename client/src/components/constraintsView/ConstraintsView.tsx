@@ -1,15 +1,15 @@
 import React from 'react';
-import GraphicalFeatureModel, {GraphicalConstraint} from '../../modeling/GraphicalFeatureModel';
+import FeatureModel, {Constraint} from '../../modeling/FeatureModel';
 import {DetailsList, IColumn, SelectionMode} from 'office-ui-fabric-react/lib/DetailsList';
 import i18n from '../../i18n';
-import Constraint from './Constraint';
+import ConstraintView from './ConstraintView';
 
-export function enableConstraintView(graphicalFeatureModel?: GraphicalFeatureModel): boolean {
-    return graphicalFeatureModel ? graphicalFeatureModel.constraints.length > 0 : false;
+export function enableConstraintsView(featureModel?: FeatureModel): boolean {
+    return featureModel ? featureModel.constraints.length > 0 : false;
 }
 
 interface Props {
-    graphicalFeatureModel: GraphicalFeatureModel
+    featureModel: FeatureModel
 };
 
 export default class extends React.Component<Props> {
@@ -19,14 +19,14 @@ export default class extends React.Component<Props> {
             name: i18n.t('constraint.constraint'),
             minWidth: 0,
             isRowHeader: true,
-            onRender: (constraint: GraphicalConstraint) => (
-                <Constraint key={constraint.getKey()} constraint={constraint}/>
+            onRender: (constraint: Constraint) => (
+                <ConstraintView key={constraint.getKey()} constraint={constraint}/>
             )
         }];
 
         return (
             <DetailsList
-                items={this.props.graphicalFeatureModel.constraints}
+                items={this.props.featureModel.constraints}
                 columns={columns}
                 compact={true}
                 selectionMode={SelectionMode.none}

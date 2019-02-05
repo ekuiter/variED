@@ -5,7 +5,7 @@
 import React, {CSSProperties} from 'react';
 import FeatureDiagramView from './FeatureDiagramView';
 import {connect} from 'react-redux';
-import {getCurrentCollaborativeSession, isFeatureDiagramCollaborativeSession, getCurrentGraphicalFeatureModel} from '../../store/selectors';
+import {getCurrentCollaborativeSession, isFeatureDiagramCollaborativeSession, getCurrentFeatureModel} from '../../store/selectors';
 import actions from '../../store/actions';
 import {State, StateDerivedProps} from '../../store/types';
 import logger from '../../helpers/logger';
@@ -28,7 +28,7 @@ export default connect(
             featureDiagramLayout: collaborativeSession.layout,
             isSelectMultipleFeatures: collaborativeSession.isSelectMultipleFeatures,
             selectedFeatureUUIDs: collaborativeSession.selectedFeatureUUIDs,
-            graphicalFeatureModel: getCurrentGraphicalFeatureModel(state)
+            featureModel: getCurrentFeatureModel(state)
         };
     }),
     (dispatch): StateDerivedProps => ({
@@ -43,7 +43,7 @@ export default connect(
         onToggleFeatureMandatory: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.toggleMandatory(payload)),
     })
 )((props: StateDerivedProps & {className?: string, style?: CSSProperties}) =>
-    props.graphicalFeatureModel // TODO: distinguish between "not editing a feature model" and "editing a feature model which is being loaded"
+    props.featureModel // TODO: distinguish between "not editing a feature model" and "editing a feature model which is being loaded"
         ? <FeatureDiagramView
             featureDiagramLayout={props.featureDiagramLayout!}
             currentArtifactPath={props.currentArtifactPath!}

@@ -12,11 +12,11 @@ import CommandBarContainer from './CommandBarContainer';
 import ShortcutContainer from './ShortcutContainer';
 import actions from '../store/actions';
 import {StateDerivedProps, State} from '../store/types';
-import ConstraintViewContainer from './constraintView/ConstraintViewContainer';
+import ConstraintsViewContainer from './constraintsView/ConstraintsViewContainer';
 import logger from '../helpers/logger';
-import {getCurrentCollaborativeSession, isFeatureDiagramCollaborativeSession, getCurrentGraphicalFeatureModel} from '../store/selectors';
+import {getCurrentCollaborativeSession, isFeatureDiagramCollaborativeSession, getCurrentFeatureModel} from '../store/selectors';
 import SplitView from './SplitView';
-import {enableConstraintView} from './constraintView/ConstraintView';
+import {enableConstraintsView} from './constraintsView/ConstraintsView';
 
 class AppContainer extends React.Component<StateDerivedProps> {
     componentDidMount() {
@@ -33,8 +33,8 @@ class AppContainer extends React.Component<StateDerivedProps> {
                     settings={this.props.settings!}
                     onSetSetting={this.props.onSetSetting!}
                     renderPrimaryView={(style: CSSProperties) => <FeatureDiagramViewContainer style={style}/>}
-                    renderSecondaryView={() => <ConstraintViewContainer/>}
-                    enableSecondaryView={() => enableConstraintView(this.props.graphicalFeatureModel)}/>
+                    renderSecondaryView={() => <ConstraintsViewContainer/>}
+                    enableSecondaryView={() => enableConstraintsView(this.props.featureModel)}/>
                 <OverlayContainer/>
                 <ShortcutContainer/>
             </Fabric>
@@ -52,7 +52,7 @@ export default connect(
             return props;
         return {
             ...props,
-            graphicalFeatureModel: getCurrentGraphicalFeatureModel(state)
+            featureModel: getCurrentFeatureModel(state)
         };
     }),
     (dispatch): StateDerivedProps => ({

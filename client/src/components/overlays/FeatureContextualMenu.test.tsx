@@ -2,7 +2,7 @@ import React from 'react';
 import {shallow} from 'enzyme';
 import FeatureContextualMenu from './FeatureContextualMenu';
 import {defaultSettings} from '../../store/settings';
-import GraphicalFeatureModel from '../../modeling/GraphicalFeatureModel';
+import FeatureModel from '../../modeling/FeatureModel';
 import {validFeatureModel} from '../../fixtures';
 import {ContextualMenu} from 'office-ui-fabric-react/lib/ContextualMenu';
 import {DirectionalHint} from 'office-ui-fabric-react/lib/Callout';
@@ -10,10 +10,10 @@ import {FeatureDiagramLayoutType} from '../../types';
 
 describe('FeatureContextualMenu', () => {
     const featureContextualMenu = (selectedFeatureUUIDs: string[] = []) => {
-        const graphicalFeatureModel = GraphicalFeatureModel.fromJSON(validFeatureModel),
+        const featureModel = FeatureModel.fromJSON(validFeatureModel),
             mock = jest.fn();
-        graphicalFeatureModel.hasElement = jest.fn().mockReturnValue(true);
-        graphicalFeatureModel.getElement = jest.fn().mockReturnValue({
+        featureModel.hasElement = jest.fn().mockReturnValue(true);
+        featureModel.getElement = jest.fn().mockReturnValue({
             querySelector: () => '<target element>',
             getBoundingClientRect: () => ({x: 10, y: 10, width: 100, height: 100})
         });
@@ -29,7 +29,7 @@ describe('FeatureContextualMenu', () => {
                 onExpandFeatures={mock}
                 onCollapseFeaturesBelow={mock}
                 onExpandFeaturesBelow={mock}
-                graphicalFeatureModel={graphicalFeatureModel}
+                featureModel={featureModel}
                 isSelectMultipleFeatures={selectedFeatureUUIDs.length > 0}
                 selectedFeatureUUIDs={selectedFeatureUUIDs}
                 onAddFeatureAbove={mock}
@@ -47,7 +47,7 @@ describe('FeatureContextualMenu', () => {
     };
 
     beforeAll(() => {
-        GraphicalFeatureModel.getSvg = jest.fn(() => ({
+        FeatureModel.getSvg = jest.fn(() => ({
             getBoundingClientRect: () => ({x: 0, y: 0, width: 1000, height: 1000})
         }));
     });

@@ -27,7 +27,7 @@ const constants = {
         }
     },
     server: {
-        webSocket: process.env.REACT_APP_WEBSOCKET || `ws://${window.location.host}/websocket`, // WebSocket URI to connect to
+        webSocket: process.env.REACT_APP_WEBSOCKET || `ws://${window.location.host}/websocket/new`, // WebSocket URI to connect to
         propertyTypes: {
             abstract: 'abstract',
             hidden: 'hidden',

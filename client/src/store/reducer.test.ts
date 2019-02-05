@@ -3,7 +3,7 @@ import actions from './actions';
 import {FeatureDiagramLayoutType, OverlayType, MessageType} from '../types';
 import {defaultSettings} from './settings';
 import {validFeatureModel, validFeatureModelWithRemovedFeatures} from '../fixtures';
-import GraphicalFeatureModel from '../modeling/GraphicalFeatureModel';
+import FeatureModel from '../modeling/FeatureModel';
 import {initialState, FeatureDiagramCollaborativeSession, State} from './types';
 import logger from '../helpers/logger';
 
@@ -128,7 +128,7 @@ describe('reducer', () => {
                 it('selects all visibile features', () => {
                     const state = reducer(serializedFeatureModelState(), actions.ui.featureDiagram.feature.selectAll());
                     expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).selectedFeatureUUIDs)
-                        .toEqual(GraphicalFeatureModel.fromJSON(validFeatureModel).getVisibleFeatureUUIDs());
+                        .toEqual(FeatureModel.fromJSON(validFeatureModel).getVisibleFeatureUUIDs());
                 });
 
                 it('does not select features of collapsed children', () => {
@@ -174,7 +174,7 @@ describe('reducer', () => {
                 it('collapses all features with actual children', () => {
                     const state = reducer(serializedFeatureModelState(), actions.ui.featureDiagram.feature.collapseAll());
                     expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).collapsedFeatureUUIDs)
-                        .toEqual(GraphicalFeatureModel.fromJSON(validFeatureModel).getFeatureUUIDsWithActualChildren());
+                        .toEqual(FeatureModel.fromJSON(validFeatureModel).getFeatureUUIDsWithActualChildren());
                 });
 
                 it('does not collapse leaf features', () => {

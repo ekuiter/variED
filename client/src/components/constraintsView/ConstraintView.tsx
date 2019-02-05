@@ -1,9 +1,9 @@
 import React, {ReactNode} from 'react';
-import {GraphicalConstraint, createConstraintRenderer} from '../../modeling/GraphicalFeatureModel';
+import {Constraint, createConstraintRenderer} from '../../modeling/FeatureModel';
 import constants from '../../constants';
 
 interface Props {
-    constraint: GraphicalConstraint
+    constraint: Constraint
 };
 
 const reactConstraintRenderer = createConstraintRenderer<ReactNode>({

@@ -9,7 +9,7 @@ import commands, {makeDivider} from '../commands';
 import {FeatureDiagramLayoutType} from '../../types';
 import FeatureComponent, {FeatureComponentProps, isFeatureOffscreen} from './FeatureComponent';
 import {OnShowOverlayFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnDeselectAllFeaturesFunction, OnRemoveFeaturesFunction, OnAddFeatureAboveFunction, OnAddFeatureBelowFunction, OnRemoveFeaturesBelowFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureMandatoryFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction} from '../../store/types';
-import {GraphicalFeature} from '../../modeling/types';
+import {Feature} from '../../modeling/types';
 
 type Props = FeatureComponentProps & {
     onDismiss: () => void,
@@ -36,14 +36,14 @@ type Props = FeatureComponentProps & {
 };
 
 export default class extends FeatureComponent({doUpdate: true})<Props> {
-    renderIfFeature(feature: GraphicalFeature) {
+    renderIfFeature(feature: Feature) {
         const {
-                onDismiss, onDeselectAllFeatures, isSelectMultipleFeatures, selectedFeatureUUIDs, graphicalFeatureModel
+                onDismiss, onDeselectAllFeatures, isSelectMultipleFeatures, selectedFeatureUUIDs, featureModel
             } = this.props,
             {gapSpace} = this.props.settings.featureDiagram.overlay;
-        if (!graphicalFeatureModel.hasElement(feature.uuid))
+        if (!featureModel.hasElement(feature.uuid))
             return null;
-        const element = graphicalFeatureModel.getElement(feature.uuid)!;
+        const element = featureModel.getElement(feature.uuid)!;
         return (
             <ContextualMenu
                 target={element.querySelector('.rectAndText')}
@@ -61,7 +61,7 @@ export default class extends FeatureComponent({doUpdate: true})<Props> {
                         this.props.onExpandFeaturesBelow, this.props.onAddFeatureAbove, this.props.onRemoveFeatures,
                         this.props.onRemoveFeaturesBelow, this.props.onSetFeatureAbstract, this.props.onSetFeatureHidden,
                         this.props.onSetFeatureMandatory, this.props.onSetFeatureAnd, this.props.onSetFeatureOr,
-                        this.props.onSetFeatureAlternative, graphicalFeatureModel!)
+                        this.props.onSetFeatureAlternative, featureModel!)
                     : [
                         commands.featureDiagram.feature.newMenu(feature.uuid, this.props.onAddFeatureBelow, this.props.onAddFeatureAbove, onDismiss),
                         commands.featureDiagram.feature.removeMenu([feature], this.props.onRemoveFeatures, this.props.onRemoveFeaturesBelow, onDismiss),

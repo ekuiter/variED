@@ -6,7 +6,7 @@ import React from 'react';
 import i18n from '../../i18n';
 import {TextFieldDialog} from '../../helpers/Dialog';
 import FeatureComponent, {FeatureComponentProps} from './FeatureComponent';
-import {GraphicalFeature} from '../../modeling/types';
+import {Feature} from '../../modeling/types';
 import {OnRenameFeatureFunction} from '../../store/types';
 
 type Props = FeatureComponentProps & {
@@ -16,7 +16,7 @@ type Props = FeatureComponentProps & {
 };
 
 export default class extends FeatureComponent()<Props> {
-    renderIfFeature(feature: GraphicalFeature) {
+    renderIfFeature(feature: Feature) {
         return (
             <TextFieldDialog
                 isOpen={this.props.isOpen}

@@ -1,7 +1,7 @@
 /**
  * The feature model is the main artifact shown and edited by this application.
  * It is a tree-like structure containing features and additional feature and cross-tree constraints.
- * The graphical feature model is intended for read-only use in rendering a feature model.
+ * The feature model is intended for read-only use in rendering a feature model.
  * It lays out the feature model and manages collapsed features.
  */
 
@@ -13,31 +13,31 @@ import {Settings} from '../store/settings';
 import {FeatureDiagramLayoutType} from '../types';
 import {present} from '../helpers/present';
 import logger from '../helpers/logger';
-import {GraphicalFeatureNode, GraphicalFeature, FeatureType, SerializedFeatureModel, UUID, DESCRIPTION, TYPE, ABSTRACT, HIDDEN, MANDATORY, STRUCT, NAME, SerializedFeatureNode, SerializedConstraint, CONSTRAINTS, SerializedConstraintNode, ConstraintType, VAR} from './types';
+import {FeatureNode, Feature, FeatureType, SerializedFeatureModel, UUID, DESCRIPTION, TYPE, ABSTRACT, HIDDEN, MANDATORY, STRUCT, NAME, SerializedFeatureNode, SerializedConstraint, CONSTRAINTS, SerializedConstraintNode, ConstraintType, VAR} from './types';
 import {getViewportWidth, getViewportHeight} from '../helpers/withDimensions';
 
-export function getUUID(node: GraphicalFeatureNode): string {
+export function getUUID(node: FeatureNode): string {
     return node.data[UUID];
 }
 
-function isRoot(node: GraphicalFeatureNode): boolean {
+function isRoot(node: FeatureNode): boolean {
     return !node.parent;
 }
 
-function isCollapsed(node: GraphicalFeatureNode): boolean {
+function isCollapsed(node: FeatureNode): boolean {
     return !!(!node.children && node.actualChildren);
 }
 
-function hasChildren(node: GraphicalFeatureNode): boolean {
+function hasChildren(node: FeatureNode): boolean {
     return !!(node.children && node.children.length > 0);
 }
 
-function hasActualChildren(node: GraphicalFeatureNode): boolean {
+function hasActualChildren(node: FeatureNode): boolean {
     return !!(node.actualChildren && node.actualChildren.length > 0);
 }
 
-function eachNodeBelow(node: GraphicalFeatureNode, callback: (node: GraphicalFeatureNode) => void): void {
-    var current, currentNode: GraphicalFeatureNode | undefined = node, next = [node], children, i, n;
+function eachNodeBelow(node: FeatureNode, callback: (node: FeatureNode) => void): void {
+    var current, currentNode: FeatureNode | undefined = node, next = [node], children, i, n;
     do {
         current = next.reverse();
         next = [];
@@ -51,13 +51,13 @@ function eachNodeBelow(node: GraphicalFeatureNode, callback: (node: GraphicalFea
     } while (next.length);
 }
 
-function getNodesBelow(node: GraphicalFeatureNode): GraphicalFeatureNode[] {
-    var nodes: GraphicalFeatureNode[] = [];
+function getNodesBelow(node: FeatureNode): FeatureNode[] {
+    var nodes: FeatureNode[] = [];
     eachNodeBelow(node, node => nodes.push(node));
     return nodes;
 }
 
-d3Hierarchy.prototype.feature = function(this: GraphicalFeatureNode): GraphicalFeature {
+d3Hierarchy.prototype.feature = function(this: FeatureNode): Feature {
     return this._feature || (this._feature = {
         node: this,
         uuid: getUUID(this),
@@ -93,7 +93,7 @@ d3Hierarchy.prototype.feature = function(this: GraphicalFeatureNode): GraphicalF
     });
 };
 
-type ConstraintRenderer<T> = ((graphicalFeatureModel: GraphicalFeatureModel, root: SerializedConstraintNode) => T) & {cacheKey: string};
+type ConstraintRenderer<T> = ((featureModel: FeatureModel, root: SerializedConstraintNode) => T) & {cacheKey: string};
 
 // adapted from FeatureIDE fm.core's org/prop4j/NodeWriter.java
 export function createConstraintRenderer<T>({neutral, _return, returnFeature, join, cacheKey}:
@@ -120,24 +120,24 @@ export function createConstraintRenderer<T>({neutral, _return, returnFeature, jo
 
     let i = 0;
 
-    const renderLiteral = (graphicalFeatureModel: GraphicalFeatureModel, node: SerializedConstraintNode): T => {
-            const feature = graphicalFeatureModel.getFeature(node[VAR]!);
+    const renderLiteral = (featureModel: FeatureModel, node: SerializedConstraintNode): T => {
+            const feature = featureModel.getFeature(node[VAR]!);
             return returnFeature(feature ? feature.name : node[VAR]!, i++);
         },
-        renderNode = (graphicalFeatureModel: GraphicalFeatureModel, node: SerializedConstraintNode, parentType: ConstraintType): T => {
+        renderNode = (featureModel: FeatureModel, node: SerializedConstraintNode, parentType: ConstraintType): T => {
         if (node[TYPE] === ConstraintType.var)
-            return renderLiteral(graphicalFeatureModel, node);
+            return renderLiteral(featureModel, node);
 
         if (node[TYPE] === ConstraintType.not) {
             const child = node.children![0];
             if (child[TYPE] === ConstraintType.var)
-                return join([_return(operatorMap[ConstraintType.not]), renderLiteral(graphicalFeatureModel, child)], neutral);
+                return join([_return(operatorMap[ConstraintType.not]), renderLiteral(featureModel, child)], neutral);
             if (child[TYPE] === ConstraintType.not)
-                return renderNode(graphicalFeatureModel, child.children![0], parentType);
+                return renderNode(featureModel, child.children![0], parentType);
         }
 
         const children = node.children!,
-            operands = children.map(child => renderNode(graphicalFeatureModel, child, node[TYPE])),
+            operands = children.map(child => renderNode(featureModel, child, node[TYPE])),
             operator = operatorMap[node[TYPE]];
 
         if (node[TYPE] === ConstraintType.conj || node[TYPE] === ConstraintType.disj ||
@@ -153,9 +153,9 @@ export function createConstraintRenderer<T>({neutral, _return, returnFeature, jo
             return join([_return(operator), _return('('), join(operands, _return(', ')), _return(')')], neutral);
     }
 
-    const constraintRenderer = (graphicalFeatureModel: GraphicalFeatureModel, root: SerializedConstraintNode) => {
+    const constraintRenderer = (featureModel: FeatureModel, root: SerializedConstraintNode) => {
         i = 0;
-        return renderNode(graphicalFeatureModel, root, ConstraintType.unknown);
+        return renderNode(featureModel, root, ConstraintType.unknown);
     };
     constraintRenderer.cacheKey = cacheKey;
     return constraintRenderer;
@@ -169,13 +169,13 @@ const stringConstraintRenderer = createConstraintRenderer({
     cacheKey: 'string'
 });
 
-export class GraphicalConstraint {
+export class Constraint {
     _renderCache: {[x: string]: any} = {};
     _element: JSX.Element;
 
     constructor(public serializedConstraint: SerializedConstraint,
         public index: number,
-        public graphicalFeatureModel: GraphicalFeatureModel) {}
+        public featureModel: FeatureModel) {}
 
     get root(): SerializedConstraintNode {
         if (this.serializedConstraint.children.length !== 1)
@@ -185,7 +185,7 @@ export class GraphicalConstraint {
 
     render<T>(constraintRenderer: ConstraintRenderer<T>): T {
         return this._renderCache[constraintRenderer.cacheKey] ||
-            (this._renderCache[constraintRenderer.cacheKey] = constraintRenderer(this.graphicalFeatureModel, this.root));
+            (this._renderCache[constraintRenderer.cacheKey] = constraintRenderer(this.featureModel, this.root));
     }
 
     toString(): string {
@@ -197,29 +197,29 @@ export class GraphicalConstraint {
     }
 }
 
-class GraphicalFeatureModel {
+class FeatureModel {
     serializedFeatureModel: SerializedFeatureModel;
     collapsedFeatureUUIDs: string[] = [];
-    _hierarchy: GraphicalFeatureNode;
-    _actualNodes: GraphicalFeatureNode[];
-    _visibleNodes: GraphicalFeatureNode[];
-    _constraints: GraphicalConstraint[];
-    _UUIDsToFeatures: {[x: string]: GraphicalFeatureNode} = {};
+    _hierarchy: FeatureNode;
+    _actualNodes: FeatureNode[];
+    _visibleNodes: FeatureNode[];
+    _constraints: Constraint[];
+    _UUIDsToFeatures: {[x: string]: FeatureNode} = {};
 
     // feature model as supplied by feature model messages from the server
-    static fromJSON(serializedFeatureModel: SerializedFeatureModel): GraphicalFeatureModel {
-        const graphicalFeatureModel = new GraphicalFeatureModel();
-        graphicalFeatureModel.serializedFeatureModel = serializedFeatureModel;
-        return graphicalFeatureModel;
+    static fromJSON(serializedFeatureModel: SerializedFeatureModel): FeatureModel {
+        const featureModel = new FeatureModel();
+        featureModel.serializedFeatureModel = serializedFeatureModel;
+        return featureModel;
     }
 
     toJSON(): SerializedFeatureModel {
         return this.serializedFeatureModel;
     }
 
-    collapse(collapsedFeatureUUIDs: string[]): GraphicalFeatureModel {
+    collapse(collapsedFeatureUUIDs: string[]): FeatureModel {
         if (this._hierarchy)
-            throw new Error('graphical feature model already initialized');
+            throw new Error('feature model already initialized');
         this.collapsedFeatureUUIDs = collapsedFeatureUUIDs;
         return this;
     }
@@ -232,19 +232,19 @@ class GraphicalFeatureModel {
 
     prepare(): void {
         if (!this._hierarchy) {
-            this._hierarchy = d3Hierarchy(this.structure) as GraphicalFeatureNode;
+            this._hierarchy = d3Hierarchy(this.structure) as FeatureNode;
             this._actualNodes = this._hierarchy.descendants();
             this._visibleNodes = [];
             this._constraints = this.serializedFeatureModel[CONSTRAINTS].map(
-                (serializedConstraint, idx) => new GraphicalConstraint(serializedConstraint, idx, this));
+                (serializedConstraint, idx) => new Constraint(serializedConstraint, idx, this));
 
-            const isVisible: (node: GraphicalFeatureNode) => boolean = memoize(node => {
+            const isVisible: (node: FeatureNode) => boolean = memoize(node => {
                 if (isRoot(node))
                     return true;
                 if (isCollapsed(node.parent!))
                     return false;
                 return isVisible(node.parent!);
-            }, (node: GraphicalFeatureNode) => getUUID(node));
+            }, (node: FeatureNode) => getUUID(node));
 
             this._actualNodes.forEach(node => {
                 // store children nodes (because they are changed on collapse)
@@ -261,43 +261,43 @@ class GraphicalFeatureModel {
         }
     }
 
-    get hierarchy(): GraphicalFeatureNode {
+    get hierarchy(): FeatureNode {
         this.prepare();
         return this._hierarchy;
     }
 
-    get visibleNodes(): GraphicalFeatureNode[] {
+    get visibleNodes(): FeatureNode[] {
         this.prepare();
         return this._visibleNodes;
     }
 
-    get actualNodes(): GraphicalFeatureNode[] {
+    get actualNodes(): FeatureNode[] {
         this.prepare();
         return this._actualNodes;
     }
 
-    get constraints(): GraphicalConstraint[] {
+    get constraints(): Constraint[] {
         this.prepare();
         return this._constraints;
     }
 
-    getNode(featureUUID: string): GraphicalFeatureNode | undefined {
+    getNode(featureUUID: string): FeatureNode | undefined {
         this.prepare();
         return this._UUIDsToFeatures[featureUUID];
     }
 
-    getFeature(featureUUID: string): GraphicalFeature | undefined {
+    getFeature(featureUUID: string): Feature | undefined {
         const node = this.getNode(featureUUID);
         return node ? node.feature() : undefined;
     }
 
-    getNodes(featureUUIDs: string[]): GraphicalFeatureNode[] {
+    getNodes(featureUUIDs: string[]): FeatureNode[] {
         return featureUUIDs
             .map(featureUUID => this.getNode(featureUUID))
             .filter(present);
     }
 
-    getFeatures(featureUUIDs: string[]): GraphicalFeature[] {
+    getFeatures(featureUUIDs: string[]): Feature[] {
         return featureUUIDs
             .map(featureUUID => this.getFeature(featureUUID))
             .filter(present);
@@ -366,7 +366,7 @@ class GraphicalFeatureModel {
 
     // returns features which, when collapsed, make the feature model fit to the given screen size
     getFittingFeatureUUIDs(settings: Settings, featureDiagramLayout: FeatureDiagramLayoutType,
-        width = GraphicalFeatureModel.getWidth(settings), height = GraphicalFeatureModel.getHeight(settings),
+        width = FeatureModel.getWidth(settings), height = FeatureModel.getHeight(settings),
         scale = 0.5): string[] {
         const fontFamily = settings.featureDiagram.font.family,
             fontSize = settings.featureDiagram.font.size,
@@ -405,8 +405,8 @@ class GraphicalFeatureModel {
     }
 
     toString() {
-        return `GraphicalFeatureModel ${JSON.stringify(this.getVisibleFeatureUUIDs())}`;
+        return `FeatureModel ${JSON.stringify(this.getVisibleFeatureUUIDs())}`;
     }
 }
 
-export default GraphicalFeatureModel;
+export default FeatureModel;

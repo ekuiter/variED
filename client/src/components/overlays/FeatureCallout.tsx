@@ -9,7 +9,7 @@ import {CommandBar} from 'office-ui-fabric-react/lib/CommandBar';
 import {FeatureDiagramLayoutType} from '../../types';
 import FeatureComponent, {FeatureComponentProps, isFeatureOffscreen} from './FeatureComponent';
 import {OnShowOverlayFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnRemoveFeaturesFunction, OnAddFeatureBelowFunction, OnAddFeatureAboveFunction, OnRemoveFeaturesBelowFunction} from '../../store/types';
-import {GraphicalFeature} from '../../modeling/types';
+import {Feature} from '../../modeling/types';
 
 type Props = FeatureComponentProps & {
     onDismiss: () => void,
@@ -27,12 +27,12 @@ type Props = FeatureComponentProps & {
 };
 
 export default class extends FeatureComponent({doUpdate: true})<Props> {
-    renderIfFeature(feature: GraphicalFeature) {
-        const {onDismiss, graphicalFeatureModel} = this.props,
+    renderIfFeature(feature: Feature) {
+        const {onDismiss, featureModel} = this.props,
             {gapSpace, width} = this.props.settings.featureDiagram.overlay;
-        if (!graphicalFeatureModel.hasElement(feature.uuid))
+        if (!featureModel.hasElement(feature.uuid))
             return null;
-        const element = graphicalFeatureModel.getElement(feature.uuid)!;
+        const element = featureModel.getElement(feature.uuid)!;
         return (
             <Callout target={element.querySelector('.rectAndText')}
                 onDismiss={onDismiss}

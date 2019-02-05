@@ -11,7 +11,7 @@ import {getShortcutText} from './shortcuts';
 
 type TranslationFunction = (...args: any[]) => any;
 type Translation = string | JSX.Element | TranslationFunction;
-
+    
 function isString(translation: Translation): translation is string {
     return typeof translation === 'string';
 }

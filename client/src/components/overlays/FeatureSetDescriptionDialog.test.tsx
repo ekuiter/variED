@@ -1,7 +1,7 @@
 import React from 'react';
 import {shallow} from 'enzyme';
 import FeatureSetDescriptionDialog from './FeatureSetDescriptionDialog';
-import GraphicalFeatureModel from '../../modeling/GraphicalFeatureModel';
+import FeatureModel from '../../modeling/FeatureModel';
 import {validFeatureModel} from '../../fixtures';
 import {TextFieldDialog} from '../../helpers/Dialog';
 import {defaultSettings} from '../../store/settings';
@@ -16,7 +16,7 @@ describe('FeatureSetDescriptionDialog', () => {
             <FeatureSetDescriptionDialog
                 isOpen={true}
                 onDismiss={mock}
-                graphicalFeatureModel={GraphicalFeatureModel.fromJSON(validFeatureModel)}
+                featureModel={FeatureModel.fromJSON(validFeatureModel)}
                 featureUUID="FeatureIDE"
                 settings={defaultSettings}
                 onSetFeatureDescription={onSetFeatureDescription}/>

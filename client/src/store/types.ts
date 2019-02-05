@@ -1,7 +1,7 @@
-import GraphicalFeatureModel from '../modeling/GraphicalFeatureModel';
+import FeatureModel from '../modeling/FeatureModel';
 import {defaultSettings, Settings} from './settings';
 import {Message, FeatureDiagramLayoutType, OverlayType, OverlayProps, ArtifactPath} from '../types';
-import {GraphicalFeature, SerializedFeatureModel} from '../modeling/types';
+import {Feature, SerializedFeatureModel} from '../modeling/types';
 
 export interface User {
     name: string
@@ -83,11 +83,11 @@ export type OnSetFeatureDescriptionFunction = (payload: {featureUUID: string, de
 export type OnSetFeatureAbstractFunction = (payload: {featureUUIDs: string[], value: boolean}) => Promise<void>;
 export type OnSetFeatureHiddenFunction = (payload: {featureUUIDs: string[], value: boolean}) => Promise<void>;
 export type OnSetFeatureMandatoryFunction = (payload: {featureUUIDs: string[], value: boolean}) => Promise<void>;
-export type OnToggleFeatureMandatoryFunction = (payload: {feature: GraphicalFeature}) => Promise<void>;
+export type OnToggleFeatureMandatoryFunction = (payload: {feature: Feature}) => Promise<void>;
 export type OnSetFeatureAndFunction = (payload: {featureUUIDs: string[]}) => Promise<void>;
 export type OnSetFeatureOrFunction = (payload: {featureUUIDs: string[]}) => Promise<void>;
 export type OnSetFeatureAlternativeFunction = (payload: {featureUUIDs: string[]}) => Promise<void>;
-export type OnToggleFeatureGroupFunction = (payload: {feature: GraphicalFeature}) => Promise<void>;
+export type OnToggleFeatureGroupFunction = (payload: {feature: Feature}) => Promise<void>;
 
 // Props that may derived from the state to use in React components.
 // This enforces the convention that a prop called 'on...' has the same type in all components.
@@ -102,7 +102,7 @@ export type StateDerivedProps = Partial<{
     featureDiagramLayout: FeatureDiagramLayoutType,
     isSelectMultipleFeatures: boolean,
     selectedFeatureUUIDs: string[],
-    graphicalFeatureModel: GraphicalFeatureModel,
+    featureModel: FeatureModel,
     overlay: OverlayType,
     overlayProps: OverlayProps,
 

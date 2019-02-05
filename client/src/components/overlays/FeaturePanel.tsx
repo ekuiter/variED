@@ -8,7 +8,7 @@ import i18n from '../../i18n';
 import {CommandBar, ICommandBarItemProps} from 'office-ui-fabric-react/lib/CommandBar';
 import commands from '../commands';
 import FeatureComponent, {FeatureComponentProps} from './FeatureComponent';
-import {GraphicalFeature} from '../../modeling/types';
+import {Feature} from '../../modeling/types';
 import {OnShowOverlayFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnRemoveFeaturesFunction, OnAddFeatureBelowFunction, OnAddFeatureAboveFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureMandatoryFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction, OnRemoveFeaturesBelowFunction} from '../../store/types';
 
 type Props = FeatureComponentProps & {
@@ -55,7 +55,7 @@ export default class extends FeatureComponent()<Props> {
             styles={{root: {margin: '0 -40px', padding: '0 35px'}}}/>
     );
 
-    renderIfFeature(feature: GraphicalFeature) {
+    renderIfFeature(feature: Feature) {
         return (
             <Panel
                 isOpen={this.props.isOpen}

@@ -10,7 +10,7 @@ import {Dispatch, AnyAction, Action as ReduxAction} from 'redux';
 import {sendMessage, sendBatchMessage} from '../server/webSocket';
 import {ThunkAction} from 'redux-thunk';
 import {State} from './types';
-import {GraphicalFeature} from '../modeling/types';
+import {Feature} from '../modeling/types';
 import uuidv4 from 'uuid/v4';
 
 const {propertyTypes, groupValueTypes} = constants.server;
@@ -98,7 +98,7 @@ const actions = {
                             type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
                             featureUUID, property: propertyTypes.mandatory, value
                         }))),
-                    toggleMandatory: createMessageAction(({feature}: {feature: GraphicalFeature}) => ({
+                    toggleMandatory: createMessageAction(({feature}: {feature: Feature}) => ({
                             type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
                             featureUUID: feature.uuid, property: propertyTypes.mandatory, value: !feature.isMandatory
                         })),
@@ -117,7 +117,7 @@ const actions = {
                             type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
                             featureUUID, property: propertyTypes.group, value: groupValueTypes.alternative
                         }))),
-                    toggleGroup: createMessageAction(({feature}: {feature: GraphicalFeature}) => ({
+                    toggleGroup: createMessageAction(({feature}: {feature: Feature}) => ({
                             type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
                             featureUUID: feature.uuid, property: propertyTypes.group,
                             value: feature.isAnd
