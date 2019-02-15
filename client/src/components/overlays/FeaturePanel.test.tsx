@@ -31,7 +31,7 @@ describe('FeaturePanel', () => {
                 onSetFeatureAlternative={mock}
                 onSetFeatureAnd={mock}
                 onSetFeatureHidden={mock}
-                onSetFeatureMandatory={mock}
+                onSetFeatureOptional={mock}
                 onSetFeatureOr={mock}/>
         );
     };

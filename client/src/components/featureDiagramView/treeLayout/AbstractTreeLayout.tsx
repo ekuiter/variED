@@ -15,7 +15,7 @@ import {D3Selection, Bbox, OverlayType, isFloatingFeatureOverlay, OverlayProps} 
 import FeatureModel from '../../../modeling/FeatureModel';
 import AbstractTreeNode from './AbstractTreeNode';
 import AbstractTreeLink from './AbstractTreeLink';
-import {OnShowOverlayFunction, OnHideOverlayFunction, OnSetSelectMultipleFeaturesFunction, OnSelectFeatureFunction, OnDeselectFeatureFunction, OnExpandFeaturesFunction, OnDeselectAllFeaturesFunction, OnToggleFeatureGroupFunction, OnToggleFeatureMandatoryFunction} from '../../../store/types';
+import {OnShowOverlayFunction, OnHideOverlayFunction, OnSetSelectMultipleFeaturesFunction, OnSelectFeatureFunction, OnDeselectFeatureFunction, OnExpandFeaturesFunction, OnDeselectAllFeaturesFunction, OnToggleFeatureGroupFunction, OnToggleFeatureOptionalFunction} from '../../../store/types';
 import logger from '../../../helpers/logger';
 import {FeatureNode, NodeCoordinateForAxisFunction} from '../../../modeling/types';
 import constants from '../../../constants';
@@ -34,7 +34,7 @@ export interface AbstractTreeLayoutProps {
     overlay: OverlayType,
     overlayProps: OverlayProps,
     isSelectMultipleFeatures: boolean,
-    selectedfeatureIDs: string[],
+    selectedFeatureIDs: string[],
     onShowOverlay: OnShowOverlayFunction,
     onHideOverlay: OnHideOverlayFunction,
     onSetSelectMultipleFeatures: OnSetSelectMultipleFeaturesFunction,
@@ -43,7 +43,7 @@ export interface AbstractTreeLayoutProps {
     onExpandFeatures: OnExpandFeaturesFunction,
     onDeselectAllFeatures: OnDeselectAllFeaturesFunction,
     onToggleFeatureGroup: OnToggleFeatureGroupFunction,
-    onToggleFeatureMandatory: OnToggleFeatureMandatoryFunction
+    onToggleFeatureOptional: OnToggleFeatureOptionalFunction
 };
 
 export default class extends React.Component<AbstractTreeLayoutProps> {
@@ -69,7 +69,7 @@ export default class extends React.Component<AbstractTreeLayoutProps> {
             this.getParentCoordinateFn('currentCoordinates'),
             this.getParentCoordinateFn('previousCoordinates'),
             this.treeNode,
-            this.props.onToggleFeatureMandatory);
+            this.props.onToggleFeatureOptional);
         this.treeNode.treeLink = this.treeLink;
     }
 
@@ -88,7 +88,7 @@ export default class extends React.Component<AbstractTreeLayoutProps> {
                 this.props.width !== prevProps.width ||
                 this.props.height !== prevProps.height);
 
-        if (this.props.selectedfeatureIDs !== prevProps.selectedfeatureIDs ||
+        if (this.props.selectedFeatureIDs !== prevProps.selectedFeatureIDs ||
             this.props.overlayProps.featureID !== prevProps.overlayProps.featureID)
             this.updateSelection();
     }
@@ -106,7 +106,7 @@ export default class extends React.Component<AbstractTreeLayoutProps> {
     }
 
     toggleSelectedNode(node: FeatureNode): void {
-        if (this.props.selectedfeatureIDs.includes(node.feature().ID))
+        if (this.props.selectedFeatureIDs.includes(node.feature().ID))
             this.props.onDeselectFeature({featureID: node.feature().ID});
         else
             this.props.onSelectFeature({featureID: node.feature().ID});
@@ -122,7 +122,7 @@ export default class extends React.Component<AbstractTreeLayoutProps> {
                     this.props.onHideOverlay({overlay: OverlayType.featureContextualMenu});
             }
             else if (overlay === OverlayType.featureContextualMenu &&
-                this.props.selectedfeatureIDs.includes(featureID))
+                this.props.selectedFeatureIDs.includes(featureID))
                 this.props.onShowOverlay({overlay, overlayProps: {featureID}});
         } else {
             if (overlay !== 'select' && isFloatingFeatureOverlay(overlay))
@@ -327,8 +327,8 @@ export default class extends React.Component<AbstractTreeLayoutProps> {
 
     updateSelection(): void {
         const {node} = this.joinData(false, false, true);
-        node.filter(d => this.props.selectedfeatureIDs.includes(d.feature().ID)).attr('class', 'node selected');
-        node.filter(d => !this.props.selectedfeatureIDs.includes(d.feature().ID)).attr('class', 'node');
+        node.filter(d => this.props.selectedFeatureIDs.includes(d.feature().ID)).attr('class', 'node selected');
+        node.filter(d => !this.props.selectedFeatureIDs.includes(d.feature().ID)).attr('class', 'node');
         node.filter(d => this.props.overlayProps.featureID === d.feature().ID).attr('class', 'node selected');
     }
 }

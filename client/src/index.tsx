@@ -32,7 +32,7 @@ window.app = {
     setLogLevel,
     LogLevel, // parameter for setLogLevel
     actions, // can be dispatched with the store
-    store // used by message delay simulation and tryOperation
+    store // used by message delay simulation
 };
 
 ReactDOM.render((
@@ -41,4 +41,4 @@ ReactDOM.render((
     </Provider>
 ), document.getElementById('root'));
 
-// TODO: store.dispatch<any>(actions.server.join({artifactPath: {project: 'FeatureModeling', artifact: 'CTV'}}));
+store.dispatch<any>(actions.server.joinRequest({artifactPath: {project: 'FeatureModeling', artifact: 'CTV'}}));

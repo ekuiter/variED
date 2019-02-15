@@ -29,7 +29,7 @@ export default connect(
         return {
             ...props,
             isSelectMultipleFeatures: collaborativeSession.isSelectMultipleFeatures,
-            selectedfeatureIDs: collaborativeSession.selectedfeatureIDs,
+            selectedFeatureIDs: collaborativeSession.selectedFeatureIDs,
             featureModel: getCurrentFeatureModel(state)
         };
     }),
@@ -78,7 +78,7 @@ export default connect(
             const {disabled, action} = removeCommand(
                 props.featureModel!.getFeatures(
                     props.isSelectMultipleFeatures
-                    ? props.selectedfeatureIDs!
+                    ? props.selectedFeatureIDs!
                     : [props.overlayProps!.featureID!]), props.onRemoveFeatures!);
             if (!disabled) {
                 await action();
@@ -105,7 +105,7 @@ export default connect(
                 return;
             }
             const {disabled, action} = collapseCommand(
-                props.featureModel!.getFeatures(props.selectedfeatureIDs!),
+                props.featureModel!.getFeatures(props.selectedFeatureIDs!),
                 props.onCollapseFeatures!, props.onExpandFeatures!,
                 !ifGlobal(props) ? (() => props.onHideOverlay!({overlay: props.overlay!})) : undefined);
             if (!disabled)
@@ -121,7 +121,7 @@ export default connect(
                 return;
             }
             const {disabled, action} = collapseCommand(
-                props.featureModel!.getFeatures(props.selectedfeatureIDs!),
+                props.featureModel!.getFeatures(props.selectedFeatureIDs!),
                 props.onCollapseFeatures!, props.onExpandFeatures!,
                 !ifGlobal(props) ? (() => props.onHideOverlay!({overlay: props.overlay!})) : undefined);
             if (!disabled)

@@ -26,7 +26,7 @@ export const validFeatureModel = <SerializedFeatureModel>{
         {
             'ID': 'Eclipse',
             'name': 'Eclipse',
-            'mandatory': true,
+            'optional': false,
             'description': 'this is a feature which has a description text',
             'type': 'and',
             'children': [
@@ -147,7 +147,7 @@ export const validFeatureModelWithRemovedFeatures = <SerializedFeatureModel>{
     'struct': [
         {
             'name': 'Eclipse',
-            'mandatory': true,
+            'optional': false,
             'description': 'this is a feature which has a description text',
             'type': 'and',
             'children': [

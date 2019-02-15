@@ -3,7 +3,7 @@
  */
 
 import constants from '../constants';
-import {Message, MessageType, ArtifactPath} from '../types';
+import {Message, ArtifactPath} from '../types';
 import logger from '../helpers/logger';
 import {wait} from '../helpers/wait';
 import {State} from '../store/types';
@@ -76,17 +76,4 @@ export async function sendMessage(message: Message, artifactPath?: ArtifactPath,
         message = {artifactPath, ...message};
     logger.logTagged({tag: 'send'}, () => message);
     wait(delay).then(() => webSocket.send(JSON.stringify(message)));
-}
-
-export async function sendBatchMessage(messages: Message[], artifactPath?: ArtifactPath, delay = 0): Promise<void> {
-    if (!messages || messages.length === 0)
-        return;
-    if (messages.length === 1)
-        await sendMessage(messages[0], artifactPath, delay);
-    else {
-        // TODO: re-enable batch messages
-        alert('batch messages are currently not available');
-        return;
-        await sendMessage({type: MessageType.BATCH, messages}, artifactPath, delay);
-    }
 }

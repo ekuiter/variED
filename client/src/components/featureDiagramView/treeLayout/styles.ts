@@ -59,19 +59,19 @@ export default {
             'stroke-width': getLinkStrokeWidth(settings),
             fill: 'none'
         }),
-        mandatory: (settings: Settings) => <StyleDescriptor>({ // style applied to a link's circle to distinguish mandatory and optional features
+        optional: (settings: Settings) => <StyleDescriptor>({ // style applied to a link's circle to distinguish mandatory and optional features
             property: node =>
-                node.parent!.feature().isGroup ? 'none' : node.feature().getPropertyString('isMandatory'),
+                node.parent!.feature().isGroup ? 'none' : node.feature().getPropertyString('isOptional'),
             yes: {
                 stroke: settings.featureDiagram.treeLayout.link.stroke,
                 'stroke-width': getLinkStrokeWidth(settings),
-                fill: settings.featureDiagram.treeLayout.link.stroke,
+                fill: 'white',
                 cursor: 'pointer'
             },
             no: {
                 stroke: settings.featureDiagram.treeLayout.link.stroke,
                 'stroke-width': getLinkStrokeWidth(settings),
-                fill: 'white',
+                fill: settings.featureDiagram.treeLayout.link.stroke,
                 cursor: 'pointer'
             },
             none: { // children of OR and ALT groups do not have a circle

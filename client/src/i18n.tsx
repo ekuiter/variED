@@ -79,9 +79,9 @@ const translationMap = {
                     or: 'Or',
                     alternative: 'Alternative'
                 },
-                selection: (isSelectMultipleFeatures: boolean, selectedfeatureIDs: string[]) =>
+                selection: (isSelectMultipleFeatures: boolean, selectedFeatureIDs: string[]) =>
                     isSelectMultipleFeatures
-                        ? `Feature selection (${selectedfeatureIDs.length})`
+                        ? `Feature selection (${selectedFeatureIDs.length})`
                         : 'Begin feature selection',
                 selectAll: 'Select all features',
                 deselectAll: 'Deselect all features',
@@ -105,8 +105,8 @@ const translationMap = {
         format: 'Format',
         layout: 'Layout',
         delay: 'Delay',
-        join: 'Join collaborative session',
-        leave: 'Leave collaborative session',
+        joinRequest: 'Join collaborative session',
+        leaveRequest: 'Leave collaborative session',
         settings: 'Settings',
         about: 'About',
         featureDiagram: {

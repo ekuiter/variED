@@ -27,7 +27,7 @@ export default connect(
             currentArtifactPath: collaborativeSession.artifactPath,
             featureDiagramLayout: collaborativeSession.layout,
             isSelectMultipleFeatures: collaborativeSession.isSelectMultipleFeatures,
-            selectedfeatureIDs: collaborativeSession.selectedfeatureIDs,
+            selectedFeatureIDs: collaborativeSession.selectedFeatureIDs,
             featureModel: getCurrentFeatureModel(state)
         };
     }),
@@ -40,7 +40,7 @@ export default connect(
         onExpandFeatures: payload => dispatch(actions.ui.featureDiagram.feature.expand(payload)),
         onDeselectAllFeatures: () => dispatch(actions.ui.featureDiagram.feature.deselectAll()),
         onToggleFeatureGroup: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.toggleGroup(payload)),
-        onToggleFeatureMandatory: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.toggleMandatory(payload)),
+        onToggleFeatureOptional: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.toggleOptional(payload)),
     })
 )((props: StateDerivedProps & {className?: string, style?: CSSProperties}) =>
     props.featureModel // TODO: distinguish between "not editing a feature model" and "editing a feature model which is being loaded"

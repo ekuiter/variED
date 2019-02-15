@@ -33,8 +33,8 @@ const OverlayContainer = (props: StateDerivedProps) => (
             featureModel={props.featureModel}
             onDismiss={() => props.onHideOverlay!({overlay: OverlayType.commandPalette})}
             onShowOverlay={props.onShowOverlay!}
-            onJoin={props.onJoin!}
-            onLeave={props.onLeave!}
+            onJoinRequest={props.onJoinRequest!}
+            onLeaveRequest={props.onLeaveRequest!}
             onUndo={props.onUndo!}
             onRedo={props.onRedo!}
             onFitToScreen={props.onFitToScreen!}
@@ -51,7 +51,7 @@ const OverlayContainer = (props: StateDerivedProps) => (
             onRemoveFeaturesBelow={props.onRemoveFeaturesBelow!}
             onSetFeatureAbstract={props.onSetFeatureAbstract!}
             onSetFeatureHidden={props.onSetFeatureHidden!}
-            onSetFeatureMandatory={props.onSetFeatureMandatory!}
+            onSetFeatureOptional={props.onSetFeatureOptional!}
             onSetFeatureAnd={props.onSetFeatureAnd!}
             onSetFeatureOr={props.onSetFeatureOr!}
             onSetFeatureAlternative={props.onSetFeatureAlternative!}
@@ -89,7 +89,7 @@ const OverlayContainer = (props: StateDerivedProps) => (
             onRemoveFeaturesBelow={props.onRemoveFeaturesBelow!}
             onSetFeatureAbstract={props.onSetFeatureAbstract!}
             onSetFeatureHidden={props.onSetFeatureHidden!}
-            onSetFeatureMandatory={props.onSetFeatureMandatory!}
+            onSetFeatureOptional={props.onSetFeatureOptional!}
             onSetFeatureAnd={props.onSetFeatureAnd!}
             onSetFeatureOr={props.onSetFeatureOr!}
             onSetFeatureAlternative={props.onSetFeatureAlternative!}
@@ -154,14 +154,14 @@ const OverlayContainer = (props: StateDerivedProps) => (
             onExpandFeaturesBelow={props.onExpandFeaturesBelow!}
             featureModel={props.featureModel!}
             isSelectMultipleFeatures={props.isSelectMultipleFeatures!}
-            selectedfeatureIDs={props.selectedfeatureIDs!}
+            selectedFeatureIDs={props.selectedFeatureIDs!}
             onAddFeatureAbove={props.onAddFeatureAbove!}
             onAddFeatureBelow={props.onAddFeatureBelow!}
             onRemoveFeatures={props.onRemoveFeatures!}
             onRemoveFeaturesBelow={props.onRemoveFeaturesBelow!}
             onSetFeatureAbstract={props.onSetFeatureAbstract!}
             onSetFeatureHidden={props.onSetFeatureHidden!}
-            onSetFeatureMandatory={props.onSetFeatureMandatory!}
+            onSetFeatureOptional={props.onSetFeatureOptional!}
             onSetFeatureAnd={props.onSetFeatureAnd!}
             onSetFeatureOr={props.onSetFeatureOr!}
             onSetFeatureAlternative={props.onSetFeatureAlternative!}
@@ -185,15 +185,15 @@ export default connect(
             ...props,
             featureDiagramLayout: collaborativeSession.layout,
             isSelectMultipleFeatures: collaborativeSession.isSelectMultipleFeatures,
-            selectedfeatureIDs: collaborativeSession.selectedfeatureIDs,
+            selectedFeatureIDs: collaborativeSession.selectedFeatureIDs,
             featureModel: getCurrentFeatureModel(state)
         };
     }),
     (dispatch): StateDerivedProps => ({
         onFitToScreen: () => dispatch(actions.ui.featureDiagram.fitToScreen()),
         onSetFeatureDiagramLayout: payload => dispatch(actions.ui.featureDiagram.setLayout(payload)),
-        onJoin: payload => dispatch<any>(actions.server.join(payload)),
-        onLeave: payload => dispatch<any>(actions.server.leave(payload)),
+        onJoinRequest: payload => dispatch<any>(actions.server.joinRequest(payload)),
+        onLeaveRequest: payload => dispatch<any>(actions.server.leaveRequest(payload)),
         onUndo: () => dispatch<any>(actions.server.undo({})),
         onRedo: () => dispatch<any>(actions.server.redo({})),
         onHideOverlay: payload => dispatch(actions.ui.overlay.hide(payload)),
@@ -214,7 +214,7 @@ export default connect(
         onRemoveFeaturesBelow: payload => dispatch<any>(actions.server.featureDiagram.feature.removeBelow(payload)),
         onSetFeatureAbstract: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setAbstract(payload)),
         onSetFeatureHidden: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setHidden(payload)),
-        onSetFeatureMandatory: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setMandatory(payload)),
+        onSetFeatureOptional: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setOptional(payload)),
         onSetFeatureAnd: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setAnd(payload)),
         onSetFeatureOr: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setOr(payload)),
         onSetFeatureAlternative: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setAlternative(payload)),

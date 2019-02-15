@@ -9,7 +9,7 @@ import {CommandBar, ICommandBarItemProps} from 'office-ui-fabric-react/lib/Comma
 import commands from '../commands';
 import FeatureComponent, {FeatureComponentProps} from './FeatureComponent';
 import {Feature} from '../../modeling/types';
-import {OnShowOverlayFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnRemoveFeaturesFunction, OnAddFeatureBelowFunction, OnAddFeatureAboveFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureMandatoryFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction, OnRemoveFeaturesBelowFunction} from '../../store/types';
+import {OnShowOverlayFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnRemoveFeaturesFunction, OnAddFeatureBelowFunction, OnAddFeatureAboveFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureOptionalFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction, OnRemoveFeaturesBelowFunction} from '../../store/types';
 
 type Props = FeatureComponentProps & {
     onDismissed: () => void,
@@ -25,7 +25,7 @@ type Props = FeatureComponentProps & {
     onAddFeatureAbove: OnAddFeatureAboveFunction,
     onSetFeatureAbstract: OnSetFeatureAbstractFunction,
     onSetFeatureHidden: OnSetFeatureHiddenFunction,
-    onSetFeatureMandatory: OnSetFeatureMandatoryFunction,
+    onSetFeatureOptional: OnSetFeatureOptionalFunction,
     onSetFeatureAnd: OnSetFeatureAndFunction,
     onSetFeatureOr: OnSetFeatureOrFunction,
     onSetFeatureAlternative: OnSetFeatureAlternativeFunction
@@ -48,7 +48,7 @@ export default class extends FeatureComponent()<Props> {
                 commands.featureDiagram.feature.rename(this.props.featureID!, this.props.onShowOverlay),
                 commands.featureDiagram.feature.setDescription(this.props.featureID!, this.props.onShowOverlay),
                 commands.featureDiagram.feature.properties([this.feature], this.props.onSetFeatureAbstract,
-                    this.props.onSetFeatureHidden, this.props.onSetFeatureMandatory, this.props.onSetFeatureAnd,
+                    this.props.onSetFeatureHidden, this.props.onSetFeatureOptional, this.props.onSetFeatureAnd,
                     this.props.onSetFeatureOr, this.props.onSetFeatureAlternative, this.props.onDismissed)
             ]}
             overflowButtonProps={{styles: buttonStyles}}

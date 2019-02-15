@@ -4,31 +4,25 @@
  */
 
 import {createStandardAction, ActionType, action} from 'typesafe-actions';
-import constants from '../constants';
 import {Message, MessageType, FeatureDiagramLayoutType, OverlayType, OverlayProps, ArtifactPath} from '../types';
 import {Dispatch, AnyAction, Action as ReduxAction} from 'redux';
-import {sendMessage, sendBatchMessage} from '../server/webSocket';
+import {sendMessage} from '../server/webSocket';
 import {ThunkAction} from 'redux-thunk';
 import {State} from './types';
 import {Feature} from '../modeling/types';
 import uuidv4 from 'uuid/v4';
 
-const {propertyTypes, groupValueTypes} = constants.server;
-
 export const SERVER_SEND_MESSAGE = 'server/sendMessage';
 const SERVER_RECEIVE_MESSAGE = 'server/receiveMessage';
 
-function createMessageAction<P>(fn: (payload: P) => Message | Message[]): (payload: P) => ThunkAction<Promise<ReduxAction>, State, any, any> {
+function createMessageAction<P>(fn: (payload: P) => Message): (payload: P) => ThunkAction<Promise<ReduxAction>, State, any, any> {
     return (payload: P) => {
         return async (dispatch: Dispatch<AnyAction>, getState: () => State) => {
-            const messageOrMessages = fn(payload),
+            const message = fn(payload),
                 state = getState(),
                 artifactPath = state.currentArtifactPath;
-            if (Array.isArray(messageOrMessages))
-                await sendBatchMessage(messageOrMessages, artifactPath, state.settings.developer.delay);
-            else
-                await sendMessage(messageOrMessages, artifactPath, state.settings.developer.delay);
-            return dispatch(action(SERVER_SEND_MESSAGE, messageOrMessages));
+            await sendMessage(message, artifactPath, state.settings.developer.delay);
+            return dispatch(action(SERVER_SEND_MESSAGE, message));
         };
     };
 }
@@ -64,12 +58,13 @@ const actions = {
     },
     server: {
         receive: createStandardAction(SERVER_RECEIVE_MESSAGE)<Message>(),
-        join: createMessageAction(({artifactPath}: {artifactPath: ArtifactPath}) => ({type: MessageType.JOIN, artifactPath})),
-        leave: createMessageAction(({artifactPath}: {artifactPath: ArtifactPath}) => ({type: MessageType.LEAVE, artifactPath})),
-        undo: createMessageAction(() => ({type: MessageType.UNDO})),
-        redo: createMessageAction(() => ({type: MessageType.REDO})),
+        joinRequest: createMessageAction(({artifactPath}: {artifactPath: ArtifactPath}) => ({type: MessageType.JOIN_REQUEST, artifactPath})),
+        leaveRequest: createMessageAction(({artifactPath}: {artifactPath: ArtifactPath}) => ({type: MessageType.LEAVE_REQUEST, artifactPath})),
+        undo: createMessageAction(() => ({type: MessageType.ERROR})), // TODO
+        redo: createMessageAction(() => ({type: MessageType.ERROR})), // TODO
         featureDiagram: {
             feature: {
+                // TODO: use kernel
                 addBelow: createMessageAction(({belowfeatureID}: {belowfeatureID: string}) =>
                     ({type: MessageType.FEATURE_DIAGRAM_FEATURE_ADD_BELOW, belowfeatureID, newfeatureID: uuidv4()})),
                 addAbove: createMessageAction(({abovefeatureIDs}: {abovefeatureIDs: string[]}) =>
@@ -93,14 +88,14 @@ const actions = {
                             type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
                             featureID, property: propertyTypes.hidden, value
                         }))),
-                    setMandatory: createMessageAction(({featureIDs, value}: {featureIDs: string[], value: boolean}) =>
+                    setOptional: createMessageAction(({featureIDs, value}: {featureIDs: string[], value: boolean}) =>
                         featureIDs.map(featureID => ({
                             type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
-                            featureID, property: propertyTypes.mandatory, value
+                            featureID, property: propertyTypes.optional, value
                         }))),
-                    toggleMandatory: createMessageAction(({feature}: {feature: Feature}) => ({
+                    toggleOptional: createMessageAction(({feature}: {feature: Feature}) => ({
                             type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
-                            featureID: feature.ID, property: propertyTypes.mandatory, value: !feature.isMandatory
+                            featureID: feature.ID, property: propertyTypes.optional, value: !feature.isOptional
                         })),
                     setAnd: createMessageAction(({featureIDs}: {featureIDs: string[]}) =>
                         featureIDs.map(featureID => ({

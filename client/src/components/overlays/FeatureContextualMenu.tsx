@@ -8,7 +8,7 @@ import {ContextualMenu} from 'office-ui-fabric-react/lib/ContextualMenu';
 import commands, {makeDivider} from '../commands';
 import {FeatureDiagramLayoutType} from '../../types';
 import FeatureComponent, {FeatureComponentProps, isFeatureOffscreen} from './FeatureComponent';
-import {OnShowOverlayFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnDeselectAllFeaturesFunction, OnRemoveFeaturesFunction, OnAddFeatureAboveFunction, OnAddFeatureBelowFunction, OnRemoveFeaturesBelowFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureMandatoryFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction} from '../../store/types';
+import {OnShowOverlayFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnDeselectAllFeaturesFunction, OnRemoveFeaturesFunction, OnAddFeatureAboveFunction, OnAddFeatureBelowFunction, OnRemoveFeaturesBelowFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureOptionalFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction} from '../../store/types';
 import {Feature} from '../../modeling/types';
 
 type Props = FeatureComponentProps & {
@@ -16,7 +16,7 @@ type Props = FeatureComponentProps & {
     isOpen: boolean,
     isSelectMultipleFeatures: boolean,
     featureDiagramLayout: FeatureDiagramLayoutType,
-    selectedfeatureIDs: string[],
+    selectedFeatureIDs: string[],
     onShowOverlay: OnShowOverlayFunction,
     onCollapseFeatures: OnCollapseFeaturesFunction,
     onCollapseFeaturesBelow: OnCollapseFeaturesBelowFunction,
@@ -29,7 +29,7 @@ type Props = FeatureComponentProps & {
     onAddFeatureAbove: OnAddFeatureAboveFunction,
     onSetFeatureAbstract: OnSetFeatureAbstractFunction,
     onSetFeatureHidden: OnSetFeatureHiddenFunction,
-    onSetFeatureMandatory: OnSetFeatureMandatoryFunction,
+    onSetFeatureOptional: OnSetFeatureOptionalFunction,
     onSetFeatureAnd: OnSetFeatureAndFunction,
     onSetFeatureOr: OnSetFeatureOrFunction,
     onSetFeatureAlternative: OnSetFeatureAlternativeFunction
@@ -38,7 +38,7 @@ type Props = FeatureComponentProps & {
 export default class extends FeatureComponent({doUpdate: true})<Props> {
     renderIfFeature(feature: Feature) {
         const {
-                onDismiss, onDeselectAllFeatures, isSelectMultipleFeatures, selectedfeatureIDs, featureModel
+                onDismiss, onDeselectAllFeatures, isSelectMultipleFeatures, selectedFeatureIDs, featureModel
             } = this.props,
             {gapSpace} = this.props.settings.featureDiagram.overlay;
         if (!featureModel.hasElement(feature.ID))
@@ -56,11 +56,11 @@ export default class extends FeatureComponent({doUpdate: true})<Props> {
                         ? DirectionalHint.bottomCenter
                         : DirectionalHint.rightCenter}
                 items={isSelectMultipleFeatures
-                    ? commands.featureDiagram.feature.selectionItems(selectedfeatureIDs, onDeselectAllFeatures,
+                    ? commands.featureDiagram.feature.selectionItems(selectedFeatureIDs, onDeselectAllFeatures,
                         this.props.onCollapseFeatures, this.props.onExpandFeatures, this.props.onCollapseFeaturesBelow,
                         this.props.onExpandFeaturesBelow, this.props.onAddFeatureAbove, this.props.onRemoveFeatures,
                         this.props.onRemoveFeaturesBelow, this.props.onSetFeatureAbstract, this.props.onSetFeatureHidden,
-                        this.props.onSetFeatureMandatory, this.props.onSetFeatureAnd, this.props.onSetFeatureOr,
+                        this.props.onSetFeatureOptional, this.props.onSetFeatureAnd, this.props.onSetFeatureOr,
                         this.props.onSetFeatureAlternative, featureModel!)
                     : [
                         commands.featureDiagram.feature.newMenu(feature.ID, this.props.onAddFeatureBelow, this.props.onAddFeatureAbove, onDismiss),
@@ -72,7 +72,7 @@ export default class extends FeatureComponent({doUpdate: true})<Props> {
                         commands.featureDiagram.feature.rename(feature.ID, this.props.onShowOverlay),
                         commands.featureDiagram.feature.setDescription(feature.ID, this.props.onShowOverlay),
                         commands.featureDiagram.feature.properties([feature], this.props.onSetFeatureAbstract,
-                            this.props.onSetFeatureHidden, this.props.onSetFeatureMandatory, this.props.onSetFeatureAnd,
+                            this.props.onSetFeatureHidden, this.props.onSetFeatureOptional, this.props.onSetFeatureAnd,
                             this.props.onSetFeatureOr, this.props.onSetFeatureAlternative, onDismiss),
                         makeDivider(),
                         commands.featureDiagram.feature.details(feature.ID, this.props.onShowOverlay)

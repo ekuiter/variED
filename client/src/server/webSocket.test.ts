@@ -70,9 +70,9 @@ describe('webSocket', () => {
         });
         expect(messageMock).not.toBeCalled();
         await getPromise();
-        await sendMessage({type: MessageType.UNDO});
+        await sendMessage({type: MessageType.ERROR});
         await wait();
-        expect(messageMock).toBeCalledWith(JSON.stringify({type: 'UNDO'}));
+        expect(messageMock).toBeCalledWith(JSON.stringify({type: 'ERROR'}));
         await close(mockServer);
     };
 

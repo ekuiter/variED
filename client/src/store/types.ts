@@ -1,30 +1,32 @@
 import FeatureModel from '../modeling/FeatureModel';
 import {defaultSettings, Settings} from './settings';
 import {Message, FeatureDiagramLayoutType, OverlayType, OverlayProps, ArtifactPath} from '../types';
-import {Feature, SerializedFeatureModel} from '../modeling/types';
+import {Feature} from '../modeling/types';
 
-export interface User {
-    name: string
+export interface Collaborator {
+    siteID: string
 };
 
 export interface CollaborativeSession {
     artifactPath: ArtifactPath,
-    users: User[]
+    collaborators: Collaborator[]
 };
 
+type KernelContext = object;
+
 export interface FeatureDiagramCollaborativeSession extends CollaborativeSession {
-    serializedFeatureModel: SerializedFeatureModel,
+    kernelContext: KernelContext,
     layout: FeatureDiagramLayoutType,
     isSelectMultipleFeatures: boolean,
-    selectedfeatureIDs: string[],
-    collapsedfeatureIDs: string[]
+    selectedFeatureIDs: string[],
+    collapsedFeatureIDs: string[]
 };
 
 export interface State {
     settings: Settings,
     overlay: OverlayType,
     overlayProps: OverlayProps
-    user?: User,
+    myself?: Collaborator,
     collaborativeSessions: CollaborativeSession[],
     artifactPaths: ArtifactPath[],
     currentArtifactPath?: ArtifactPath
@@ -34,21 +36,21 @@ export const initialState: State = {
     settings: defaultSettings,
     overlay: OverlayType.none,
     overlayProps: {},
-    user: undefined,
+    myself: undefined,
     collaborativeSessions: [],
     artifactPaths: [],
     currentArtifactPath: undefined
 };
 
 export const initialFeatureDiagramCollaborativeSessionState =
-    (artifactPath: ArtifactPath, serializedFeatureModel: SerializedFeatureModel): FeatureDiagramCollaborativeSession => ({
+    (artifactPath: ArtifactPath, kernelContext: KernelContext): FeatureDiagramCollaborativeSession => ({
         artifactPath,
-        users: [],
-        serializedFeatureModel,
+        collaborators: [],
+        kernelContext,
         layout: FeatureDiagramLayoutType.verticalTree,
         isSelectMultipleFeatures: false,
-        selectedfeatureIDs: [],
-        collapsedfeatureIDs: []
+        selectedFeatureIDs: [],
+        collapsedFeatureIDs: []
     });
 
 export type OnSelectFeatureFunction = (payload: {featureID: string}) => void;
@@ -70,8 +72,8 @@ export type OnSetSettingFunction = (payload: {path: string, value: any}) => void
 export type OnResetSettingsFunction = () => void;
 export type OnSetCurrentArtifactPathFunction = (payload: {artifactPath?: ArtifactPath}) => void;
 
-export type OnJoinFunction = (payload: {artifactPath: ArtifactPath}) => Promise<void>;
-export type OnLeaveFunction = (payload: {artifactPath: ArtifactPath}) => Promise<void>;
+export type OnJoinRequestFunction = (payload: {artifactPath: ArtifactPath}) => Promise<void>;
+export type OnLeaveRequestFunction = (payload: {artifactPath: ArtifactPath}) => Promise<void>;
 export type OnUndoFunction = () => Promise<void>;
 export type OnRedoFunction = () => Promise<void>;
 export type OnAddFeatureBelowFunction = (payload: {belowfeatureID: string}) => Promise<void>;
@@ -82,8 +84,8 @@ export type OnRenameFeatureFunction = (payload: {featureID: string, name: string
 export type OnSetFeatureDescriptionFunction = (payload: {featureID: string, description: string}) => Promise<void>;
 export type OnSetFeatureAbstractFunction = (payload: {featureIDs: string[], value: boolean}) => Promise<void>;
 export type OnSetFeatureHiddenFunction = (payload: {featureIDs: string[], value: boolean}) => Promise<void>;
-export type OnSetFeatureMandatoryFunction = (payload: {featureIDs: string[], value: boolean}) => Promise<void>;
-export type OnToggleFeatureMandatoryFunction = (payload: {feature: Feature}) => Promise<void>;
+export type OnSetFeatureOptionalFunction = (payload: {featureIDs: string[], value: boolean}) => Promise<void>;
+export type OnToggleFeatureOptionalFunction = (payload: {feature: Feature}) => Promise<void>;
 export type OnSetFeatureAndFunction = (payload: {featureIDs: string[]}) => Promise<void>;
 export type OnSetFeatureOrFunction = (payload: {featureIDs: string[]}) => Promise<void>;
 export type OnSetFeatureAlternativeFunction = (payload: {featureIDs: string[]}) => Promise<void>;
@@ -96,12 +98,12 @@ export type StateDerivedProps = Partial<{
     currentArtifactPath: ArtifactPath,
     artifactPaths: ArtifactPath[],
     collaborativeSessions: CollaborativeSession[],
-    user: User,
-    users: User[],
+    collaborator: Collaborator,
+    collaborators: Collaborator[],
     settings: Settings,
     featureDiagramLayout: FeatureDiagramLayoutType,
     isSelectMultipleFeatures: boolean,
-    selectedfeatureIDs: string[],
+    selectedFeatureIDs: string[],
     featureModel: FeatureModel,
     overlay: OverlayType,
     overlayProps: OverlayProps,
@@ -125,8 +127,8 @@ export type StateDerivedProps = Partial<{
     onResetSettings: OnResetSettingsFunction,
     onSetCurrentArtifactPath: OnSetCurrentArtifactPathFunction,
 
-    onJoin: OnJoinFunction,
-    onLeave: OnLeaveFunction,
+    onJoinRequest: OnJoinRequestFunction,
+    onLeaveRequest: OnLeaveRequestFunction,
     onUndo: OnUndoFunction,
     onRedo: OnRedoFunction,
     onAddFeatureBelow: OnAddFeatureBelowFunction,
@@ -137,8 +139,8 @@ export type StateDerivedProps = Partial<{
     onSetFeatureDescription: OnSetFeatureDescriptionFunction,
     onSetFeatureAbstract: OnSetFeatureAbstractFunction,
     onSetFeatureHidden: OnSetFeatureHiddenFunction,
-    onSetFeatureMandatory: OnSetFeatureMandatoryFunction,
-    onToggleFeatureMandatory: OnToggleFeatureMandatoryFunction,
+    onSetFeatureOptional: OnSetFeatureOptionalFunction,
+    onToggleFeatureOptional: OnToggleFeatureOptionalFunction,
     onSetFeatureAnd: OnSetFeatureAndFunction,
     onSetFeatureOr: OnSetFeatureOrFunction,
     onSetFeatureAlternative: OnSetFeatureAlternativeFunction,

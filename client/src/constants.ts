@@ -27,18 +27,7 @@ const constants = {
         }
     },
     server: {
-        webSocket: process.env.REACT_APP_WEBSOCKET || `ws://${window.location.host}/websocket/new`, // WebSocket URI to connect to
-        propertyTypes: {
-            abstract: 'abstract',
-            hidden: 'hidden',
-            mandatory: 'mandatory',
-            group: 'group'
-        },
-        groupValueTypes: {
-            and: 'and',
-            or: 'or',
-            alternative: 'alternative'
-        }
+        webSocket: process.env.REACT_APP_WEBSOCKET || `ws://${window.location.host}/websocket/new` // WebSocket URI to connect to, TODO: reuse existing site ID
     },
     helpers: {
         withDimensions: {

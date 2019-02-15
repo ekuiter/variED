@@ -13,7 +13,7 @@ import {
 } from '../../../helpers/svg';
 import styles from './styles';
 import {Rect, Point, D3Selection} from '../../../types';
-import {OnToggleFeatureMandatoryFunction} from '../../../store/types';
+import {OnToggleFeatureOptionalFunction} from '../../../store/types';
 import {FeatureNode, NodeCoordinateForAxisFunction, NodePointFunction, FeatureType} from '../../../modeling/types';
 
 declare class AbstractTreeNode {
@@ -26,7 +26,7 @@ declare class AbstractTreeNode {
 export default class {
     constructor(public settings: Settings, public getCurrentParentCoordinate: NodeCoordinateForAxisFunction,
         public getPreviousParentCoordinate: NodeCoordinateForAxisFunction, public treeNode: AbstractTreeNode,
-        public onToggleFeatureMandatory: OnToggleFeatureMandatoryFunction) {}
+        public onToggleFeatureOptional: OnToggleFeatureOptionalFunction) {}
 
     nodeX(node: FeatureNode): number {
         return this.treeNode.x(node);
@@ -118,8 +118,8 @@ export default class {
             linkEnter.call(drawCircle, null, {
                 center: from,
                 radius: 0,
-                style: styles.link.mandatory(this.settings),
-                fn: (circle: D3Selection) => circle.on('dblclick', d => this.onToggleFeatureMandatory({feature: d.feature()}))
+                style: styles.link.optional(this.settings),
+                fn: (circle: D3Selection) => circle.on('dblclick', d => this.onToggleFeatureOptional({feature: d.feature()}))
             });
 
         return linkEnter;
@@ -135,7 +135,7 @@ export default class {
             link.call(this.drawLink, '.line', {from, to});
 
         if (zIndex === 'inFront')
-            link.call(drawCircle, 'circle', {center: from, radius, style: styles.link.mandatory(this.settings)});
+            link.call(drawCircle, 'circle', {center: from, radius, style: styles.link.optional(this.settings)});
     }
 
     exit(link: D3Selection, zIndex: string): void {

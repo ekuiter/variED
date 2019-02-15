@@ -166,15 +166,15 @@ describe('actions', () => {
                     expectBatchMessageAction(actions.server.featureDiagram.feature.properties.setHidden({featureIDs: ['FeatureIDE'], value: true}),
                         [{type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY, featureID: 'FeatureIDE', property: propertyTypes.hidden, value: true}]));
     
-                it('sets the mandatory property', () =>
-                    expectBatchMessageAction(actions.server.featureDiagram.feature.properties.setMandatory({featureIDs: ['FeatureIDE'], value: true}),
-                        [{type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY, featureID: 'FeatureIDE', property: propertyTypes.mandatory, value: true}]));
+                it('sets the optional property', () =>
+                    expectBatchMessageAction(actions.server.featureDiagram.feature.properties.setOptional({featureIDs: ['FeatureIDE'], value: true}),
+                        [{type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY, featureID: 'FeatureIDE', property: propertyTypes.optional, value: true}]));
     
-                it('toggles the mandatory property', async () => {
-                    await expectMessageAction(actions.server.featureDiagram.feature.properties.toggleMandatory({feature: <any>{ID: 'FeatureIDE', isMandatory: true}}),
-                        {type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY, featureID: 'FeatureIDE', property: propertyTypes.mandatory, value: false});
-                    await expectMessageAction(actions.server.featureDiagram.feature.properties.toggleMandatory({feature: <any>{ID: 'FeatureIDE', isMandatory: false}}),
-                            {type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY, featureID: 'FeatureIDE', property: propertyTypes.mandatory, value: true});
+                it('toggles the optional property', async () => {
+                    await expectMessageAction(actions.server.featureDiagram.feature.properties.toggleOptional({feature: <any>{ID: 'FeatureIDE', isOptional: true}}),
+                        {type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY, featureID: 'FeatureIDE', property: propertyTypes.optional, value: false});
+                    await expectMessageAction(actions.server.featureDiagram.feature.properties.toggleOptional({feature: <any>{ID: 'FeatureIDE', isOptional: false}}),
+                            {type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY, featureID: 'FeatureIDE', property: propertyTypes.optional, value: true});
                 });
     
                 it('changes the group type to and', () =>

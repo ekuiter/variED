@@ -1,6 +1,6 @@
 import React from 'react';
 import i18n from '../../i18n';
-import {OnShowOverlayFunction, OnUndoFunction, OnRedoFunction, OnSetFeatureDiagramLayoutFunction, OnFitToScreenFunction, OnAddFeatureAboveFunction, OnAddFeatureBelowFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnRemoveFeaturesFunction, OnRemoveFeaturesBelowFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureMandatoryFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction, OnExpandAllFeaturesFunction, OnCollapseAllFeaturesFunction, OnJoinFunction, OnLeaveFunction, CollaborativeSession, OnSetCurrentArtifactPathFunction, OnSetSettingFunction} from '../../store/types';
+import {OnShowOverlayFunction, OnUndoFunction, OnRedoFunction, OnSetFeatureDiagramLayoutFunction, OnFitToScreenFunction, OnAddFeatureAboveFunction, OnAddFeatureBelowFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnRemoveFeaturesFunction, OnRemoveFeaturesBelowFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureOptionalFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction, OnExpandAllFeaturesFunction, OnCollapseAllFeaturesFunction, OnJoinRequestFunction, OnLeaveRequestFunction, CollaborativeSession, OnSetCurrentArtifactPathFunction, OnSetSettingFunction} from '../../store/types';
 import {getShortcutText} from '../../shortcuts';
 import {OverlayType, Omit, FeatureDiagramLayoutType, FormatType, isArtifactPathEqual, ArtifactPath} from '../../types';
 import Palette, {PaletteItem, PaletteAction, getKey} from '../../helpers/Palette';
@@ -18,8 +18,8 @@ interface Props {
     featureModel?: FeatureModel,
     onDismiss: () => void,
     onShowOverlay: OnShowOverlayFunction,
-    onJoin: OnJoinFunction,
-    onLeave: OnLeaveFunction,
+    onJoinRequest: OnJoinRequestFunction,
+    onLeaveRequest: OnLeaveRequestFunction,
     onUndo: OnUndoFunction,
     onRedo: OnRedoFunction,
     onFitToScreen: OnFitToScreenFunction,
@@ -35,7 +35,7 @@ interface Props {
     onAddFeatureAbove: OnAddFeatureAboveFunction,
     onSetFeatureAbstract: OnSetFeatureAbstractFunction,
     onSetFeatureHidden: OnSetFeatureHiddenFunction,
-    onSetFeatureMandatory: OnSetFeatureMandatoryFunction,
+    onSetFeatureOptional: OnSetFeatureOptionalFunction,
     onSetFeatureAnd: OnSetFeatureAndFunction,
     onSetFeatureOr: OnSetFeatureOrFunction,
     onSetFeatureAlternative: OnSetFeatureAlternativeFunction
@@ -144,7 +144,7 @@ export default class extends React.Component<Props, State> {
 
     commands: PaletteItem[] = [
         {
-            text: i18n.t('commandPalette.join'),
+            text: i18n.t('commandPalette.joinRequest'),
             icon: 'JoinOnlineMeeting',
             disabled: () => this.props.artifactPaths.length === 0,
             action: this.actionWithArguments(
@@ -165,11 +165,11 @@ export default class extends React.Component<Props, State> {
                     if (this.isEditing({project, artifact}))
                         this.props.onSetCurrentArtifactPath({artifactPath: {project, artifact}});
                     else
-                        this.props.onJoin({artifactPath: {project, artifact}});
+                        this.props.onJoinRequest({artifactPath: {project, artifact}});
                 })
         },
         {
-            text: i18n.t('commandPalette.leave'),
+            text: i18n.t('commandPalette.leaveRequest'),
             icon: 'JoinOnlineMeeting',
             disabled: () => this.props.collaborativeSessions.length === 0,
             action: this.actionWithArguments(
@@ -185,7 +185,7 @@ export default class extends React.Component<Props, State> {
                         .filter(collaborativeSession => collaborativeSession.artifactPath.project === project)
                         .map(collaborativeSession => collaborativeSession.artifactPath.artifact)
                 }],
-                (project, artifact) => this.props.onLeave({artifactPath: {project, artifact}}))
+                (project, artifact) => this.props.onLeaveRequest({artifactPath: {project, artifact}}))
         },
         {
             text: i18n.t('commandPalette.settings'),
@@ -291,13 +291,13 @@ export default class extends React.Component<Props, State> {
             featureID => this.props.onSetFeatureHidden({featureIDs: [featureID], value: !this.props.featureModel!.getFeature(featureID)!.isHidden})),
         
         this.featureCommand(
-            {text: i18n.t('commandPalette.featureDiagram.feature.propertiesMenu.mandatory')},
-            featureID => this.props.onSetFeatureMandatory({featureIDs: [featureID], value: true})),
-        
-        this.featureCommand(
             {text: i18n.t('commandPalette.featureDiagram.feature.propertiesMenu.optional')},
-            featureID => this.props.onSetFeatureMandatory({featureIDs: [featureID], value: false})),
-        
+            featureID => this.props.onSetFeatureOptional({featureIDs: [featureID], value: true})),
+    
+        this.featureCommand(
+            {text: i18n.t('commandPalette.featureDiagram.feature.propertiesMenu.mandatory')},
+            featureID => this.props.onSetFeatureOptional({featureIDs: [featureID], value: false})),
+                
         this.featureCommand(
             {text: i18n.t('commandPalette.featureDiagram.feature.propertiesMenu.and')},
             featureID => this.props.onSetFeatureAnd({featureIDs: [featureID]})),

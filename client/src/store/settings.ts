@@ -66,8 +66,8 @@ export interface Settings {
             width: number // width of feature callout in px
         }
     },
-    userFacepile: {
-        maxDisplayableUsers: number, // number of users to display before overflowing
+    collaboratorFacepile: {
+        maxDisplayableCollaborators: number, // number of users to display before overflowing
         overflowBreakpoint: number, // viewport width under which all users will be overflowed
         gapSpace: number // space between facepile and overlay
     },
@@ -133,8 +133,8 @@ export const defaultSettings: Settings = {
             width: 300
         }
     },
-    userFacepile: {
-        maxDisplayableUsers: 3,
+    collaboratorFacepile: {
+        maxDisplayableCollaborators: 3,
         overflowBreakpoint: 768,
         gapSpace: 3
     },

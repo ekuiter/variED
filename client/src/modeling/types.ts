@@ -12,7 +12,7 @@ export const TYPE = 'type';
 export const NAME = 'name';
 export const ID = 'ID';
 export const DESCRIPTION = 'description';
-export const MANDATORY = 'mandatory';
+export const OPTIONAL = 'optional';
 export const ABSTRACT = 'abstract';
 export const HIDDEN = 'hidden';
 export const VAR = 'var';
@@ -41,7 +41,7 @@ export interface SerializedFeatureNode {
     [NAME]: string,
     [ID]: string,
     [HIDDEN]?: boolean,
-    [MANDATORY]?: boolean,
+    [OPTIONAL]?: boolean,
     [ABSTRACT]?: boolean,
     [DESCRIPTION]?: string,
     children?: SerializedFeatureNode[]
@@ -78,7 +78,7 @@ export interface Feature {
     isRoot: boolean,
     isAbstract: boolean,
     isHidden: boolean,
-    isMandatory: boolean,
+    isOptional: boolean,
     isAnd: boolean,
     isOr: boolean,
     isAlternative: boolean,

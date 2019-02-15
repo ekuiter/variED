@@ -14,7 +14,7 @@ import {SerializedFeatureModel} from '../modeling/types';
 
 export function isFeatureDiagramCollaborativeSession(collaborativeSession?: CollaborativeSession): collaborativeSession is FeatureDiagramCollaborativeSession {
     return typeof collaborativeSession !== 'undefined' &&
-        (<FeatureDiagramCollaborativeSession>collaborativeSession).serializedFeatureModel !== undefined;
+        (<FeatureDiagramCollaborativeSession>collaborativeSession).kernelContext !== undefined;
 }
 
 export function isEditingFeatureModel(state: State): boolean {
@@ -57,24 +57,25 @@ const currentFeatureModelCollaborativeSessionKeySelector = <T>(key: string) => (
     return undefined;
 };
 
+// TODO: use kernel context
 export const getFeatureModel = createCachedSelector(
     featureModelCollaborativeSessionKeySelector('serializedFeatureModel'),
-    featureModelCollaborativeSessionKeySelector('collapsedfeatureIDs'),
-    (serializedFeatureModel?: SerializedFeatureModel, collapsedfeatureIDs?: string[]): FeatureModel | undefined => {
+    featureModelCollaborativeSessionKeySelector('collapsedFeatureIDs'),
+    (serializedFeatureModel?: SerializedFeatureModel, collapsedFeatureIDs?: string[]): FeatureModel | undefined => {
         logger.infoTagged({tag: 'redux'}, () => 'updating feature model selector');
-        if (!serializedFeatureModel || !collapsedfeatureIDs)
+        if (!serializedFeatureModel || !collapsedFeatureIDs)
             return undefined;
-        return FeatureModel.fromJSON(serializedFeatureModel).collapse(collapsedfeatureIDs);
+        return FeatureModel.fromJSON(serializedFeatureModel).collapse(collapsedFeatureIDs);
     }
 )((_state: State, artifactPath: ArtifactPath) => artifactPathToString(artifactPath));
 
 export const getCurrentFeatureModel = createSelector(
     currentFeatureModelCollaborativeSessionKeySelector('serializedFeatureModel'),
-    currentFeatureModelCollaborativeSessionKeySelector('collapsedfeatureIDs'),
-    (serializedFeatureModel?: SerializedFeatureModel, collapsedfeatureIDs?: string[]): FeatureModel | undefined => {
+    currentFeatureModelCollaborativeSessionKeySelector('collapsedFeatureIDs'),
+    (serializedFeatureModel?: SerializedFeatureModel, collapsedFeatureIDs?: string[]): FeatureModel | undefined => {
         logger.infoTagged({tag: 'redux'}, () => 'updating feature model selector');
-        if (!serializedFeatureModel || !collapsedfeatureIDs)
+        if (!serializedFeatureModel || !collapsedFeatureIDs)
             return undefined;
-        return FeatureModel.fromJSON(serializedFeatureModel).collapse(collapsedfeatureIDs);
+        return FeatureModel.fromJSON(serializedFeatureModel).collapse(collapsedFeatureIDs);
     }
 );

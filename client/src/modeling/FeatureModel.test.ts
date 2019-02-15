@@ -24,7 +24,7 @@ describe('feature', () => {
             description: 'A sample description',
             isAbstract: false,
             isHidden: false,
-            isMandatory: false,
+            isOptional: true,
             isAnd: false,
             isOr: true,
             isAlternative: false,
@@ -50,14 +50,14 @@ describe('feature', () => {
 });
 
 describe('FeatureModel', () => {
-    const createFeatureModel = (serializedFeatureModel = validFeatureModel, collapsedfeatureIDs = ['FeatureIDE']) =>
-        FeatureModel.fromJSON(serializedFeatureModel).collapse(collapsedfeatureIDs);
+    const createFeatureModel = (serializedFeatureModel = validFeatureModel, collapsedFeatureIDs = ['FeatureIDE']) =>
+        FeatureModel.fromJSON(serializedFeatureModel).collapse(collapsedFeatureIDs);
 
     it('creates a representation of a feature model', () => {
-        const collapsedfeatureIDs: string[] = [],
-            featureModel = createFeatureModel(validFeatureModel, collapsedfeatureIDs);
+        const collapsedFeatureIDs: string[] = [],
+            featureModel = createFeatureModel(validFeatureModel, collapsedFeatureIDs);
         expect(featureModel.serializedFeatureModel).toBe(validFeatureModel);
-        expect(featureModel.collapsedfeatureIDs).toBe(collapsedfeatureIDs);
+        expect(featureModel.collapsedFeatureIDs).toBe(collapsedFeatureIDs);
     });
 
     it('retrieves a feature model\'s structure', () => {

@@ -3,7 +3,7 @@
  */
 
 import commands, {makeDivider} from './commands';
-import UserFacepile from './UserFacepile';
+import CollaboratorFacepile from './CollaboratorFacepile';
 import {CommandBar} from 'office-ui-fabric-react/lib/CommandBar';
 import React from 'react';
 import {connect} from 'react-redux';
@@ -39,11 +39,11 @@ const CommandBarContainer = (props: StateDerivedProps) => (
                             commands.featureDiagram.feature.selectAll(props.onSelectAllFeatures!),
                             commands.featureDiagram.feature.deselectAll(props.onDeselectAllFeatures!),
                             commands.featureDiagram.feature.selection(
-                                props.isSelectMultipleFeatures!, props.onSetSelectMultipleFeatures!, props.selectedfeatureIDs!,
+                                props.isSelectMultipleFeatures!, props.onSetSelectMultipleFeatures!, props.selectedFeatureIDs!,
                                 props.onDeselectAllFeatures!, props.onCollapseFeatures!, props.onExpandFeatures!,
                                 props.onCollapseFeaturesBelow!, props.onExpandFeaturesBelow!, props.onAddFeatureAbove!,
                                 props.onRemoveFeatures!, props.onRemoveFeaturesBelow!, props.onSetFeatureAbstract!,
-                                props.onSetFeatureHidden!, props.onSetFeatureMandatory!, props.onSetFeatureAnd!,
+                                props.onSetFeatureHidden!, props.onSetFeatureOptional!, props.onSetFeatureAnd!,
                                 props.onSetFeatureOr!, props.onSetFeatureAlternative!, props.featureModel!)
                         ]
                     }
@@ -79,12 +79,12 @@ const CommandBarContainer = (props: StateDerivedProps) => (
             }
         ]}
         farItems={[{
-            key: 'userFacepile',
+            key: 'collaboratorFacepile',
             onRender: () =>
-                <UserFacepile
+                <CollaboratorFacepile
                     users={props.users!}
                     settings={props.settings!}
-                    user={props.user}/>
+                    user={props.collaborator}/>
         }]}/>
 );
 
@@ -93,7 +93,7 @@ export default connect(
         const collaborativeSession = getCurrentCollaborativeSession(state),
             props: StateDerivedProps = {
                 settings: state.settings,
-                user: state.user,
+                collaborator: state.user,
                 users: []
             };
         if (!collaborativeSession || !isFeatureDiagramCollaborativeSession(collaborativeSession))
@@ -102,7 +102,7 @@ export default connect(
             ...props,
             featureDiagramLayout: collaborativeSession.layout,
             isSelectMultipleFeatures: collaborativeSession.isSelectMultipleFeatures,
-            selectedfeatureIDs: collaborativeSession.selectedfeatureIDs,
+            selectedFeatureIDs: collaborativeSession.selectedFeatureIDs,
             users: collaborativeSession.users,
             featureModel: getCurrentFeatureModel(state)
         };
@@ -127,7 +127,7 @@ export default connect(
         onRemoveFeaturesBelow: payload => dispatch<any>(actions.server.featureDiagram.feature.removeBelow(payload)),
         onSetFeatureAbstract: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setAbstract(payload)),
         onSetFeatureHidden: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setHidden(payload)),
-        onSetFeatureMandatory: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setMandatory(payload)),
+        onSetFeatureOptional: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setOptional(payload)),
         onSetFeatureAnd: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setAnd(payload)),
         onSetFeatureOr: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setOr(payload)),
         onSetFeatureAlternative: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setAlternative(payload))

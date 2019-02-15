@@ -49,8 +49,8 @@ class UserFacepile extends React.Component<Props, State> {
             }
         }),
             personas = this.props.users.map(toPersona),
-            {maxDisplayableUsers, overflowBreakpoint, gapSpace} = this.props.settings.userFacepile,
-            maxDisplayablePersonas = this.props.width < overflowBreakpoint ? 1 : maxDisplayableUsers;
+            {maxDisplayableCollaborators, overflowBreakpoint, gapSpace} = this.props.settings.collaboratorFacepile,
+            maxDisplayablePersonas = this.props.width < overflowBreakpoint ? 1 : maxDisplayableCollaborators;
 
         return (
             <React.Fragment>

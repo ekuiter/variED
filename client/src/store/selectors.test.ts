@@ -14,7 +14,7 @@ describe('selectors', () => {
                 collaborativeSessions: [{
                     artifactPath: {project: 'project', artifact: 'artifact'},
                     serializedFeatureModel: validFeatureModel,
-                    collapsedfeatureIDs: []
+                    collapsedFeatureIDs: []
                 }],
                 currentArtifactPath: {project: 'project', artifact: 'artifact'}
             };
@@ -26,7 +26,7 @@ describe('selectors', () => {
             const collaborativeSessions = [{
                     artifactPath: {project: 'project', artifact: 'artifact'},
                     serializedFeatureModel: invalidFeatureModel1,
-                    collapsedfeatureIDs: ['test1']
+                    collapsedFeatureIDs: ['test1']
                 }],
                 currentArtifactPath = {project: 'project', artifact: 'artifact'};
                 getCurrentFeatureModel.resetRecomputations();
@@ -43,7 +43,7 @@ describe('selectors', () => {
             state.collaborativeSessions = [{
                 artifactPath: {project: 'project', artifact: 'artifact'},
                 serializedFeatureModel: validFeatureModel,
-                collapsedfeatureIDs: ['test1']
+                collapsedFeatureIDs: ['test1']
             }];
             getCurrentFeatureModel(state);
             expect(getCurrentFeatureModel.recomputations()).toBe(2);
@@ -57,7 +57,7 @@ describe('selectors', () => {
             state.collaborativeSessions = [{
                 artifactPath: {project: 'project', artifact: 'artifact'},
                 serializedFeatureModel: validFeatureModel,
-                collapsedfeatureIDs: []
+                collapsedFeatureIDs: []
             }];
             getCurrentFeatureModel(state);
             expect(getCurrentFeatureModel.recomputations()).toBe(3);
@@ -66,7 +66,7 @@ describe('selectors', () => {
             state.collaborativeSessions = [{
                 artifactPath: {project: 'project', artifact: 'artifact'},
                 serializedFeatureModel: validFeatureModel,
-                collapsedfeatureIDs: state.collaborativeSessions[0].collapsedfeatureIDs
+                collapsedFeatureIDs: state.collaborativeSessions[0].collapsedFeatureIDs
             }];
             getCurrentFeatureModel(state);
             expect(getCurrentFeatureModel.recomputations()).toBe(3);

@@ -13,7 +13,7 @@ import {Settings} from '../store/settings';
 import {FeatureDiagramLayoutType} from '../types';
 import {present} from '../helpers/present';
 import logger from '../helpers/logger';
-import {FeatureNode, Feature, FeatureType, SerializedFeatureModel, ID, DESCRIPTION, TYPE, ABSTRACT, HIDDEN, MANDATORY, STRUCT, NAME, SerializedFeatureNode, SerializedConstraint, CONSTRAINTS, SerializedConstraintNode, ConstraintType, VAR} from './types';
+import {FeatureNode, Feature, FeatureType, SerializedFeatureModel, ID, DESCRIPTION, TYPE, ABSTRACT, HIDDEN, OPTIONAL, STRUCT, NAME, SerializedFeatureNode, SerializedConstraint, CONSTRAINTS, SerializedConstraintNode, ConstraintType, VAR} from './types';
 import {getViewportWidth, getViewportHeight} from '../helpers/withDimensions';
 
 export function getID(node: FeatureNode): string {
@@ -67,7 +67,7 @@ d3Hierarchy.prototype.feature = function(this: FeatureNode): Feature {
         isRoot: isRoot(this),
         isAbstract: !!this.data[ABSTRACT],
         isHidden: !!this.data[HIDDEN],
-        isMandatory: !!this.data[MANDATORY],
+        isOptional: !!this.data[OPTIONAL],
         isAnd: this.data[TYPE] === FeatureType.and,
         isOr: this.data[TYPE] === FeatureType.or,
         isAlternative: this.data[TYPE] === FeatureType.alt,
@@ -199,7 +199,7 @@ export class Constraint {
 
 class FeatureModel {
     serializedFeatureModel: SerializedFeatureModel;
-    collapsedfeatureIDs: string[] = [];
+    collapsedFeatureIDs: string[] = [];
     _hierarchy: FeatureNode;
     _actualNodes: FeatureNode[];
     _visibleNodes: FeatureNode[];
@@ -217,10 +217,10 @@ class FeatureModel {
         return this.serializedFeatureModel;
     }
 
-    collapse(collapsedfeatureIDs: string[]): FeatureModel {
+    collapse(collapsedFeatureIDs: string[]): FeatureModel {
         if (this._hierarchy)
             throw new Error('feature model already initialized');
-        this.collapsedfeatureIDs = collapsedfeatureIDs;
+        this.collapsedFeatureIDs = collapsedFeatureIDs;
         return this;
     }
 
@@ -250,7 +250,7 @@ class FeatureModel {
                 // store children nodes (because they are changed on collapse)
                 node.actualChildren = node.children;
 
-                if (this.collapsedfeatureIDs.find(featureID => getID(node) === featureID))
+                if (this.collapsedFeatureIDs.find(featureID => getID(node) === featureID))
                     node.children = undefined;
 
                 if (isVisible(node))
@@ -376,27 +376,27 @@ class FeatureModel {
                 2 * settings.featureDiagram.treeLayout.node.paddingY +
                 2 * settings.featureDiagram.treeLayout.node.strokeWidth,
             estimatedDimension = featureDiagramLayout === FeatureDiagramLayoutType.verticalTree ? 'width' : 'height';
-        let nodes = this.actualNodes, collapsedfeatureIDs: string[] = [];
+        let nodes = this.actualNodes, collapsedFeatureIDs: string[] = [];
         width = Math.max(width, constants.featureDiagram.fitToScreen.minWidth);
         height = Math.max(height, constants.featureDiagram.fitToScreen.minHeight);
         logger.infoBeginCollapsed(() => `[fit to screen] fitting feature model to ${estimatedDimension} ${FeatureDiagramLayoutType.verticalTree ? width : height}px`);
 
         while (true) {
             const {estimatedSize, collapsibleNodes} = estimateHierarchySize(
-                nodes, collapsedfeatureIDs, featureDiagramLayout,
+                nodes, collapsedFeatureIDs, featureDiagramLayout,
                 {fontFamily, fontSize, widthPadding, rectHeight, getID, scale});
-            logger.info(() => `estimated ${estimatedDimension} ${Math.round(estimatedSize)}px when collapsing ${JSON.stringify(collapsedfeatureIDs)}`);
+            logger.info(() => `estimated ${estimatedDimension} ${Math.round(estimatedSize)}px when collapsing ${JSON.stringify(collapsedFeatureIDs)}`);
     
             if ((featureDiagramLayout === FeatureDiagramLayoutType.verticalTree ? estimatedSize <= width : estimatedSize <= height) ||
                 collapsibleNodes.length === 0) {
-                logger.info(() => `feature model fitted by collapsing ${collapsedfeatureIDs.length} feature(s)`);
+                logger.info(() => `feature model fitted by collapsing ${collapsedFeatureIDs.length} feature(s)`);
                 logger.infoEnd();
-                return collapsedfeatureIDs;
+                return collapsedFeatureIDs;
             }
     
             const collapsibleNodeIDs = collapsibleNodes.map(getID);
             logger.info(() => `collapsing ${JSON.stringify(collapsibleNodeIDs)}`);
-            collapsedfeatureIDs = collapsedfeatureIDs.concat(collapsibleNodeIDs);
+            collapsedFeatureIDs = collapsedFeatureIDs.concat(collapsibleNodeIDs);
             const invisibleNodes = collapsibleNodes
                 .map(node => getNodesBelow(node).slice(1))
                 .reduce((acc, children) => acc.concat(children), []);
