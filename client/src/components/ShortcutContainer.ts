@@ -40,7 +40,7 @@ export default connect(
         onExpandAllFeatures: () => dispatch(actions.ui.featureDiagram.feature.expandAll()),
         onCollapseFeatures: payload => dispatch(actions.ui.featureDiagram.feature.collapse(payload)),
         onExpandFeatures: payload => dispatch(actions.ui.featureDiagram.feature.expand(payload)),
-        onCreateFeatureBelow: payload => dispatch<any>(actions.server.featureDiagram.feature.addBelow(payload)),
+        onCreateFeatureBelow: payload => dispatch<any>(actions.server.featureDiagram.feature.createBelow(payload)),
         onRemoveFeature: payload => dispatch<any>(actions.server.featureDiagram.feature.remove(payload)),
         onShowOverlay: payload => dispatch(actions.ui.overlay.show(payload)),
         onHideOverlay: payload => dispatch(actions.ui.overlay.hide(payload)),

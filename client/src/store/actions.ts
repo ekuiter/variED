@@ -65,15 +65,15 @@ const actions = {
         featureDiagram: {
             feature: {
                 // TODO: use kernel
-                addBelow: createMessageAction(({belowfeatureID}: {belowfeatureID: string}) =>
+                createBelow: createMessageAction(({belowfeatureID}: {belowfeatureID: string}) =>
                     ({type: MessageType.FEATURE_DIAGRAM_FEATURE_ADD_BELOW, belowfeatureID, newfeatureID: uuidv4()})),
-                addAbove: createMessageAction(({abovefeatureIDs}: {abovefeatureIDs: string[]}) =>
+                createAbove: createMessageAction(({abovefeatureIDs}: {abovefeatureIDs: string[]}) =>
                     ({type: MessageType.FEATURE_DIAGRAM_FEATURE_ADD_ABOVE, abovefeatureIDs, newfeatureID: uuidv4()})),
                 remove: createMessageAction(({featureIDs}: {featureIDs: string[]}) =>
                     (featureIDs.map(featureID => ({type: MessageType.FEATURE_DIAGRAM_FEATURE_REMOVE, featureID})))),
-                removeBelow: createMessageAction(({featureIDs}: {featureIDs: string[]}) =>
+                removeSubtree: createMessageAction(({featureIDs}: {featureIDs: string[]}) =>
                     (featureIDs.map(featureID => ({type: MessageType.FEATURE_DIAGRAM_FEATURE_REMOVE_BELOW, featureID})))),
-                rename: createMessageAction(({featureID, name}: {featureID: string, name: string}) =>
+                setName: createMessageAction(({featureID, name}: {featureID: string, name: string}) =>
                     ({type: MessageType.FEATURE_DIAGRAM_FEATURE_RENAME, featureID, name})),
                 setDescription: createMessageAction(({featureID, description}: {featureID: string, description: string}) =>
                     ({type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_DESCRIPTION, featureID, description})),

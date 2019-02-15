@@ -138,7 +138,7 @@ describe('actions', () => {
     
         describe('feature', () => {
             it('adds a feature below', () => {
-                return expectMessageAction(actions.server.featureDiagram.feature.addBelow({belowfeatureID: 'FeatureIDE'}),
+                return expectMessageAction(actions.server.featureDiagram.feature.createBelow({belowfeatureID: 'FeatureIDE'}),
                     {type: MessageType.FEATURE_DIAGRAM_FEATURE_ADD_BELOW, belowfeatureID: 'FeatureIDE'}, false, 'toMatchObject');
             });
     
@@ -148,7 +148,7 @@ describe('actions', () => {
             });
     
             it('renames a feature', () => {
-                return expectMessageAction(actions.server.featureDiagram.feature.rename({featureID: 'FeatureIDE', name: 'new feature name'}),
+                return expectMessageAction(actions.server.featureDiagram.feature.setName({featureID: 'FeatureIDE', name: 'new feature name'}),
                     {type: MessageType.FEATURE_DIAGRAM_FEATURE_RENAME, featureID: 'FeatureIDE', name: 'new feature name'});
             });
     
@@ -253,7 +253,7 @@ describe('actions', () => {
     
         describe('features', () => {
             it('adds a feature above', () =>
-                expectMessageAction(actions.server.featureDiagram.feature.addAbove({abovefeatureIDs: ['FeatureIDE', 'Eclipse']}),
+                expectMessageAction(actions.server.featureDiagram.feature.createAbove({abovefeatureIDs: ['FeatureIDE', 'Eclipse']}),
                     {type: MessageType.FEATURE_DIAGRAM_FEATURE_ADD_ABOVE, abovefeatureIDs: ['FeatureIDE', 'Eclipse']}, false, 'toMatchObject'));
         });
     });

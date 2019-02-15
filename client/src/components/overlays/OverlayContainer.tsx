@@ -208,17 +208,17 @@ export default connect(
         onExpandFeatures: payload => dispatch(actions.ui.featureDiagram.feature.expand(payload)),
         onCollapseFeaturesBelow: payload => dispatch(actions.ui.featureDiagram.feature.collapseBelow(payload)),
         onExpandFeaturesBelow: payload => dispatch(actions.ui.featureDiagram.feature.expandBelow(payload)),
-        onCreateFeatureAbove: payload => dispatch<any>(actions.server.featureDiagram.feature.addAbove(payload)),
-        onCreateFeatureBelow: payload => dispatch<any>(actions.server.featureDiagram.feature.addBelow(payload)),
+        onCreateFeatureAbove: payload => dispatch<any>(actions.server.featureDiagram.feature.createAbove(payload)),
+        onCreateFeatureBelow: payload => dispatch<any>(actions.server.featureDiagram.feature.createBelow(payload)),
         onRemoveFeature: payload => dispatch<any>(actions.server.featureDiagram.feature.remove(payload)),
-        onRemoveFeatureSubtree: payload => dispatch<any>(actions.server.featureDiagram.feature.removeBelow(payload)),
+        onRemoveFeatureSubtree: payload => dispatch<any>(actions.server.featureDiagram.feature.removeSubtree(payload)),
         onSetFeatureAbstract: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setAbstract(payload)),
         onSetFeatureHidden: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setHidden(payload)),
         onSetFeatureOptional: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setOptional(payload)),
         onSetFeatureAnd: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setAnd(payload)),
         onSetFeatureOr: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setOr(payload)),
         onSetFeatureAlternative: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setAlternative(payload)),
-        onSetFeatureName: payload => dispatch<any>(actions.server.featureDiagram.feature.rename(payload)),
+        onSetFeatureName: payload => dispatch<any>(actions.server.featureDiagram.feature.setName(payload)),
         onSetFeatureDescription: payload => dispatch<any>(actions.server.featureDiagram.feature.setDescription(payload))
     })
 )(OverlayContainer);
