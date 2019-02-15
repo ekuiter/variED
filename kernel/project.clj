@@ -26,4 +26,4 @@
                       :plugins      [[lein-cljsbuild "1.1.7"]]
                       :cljsbuild    {:builds [{:source-paths ["src"]
                                                :compiler     {:optimizations :advanced
-                                                              :output-to "../client/src/kernel.js"}}]}}})
+                                                              :output-to "../client/src/_kernel.js"}}]}}})

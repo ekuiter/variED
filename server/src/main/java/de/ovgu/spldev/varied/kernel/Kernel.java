@@ -103,4 +103,10 @@ public class Kernel {
         callDone();
         return leaveMessage;
     }
+
+    public void GC() {
+        callPrepare();
+        callKernel("serverGC");
+        callDone();
+    }
 }

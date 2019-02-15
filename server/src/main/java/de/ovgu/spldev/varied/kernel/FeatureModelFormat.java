@@ -1,7 +1,6 @@
 package de.ovgu.spldev.varied.kernel;
 
 import clojure.lang.PersistentHashMap;
-import clojure.lang.PersistentVector;
 import de.ovgu.featureide.fm.core.base.FeatureUtils;
 import de.ovgu.featureide.fm.core.base.IConstraint;
 import de.ovgu.featureide.fm.core.base.IFeature;

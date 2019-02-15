@@ -281,21 +281,21 @@ describe('reducer', () => {
     
         it('lets users join', () => {
             const state = reducer(serializedFeatureModelState(), actions.server.receive({type: MessageType.JOIN_REQUEST, artifactPath, user: {name: 'some user'}}));
-            expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).users).toContainEqual({name: 'some user'});
+            expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).collaborators).toContainEqual({name: 'some user'});
         });
     
         it('does not let users join multiple times', () => {
             let state = reducer(serializedFeatureModelState(), actions.server.receive({type: MessageType.JOIN_REQUEST, artifactPath, user: {name: 'some user'}}));
-            expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).users).toHaveLength(1);
+            expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).collaborators).toHaveLength(1);
             state = reducer(state, actions.server.receive({type: MessageType.JOIN_REQUEST, artifactPath, user: {name: 'some user'}}));
-            expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).users).toHaveLength(1);
+            expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).collaborators).toHaveLength(1);
         });
     
         it('lets users leave', () => {
             let state = reducer(serializedFeatureModelState(), actions.server.receive({type: MessageType.JOIN_REQUEST, artifactPath, user: {name: 'some user'}}));
-            expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).users).toContainEqual({name: 'some user'});
+            expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).collaborators).toContainEqual({name: 'some user'});
             state = reducer(serializedFeatureModelState(), actions.server.receive({type: MessageType.LEAVE_REQUEST, artifactPath, user: {name: 'some user'}}));
-            expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).users).not.toContainEqual({name: 'some user'});
+            expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).collaborators).not.toContainEqual({name: 'some user'});
         });
     
         it('updates the feature model', () => {

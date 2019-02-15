@@ -53,7 +53,7 @@ task clean(type: Exec) {
     }
     doLast {
         delete '../server/lib/kernel-SNAPSHOT-standalone.jar'
-        delete '../client/src/kernel.js'
+        delete '../client/src/_kernel.js'
         delete '../build/kernel-documentation'
     }
 }
