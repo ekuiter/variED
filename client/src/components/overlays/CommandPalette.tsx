@@ -1,6 +1,6 @@
 import React from 'react';
 import i18n from '../../i18n';
-import {OnShowOverlayFunction, OnUndoFunction, OnRedoFunction, OnSetFeatureDiagramLayoutFunction, OnFitToScreenFunction, OnAddFeatureAboveFunction, OnAddFeatureBelowFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnRemoveFeaturesFunction, OnRemoveFeaturesBelowFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureOptionalFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction, OnExpandAllFeaturesFunction, OnCollapseAllFeaturesFunction, OnJoinRequestFunction, OnLeaveRequestFunction, CollaborativeSession, OnSetCurrentArtifactPathFunction, OnSetSettingFunction} from '../../store/types';
+import {OnShowOverlayFunction, OnUndoFunction, OnRedoFunction, OnSetFeatureDiagramLayoutFunction, OnFitToScreenFunction, OnCreateFeatureAboveFunction, OnCreateFeatureBelowFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnRemoveFeatureFunction, OnRemoveFeatureSubtreeFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureOptionalFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction, OnExpandAllFeaturesFunction, OnCollapseAllFeaturesFunction, OnJoinRequestFunction, OnLeaveRequestFunction, CollaborativeSession, OnSetCurrentArtifactPathFunction, OnSetSettingFunction} from '../../store/types';
 import {getShortcutText} from '../../shortcuts';
 import {OverlayType, Omit, FeatureDiagramLayoutType, FormatType, isArtifactPathEqual, ArtifactPath} from '../../types';
 import Palette, {PaletteItem, PaletteAction, getKey} from '../../helpers/Palette';
@@ -29,10 +29,10 @@ interface Props {
     onCollapseFeaturesBelow: OnCollapseFeaturesBelowFunction,
     onExpandFeatures: OnExpandFeaturesFunction,
     onExpandFeaturesBelow: OnExpandFeaturesBelowFunction,
-    onRemoveFeatures: OnRemoveFeaturesFunction,
-    onRemoveFeaturesBelow: OnRemoveFeaturesBelowFunction,
-    onAddFeatureBelow: OnAddFeatureBelowFunction,
-    onAddFeatureAbove: OnAddFeatureAboveFunction,
+    onRemoveFeature: OnRemoveFeatureFunction,
+    onRemoveFeatureSubtree: OnRemoveFeatureSubtreeFunction,
+    onCreateFeatureBelow: OnCreateFeatureBelowFunction,
+    onCreateFeatureAbove: OnCreateFeatureAboveFunction,
     onSetFeatureAbstract: OnSetFeatureAbstractFunction,
     onSetFeatureHidden: OnSetFeatureHiddenFunction,
     onSetFeatureOptional: OnSetFeatureOptionalFunction,
@@ -243,23 +243,23 @@ export default class extends React.Component<Props, State> {
             text: i18n.t('commands.featureDiagram.feature.newMenu.newBelow'),
             shortcut: getShortcutText('featureDiagram.feature.new'),
             icon: 'Add'
-        }, featureID => this.props.onAddFeatureBelow({belowfeatureID: featureID})),
+        }, featureID => this.props.onCreateFeatureBelow({belowfeatureID: featureID})),
         
         this.featureCommand({
             text: i18n.t('commands.featureDiagram.feature.newMenu.newAbove'),
             icon: 'Add'
-        }, featureID => this.props.onAddFeatureAbove({abovefeatureIDs: [featureID]})),
+        }, featureID => this.props.onCreateFeatureAbove({abovefeatureIDs: [featureID]})),
         
         this.featureCommand({
             text: i18n.getFunction('commands.featureDiagram.feature.removeMenu.remove')({length: 1}),
             shortcut: getShortcutText('featureDiagram.feature.remove'),
             icon: 'Remove'
-        }, featureID => this.props.onRemoveFeatures({featureIDs: [featureID]})),
+        }, featureID => this.props.onRemoveFeature({featureIDs: [featureID]})),
         
         this.featureCommand({
             text: i18n.t('commands.featureDiagram.feature.removeMenu.removeBelow'),
             icon: 'Remove'
-        }, featureID => this.props.onRemoveFeaturesBelow({featureIDs: [featureID]})),
+        }, featureID => this.props.onRemoveFeatureSubtree({featureIDs: [featureID]})),
         
         this.featureCommand({
             text: i18n.t('commandPalette.featureDiagram.feature.details'),

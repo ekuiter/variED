@@ -29,10 +29,10 @@ describe('FeatureCallout', () => {
                 onExpandFeaturesBelow={mock}
                 featureModel={featureModel}
                 featureID={featureID}
-                onRemoveFeatures={mock}
-                onAddFeatureAbove={mock}
-                onAddFeatureBelow={mock}
-                onRemoveFeaturesBelow={mock}/>
+                onRemoveFeature={mock}
+                onCreateFeatureAbove={mock}
+                onCreateFeatureBelow={mock}
+                onRemoveFeatureSubtree={mock}/>
         );
     };
 

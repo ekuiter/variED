@@ -7,12 +7,12 @@ import i18n from '../../i18n';
 import {TextFieldDialog} from '../../helpers/Dialog';
 import FeatureComponent, {FeatureComponentProps} from './FeatureComponent';
 import {Feature} from '../../modeling/types';
-import {OnRenameFeatureFunction} from '../../store/types';
+import {OnSetFeatureNameFunction} from '../../store/types';
 
 type Props = FeatureComponentProps & {
     isOpen: boolean,
     onDismiss: () => void,
-    onRenameFeature: OnRenameFeatureFunction
+    onSetFeatureName: OnSetFeatureNameFunction
 };
 
 export default class extends FeatureComponent()<Props> {
@@ -26,7 +26,7 @@ export default class extends FeatureComponent()<Props> {
                 defaultValue={feature.name}
                 onSubmit={newFeatureName => {
                     if (newFeatureName && feature.name !== newFeatureName)
-                        this.props.onRenameFeature({featureID: feature.ID, name: newFeatureName});
+                        this.props.onSetFeatureName({featureID: feature.ID, name: newFeatureName});
                     else
                         ;//TODO: show error
                 }}/>

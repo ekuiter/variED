@@ -41,8 +41,8 @@ const CommandBarContainer = (props: StateDerivedProps) => (
                             commands.featureDiagram.feature.selection(
                                 props.isSelectMultipleFeatures!, props.onSetSelectMultipleFeatures!, props.selectedFeatureIDs!,
                                 props.onDeselectAllFeatures!, props.onCollapseFeatures!, props.onExpandFeatures!,
-                                props.onCollapseFeaturesBelow!, props.onExpandFeaturesBelow!, props.onAddFeatureAbove!,
-                                props.onRemoveFeatures!, props.onRemoveFeaturesBelow!, props.onSetFeatureAbstract!,
+                                props.onCollapseFeaturesBelow!, props.onExpandFeaturesBelow!, props.onCreateFeatureAbove!,
+                                props.onRemoveFeature!, props.onRemoveFeatureSubtree!, props.onSetFeatureAbstract!,
                                 props.onSetFeatureHidden!, props.onSetFeatureOptional!, props.onSetFeatureAnd!,
                                 props.onSetFeatureOr!, props.onSetFeatureAlternative!, props.featureModel!)
                         ]
@@ -122,9 +122,9 @@ export default connect(
         onFitToScreen: () => dispatch(actions.ui.featureDiagram.fitToScreen()),
         onUndo: () => dispatch<any>(actions.server.undo({})),
         onRedo: () => dispatch<any>(actions.server.redo({})),
-        onAddFeatureAbove: payload => dispatch<any>(actions.server.featureDiagram.feature.addAbove(payload)),
-        onRemoveFeatures: payload => dispatch<any>(actions.server.featureDiagram.feature.remove(payload)),
-        onRemoveFeaturesBelow: payload => dispatch<any>(actions.server.featureDiagram.feature.removeBelow(payload)),
+        onCreateFeatureAbove: payload => dispatch<any>(actions.server.featureDiagram.feature.addAbove(payload)),
+        onRemoveFeature: payload => dispatch<any>(actions.server.featureDiagram.feature.remove(payload)),
+        onRemoveFeatureSubtree: payload => dispatch<any>(actions.server.featureDiagram.feature.removeBelow(payload)),
         onSetFeatureAbstract: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setAbstract(payload)),
         onSetFeatureHidden: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setHidden(payload)),
         onSetFeatureOptional: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setOptional(payload)),

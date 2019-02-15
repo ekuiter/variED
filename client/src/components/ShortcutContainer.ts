@@ -40,8 +40,8 @@ export default connect(
         onExpandAllFeatures: () => dispatch(actions.ui.featureDiagram.feature.expandAll()),
         onCollapseFeatures: payload => dispatch(actions.ui.featureDiagram.feature.collapse(payload)),
         onExpandFeatures: payload => dispatch(actions.ui.featureDiagram.feature.expand(payload)),
-        onAddFeatureBelow: payload => dispatch<any>(actions.server.featureDiagram.feature.addBelow(payload)),
-        onRemoveFeatures: payload => dispatch<any>(actions.server.featureDiagram.feature.remove(payload)),
+        onCreateFeatureBelow: payload => dispatch<any>(actions.server.featureDiagram.feature.addBelow(payload)),
+        onRemoveFeature: payload => dispatch<any>(actions.server.featureDiagram.feature.remove(payload)),
         onShowOverlay: payload => dispatch(actions.ui.overlay.show(payload)),
         onHideOverlay: payload => dispatch(actions.ui.overlay.hide(payload)),
         onUndo: () => dispatch<any>(actions.server.undo({})),
@@ -67,7 +67,7 @@ export default connect(
         'featureDiagram.feature.new',
         (props: StateDerivedProps) => ifFeatureModel(props) && ifSingleFloatingFeature(props),
         async ({props}: {props: StateDerivedProps}) => {
-            await props.onAddFeatureBelow!({belowfeatureID: props.overlayProps!.featureID!});
+            await props.onCreateFeatureBelow!({belowfeatureID: props.overlayProps!.featureID!});
             props.onHideOverlay!({overlay: props.overlay!});
         }),
 
@@ -79,7 +79,7 @@ export default connect(
                 props.featureModel!.getFeatures(
                     props.isSelectMultipleFeatures
                     ? props.selectedFeatureIDs!
-                    : [props.overlayProps!.featureID!]), props.onRemoveFeatures!);
+                    : [props.overlayProps!.featureID!]), props.onRemoveFeature!);
             if (!disabled) {
                 await action();
                 props.onHideOverlay!({overlay: props.overlay!});

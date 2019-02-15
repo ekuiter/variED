@@ -8,7 +8,7 @@ import {ContextualMenu} from 'office-ui-fabric-react/lib/ContextualMenu';
 import commands, {makeDivider} from '../commands';
 import {FeatureDiagramLayoutType} from '../../types';
 import FeatureComponent, {FeatureComponentProps, isFeatureOffscreen} from './FeatureComponent';
-import {OnShowOverlayFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnDeselectAllFeaturesFunction, OnRemoveFeaturesFunction, OnAddFeatureAboveFunction, OnAddFeatureBelowFunction, OnRemoveFeaturesBelowFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureOptionalFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction} from '../../store/types';
+import {OnShowOverlayFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnDeselectAllFeaturesFunction, OnRemoveFeatureFunction, OnCreateFeatureAboveFunction, OnCreateFeatureBelowFunction, OnRemoveFeatureSubtreeFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureOptionalFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction} from '../../store/types';
 import {Feature} from '../../modeling/types';
 
 type Props = FeatureComponentProps & {
@@ -23,10 +23,10 @@ type Props = FeatureComponentProps & {
     onExpandFeatures: OnExpandFeaturesFunction,
     onExpandFeaturesBelow: OnExpandFeaturesBelowFunction,
     onDeselectAllFeatures: OnDeselectAllFeaturesFunction,
-    onRemoveFeatures: OnRemoveFeaturesFunction,
-    onRemoveFeaturesBelow: OnRemoveFeaturesBelowFunction,
-    onAddFeatureBelow: OnAddFeatureBelowFunction,
-    onAddFeatureAbove: OnAddFeatureAboveFunction,
+    onRemoveFeature: OnRemoveFeatureFunction,
+    onRemoveFeatureSubtree: OnRemoveFeatureSubtreeFunction,
+    onCreateFeatureBelow: OnCreateFeatureBelowFunction,
+    onCreateFeatureAbove: OnCreateFeatureAboveFunction,
     onSetFeatureAbstract: OnSetFeatureAbstractFunction,
     onSetFeatureHidden: OnSetFeatureHiddenFunction,
     onSetFeatureOptional: OnSetFeatureOptionalFunction,
@@ -58,13 +58,13 @@ export default class extends FeatureComponent({doUpdate: true})<Props> {
                 items={isSelectMultipleFeatures
                     ? commands.featureDiagram.feature.selectionItems(selectedFeatureIDs, onDeselectAllFeatures,
                         this.props.onCollapseFeatures, this.props.onExpandFeatures, this.props.onCollapseFeaturesBelow,
-                        this.props.onExpandFeaturesBelow, this.props.onAddFeatureAbove, this.props.onRemoveFeatures,
-                        this.props.onRemoveFeaturesBelow, this.props.onSetFeatureAbstract, this.props.onSetFeatureHidden,
+                        this.props.onExpandFeaturesBelow, this.props.onCreateFeatureAbove, this.props.onRemoveFeature,
+                        this.props.onRemoveFeatureSubtree, this.props.onSetFeatureAbstract, this.props.onSetFeatureHidden,
                         this.props.onSetFeatureOptional, this.props.onSetFeatureAnd, this.props.onSetFeatureOr,
                         this.props.onSetFeatureAlternative, featureModel!)
                     : [
-                        commands.featureDiagram.feature.newMenu(feature.ID, this.props.onAddFeatureBelow, this.props.onAddFeatureAbove, onDismiss),
-                        commands.featureDiagram.feature.removeMenu([feature], this.props.onRemoveFeatures, this.props.onRemoveFeaturesBelow, onDismiss),
+                        commands.featureDiagram.feature.newMenu(feature.ID, this.props.onCreateFeatureBelow, this.props.onCreateFeatureAbove, onDismiss),
+                        commands.featureDiagram.feature.removeMenu([feature], this.props.onRemoveFeature, this.props.onRemoveFeatureSubtree, onDismiss),
                         commands.featureDiagram.feature.collapseMenu(
                             [feature], this.props.onCollapseFeatures, this.props.onExpandFeatures,
                             this.props.onCollapseFeaturesBelow, this.props.onExpandFeaturesBelow, onDismiss),

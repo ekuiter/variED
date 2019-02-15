@@ -9,7 +9,7 @@ import {CommandBar, ICommandBarItemProps} from 'office-ui-fabric-react/lib/Comma
 import commands from '../commands';
 import FeatureComponent, {FeatureComponentProps} from './FeatureComponent';
 import {Feature} from '../../modeling/types';
-import {OnShowOverlayFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnRemoveFeaturesFunction, OnAddFeatureBelowFunction, OnAddFeatureAboveFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureOptionalFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction, OnRemoveFeaturesBelowFunction} from '../../store/types';
+import {OnShowOverlayFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnRemoveFeatureFunction, OnCreateFeatureBelowFunction, OnCreateFeatureAboveFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureOptionalFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction, OnRemoveFeatureSubtreeFunction} from '../../store/types';
 
 type Props = FeatureComponentProps & {
     onDismissed: () => void,
@@ -19,10 +19,10 @@ type Props = FeatureComponentProps & {
     onCollapseFeaturesBelow: OnCollapseFeaturesBelowFunction,
     onExpandFeatures: OnExpandFeaturesFunction,
     onExpandFeaturesBelow: OnExpandFeaturesBelowFunction,
-    onRemoveFeatures: OnRemoveFeaturesFunction,
-    onRemoveFeaturesBelow: OnRemoveFeaturesBelowFunction,
-    onAddFeatureBelow: OnAddFeatureBelowFunction,
-    onAddFeatureAbove: OnAddFeatureAboveFunction,
+    onRemoveFeature: OnRemoveFeatureFunction,
+    onRemoveFeatureSubtree: OnRemoveFeatureSubtreeFunction,
+    onCreateFeatureBelow: OnCreateFeatureBelowFunction,
+    onCreateFeatureAbove: OnCreateFeatureAboveFunction,
     onSetFeatureAbstract: OnSetFeatureAbstractFunction,
     onSetFeatureHidden: OnSetFeatureHiddenFunction,
     onSetFeatureOptional: OnSetFeatureOptionalFunction,
@@ -38,8 +38,8 @@ export default class extends FeatureComponent()<Props> {
     onRenderFooterContent = () => (
         <CommandBar
             items={transparentItems([
-                commands.featureDiagram.feature.newMenu(this.props.featureID!, this.props.onAddFeatureBelow, this.props.onAddFeatureAbove, this.props.onDismissed, true),
-                commands.featureDiagram.feature.removeMenu([this.feature], this.props.onRemoveFeatures, this.props.onRemoveFeaturesBelow, this.props.onDismissed, true)
+                commands.featureDiagram.feature.newMenu(this.props.featureID!, this.props.onCreateFeatureBelow, this.props.onCreateFeatureAbove, this.props.onDismissed, true),
+                commands.featureDiagram.feature.removeMenu([this.feature], this.props.onRemoveFeature, this.props.onRemoveFeatureSubtree, this.props.onDismissed, true)
             ])}
             overflowItems={[
                 commands.featureDiagram.feature.collapseMenu(

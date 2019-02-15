@@ -76,11 +76,11 @@ export type OnJoinRequestFunction = (payload: {artifactPath: ArtifactPath}) => P
 export type OnLeaveRequestFunction = (payload: {artifactPath: ArtifactPath}) => Promise<void>;
 export type OnUndoFunction = () => Promise<void>;
 export type OnRedoFunction = () => Promise<void>;
-export type OnAddFeatureBelowFunction = (payload: {belowfeatureID: string}) => Promise<void>;
-export type OnAddFeatureAboveFunction = (payload: {abovefeatureIDs: string[]}) => Promise<void>;
-export type OnRemoveFeaturesFunction = (payload: {featureIDs: string[]}) => Promise<void>;
-export type OnRemoveFeaturesBelowFunction = (payload: {featureIDs: string[]}) => Promise<void>;
-export type OnRenameFeatureFunction = (payload: {featureID: string, name: string}) => Promise<void>;
+export type OnCreateFeatureBelowFunction = (payload: {belowfeatureID: string}) => Promise<void>;
+export type OnCreateFeatureAboveFunction = (payload: {abovefeatureIDs: string[]}) => Promise<void>;
+export type OnRemoveFeatureFunction = (payload: {featureIDs: string[]}) => Promise<void>;
+export type OnRemoveFeatureSubtreeFunction = (payload: {featureIDs: string[]}) => Promise<void>;
+export type OnSetFeatureNameFunction = (payload: {featureID: string, name: string}) => Promise<void>;
 export type OnSetFeatureDescriptionFunction = (payload: {featureID: string, description: string}) => Promise<void>;
 export type OnSetFeatureAbstractFunction = (payload: {featureIDs: string[], value: boolean}) => Promise<void>;
 export type OnSetFeatureHiddenFunction = (payload: {featureIDs: string[], value: boolean}) => Promise<void>;
@@ -89,7 +89,7 @@ export type OnToggleFeatureOptionalFunction = (payload: {feature: Feature}) => P
 export type OnSetFeatureAndFunction = (payload: {featureIDs: string[]}) => Promise<void>;
 export type OnSetFeatureOrFunction = (payload: {featureIDs: string[]}) => Promise<void>;
 export type OnSetFeatureAlternativeFunction = (payload: {featureIDs: string[]}) => Promise<void>;
-export type OnToggleFeatureGroupFunction = (payload: {feature: Feature}) => Promise<void>;
+export type OnToggleFeatureGroupTypeFunction = (payload: {feature: Feature}) => Promise<void>;
 
 // Props that may derived from the state to use in React components.
 // This enforces the convention that a prop called 'on...' has the same type in all components.
@@ -131,11 +131,11 @@ export type StateDerivedProps = Partial<{
     onLeaveRequest: OnLeaveRequestFunction,
     onUndo: OnUndoFunction,
     onRedo: OnRedoFunction,
-    onAddFeatureBelow: OnAddFeatureBelowFunction,
-    onAddFeatureAbove: OnAddFeatureAboveFunction,
-    onRemoveFeatures: OnRemoveFeaturesFunction,
-    onRemoveFeaturesBelow: OnRemoveFeaturesBelowFunction,
-    onRenameFeature: OnRenameFeatureFunction,
+    onCreateFeatureBelow: OnCreateFeatureBelowFunction,
+    onCreateFeatureAbove: OnCreateFeatureAboveFunction,
+    onRemoveFeature: OnRemoveFeatureFunction,
+    onRemoveFeatureSubtree: OnRemoveFeatureSubtreeFunction,
+    onSetFeatureName: OnSetFeatureNameFunction,
     onSetFeatureDescription: OnSetFeatureDescriptionFunction,
     onSetFeatureAbstract: OnSetFeatureAbstractFunction,
     onSetFeatureHidden: OnSetFeatureHiddenFunction,
@@ -144,5 +144,5 @@ export type StateDerivedProps = Partial<{
     onSetFeatureAnd: OnSetFeatureAndFunction,
     onSetFeatureOr: OnSetFeatureOrFunction,
     onSetFeatureAlternative: OnSetFeatureAlternativeFunction,
-    onToggleFeatureGroup: OnToggleFeatureGroupFunction
+    onToggleFeatureGroupType: OnToggleFeatureGroupTypeFunction
 }>;

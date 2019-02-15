@@ -15,7 +15,7 @@ import {D3Selection, Bbox, OverlayType, isFloatingFeatureOverlay, OverlayProps} 
 import FeatureModel from '../../../modeling/FeatureModel';
 import AbstractTreeNode from './AbstractTreeNode';
 import AbstractTreeLink from './AbstractTreeLink';
-import {OnShowOverlayFunction, OnHideOverlayFunction, OnSetSelectMultipleFeaturesFunction, OnSelectFeatureFunction, OnDeselectFeatureFunction, OnExpandFeaturesFunction, OnDeselectAllFeaturesFunction, OnToggleFeatureGroupFunction, OnToggleFeatureOptionalFunction} from '../../../store/types';
+import {OnShowOverlayFunction, OnHideOverlayFunction, OnSetSelectMultipleFeaturesFunction, OnSelectFeatureFunction, OnDeselectFeatureFunction, OnExpandFeaturesFunction, OnDeselectAllFeaturesFunction, OnToggleFeatureGroupTypeFunction, OnToggleFeatureOptionalFunction} from '../../../store/types';
 import logger from '../../../helpers/logger';
 import {FeatureNode, NodeCoordinateForAxisFunction} from '../../../modeling/types';
 import constants from '../../../constants';
@@ -42,7 +42,7 @@ export interface AbstractTreeLayoutProps {
     onDeselectFeature: OnDeselectFeatureFunction,
     onExpandFeatures: OnExpandFeaturesFunction,
     onDeselectAllFeatures: OnDeselectAllFeaturesFunction,
-    onToggleFeatureGroup: OnToggleFeatureGroupFunction,
+    onToggleFeatureGroupType: OnToggleFeatureGroupTypeFunction,
     onToggleFeatureOptional: OnToggleFeatureOptionalFunction
 };
 
@@ -63,7 +63,7 @@ export default class extends React.Component<AbstractTreeLayoutProps> {
             this.setActiveNode.bind(this),
             this.props.onShowOverlay,
             this.props.onExpandFeatures,
-            this.props.onToggleFeatureGroup);
+            this.props.onToggleFeatureGroupType);
         this.treeLink = new TreeLink(
             props.settings,
             this.getParentCoordinateFn('currentCoordinates'),

@@ -44,11 +44,11 @@ const OverlayContainer = (props: StateDerivedProps) => (
             onExpandAllFeatures={props.onExpandAllFeatures!}
             onCollapseFeaturesBelow={props.onCollapseFeaturesBelow!}
             onExpandFeaturesBelow={props.onExpandFeaturesBelow!}
-            onAddFeatureAbove={props.onAddFeatureAbove!}
-            onAddFeatureBelow={props.onAddFeatureBelow!}
+            onCreateFeatureAbove={props.onCreateFeatureAbove!}
+            onCreateFeatureBelow={props.onCreateFeatureBelow!}
             onSetFeatureDiagramLayout={props.onSetFeatureDiagramLayout!}
-            onRemoveFeatures={props.onRemoveFeatures!}
-            onRemoveFeaturesBelow={props.onRemoveFeaturesBelow!}
+            onRemoveFeature={props.onRemoveFeature!}
+            onRemoveFeatureSubtree={props.onRemoveFeatureSubtree!}
             onSetFeatureAbstract={props.onSetFeatureAbstract!}
             onSetFeatureHidden={props.onSetFeatureHidden!}
             onSetFeatureOptional={props.onSetFeatureOptional!}
@@ -83,10 +83,10 @@ const OverlayContainer = (props: StateDerivedProps) => (
             onExpandFeaturesBelow={props.onExpandFeaturesBelow!}
             featureModel={props.featureModel!}
             settings={props.settings!}
-            onAddFeatureAbove={props.onAddFeatureAbove!}
-            onAddFeatureBelow={props.onAddFeatureBelow!}
-            onRemoveFeatures={props.onRemoveFeatures!}
-            onRemoveFeaturesBelow={props.onRemoveFeaturesBelow!}
+            onCreateFeatureAbove={props.onCreateFeatureAbove!}
+            onCreateFeatureBelow={props.onCreateFeatureBelow!}
+            onRemoveFeature={props.onRemoveFeature!}
+            onRemoveFeatureSubtree={props.onRemoveFeatureSubtree!}
             onSetFeatureAbstract={props.onSetFeatureAbstract!}
             onSetFeatureHidden={props.onSetFeatureHidden!}
             onSetFeatureOptional={props.onSetFeatureOptional!}
@@ -101,7 +101,7 @@ const OverlayContainer = (props: StateDerivedProps) => (
             onDismiss={() => props.onHideOverlay!({overlay: OverlayType.featureRenameDialog})}
             featureModel={props.featureModel!}
             settings={props.settings!}
-            onRenameFeature={props.onRenameFeature!}
+            onSetFeatureName={props.onSetFeatureName!}
             {...props.overlayProps}/>}
 
         {props.overlay === OverlayType.featureSetDescriptionDialog &&
@@ -134,10 +134,10 @@ const OverlayContainer = (props: StateDerivedProps) => (
             onCollapseFeaturesBelow={props.onCollapseFeaturesBelow!}
             onExpandFeaturesBelow={props.onExpandFeaturesBelow!}
             featureModel={props.featureModel!}
-            onAddFeatureAbove={props.onAddFeatureAbove!}
-            onAddFeatureBelow={props.onAddFeatureBelow!}
-            onRemoveFeatures={props.onRemoveFeatures!}
-            onRemoveFeaturesBelow={props.onRemoveFeaturesBelow!}
+            onCreateFeatureAbove={props.onCreateFeatureAbove!}
+            onCreateFeatureBelow={props.onCreateFeatureBelow!}
+            onRemoveFeature={props.onRemoveFeature!}
+            onRemoveFeatureSubtree={props.onRemoveFeatureSubtree!}
             {...props.overlayProps}/>}
 
         {props.overlay === OverlayType.featureContextualMenu &&
@@ -155,10 +155,10 @@ const OverlayContainer = (props: StateDerivedProps) => (
             featureModel={props.featureModel!}
             isSelectMultipleFeatures={props.isSelectMultipleFeatures!}
             selectedFeatureIDs={props.selectedFeatureIDs!}
-            onAddFeatureAbove={props.onAddFeatureAbove!}
-            onAddFeatureBelow={props.onAddFeatureBelow!}
-            onRemoveFeatures={props.onRemoveFeatures!}
-            onRemoveFeaturesBelow={props.onRemoveFeaturesBelow!}
+            onCreateFeatureAbove={props.onCreateFeatureAbove!}
+            onCreateFeatureBelow={props.onCreateFeatureBelow!}
+            onRemoveFeature={props.onRemoveFeature!}
+            onRemoveFeatureSubtree={props.onRemoveFeatureSubtree!}
             onSetFeatureAbstract={props.onSetFeatureAbstract!}
             onSetFeatureHidden={props.onSetFeatureHidden!}
             onSetFeatureOptional={props.onSetFeatureOptional!}
@@ -208,17 +208,17 @@ export default connect(
         onExpandFeatures: payload => dispatch(actions.ui.featureDiagram.feature.expand(payload)),
         onCollapseFeaturesBelow: payload => dispatch(actions.ui.featureDiagram.feature.collapseBelow(payload)),
         onExpandFeaturesBelow: payload => dispatch(actions.ui.featureDiagram.feature.expandBelow(payload)),
-        onAddFeatureAbove: payload => dispatch<any>(actions.server.featureDiagram.feature.addAbove(payload)),
-        onAddFeatureBelow: payload => dispatch<any>(actions.server.featureDiagram.feature.addBelow(payload)),
-        onRemoveFeatures: payload => dispatch<any>(actions.server.featureDiagram.feature.remove(payload)),
-        onRemoveFeaturesBelow: payload => dispatch<any>(actions.server.featureDiagram.feature.removeBelow(payload)),
+        onCreateFeatureAbove: payload => dispatch<any>(actions.server.featureDiagram.feature.addAbove(payload)),
+        onCreateFeatureBelow: payload => dispatch<any>(actions.server.featureDiagram.feature.addBelow(payload)),
+        onRemoveFeature: payload => dispatch<any>(actions.server.featureDiagram.feature.remove(payload)),
+        onRemoveFeatureSubtree: payload => dispatch<any>(actions.server.featureDiagram.feature.removeBelow(payload)),
         onSetFeatureAbstract: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setAbstract(payload)),
         onSetFeatureHidden: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setHidden(payload)),
         onSetFeatureOptional: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setOptional(payload)),
         onSetFeatureAnd: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setAnd(payload)),
         onSetFeatureOr: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setOr(payload)),
         onSetFeatureAlternative: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setAlternative(payload)),
-        onRenameFeature: payload => dispatch<any>(actions.server.featureDiagram.feature.rename(payload)),
+        onSetFeatureName: payload => dispatch<any>(actions.server.featureDiagram.feature.rename(payload)),
         onSetFeatureDescription: payload => dispatch<any>(actions.server.featureDiagram.feature.setDescription(payload))
     })
 )(OverlayContainer);

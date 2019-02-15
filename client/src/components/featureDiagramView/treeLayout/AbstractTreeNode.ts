@@ -10,7 +10,7 @@ import {addStyle, appendCross, drawCircle, translateTransform, StyleDescriptor, 
 import styles from './styles';
 import {isCommand} from '../../../helpers/withKeys';
 import {OverlayType, Rect, D3Selection, Point} from '../../../types';
-import {OnShowOverlayFunction, OnExpandFeaturesFunction, OnToggleFeatureGroupFunction} from '../../../store/types';
+import {OnShowOverlayFunction, OnExpandFeaturesFunction, OnToggleFeatureGroupTypeFunction} from '../../../store/types';
 import {FeatureNode} from '../../../modeling/types';
 
 declare class AbstractTreeLink {
@@ -68,7 +68,7 @@ export default class {
     constructor(public settings: Settings, public isSelectMultipleFeatures: boolean, public debug: boolean,
         public setActiveNode: (overlay: OverlayType | 'select', activeNode: FeatureNode) => void,
         public onShowOverlay: OnShowOverlayFunction, public onExpandFeatures: OnExpandFeaturesFunction,
-        public onToggleFeatureGroup: OnToggleFeatureGroupFunction) {}
+        public onToggleFeatureGroupType: OnToggleFeatureGroupTypeFunction) {}
 
     x(_node: FeatureNode): number {
         throw new Error('abstract method not implemented');
@@ -120,7 +120,7 @@ export default class {
             arcClick = nodeEnter.append('path')
                 .attr('class', 'arcClick')
                 .call(addStyle, styles.node.arcClick(this.settings))
-                .on('dblclick', (d: FeatureNode) => this.onToggleFeatureGroup({feature: d.feature()}));
+                .on('dblclick', (d: FeatureNode) => this.onToggleFeatureGroupType({feature: d.feature()}));
         this.treeLink.drawGroup(arcSegment, arcSlice, arcClick);
 
         const expandFeature = (d: FeatureNode) => d.feature().isCollapsed && this.onExpandFeatures({featureIDs: [d.feature().ID]});

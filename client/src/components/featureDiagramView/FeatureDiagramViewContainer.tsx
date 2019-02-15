@@ -39,7 +39,7 @@ export default connect(
         onDeselectFeature: payload => dispatch(actions.ui.featureDiagram.feature.deselect(payload)),
         onExpandFeatures: payload => dispatch(actions.ui.featureDiagram.feature.expand(payload)),
         onDeselectAllFeatures: () => dispatch(actions.ui.featureDiagram.feature.deselectAll()),
-        onToggleFeatureGroup: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.toggleGroup(payload)),
+        onToggleFeatureGroupType: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.toggleGroup(payload)),
         onToggleFeatureOptional: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.toggleOptional(payload)),
     })
 )((props: StateDerivedProps & {className?: string, style?: CSSProperties}) =>

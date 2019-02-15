@@ -8,7 +8,7 @@ import commands from '../commands';
 import {CommandBar} from 'office-ui-fabric-react/lib/CommandBar';
 import {FeatureDiagramLayoutType} from '../../types';
 import FeatureComponent, {FeatureComponentProps, isFeatureOffscreen} from './FeatureComponent';
-import {OnShowOverlayFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnRemoveFeaturesFunction, OnAddFeatureBelowFunction, OnAddFeatureAboveFunction, OnRemoveFeaturesBelowFunction} from '../../store/types';
+import {OnShowOverlayFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnRemoveFeatureFunction, OnCreateFeatureBelowFunction, OnCreateFeatureAboveFunction, OnRemoveFeatureSubtreeFunction} from '../../store/types';
 import {Feature} from '../../modeling/types';
 
 type Props = FeatureComponentProps & {
@@ -20,10 +20,10 @@ type Props = FeatureComponentProps & {
     onCollapseFeaturesBelow: OnCollapseFeaturesBelowFunction,
     onExpandFeatures: OnExpandFeaturesFunction,
     onExpandFeaturesBelow: OnExpandFeaturesBelowFunction,
-    onRemoveFeatures: OnRemoveFeaturesFunction,
-    onRemoveFeaturesBelow: OnRemoveFeaturesBelowFunction,
-    onAddFeatureBelow: OnAddFeatureBelowFunction,
-    onAddFeatureAbove: OnAddFeatureAboveFunction
+    onRemoveFeature: OnRemoveFeatureFunction,
+    onRemoveFeatureSubtree: OnRemoveFeatureSubtreeFunction,
+    onCreateFeatureBelow: OnCreateFeatureBelowFunction,
+    onCreateFeatureAbove: OnCreateFeatureAboveFunction
 };
 
 export default class extends FeatureComponent({doUpdate: true})<Props> {
@@ -54,8 +54,8 @@ export default class extends FeatureComponent({doUpdate: true})<Props> {
                         : <div className="inner empty"/>}
                     <CommandBar
                         items={[
-                            commands.featureDiagram.feature.newMenu(feature.ID, this.props.onAddFeatureBelow, this.props.onAddFeatureAbove, onDismiss, true),
-                            commands.featureDiagram.feature.removeMenu([feature], this.props.onRemoveFeatures, this.props.onRemoveFeaturesBelow, onDismiss, true),
+                            commands.featureDiagram.feature.newMenu(feature.ID, this.props.onCreateFeatureBelow, this.props.onCreateFeatureAbove, onDismiss, true),
+                            commands.featureDiagram.feature.removeMenu([feature], this.props.onRemoveFeature, this.props.onRemoveFeatureSubtree, onDismiss, true),
                             commands.featureDiagram.feature.collapseMenu(
                                 [feature], this.props.onCollapseFeatures, this.props.onExpandFeatures,
                                 this.props.onCollapseFeaturesBelow, this.props.onExpandFeaturesBelow, onDismiss, true),

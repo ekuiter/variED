@@ -7,11 +7,11 @@ import {TextFieldDialog} from '../../helpers/Dialog';
 import {defaultSettings} from '../../store/settings';
 
 describe('FeatureRenameDialog', () => {
-    let featureRenameDialog: JSX.Element, onRenameFeature: jest.Mock;
+    let featureRenameDialog: JSX.Element, onSetFeatureName: jest.Mock;
 
     beforeEach(() => {
         const mock = jest.fn();
-        onRenameFeature = jest.fn();
+        onSetFeatureName = jest.fn();
         featureRenameDialog = (
             <FeatureRenameDialog
                 isOpen={true}
@@ -19,7 +19,7 @@ describe('FeatureRenameDialog', () => {
                 featureModel={FeatureModel.fromJSON(validFeatureModel)}
                 featureID="FeatureIDE"
                 settings={defaultSettings}
-                onRenameFeature={onRenameFeature}/>
+                onSetFeatureName={onSetFeatureName}/>
         );
     });
 
@@ -31,12 +31,12 @@ describe('FeatureRenameDialog', () => {
     it('triggers a rename if a new name is entered', () => {
         const wrapper = shallow(featureRenameDialog);
         wrapper.find(TextFieldDialog).simulate('submit', 'new feature name');
-        expect(onRenameFeature).lastCalledWith({featureID: 'FeatureIDE', name: 'new feature name'});
+        expect(onSetFeatureName).lastCalledWith({featureID: 'FeatureIDE', name: 'new feature name'});
     });
 
     it('does nothing if the new name is the same as the old name', () => {
         const wrapper = shallow(featureRenameDialog);
         wrapper.find(TextFieldDialog).simulate('submit', 'FeatureIDE');
-        expect(onRenameFeature).not.toBeCalled();
+        expect(onSetFeatureName).not.toBeCalled();
     });
 });
