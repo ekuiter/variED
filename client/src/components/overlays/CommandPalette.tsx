@@ -129,7 +129,7 @@ export default class extends React.Component<Props, State> {
             action: this.actionWithArguments(
                 [{
                     title: i18n.t('commandPalette.feature'),
-                    items: () => this.props.featureModel!.getVisiblefeatureIDs().map(featureID => ({
+                    items: () => this.props.featureModel!.getVisibleFeatureIDs().map(featureID => ({
                         key: featureID, text: this.props.featureModel!.getFeature(featureID)!.name
                     }))
                 }],

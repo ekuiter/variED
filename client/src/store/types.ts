@@ -1,7 +1,7 @@
 import FeatureModel from '../modeling/FeatureModel';
 import {defaultSettings, Settings} from './settings';
 import {Message, FeatureDiagramLayoutType, OverlayType, OverlayProps, ArtifactPath} from '../types';
-import {Feature} from '../modeling/types';
+import {Feature, SerializedFeatureModel} from '../modeling/types';
 
 export interface Collaborator {
     siteID: string
@@ -16,6 +16,7 @@ export type KernelContext = object;
 
 export interface FeatureDiagramCollaborativeSession extends CollaborativeSession {
     kernelContext: KernelContext,
+    serializedFeatureModel: SerializedFeatureModel,
     layout: FeatureDiagramLayoutType,
     isSelectMultipleFeatures: boolean,
     selectedFeatureIDs: string[],
@@ -43,10 +44,12 @@ export const initialState: State = {
 };
 
 export const initialFeatureDiagramCollaborativeSessionState =
-    (artifactPath: ArtifactPath, kernelContext: KernelContext): FeatureDiagramCollaborativeSession => ({
+    (artifactPath: ArtifactPath, kernelContext: KernelContext, serializedFeatureModel: SerializedFeatureModel):
+    FeatureDiagramCollaborativeSession => ({
         artifactPath,
         collaborators: [],
         kernelContext,
+        serializedFeatureModel,
         layout: FeatureDiagramLayoutType.verticalTree,
         isSelectMultipleFeatures: false,
         selectedFeatureIDs: [],
@@ -65,7 +68,7 @@ export type OnCollapseFeaturesFunction = (payload: {featureIDs: string[]}) => vo
 export type OnExpandFeaturesFunction = (payload: {featureIDs: string[]}) => void;
 export type OnCollapseFeaturesBelowFunction = (payload: {featureIDs: string[]}) => void;
 export type OnExpandFeaturesBelowFunction = (payload: {featureIDs: string[]}) => void;
-export type OnShowOverlayFunction = (payload: {overlay: OverlayType, overlayProps: OverlayProps, selectOnefeatureID?: string}) => void;
+export type OnShowOverlayFunction = (payload: {overlay: OverlayType, overlayProps: OverlayProps, selectOneFeatureID?: string}) => void;
 export type OnHideOverlayFunction = (payload: {overlay: OverlayType}) => void;
 export type OnFitToScreenFunction = () => void;
 export type OnSetSettingFunction = (payload: {path: string, value: any}) => void;

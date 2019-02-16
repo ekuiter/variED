@@ -126,7 +126,7 @@ export default class extends React.Component<AbstractTreeLayoutProps> {
                 this.props.onShowOverlay({overlay, overlayProps: {featureID}});
         } else {
             if (overlay !== 'select' && isFloatingFeatureOverlay(overlay))
-                this.props.onShowOverlay({overlay, overlayProps: {featureID},selectOnefeatureID: featureID});
+                this.props.onShowOverlay({overlay, overlayProps: {featureID}, selectOneFeatureID: featureID});
             else if (overlay === 'select') {
                 this.props.onSetSelectMultipleFeatures({isSelectMultipleFeatures: true});
                 this.props.onSelectFeature({featureID});

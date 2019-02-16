@@ -42,6 +42,13 @@ export enum GroupType {
     alternative = 'alternative'
 };
 
+export enum PropertyType {
+    abstract = 'abstract',
+    hidden = 'hidden',
+    name = 'name',
+    description = 'description'
+};
+
 export interface SerializedFeatureNode {
     [TYPE]: FeatureType,
     [NAME]: string,

@@ -128,7 +128,7 @@ describe('reducer', () => {
                 it('selects all visibile features', () => {
                     const state = reducer(serializedFeatureModelState(), actions.ui.featureDiagram.feature.selectAll());
                     expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).selectedFeatureIDs)
-                        .toEqual(FeatureModel.fromJSON(validFeatureModel).getVisiblefeatureIDs());
+                        .toEqual(FeatureModel.fromJSON(validFeatureModel).getVisibleFeatureIDs());
                 });
 
                 it('does not select features of collapsed children', () => {
@@ -174,7 +174,7 @@ describe('reducer', () => {
                 it('collapses all features with actual children', () => {
                     const state = reducer(serializedFeatureModelState(), actions.ui.featureDiagram.feature.collapseAll());
                     expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).collapsedFeatureIDs)
-                        .toEqual(FeatureModel.fromJSON(validFeatureModel).getfeatureIDsWithActualChildren());
+                        .toEqual(FeatureModel.fromJSON(validFeatureModel).getFeatureIDsWithActualChildren());
                 });
 
                 it('does not collapse leaf features', () => {

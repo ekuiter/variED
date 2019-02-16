@@ -113,21 +113,21 @@ describe('FeatureModel', () => {
     });
 
     it('retrieves visible feature names', () => {
-        const visiblefeatureIDs = createFeatureModel().getVisiblefeatureIDs();
-        expect(visiblefeatureIDs).toContain('Eclipse');
-        expect(visiblefeatureIDs).toContain('FeatureIDE');
-        expect(visiblefeatureIDs).not.toContain('FeatureHouse');
+        const visibleFeatureIDs = createFeatureModel().getVisibleFeatureIDs();
+        expect(visibleFeatureIDs).toContain('Eclipse');
+        expect(visibleFeatureIDs).toContain('FeatureIDE');
+        expect(visibleFeatureIDs).not.toContain('FeatureHouse');
     });
 
     it('retrieves actual feature names', () => {
-        const actualfeatureIDs = createFeatureModel().getActualfeatureIDs();
-        expect(actualfeatureIDs).toContain('Eclipse');
-        expect(actualfeatureIDs).toContain('FeatureIDE');
-        expect(actualfeatureIDs).toContain('FeatureHouse');
+        const actualFeatureIDs = createFeatureModel().getActualFeatureIDs();
+        expect(actualFeatureIDs).toContain('Eclipse');
+        expect(actualFeatureIDs).toContain('FeatureIDE');
+        expect(actualFeatureIDs).toContain('FeatureHouse');
     });
 
     it('retrieves feature names with actual children', () => {
-        const featureIDsWithActualChildren = createFeatureModel().getfeatureIDsWithActualChildren();
+        const featureIDsWithActualChildren = createFeatureModel().getFeatureIDsWithActualChildren();
         expect(featureIDsWithActualChildren).toContain('Eclipse');
         expect(featureIDsWithActualChildren).toContain('FeatureIDE');
         expect(featureIDsWithActualChildren).not.toContain('FeatureHouse');

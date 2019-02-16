@@ -138,8 +138,8 @@ describe('actions', () => {
     
         describe('feature', () => {
             it('adds a feature below', () => {
-                return expectMessageAction(actions.server.featureDiagram.feature.createBelow({belowfeatureID: 'FeatureIDE'}),
-                    {type: MessageType.FEATURE_DIAGRAM_FEATURE_ADD_BELOW, belowfeatureID: 'FeatureIDE'}, false, 'toMatchObject');
+                return expectMessageAction(actions.server.featureDiagram.feature.createBelow({parentID: 'FeatureIDE'}),
+                    {type: MessageType.FEATURE_DIAGRAM_FEATURE_ADD_BELOW, parentID: 'FeatureIDE'}, false, 'toMatchObject');
             });
     
             it('removes a feature', () => {
@@ -253,8 +253,8 @@ describe('actions', () => {
     
         describe('features', () => {
             it('adds a feature above', () =>
-                expectMessageAction(actions.server.featureDiagram.feature.createAbove({abovefeatureIDs: ['FeatureIDE', 'Eclipse']}),
-                    {type: MessageType.FEATURE_DIAGRAM_FEATURE_ADD_ABOVE, abovefeatureIDs: ['FeatureIDE', 'Eclipse']}, false, 'toMatchObject'));
+                expectMessageAction(actions.server.featureDiagram.feature.createAbove({IDs: ['FeatureIDE', 'Eclipse']}),
+                    {type: MessageType.FEATURE_DIAGRAM_FEATURE_ADD_ABOVE, IDs: ['FeatureIDE', 'Eclipse']}, false, 'toMatchObject'));
         });
     });
 });

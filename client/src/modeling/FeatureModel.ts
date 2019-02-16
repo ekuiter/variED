@@ -340,19 +340,19 @@ class FeatureModel {
             (settings.views.splitDirection === 'vertical' ? settings.views.splitAt : 1);
     }
 
-    getVisiblefeatureIDs(): string[] {
+    getVisibleFeatureIDs(): string[] {
         return this.visibleNodes.map(getID);
     }
 
-    getActualfeatureIDs(): string[] {
+    getActualFeatureIDs(): string[] {
         return this.actualNodes.map(getID);
     }
 
-    getfeatureIDsWithActualChildren(): string[] {
+    getFeatureIDsWithActualChildren(): string[] {
         return this.actualNodes.filter(hasActualChildren).map(getID);
     }
 
-    getfeatureIDsBelowWithActualChildren(featureID: string): string[] {
+    getFeatureIDsBelowWithActualChildren(featureID: string): string[] {
         const node = this.getNode(featureID);
         return node ? getNodesBelow(node).filter(hasActualChildren).map(getID) : [];
     }
@@ -365,7 +365,7 @@ class FeatureModel {
     }
 
     // returns features which, when collapsed, make the feature model fit to the given screen size
-    getFittingfeatureIDs(settings: Settings, featureDiagramLayout: FeatureDiagramLayoutType,
+    getFittingFeatureIDs(settings: Settings, featureDiagramLayout: FeatureDiagramLayoutType,
         width = FeatureModel.getWidth(settings), height = FeatureModel.getHeight(settings),
         scale = 0.5): string[] {
         const fontFamily = settings.featureDiagram.font.family,
@@ -405,7 +405,7 @@ class FeatureModel {
     }
 
     toString() {
-        return `FeatureModel ${JSON.stringify(this.getVisiblefeatureIDs())}`;
+        return `FeatureModel ${JSON.stringify(this.getVisibleFeatureIDs())}`;
     }
 }
 
