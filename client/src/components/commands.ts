@@ -127,7 +127,7 @@ const commands = {
                 iconOnly,
                 split: true,
                 onClick: () => {
-                    onCreateFeatureBelow({belowfeatureID: featureID}).then(onClick);
+                    onCreateFeatureBelow({featureParentID: featureID}).then(onClick);
                 },
                 subMenuProps: {
                     items: [
@@ -137,7 +137,7 @@ const commands = {
                             secondaryText: getShortcutText('featureDiagram.feature.new'),
                             iconProps: {iconName: 'Add'},
                             onClick: () => {
-                                onCreateFeatureBelow({belowfeatureID: featureID}).then(onClick);
+                                onCreateFeatureBelow({featureParentID: featureID}).then(onClick);
                             }
                         },
                         commands.featureDiagram.feature.newAbove([featureID], onCreateFeatureAbove, onClick)
@@ -160,7 +160,7 @@ const commands = {
                     iconProps: {iconName: 'Add'},
                     disabled,
                     onClick: () => {
-                        onCreateFeatureAbove({abovefeatureIDs: featureIDs}).then(onClick);
+                        onCreateFeatureAbove({featureIDs}).then(onClick);
                     }
                 });
             },

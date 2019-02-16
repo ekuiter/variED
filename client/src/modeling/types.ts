@@ -36,6 +36,12 @@ export enum ConstraintType {
     unknown = 'unknown'
 };
 
+export enum GroupType {
+    and = 'and',
+    or = 'or',
+    alternative = 'alternative'
+};
+
 export interface SerializedFeatureNode {
     [TYPE]: FeatureType,
     [NAME]: string,

@@ -67,7 +67,7 @@ export default connect(
         'featureDiagram.feature.new',
         (props: StateDerivedProps) => ifFeatureModel(props) && ifSingleFloatingFeature(props),
         async ({props}: {props: StateDerivedProps}) => {
-            await props.onCreateFeatureBelow!({belowfeatureID: props.overlayProps!.featureID!});
+            await props.onCreateFeatureBelow!({featureParentID: props.overlayProps!.featureID!});
             props.onHideOverlay!({overlay: props.overlay!});
         }),
 

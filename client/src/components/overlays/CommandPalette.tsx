@@ -243,12 +243,12 @@ export default class extends React.Component<Props, State> {
             text: i18n.t('commands.featureDiagram.feature.newMenu.newBelow'),
             shortcut: getShortcutText('featureDiagram.feature.new'),
             icon: 'Add'
-        }, featureID => this.props.onCreateFeatureBelow({belowfeatureID: featureID})),
+        }, featureID => this.props.onCreateFeatureBelow({featureParentID: featureID})),
         
         this.featureCommand({
             text: i18n.t('commands.featureDiagram.feature.newMenu.newAbove'),
             icon: 'Add'
-        }, featureID => this.props.onCreateFeatureAbove({abovefeatureIDs: [featureID]})),
+        }, featureID => this.props.onCreateFeatureAbove({featureIDs: [featureID]})),
         
         this.featureCommand({
             text: i18n.getFunction('commands.featureDiagram.feature.removeMenu.remove')({length: 1}),

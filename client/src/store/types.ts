@@ -12,7 +12,7 @@ export interface CollaborativeSession {
     collaborators: Collaborator[]
 };
 
-type KernelContext = object;
+export type KernelContext = object;
 
 export interface FeatureDiagramCollaborativeSession extends CollaborativeSession {
     kernelContext: KernelContext,
@@ -76,8 +76,8 @@ export type OnJoinRequestFunction = (payload: {artifactPath: ArtifactPath}) => P
 export type OnLeaveRequestFunction = (payload: {artifactPath: ArtifactPath}) => Promise<void>;
 export type OnUndoFunction = () => Promise<void>;
 export type OnRedoFunction = () => Promise<void>;
-export type OnCreateFeatureBelowFunction = (payload: {belowfeatureID: string}) => Promise<void>;
-export type OnCreateFeatureAboveFunction = (payload: {abovefeatureIDs: string[]}) => Promise<void>;
+export type OnCreateFeatureBelowFunction = (payload: {featureParentID: string}) => Promise<void>;
+export type OnCreateFeatureAboveFunction = (payload: {featureIDs: string[]}) => Promise<void>;
 export type OnRemoveFeatureFunction = (payload: {featureIDs: string[]}) => Promise<void>;
 export type OnRemoveFeatureSubtreeFunction = (payload: {featureIDs: string[]}) => Promise<void>;
 export type OnSetFeatureNameFunction = (payload: {featureID: string, name: string}) => Promise<void>;

@@ -70,10 +70,12 @@ export async function openWebSocket(_handleMessage?: HandleMessageFunction): Pro
     // return nothing to not expose WebSocket object
 }
 
-export async function sendMessage(message: Message, artifactPath?: ArtifactPath, delay = 0): Promise<void> {
+export async function sendMessage(message: Message, artifactPath?: ArtifactPath, delay = 0): Promise<Message> {
     const webSocket = await getWebSocket();
     if (artifactPath)
         message = {artifactPath, ...message};
     logger.logTagged({tag: 'send'}, () => message);
-    wait(delay).then(() => webSocket.send(JSON.stringify(message)));
+    await wait(delay);
+    webSocket.send(JSON.stringify(message));
+    return message;
 }
