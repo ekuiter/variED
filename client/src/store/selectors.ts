@@ -10,7 +10,7 @@ import FeatureModel from '../modeling/FeatureModel';
 import {State, CollaborativeSession, FeatureDiagramCollaborativeSession} from './types';
 import logger from '../helpers/logger';
 import {ArtifactPath, isArtifactPathEqual, artifactPathToString} from '../types';
-import {SerializedFeatureModel} from '../modeling/types';
+import {KernelFeatureModel} from '../modeling/types';
 
 export function isFeatureDiagramCollaborativeSession(collaborativeSession?: CollaborativeSession): collaborativeSession is FeatureDiagramCollaborativeSession {
     return typeof collaborativeSession !== 'undefined' &&
@@ -58,23 +58,23 @@ const currentFeatureModelCollaborativeSessionKeySelector = <T>(key: string) => (
 };
 
 export const getFeatureModel = createCachedSelector(
-    featureModelCollaborativeSessionKeySelector('serializedFeatureModel'),
+    featureModelCollaborativeSessionKeySelector('kernelFeatureModel'),
     featureModelCollaborativeSessionKeySelector('collapsedFeatureIDs'),
-    (serializedFeatureModel?: SerializedFeatureModel, collapsedFeatureIDs?: string[]): FeatureModel | undefined => {
+    (kernelFeatureModel?: KernelFeatureModel, collapsedFeatureIDs?: string[]): FeatureModel | undefined => {
         logger.infoTagged({tag: 'redux'}, () => 'updating feature model selector');
-        if (!serializedFeatureModel || !collapsedFeatureIDs)
+        if (!kernelFeatureModel || !collapsedFeatureIDs)
             return undefined;
-        return FeatureModel.fromJSON(serializedFeatureModel).collapse(collapsedFeatureIDs);
+        return FeatureModel.fromKernel(kernelFeatureModel).collapse(collapsedFeatureIDs);
     }
 )((_state: State, artifactPath: ArtifactPath) => artifactPathToString(artifactPath));
 
 export const getCurrentFeatureModel = createSelector(
-    currentFeatureModelCollaborativeSessionKeySelector('serializedFeatureModel'),
+    currentFeatureModelCollaborativeSessionKeySelector('kernelFeatureModel'),
     currentFeatureModelCollaborativeSessionKeySelector('collapsedFeatureIDs'),
-    (serializedFeatureModel?: SerializedFeatureModel, collapsedFeatureIDs?: string[]): FeatureModel | undefined => {
+    (kernelFeatureModel?: KernelFeatureModel, collapsedFeatureIDs?: string[]): FeatureModel | undefined => {
         logger.infoTagged({tag: 'redux'}, () => 'updating feature model selector');
-        if (!serializedFeatureModel || !collapsedFeatureIDs)
+        if (!kernelFeatureModel || !collapsedFeatureIDs)
             return undefined;
-        return FeatureModel.fromJSON(serializedFeatureModel).collapse(collapsedFeatureIDs);
+        return FeatureModel.fromKernel(kernelFeatureModel).collapse(collapsedFeatureIDs);
     }
 );

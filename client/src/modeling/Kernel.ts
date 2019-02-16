@@ -2,7 +2,7 @@ import './_kernel';
 import {ArtifactPath, artifactPathToString} from '../types';
 import logger from '../helpers/logger';
 import {KernelContext, State, KernelData} from '../store/types';
-import {GroupType, SerializedFeatureModel} from './types';
+import {GroupType, KernelFeatureModel} from './types';
 import {isFeatureDiagramCollaborativeSession, getCollaborativeSession} from '../store/selectors';
 
 declare var window: any;
@@ -53,11 +53,11 @@ class Kernel {
     }
 
     static initialize(artifactPath: ArtifactPath, siteID: string, context: string):
-    [KernelContext, SerializedFeatureModel] {
+    [KernelContext, KernelFeatureModel] {
         const kernel = new Kernel(artifactPath);
-        const serializedFeatureModel = kernel._initialize(siteID, context);
+        const kernelFeatureModel = kernel._initialize(siteID, context);
         kernel._finalize();
-        return [kernel.context!, serializedFeatureModel]; // TODO: FM format
+        return [kernel.context!, kernelFeatureModel];
     }
 
     _finalize(): KernelContext {
@@ -65,24 +65,23 @@ class Kernel {
         return this.context!;
     }
 
-    _initialize(siteID: string, context: string): SerializedFeatureModel {
+    _initialize(siteID: string, context: string): KernelFeatureModel {
         return this._callKernel(api => api.clientInitialize(siteID, context));
     }
 
-    generateOperation(POSequence: KernelData): [SerializedFeatureModel, string] {
-        const [serializedFeatureModel, operation]: [KernelData, string] =
+    generateOperation(POSequence: KernelData): [KernelFeatureModel, string] {
+        const [kernelFeatureModel, operation]: [KernelData, string] =
             this._callKernel(api => api.clientGenerateOperation(POSequence))
         // TODO: assuming into-array can be destructured like this
-        // TODO: which feature model format should be used here?
-        return [serializedFeatureModel, operation];
+        return [kernelFeatureModel, operation];
     }
 
     generateHeartbeat(): string {
         return this._callKernel(api => api.clientGenerateHeartbeat())
     }
 
-    receiveMessage(message: string): SerializedFeatureModel /* | ConflictResolutionDetails */ {
-        // TODO: returns serialized feature model (or conflict resolution information)
+    receiveMessage(message: string): KernelFeatureModel /* | ConflictResolutionDetails */ {
+        // TODO: might return conflict resolution information
         return this._callKernel(api => api.clientReceiveMessage(message));
     }
 
@@ -127,7 +126,7 @@ class Kernel {
     }
 
     operationCreateConstraint(formula: KernelData): KernelData {
-        // TODO: constraint formula format
+        // TODO: constraint formula format (js->clj?)
         return this._callKernel(api => api.operationCreateConstraint(formula));
     }
 

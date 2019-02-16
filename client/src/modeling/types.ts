@@ -1,39 +1,29 @@
 import {HierarchyPointNode} from 'd3-hierarchy';
 import {Point} from '../types';
 
-// tags and attributes used in serialized feature models
-export const STRUCT = 'struct';
+// keys and attributes used in kernel feature models
+export const FEATURES = 'features';
 export const CONSTRAINTS = 'constraints';
-export const PROPERTIES = 'properties';
-export const CALCULATIONS = 'calculations';
-export const COMMENTS = 'comments';
-export const FEATURE_ORDER = 'featureOrder';
-export const TYPE = 'type';
+export const CHILDREN_CACHE = 'children-cache';
+export const NIL = 'nil';
+export const ID_KEY = 'ID';
 export const NAME = 'name';
-export const ID = 'ID';
 export const DESCRIPTION = 'description';
-export const OPTIONAL = 'optional';
-export const ABSTRACT = 'abstract';
-export const HIDDEN = 'hidden';
-export const VAR = 'var';
-
-export enum FeatureType {
-    feature = 'feature',
-    or = 'or',
-    alt = 'alt',
-    and = 'and',
-    unknown = 'unknown'
-};
+export const OPTIONAL = 'optional?';
+export const ABSTRACT = 'abstract?';
+export const HIDDEN = 'hidden?';
+export const PARENT_ID = 'parent-ID';
+export const GROUP_TYPE = 'group-type';
+export const GRAVEYARDED = 'graveyarded?';
+export const FORMULA = 'formula';
 
 export enum ConstraintType {
-    var = 'var',
+    unknown = 'unknown',
     not = 'not',
     disj = 'disj',
     eq = 'eq',
     imp = 'imp',
-    conj = 'conj',
-    atmost1 = 'atmost1',
-    unknown = 'unknown'
+    conj = 'conj'
 };
 
 export enum GroupType {
@@ -43,41 +33,37 @@ export enum GroupType {
 };
 
 export enum PropertyType {
-    abstract = 'abstract',
-    hidden = 'hidden',
+    abstract = 'abstract?',
+    hidden = 'hidden?',
     name = 'name',
     description = 'description'
 };
 
-export interface SerializedFeatureNode {
-    [TYPE]: FeatureType,
+export interface KernelFeature {
+    [ID_KEY]?: string, // added dynamically by FeatureModel class
     [NAME]: string,
-    [ID]: string,
-    [HIDDEN]?: boolean,
-    [OPTIONAL]?: boolean,
-    [ABSTRACT]?: boolean,
-    [DESCRIPTION]?: string,
-    children?: SerializedFeatureNode[]
+    [DESCRIPTION]: string | null,
+    [HIDDEN]: boolean,
+    [OPTIONAL]: boolean,
+    [ABSTRACT]: boolean,
+    [PARENT_ID]?: string | null,
+    [GROUP_TYPE]: GroupType
 };
 
-export interface SerializedConstraintNode {
-    [TYPE]: ConstraintType,
-    [VAR]?: string,
-    children?: SerializedConstraintNode[]
+export type KernelConstraintFormulaAtom = ConstraintType | string;
+export interface KernelConstraintNestedFormula extends Array<KernelConstraintNestedFormula | KernelConstraintFormulaAtom> {}
+export type KernelConstraintFormula = KernelConstraintFormulaAtom | KernelConstraintNestedFormula;
+
+export interface KernelConstraint {
+    [ID_KEY]?: string, // added dynamically, see KernelFeature
+    [GRAVEYARDED]: boolean,
+    [FORMULA]: KernelConstraintFormula
 };
 
-export interface SerializedConstraint {
-    [TYPE]: 'rule',
-    children: SerializedConstraintNode[]
-};
-
-export interface SerializedFeatureModel {
-    [STRUCT]: SerializedFeatureNode[],
-    [CONSTRAINTS]: SerializedConstraint[],
-    // ignored for now
-    [CALCULATIONS]: never,
-    [COMMENTS]: never,
-    [FEATURE_ORDER]: never
+export interface KernelFeatureModel {
+    [FEATURES]: {[ID: string]: KernelFeature},
+    [CONSTRAINTS]: {[ID: string]: KernelConstraint},
+    [CHILDREN_CACHE]: {[ID: string]: string[]}
 };
 
 export type FeaturePropertyKey = string | ((node: FeatureNode) => string);
@@ -86,7 +72,6 @@ export interface Feature {
     node: FeatureNode,
     ID: string,
     name: string,
-    type: FeatureType,
     description?: string,
     isRoot: boolean,
     isAbstract: boolean,
@@ -103,7 +88,7 @@ export interface Feature {
     getNumberOfFeaturesBelow: () => number
 };
 
-type Datum = SerializedFeatureNode; // accessible as node.data
+type Datum = KernelFeature; // accessible as node.data
 
 export type FeatureNode = HierarchyPointNode<Datum> & {
     children?: FeatureNode[];

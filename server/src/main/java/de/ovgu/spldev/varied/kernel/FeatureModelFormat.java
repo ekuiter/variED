@@ -34,8 +34,8 @@ public class FeatureModelFormat {
                     feature.getStructure().getParent() == null ? null : feature.getStructure().getParent().getFeature().getName());
             featureMap.put(Kernel.keyword("optional?"), feature.getStructure().isMandatory());
             featureMap.put(Kernel.keyword("name"), de.ovgu.spldev.varied.util.FeatureUtils.getFeatureName(feature));
-            featureMap.put(Kernel.keyword("hidden"), feature.getStructure().isHidden());
-            featureMap.put(Kernel.keyword("abstract"), feature.getStructure().isAbstract());
+            featureMap.put(Kernel.keyword("hidden?"), feature.getStructure().isHidden());
+            featureMap.put(Kernel.keyword("abstract?"), feature.getStructure().isAbstract());
             final String description = feature.getProperty().getDescription();
             if ((description != null) && !description.trim().isEmpty()) {
                 featureMap.put(Kernel.keyword("description"), description.replace("\r", ""));

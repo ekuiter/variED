@@ -139,7 +139,7 @@
   "Creates a feature below another feature.
   The parent feature must be valid."
   [_FM parent-ID]
-  (log "CO (create-feature-below" parent-ID ")")
+  (log "CO create-feature-below" parent-ID)
   (let [PO-create-feature (PO/create-feature)
         ID (PO/get-ID PO-create-feature)]
     (make-PO-sequence
@@ -153,7 +153,7 @@
   This is guaranteed automatically by the fact that competing concurrent updates
   on any parent cause conflicts (because both operations set the parent)."
   [FM & IDs]
-  (log "CO (create-feature-above" (string/join " " IDs) ")")
+  (log "CO create-feature-above" (string/join " " IDs))
   (let [parent-ID (FM/get-feature-parent-ID FM (first IDs))
         PO-create-feature (PO/create-feature)
         ID (PO/get-ID PO-create-feature)]
@@ -171,7 +171,7 @@
   "Removes an entire feature subtree rooted at a feature.
   The feature must be valid."
   [FM ID]
-  (log "CO (remove-feature-subtree" ID ")")
+  (log "CO remove-feature-subtree" ID)
   (make-PO-sequence
     (PO/update-feature
       ID :parent-ID
@@ -183,7 +183,7 @@
   Both must be valid features.
   The targeted feature subtree must not lie below the moved feature subtree."
   [FM ID parent-ID]
-  (log "CO (move-feature-subtree" ID parent-ID ")")
+  (log "CO move-feature-subtree" ID parent-ID)
   (make-PO-sequence
     (PO/update-feature
       ID :parent-ID
@@ -222,7 +222,7 @@
   it does not impact undo at all). Where the assert operation is placed is irrelevant, so order
   is also irrelevant for undo/redo."
   [FM ID]
-  (log "CO (remove-feature" ID ")")
+  (log "CO remove-feature" ID)
   (let [parent-ID (FM/get-feature-parent-ID FM ID)
         children-IDs (FM/get-feature-children-IDs FM ID)]
     (apply make-PO-sequence
@@ -234,14 +234,14 @@
   "Sets the optional attribute of a feature.
   The feature must be valid."
   [FM ID optional?]
-  (log "CO (set-feature-optional?" ID optional? ")")
+  (log "CO set-feature-optional?" ID optional?)
   (make-PO-sequence (PO/update-feature ID :optional? (FM/get-feature-optional? FM ID) optional?)))
 
 (defn set-feature-group-type
   "Sets the group type attribute of a feature.
   The feature must be valid."
   [FM ID group-type]
-  (log "CO (set-feature-group-type" ID group-type ")")
+  (log "CO set-feature-group-type" ID group-type)
   (make-PO-sequence (PO/update-feature ID :group-type (FM/get-feature-group-type FM ID) group-type)))
 
 (defn set-feature-property
@@ -249,13 +249,13 @@
   These may be arbitrary properties such as name, hidden, abstract or description.
   The feature must be valid."
   [FM ID property value]
-  (log "CO (set-feature-property" ID property value ")")
+  (log "CO set-feature-property" ID property value)
   (make-PO-sequence (PO/update-feature ID property (FM/get-feature-property FM ID property) value)))
 
 (defn create-constraint
   "Creates a constraint and initializes it with a given propositional formula."
   [_FM formula]
-  (log "CO (create-constraint" formula ")")
+  (log "CO create-constraint" formula)
   (let [PO-create-constraint (PO/create-constraint)
         ID (PO/get-ID PO-create-constraint)]
     (make-PO-sequence
@@ -266,11 +266,11 @@
 (defn set-constraint
   "Sets the propositional formula of a constraint."
   [FM ID formula]
-  (log "CO (set-constraint" ID formula ")")
+  (log "CO set-constraint" ID formula)
   (make-PO-sequence (PO/update-constraint ID :formula (FM/get-constraint-formula FM ID) formula)))
 
 (defn remove-constraint
   "Removes a constraint."
   [FM ID]
-  (log "CO (remove-constraint" ID ")")
+  (log "CO remove-constraint" ID)
   (make-PO-sequence (PO/update-constraint ID :graveyarded? (FM/get-constraint-graveyarded? FM ID) true)))

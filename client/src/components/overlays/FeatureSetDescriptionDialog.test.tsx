@@ -16,7 +16,7 @@ describe('FeatureSetDescriptionDialog', () => {
             <FeatureSetDescriptionDialog
                 isOpen={true}
                 onDismiss={mock}
-                featureModel={FeatureModel.fromJSON(validFeatureModel)}
+                featureModel={FeatureModel.fromKernel(validFeatureModel)}
                 featureID="FeatureIDE"
                 settings={defaultSettings}
                 onSetFeatureDescription={onSetFeatureDescription}/>

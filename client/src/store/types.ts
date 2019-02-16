@@ -1,7 +1,7 @@
 import FeatureModel from '../modeling/FeatureModel';
 import {defaultSettings, Settings} from './settings';
 import {Message, FeatureDiagramLayoutType, OverlayType, OverlayProps, ArtifactPath} from '../types';
-import {Feature, SerializedFeatureModel} from '../modeling/types';
+import {Feature, KernelFeatureModel} from '../modeling/types';
 
 export interface Collaborator {
     siteID: string
@@ -17,7 +17,7 @@ export type KernelData = any;
 
 export interface FeatureDiagramCollaborativeSession extends CollaborativeSession {
     kernelContext: KernelContext,
-    serializedFeatureModel: SerializedFeatureModel,
+    kernelFeatureModel: KernelFeatureModel,
     layout: FeatureDiagramLayoutType,
     isSelectMultipleFeatures: boolean,
     selectedFeatureIDs: string[],
@@ -45,12 +45,12 @@ export const initialState: State = {
 };
 
 export const initialFeatureDiagramCollaborativeSessionState =
-    (artifactPath: ArtifactPath, kernelContext: KernelContext, serializedFeatureModel: SerializedFeatureModel):
+    (artifactPath: ArtifactPath, kernelContext: KernelContext, kernelFeatureModel: KernelFeatureModel):
     FeatureDiagramCollaborativeSession => ({
         artifactPath,
         collaborators: [],
         kernelContext,
-        serializedFeatureModel,
+        kernelFeatureModel,
         layout: FeatureDiagramLayoutType.verticalTree,
         isSelectMultipleFeatures: false,
         selectedFeatureIDs: [],

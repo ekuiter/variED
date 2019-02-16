@@ -13,10 +13,10 @@
             [kernel.core.movic :as MOVIC]
             [kernel.core.garbage-collector :as GC]
             [kernel.core.compound-operation :as CO]
+            [kernel.core.feature-model :as FM]
             [kernel.core.message :as message]
             [kernel.shell.context :refer [*context*]]
-            [kernel.helpers :refer [log]]
-            [kernel.core.feature-model :as FM]))
+            [kernel.helpers :refer [log]]))
 
 (defn initialize-context-mesh-topology
   "Initializes global context for a new site in a mesh topology.

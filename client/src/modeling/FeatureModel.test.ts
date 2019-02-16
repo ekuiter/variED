@@ -1,11 +1,11 @@
 import FeatureModel, {getID} from './FeatureModel';
-import {validFeatureModel, invalidFeatureModel2} from '../fixtures';
+import {validFeatureModel} from '../fixtures';
 import {hierarchy as d3Hierarchy} from 'd3-hierarchy';
 
 describe('feature', () => {
     let featureModel: FeatureModel;
     beforeAll(() => {
-        featureModel = FeatureModel.fromJSON(validFeatureModel).collapse(['FeatureIDE']);
+        featureModel = FeatureModel.fromKernel(validFeatureModel).collapse(['FeatureIDE']);
     });
 
     it('is cached in a node in the hierarchy', () => {
@@ -50,24 +50,16 @@ describe('feature', () => {
 });
 
 describe('FeatureModel', () => {
-    const createFeatureModel = (serializedFeatureModel = validFeatureModel, collapsedFeatureIDs = ['FeatureIDE']) =>
-        FeatureModel.fromJSON(serializedFeatureModel).collapse(collapsedFeatureIDs);
+    const createFeatureModel = (kernelFeatureModel = validFeatureModel, collapsedFeatureIDs = ['FeatureIDE']) =>
+        FeatureModel.fromKernel(kernelFeatureModel).collapse(collapsedFeatureIDs);
 
     it('creates a representation of a feature model', () => {
         const collapsedFeatureIDs: string[] = [],
             featureModel = createFeatureModel(validFeatureModel, collapsedFeatureIDs);
-        expect(featureModel.serializedFeatureModel).toBe(validFeatureModel);
+        expect(featureModel.kernelFeatureModel).toBe(validFeatureModel);
         expect(featureModel.collapsedFeatureIDs).toBe(collapsedFeatureIDs);
     });
-
-    it('retrieves a feature model\'s structure', () => {
-        expect(createFeatureModel().structure.ID).toBe('Eclipse');
-    });
-
-    it('errors on invalid structure', () => {
-        expect(() => createFeatureModel(invalidFeatureModel2).structure).toThrow('feature model has no structure');
-    });
-
+    
     it('prepares a cached hierarchy with visible and actual nodes', () => {
         const featureModel = createFeatureModel();
         expect(featureModel._hierarchy).toBeUndefined();

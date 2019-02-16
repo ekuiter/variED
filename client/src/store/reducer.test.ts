@@ -2,7 +2,7 @@ import reducer from './reducer';
 import actions from './actions';
 import {FeatureDiagramLayoutType, OverlayType, MessageType} from '../types';
 import {defaultSettings} from './settings';
-import {validFeatureModel, validFeatureModelWithRemovedFeatures} from '../fixtures';
+import {validFeatureModel} from '../fixtures';
 import FeatureModel from '../modeling/FeatureModel';
 import {initialState, FeatureDiagramCollaborativeSession, State} from './types';
 import logger from '../helpers/logger';
@@ -11,7 +11,7 @@ jest.mock('../helpers/logger');
 
 describe('reducer', () => {
     const artifactPath = {project: 'project', artifact: 'artifact'},
-        serializedFeatureModelState = (state = reducer(), serializedFeatureModel = validFeatureModel) => ({
+        kernelFeatureModelState = (state = reducer(), kernelFeatureModel = validFeatureModel) => ({
                 ...state,
                 collaborativeSessions: <FeatureDiagramCollaborativeSession[]>[{
                     artifactPath,
@@ -20,7 +20,7 @@ describe('reducer', () => {
                     isSelectMultipleFeatures: false,
                     collapsedFeatureIDs: [],
                     selectedFeatureIDs: [],
-                    serializedFeatureModel,
+                    kernelFeatureModel: kernelFeatureModel,
                     kernelContext: {} // assume no kernel in the unit tests
                 }],
                 currentArtifactPath: artifactPath
@@ -46,7 +46,7 @@ describe('reducer', () => {
 
     describe('user interface', () => {
         it('sets the feature diagram layout', () => {
-            let state = reducer(serializedFeatureModelState(), actions.ui.featureDiagram.setLayout({layout: FeatureDiagramLayoutType.horizontalTree}));
+            let state = reducer(kernelFeatureModelState(), actions.ui.featureDiagram.setLayout({layout: FeatureDiagramLayoutType.horizontalTree}));
             expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).layout).toEqual(FeatureDiagramLayoutType.horizontalTree);
             state = reducer(state, actions.ui.featureDiagram.setLayout({layout: FeatureDiagramLayoutType.verticalTree}));
             expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).layout).toEqual(FeatureDiagramLayoutType.verticalTree);
@@ -54,26 +54,26 @@ describe('reducer', () => {
 
         describe('feature', () => {
             it('is selected', () => {
-                const state = reducer(serializedFeatureModelState(), actions.ui.featureDiagram.feature.select({featureID: 'FeatureIDE'}));
+                const state = reducer(kernelFeatureModelState(), actions.ui.featureDiagram.feature.select({featureID: 'FeatureIDE'}));
                 expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).selectedFeatureIDs).toContain('FeatureIDE');
             });
 
             it('is not selected multiple times', () => {
-                let state = reducer(serializedFeatureModelState(), actions.ui.featureDiagram.feature.select({featureID: 'FeatureIDE'}));
+                let state = reducer(kernelFeatureModelState(), actions.ui.featureDiagram.feature.select({featureID: 'FeatureIDE'}));
                 expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).selectedFeatureIDs.filter((name: string) => name === 'FeatureIDE')).toHaveLength(1);
                 state = reducer(state, actions.ui.featureDiagram.feature.select({featureID: 'FeatureIDE'}));
                 expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).selectedFeatureIDs.filter((name: string) => name === 'FeatureIDE')).toHaveLength(1);
             });
 
             it('is deselected', () => {
-                let state = reducer(serializedFeatureModelState(), actions.ui.featureDiagram.feature.select({featureID: 'FeatureIDE'}));
+                let state = reducer(kernelFeatureModelState(), actions.ui.featureDiagram.feature.select({featureID: 'FeatureIDE'}));
                 expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).selectedFeatureIDs).toContain('FeatureIDE');
                 state = reducer(state, actions.ui.featureDiagram.feature.deselect({featureID: 'FeatureIDE'}));
                 expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).selectedFeatureIDs).not.toContain('FeatureIDE');
             });
 
             it('disables multiple feature selection when the last feature is deselected', () => {
-                let state = reducer(serializedFeatureModelState(), actions.ui.featureDiagram.feature.setSelectMultiple({isSelectMultipleFeatures: true}));
+                let state = reducer(kernelFeatureModelState(), actions.ui.featureDiagram.feature.setSelectMultiple({isSelectMultipleFeatures: true}));
                 state = reducer(state, actions.ui.featureDiagram.feature.select({featureID: 'FeatureIDE'}));
                 state = reducer(state, actions.ui.featureDiagram.feature.select({featureID: 'Eclipse'}));
                 expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).isSelectMultipleFeatures).toBe(true);
@@ -84,19 +84,19 @@ describe('reducer', () => {
             });
 
             it('is collapsed', () => {
-                const state = reducer(serializedFeatureModelState(), actions.ui.featureDiagram.feature.collapse({featureIDs: ['FeatureIDE']}));
+                const state = reducer(kernelFeatureModelState(), actions.ui.featureDiagram.feature.collapse({featureIDs: ['FeatureIDE']}));
                 expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).collapsedFeatureIDs).toContain('FeatureIDE');
             });
 
             it('is not collapsed multiple times', () => {
-                let state = reducer(serializedFeatureModelState(), actions.ui.featureDiagram.feature.collapse({featureIDs: ['FeatureIDE']}));
+                let state = reducer(kernelFeatureModelState(), actions.ui.featureDiagram.feature.collapse({featureIDs: ['FeatureIDE']}));
                 expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).collapsedFeatureIDs.filter((name: string) => name === 'FeatureIDE')).toHaveLength(1);
                 state = reducer(state, actions.ui.featureDiagram.feature.collapse({featureIDs: ['FeatureIDE']}));
                 expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).collapsedFeatureIDs.filter((name: string) => name === 'FeatureIDE')).toHaveLength(1);
             });
 
             it('is expanded', () => {
-                let state = reducer(serializedFeatureModelState(), actions.ui.featureDiagram.feature.collapse({featureIDs: ['FeatureIDE']}));
+                let state = reducer(kernelFeatureModelState(), actions.ui.featureDiagram.feature.collapse({featureIDs: ['FeatureIDE']}));
                 expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).collapsedFeatureIDs).toContain('FeatureIDE');
                 state = reducer(state, actions.ui.featureDiagram.feature.expand({featureIDs: ['FeatureIDE']}));
                 expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).collapsedFeatureIDs).not.toContain('FeatureIDE');
@@ -106,41 +106,41 @@ describe('reducer', () => {
         describe('multiple features', () => {
             describe('multiple feature selection', () => {
                 it('sets whether multiple features can be selected', () => {
-                    const state = reducer(serializedFeatureModelState(), actions.ui.featureDiagram.feature.setSelectMultiple({isSelectMultipleFeatures: true}));
+                    const state = reducer(kernelFeatureModelState(), actions.ui.featureDiagram.feature.setSelectMultiple({isSelectMultipleFeatures: true}));
                     expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).isSelectMultipleFeatures).toBe(true);
                 });
 
                 it('resets selected features when multiple feature selection is enabled', () => {
-                    let state = reducer(serializedFeatureModelState(), actions.ui.featureDiagram.feature.select({featureID: 'FeatureIDE'}));
+                    let state = reducer(kernelFeatureModelState(), actions.ui.featureDiagram.feature.select({featureID: 'FeatureIDE'}));
                     expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).selectedFeatureIDs).toContain('FeatureIDE');
-                    state = reducer(serializedFeatureModelState(), actions.ui.featureDiagram.feature.setSelectMultiple({isSelectMultipleFeatures: true}));
+                    state = reducer(kernelFeatureModelState(), actions.ui.featureDiagram.feature.setSelectMultiple({isSelectMultipleFeatures: true}));
                     expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).selectedFeatureIDs).not.toContain('FeatureIDE');
                 });
 
                 it('resets selected features when multiple feature selection is disabled', () => {
-                    let state = reducer(serializedFeatureModelState(), actions.ui.featureDiagram.feature.select({featureID: 'FeatureIDE'}));
+                    let state = reducer(kernelFeatureModelState(), actions.ui.featureDiagram.feature.select({featureID: 'FeatureIDE'}));
                     expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).selectedFeatureIDs).toContain('FeatureIDE');
-                    state = reducer(serializedFeatureModelState(), actions.ui.featureDiagram.feature.setSelectMultiple({isSelectMultipleFeatures: false}));
+                    state = reducer(kernelFeatureModelState(), actions.ui.featureDiagram.feature.setSelectMultiple({isSelectMultipleFeatures: false}));
                     expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).selectedFeatureIDs).not.toContain('FeatureIDE');
                 });
             });
 
             describe('select all features', () => {
                 it('selects all visibile features', () => {
-                    const state = reducer(serializedFeatureModelState(), actions.ui.featureDiagram.feature.selectAll());
+                    const state = reducer(kernelFeatureModelState(), actions.ui.featureDiagram.feature.selectAll());
                     expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).selectedFeatureIDs)
-                        .toEqual(FeatureModel.fromJSON(validFeatureModel).getVisibleFeatureIDs());
+                        .toEqual(FeatureModel.fromKernel(validFeatureModel).getVisibleFeatureIDs());
                 });
 
                 it('does not select features of collapsed children', () => {
-                    let state = reducer(serializedFeatureModelState(), actions.ui.featureDiagram.feature.collapse({featureIDs: ['FeatureIDE']}));
+                    let state = reducer(kernelFeatureModelState(), actions.ui.featureDiagram.feature.collapse({featureIDs: ['FeatureIDE']}));
                     state = reducer(state, actions.ui.featureDiagram.feature.selectAll());
                     expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).selectedFeatureIDs).toContain('FeatureIDE');
                     expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).selectedFeatureIDs).not.toContain('FeatureHouse');
                 });
 
                 it('enables multiple feature selection', () => {
-                    const state = reducer(serializedFeatureModelState(), actions.ui.featureDiagram.feature.selectAll());
+                    const state = reducer(kernelFeatureModelState(), actions.ui.featureDiagram.feature.selectAll());
                     expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).isSelectMultipleFeatures).toBe(true);
                 });
 
@@ -152,14 +152,14 @@ describe('reducer', () => {
 
             describe('deselect all features', () => {
                 it('deselects all features', () => {
-                    let state = reducer(serializedFeatureModelState(), actions.ui.featureDiagram.feature.select({featureID: 'FeatureIDE'}));
+                    let state = reducer(kernelFeatureModelState(), actions.ui.featureDiagram.feature.select({featureID: 'FeatureIDE'}));
                     expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).selectedFeatureIDs).toHaveLength(1);
                     state = reducer(state, actions.ui.featureDiagram.feature.deselectAll());
                     expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).selectedFeatureIDs).toHaveLength(0);
                 });
 
                 it('disables multiple feature selection', () => {
-                    let state = reducer(serializedFeatureModelState(), actions.ui.featureDiagram.feature.setSelectMultiple({isSelectMultipleFeatures: true}));
+                    let state = reducer(kernelFeatureModelState(), actions.ui.featureDiagram.feature.setSelectMultiple({isSelectMultipleFeatures: true}));
                     expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).isSelectMultipleFeatures).toBe(true);
                     state = reducer(state, actions.ui.featureDiagram.feature.deselectAll());
                     expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).isSelectMultipleFeatures).toBe(false);
@@ -173,13 +173,13 @@ describe('reducer', () => {
 
             describe('collapse all features', () => {
                 it('collapses all features with actual children', () => {
-                    const state = reducer(serializedFeatureModelState(), actions.ui.featureDiagram.feature.collapseAll());
+                    const state = reducer(kernelFeatureModelState(), actions.ui.featureDiagram.feature.collapseAll());
                     expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).collapsedFeatureIDs)
-                        .toEqual(FeatureModel.fromJSON(validFeatureModel).getFeatureIDsWithActualChildren());
+                        .toEqual(FeatureModel.fromKernel(validFeatureModel).getFeatureIDsWithActualChildren());
                 });
 
                 it('does not collapse leaf features', () => {
-                    let state = reducer(serializedFeatureModelState(), actions.ui.featureDiagram.feature.collapseAll());
+                    let state = reducer(kernelFeatureModelState(), actions.ui.featureDiagram.feature.collapseAll());
                     expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).selectedFeatureIDs).not.toContain('FeatureHouse');
                 });
 
@@ -191,7 +191,7 @@ describe('reducer', () => {
 
             describe('expand all features', () => {
                 it('expands all features', () => {
-                    let state = reducer(serializedFeatureModelState(), actions.ui.featureDiagram.feature.collapse({featureIDs: ['FeatureIDE']}));
+                    let state = reducer(kernelFeatureModelState(), actions.ui.featureDiagram.feature.collapse({featureIDs: ['FeatureIDE']}));
                     expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).collapsedFeatureIDs).toHaveLength(1);
                     state = reducer(state, actions.ui.featureDiagram.feature.expandAll());
                     expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).collapsedFeatureIDs).toHaveLength(0);
@@ -219,7 +219,7 @@ describe('reducer', () => {
                 });
 
                 it('selects a feature if specified', () => {
-                    let state: State = serializedFeatureModelState();
+                    let state: State = kernelFeatureModelState();
                     expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).selectedFeatureIDs).not.toContain('FeatureIDE');
                     state = reducer(state, actions.ui.overlay.show({overlay: OverlayType.featureCallout, overlayProps: {featureID: 'FeatureIDE'}, selectOneFeature: 'FeatureIDE'}));
                     expect(state.overlay).toBe(OverlayType.featureCallout);
@@ -249,7 +249,7 @@ describe('reducer', () => {
 
                 it('deselects a feature when switching from a feature callout or ' +
                     'contextual menu in single feature selection mode', () => {
-                    let state = reducer(serializedFeatureModelState(), actions.ui.featureDiagram.feature.select({featureID: 'FeatureIDE'}));
+                    let state = reducer(kernelFeatureModelState(), actions.ui.featureDiagram.feature.select({featureID: 'FeatureIDE'}));
                     state = reducer(state, actions.ui.overlay.show({overlay: OverlayType.featureCallout, overlayProps: {featureID: 'FeatureIDE'}}));
                     expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).selectedFeatureIDs).toContain('FeatureIDE');
                     state = reducer(state, actions.ui.overlay.hide({overlay: OverlayType.featureCallout}));
@@ -257,7 +257,7 @@ describe('reducer', () => {
                 });
     
                 it('does not deselect a feature in multiple feature selection mode', () => {
-                    let state = reducer(serializedFeatureModelState(), actions.ui.featureDiagram.feature.setSelectMultiple({isSelectMultipleFeatures: true}));
+                    let state = reducer(kernelFeatureModelState(), actions.ui.featureDiagram.feature.setSelectMultiple({isSelectMultipleFeatures: true}));
                     state = reducer(state, actions.ui.featureDiagram.feature.select({featureID: 'FeatureIDE'}));
                     state = reducer(state, actions.ui.overlay.show({overlay: OverlayType.featureCallout, overlayProps: {featureID: 'FeatureIDE'}}));
                     expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).selectedFeatureIDs).toContain('FeatureIDE');
@@ -281,31 +281,22 @@ describe('reducer', () => {
         });
     
         it('lets users join', () => {
-            const state = reducer(serializedFeatureModelState(), actions.server.receive({type: MessageType.JOIN_REQUEST, artifactPath, user: {name: 'some user'}}));
+            const state = reducer(kernelFeatureModelState(), actions.server.receive({type: MessageType.JOIN_REQUEST, artifactPath, user: {name: 'some user'}}));
             expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).collaborators).toContainEqual({name: 'some user'});
         });
     
         it('does not let users join multiple times', () => {
-            let state = reducer(serializedFeatureModelState(), actions.server.receive({type: MessageType.JOIN_REQUEST, artifactPath, user: {name: 'some user'}}));
+            let state = reducer(kernelFeatureModelState(), actions.server.receive({type: MessageType.JOIN_REQUEST, artifactPath, user: {name: 'some user'}}));
             expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).collaborators).toHaveLength(1);
             state = reducer(state, actions.server.receive({type: MessageType.JOIN_REQUEST, artifactPath, user: {name: 'some user'}}));
             expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).collaborators).toHaveLength(1);
         });
     
         it('lets users leave', () => {
-            let state = reducer(serializedFeatureModelState(), actions.server.receive({type: MessageType.JOIN_REQUEST, artifactPath, user: {name: 'some user'}}));
+            let state = reducer(kernelFeatureModelState(), actions.server.receive({type: MessageType.JOIN_REQUEST, artifactPath, user: {name: 'some user'}}));
             expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).collaborators).toContainEqual({name: 'some user'});
-            state = reducer(serializedFeatureModelState(), actions.server.receive({type: MessageType.LEAVE_REQUEST, artifactPath, user: {name: 'some user'}}));
+            state = reducer(kernelFeatureModelState(), actions.server.receive({type: MessageType.LEAVE_REQUEST, artifactPath, user: {name: 'some user'}}));
             expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).collaborators).not.toContainEqual({name: 'some user'});
-        });
-
-        describe('feature model', () => {
-            it('removes obsolete features from the list of collapsed features', () => {
-                let state = reducer(serializedFeatureModelState(), actions.ui.featureDiagram.feature.collapseAll());
-                expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).collapsedFeatureIDs).toContain('FeatureIDE');
-                state = serializedFeatureModelState(state, validFeatureModelWithRemovedFeatures);
-                expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).collapsedFeatureIDs).not.toContain('FeatureIDE');
-            });
         });
     });
 });

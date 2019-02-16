@@ -59,7 +59,6 @@ public abstract class CollaborativeSession {
     }
 
     void onMessage(Collaborator collaborator, Message message) throws Message.InvalidMessageException {
-        Logger.info("decoding message {}", message);
         if (!_onMessage(collaborator, (Message.IDecodable) message))
             throw new Message.InvalidMessageException("message can not be processed");
     }

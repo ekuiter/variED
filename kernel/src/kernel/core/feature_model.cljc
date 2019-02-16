@@ -63,16 +63,10 @@
   we could just transfer the uninitialized feature model and build the children
   cache at the client (to save bandwidth)."
   [FM]
-  (-> FM
-      (assoc :children-cache
-             (reduce-kv (fn [acc ID {parent-ID :parent-ID}]
-                          (update acc parent-ID #(if % (conj % ID) #{ID})))
-                        {} (FM :features)))
-      ; only for the client, so that the tree can be built efficiently together with the :children-cache
-      (assoc :root-cache
-             (some (fn [[ID {parent-ID :parent-ID}]]
-                     (when (nil? parent-ID) ID))
-                   (FM :features)))))
+  (assoc FM :children-cache
+    (reduce-kv (fn [acc ID {parent-ID :parent-ID}]
+                 (update acc parent-ID #(if % (conj % ID) #{ID})))
+               {} (FM :features))))
 
 ; default values
 
@@ -186,8 +180,7 @@
                    (assoc-in [:features ID :parent-ID] parent-ID)
                    ; update the children cache
                    (update-in [:children-cache (get-in FM [:features ID :parent-ID])]
-                              #(disj % ID))
-                   (update :root-cache #(if (nil? parent-ID) ID %)))] ; assuming that only all COs guarantee a single root
+                              #(disj % ID)))]
     (if (= parent-ID :graveyard)
       new-FM                                                ; it is unnecessary to cache removed features
       (update-in new-FM

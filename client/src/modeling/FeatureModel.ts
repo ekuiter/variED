@@ -13,11 +13,11 @@ import {Settings} from '../store/settings';
 import {FeatureDiagramLayoutType} from '../types';
 import {present} from '../helpers/present';
 import logger from '../helpers/logger';
-import {FeatureNode, Feature, FeatureType, SerializedFeatureModel, ID, DESCRIPTION, TYPE, ABSTRACT, HIDDEN, OPTIONAL, STRUCT, NAME, SerializedFeatureNode, SerializedConstraint, CONSTRAINTS, SerializedConstraintNode, ConstraintType, VAR} from './types';
+import {FeatureNode, Feature, KernelFeatureModel, DESCRIPTION, ABSTRACT, HIDDEN, OPTIONAL, NAME, KernelFeature, KernelConstraint, CONSTRAINTS, ConstraintType, FEATURES, CHILDREN_CACHE, KernelConstraintFormula, GRAVEYARDED, FORMULA, ID_KEY, KernelConstraintFormulaAtom, GROUP_TYPE, GroupType, NIL} from './types';
 import {getViewportWidth, getViewportHeight} from '../helpers/withDimensions';
 
 export function getID(node: FeatureNode): string {
-    return node.data[ID];
+    return node.data[ID_KEY]!;
 }
 
 function isRoot(node: FeatureNode): boolean {
@@ -62,18 +62,17 @@ d3Hierarchy.prototype.feature = function(this: FeatureNode): Feature {
         node: this,
         ID: getID(this),
         name: this.data[NAME],
-        type: this.data[TYPE],
-        description: this.data[DESCRIPTION],
+        description: this.data[DESCRIPTION] || undefined,
         isRoot: isRoot(this),
         isAbstract: !!this.data[ABSTRACT],
         isHidden: !!this.data[HIDDEN],
         isOptional: !!this.data[OPTIONAL],
-        isAnd: this.data[TYPE] === FeatureType.and,
-        isOr: this.data[TYPE] === FeatureType.or,
-        isAlternative: this.data[TYPE] === FeatureType.alt,
+        isAnd: this.data[GROUP_TYPE] === GroupType.and,
+        isOr: this.data[GROUP_TYPE] === GroupType.or,
+        isAlternative: this.data[GROUP_TYPE] === GroupType.alternative,
         isGroup:
-            this.data[TYPE] === FeatureType.or ||
-            this.data[TYPE] === FeatureType.alt,
+            this.data[GROUP_TYPE] === GroupType.or ||
+            this.data[GROUP_TYPE] === GroupType.alternative,
         isCollapsed: isCollapsed(this),
         hasChildren: hasChildren(this),
         hasActualChildren: hasActualChildren(this),
@@ -93,7 +92,7 @@ d3Hierarchy.prototype.feature = function(this: FeatureNode): Feature {
     });
 };
 
-type ConstraintRenderer<T> = ((featureModel: FeatureModel, root: SerializedConstraintNode) => T) & {cacheKey: string};
+type ConstraintRenderer<T> = ((featureModel: FeatureModel, formula: KernelConstraintFormula) => T) & {cacheKey: string};
 
 // adapted from FeatureIDE fm.core's org/prop4j/NodeWriter.java
 export function createConstraintRenderer<T>({neutral, _return, returnFeature, join, cacheKey}:
@@ -104,47 +103,46 @@ export function createConstraintRenderer<T>({neutral, _return, returnFeature, jo
         [ConstraintType.disj]: '\u2228',
         [ConstraintType.eq]: '\u21D4',
         [ConstraintType.imp]: '\u21D2',
-        [ConstraintType.conj]: '\u2227',
-        [ConstraintType.atmost1]: 'atmost1 '
+        [ConstraintType.conj]: '\u2227'
     };
 
     const orderMap: {[x: string]: number} = {
         [ConstraintType.unknown]: -1,
         [ConstraintType.not]: 0,
-        [ConstraintType.disj]: 4,
-        [ConstraintType.eq]: 2,
-        [ConstraintType.imp]: 3,
-        [ConstraintType.conj]: 5,
-        [ConstraintType.atmost1]: 1
+        [ConstraintType.disj]: 3,
+        [ConstraintType.eq]: 1,
+        [ConstraintType.imp]: 2,
+        [ConstraintType.conj]: 4
     };
 
     let i = 0;
 
-    const renderLiteral = (featureModel: FeatureModel, node: SerializedConstraintNode): T => {
-            const feature = featureModel.getFeature(node[VAR]!);
-            return returnFeature(feature ? feature.name : node[VAR]!, i++);
+    const isAtom = (formula: KernelConstraintFormula): formula is KernelConstraintFormulaAtom => !Array.isArray(formula),
+            renderLiteral = (featureModel: FeatureModel, atom: KernelConstraintFormulaAtom): T => {
+            const feature = featureModel.getFeature(atom);
+            return returnFeature(feature ? feature.name : atom, i++);
         },
-        renderNode = (featureModel: FeatureModel, node: SerializedConstraintNode, parentType: ConstraintType): T => {
-        if (node[TYPE] === ConstraintType.var)
-            return renderLiteral(featureModel, node);
+        renderFormula = (featureModel: FeatureModel, formula: KernelConstraintFormula, parentType: ConstraintType): T => {
+        if (isAtom(formula))
+            return renderLiteral(featureModel, formula);
+        const nodeType = formula[0] as ConstraintType;
 
-        if (node[TYPE] === ConstraintType.not) {
-            const child = node.children![0];
-            if (child[TYPE] === ConstraintType.var)
+        if (nodeType === ConstraintType.not) {
+            const child = formula[1];
+            if (isAtom(child))
                 return join([_return(operatorMap[ConstraintType.not]), renderLiteral(featureModel, child)], neutral);
-            if (child[TYPE] === ConstraintType.not)
-                return renderNode(featureModel, child.children![0], parentType);
+            if (child[0] as ConstraintType === ConstraintType.not)
+                return renderFormula(featureModel, child[1], parentType);
         }
 
-        const children = node.children!,
-            operands = children.map(child => renderNode(featureModel, child, node[TYPE])),
-            operator = operatorMap[node[TYPE]];
+        const operands = formula.slice(1).map(child => renderFormula(featureModel, child, nodeType)),
+            operator = operatorMap[nodeType];
 
-        if (node[TYPE] === ConstraintType.conj || node[TYPE] === ConstraintType.disj ||
-            node[TYPE] === ConstraintType.imp || node[TYPE] === ConstraintType.eq) {
+        if (nodeType === ConstraintType.conj || nodeType === ConstraintType.disj ||
+            nodeType === ConstraintType.imp || nodeType === ConstraintType.eq) {
             const result = join(operands, _return(` ${operator} `)),
                 orderParent = orderMap[parentType],
-                orderChild = orderMap[node[TYPE]];
+                orderChild = orderMap[nodeType];
             return orderParent > orderChild ||
                 (orderParent === orderChild && orderParent === orderMap[ConstraintType.imp])
                 ? join([_return('('), result, _return(')')], neutral)
@@ -153,9 +151,9 @@ export function createConstraintRenderer<T>({neutral, _return, returnFeature, jo
             return join([_return(operator), _return('('), join(operands, _return(', ')), _return(')')], neutral);
     }
 
-    const constraintRenderer = (featureModel: FeatureModel, root: SerializedConstraintNode) => {
+    const constraintRenderer = (featureModel: FeatureModel, root: KernelConstraintFormula) => {
         i = 0;
-        return renderNode(featureModel, root, ConstraintType.unknown);
+        return renderFormula(featureModel, root, ConstraintType.unknown);
     };
     constraintRenderer.cacheKey = cacheKey;
     return constraintRenderer;
@@ -173,19 +171,25 @@ export class Constraint {
     _renderCache: {[x: string]: any} = {};
     _element: JSX.Element;
 
-    constructor(public serializedConstraint: SerializedConstraint,
-        public index: number,
+    constructor(public kernelConstraint: KernelConstraint,
         public featureModel: FeatureModel) {}
 
-    get root(): SerializedConstraintNode {
-        if (this.serializedConstraint.children.length !== 1)
-            throw new Error('constraint does not have one root');
-        return this.serializedConstraint.children[0];
+    get ID(): string {
+        return this.kernelConstraint[ID_KEY]!;
+    }
+
+    get isGraveyarded(): boolean {
+        return this.kernelConstraint[GRAVEYARDED];
+    }
+
+    get formula(): KernelConstraintFormula {
+        return this.kernelConstraint[FORMULA];
     }
 
     render<T>(constraintRenderer: ConstraintRenderer<T>): T {
         return this._renderCache[constraintRenderer.cacheKey] ||
-            (this._renderCache[constraintRenderer.cacheKey] = constraintRenderer(this.featureModel, this.root));
+            (this._renderCache[constraintRenderer.cacheKey] =
+                constraintRenderer(this.featureModel, this.formula));
     }
 
     toString(): string {
@@ -193,12 +197,12 @@ export class Constraint {
     }
 
     getKey(): string {
-        return this.index.toString();
+        return this.ID.toString();
     }
 }
 
 class FeatureModel {
-    serializedFeatureModel: SerializedFeatureModel;
+    kernelFeatureModel: KernelFeatureModel;
     collapsedFeatureIDs: string[] = [];
     _hierarchy: FeatureNode;
     _actualNodes: FeatureNode[];
@@ -207,14 +211,14 @@ class FeatureModel {
     _IDsToFeatures: {[x: string]: FeatureNode} = {};
 
     // feature model as supplied by feature model messages from the server
-    static fromJSON(serializedFeatureModel: SerializedFeatureModel): FeatureModel {
+    static fromKernel(kernelFeatureModel: KernelFeatureModel): FeatureModel {
         const featureModel = new FeatureModel();
-        featureModel.serializedFeatureModel = serializedFeatureModel;
+        featureModel.kernelFeatureModel = kernelFeatureModel;
         return featureModel;
     }
 
-    toJSON(): SerializedFeatureModel {
-        return this.serializedFeatureModel;
+    toKernel(): KernelFeatureModel {
+        return this.kernelFeatureModel;
     }
 
     collapse(collapsedFeatureIDs: string[]): FeatureModel {
@@ -224,19 +228,25 @@ class FeatureModel {
         return this;
     }
 
-    get structure(): SerializedFeatureNode {
-        if (!this.serializedFeatureModel[STRUCT] || this.serializedFeatureModel[STRUCT].length !== 1)
-            throw new Error('feature model has no structure');
-        return this.serializedFeatureModel[STRUCT][0];
-    }
-
     prepare(): void {
         if (!this._hierarchy) {
-            this._hierarchy = d3Hierarchy(this.structure) as FeatureNode;
+            const features = this.kernelFeatureModel[FEATURES],
+                constraints = this.kernelFeatureModel[CONSTRAINTS],
+                childrenCache = this.kernelFeatureModel[CHILDREN_CACHE];
+            Object.keys(features).forEach(ID => features[ID][ID_KEY] = ID);
+            Object.keys(constraints).forEach(ID => constraints[ID][ID_KEY] = ID);
+            const children = (kernelFeature: KernelFeature) =>
+                (childrenCache[kernelFeature[ID_KEY]!] || []).map(ID => features[ID]);
+
+            if (childrenCache[NIL].length !== 1)
+                throw new Error('feature model does not have a single root');
+            const rootFeature = features[childrenCache[NIL][0]];
+
+            this._hierarchy = d3Hierarchy(rootFeature, children) as FeatureNode;
             this._actualNodes = this._hierarchy.descendants();
             this._visibleNodes = [];
-            this._constraints = this.serializedFeatureModel[CONSTRAINTS].map(
-                (serializedConstraint, idx) => new Constraint(serializedConstraint, idx, this));
+            this._constraints = Object.values(constraints).map(
+                kernelConstraint => new Constraint(kernelConstraint, this)); // TODO: visible according to FM/graveyarded-constraint?
 
             const isVisible: (node: FeatureNode) => boolean = memoize(node => {
                 if (isRoot(node))

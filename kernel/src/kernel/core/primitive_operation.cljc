@@ -64,7 +64,7 @@
   Newly created features are not part of the feature tree until explicitly inserted."
   []
   (let [ID (helpers/generate-ID)]
-    (log "PO (create-feature" ID ")")
+    (log "PO create-feature" ID)
     {:type :create-feature
      :ID   ID}))
 
@@ -72,7 +72,7 @@
   "Updates a single attribute of a feature.
   For conflict detection and undo/redo, it is also necessary to store an attribute's old value for every update."
   [ID attribute old-value new-value]
-  (log "PO (update-feature" ID attribute old-value new-value ")")
+  (log "PO update-feature" ID attribute old-value new-value)
   {:type      :update-feature
    :ID        ID
    :attribute attribute
@@ -83,7 +83,7 @@
   "Creates a new constraint."
   []
   (let [ID (helpers/generate-ID)]
-    (log "PO (create-constraint" ID ")")
+    (log "PO create-constraint" ID)
     {:type :create-constraint
      :ID   ID}))
 
@@ -91,7 +91,7 @@
   "Updates a single attribute of a constraint.
   For conflict detection and undo/redo, it is also necessary to store an attribute's old value for every update."
   [ID attribute old-value new-value]
-  (log "PO (update-constraint" ID attribute old-value new-value ")")
+  (log "PO update-constraint" ID attribute old-value new-value)
   {:type      :update-constraint
    :ID        ID
    :attribute attribute
@@ -104,7 +104,7 @@
   This assertion operation has no actual execution effect on the feature model,
   it only affects the conflict detection."
   [ID]
-  (log "PO (assert-no-child-added" ID ")")
+  (log "PO assert-no-child-added" ID)
   {:type :assert-no-child-added
    :ID   ID})
 

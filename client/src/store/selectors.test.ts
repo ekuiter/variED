@@ -1,5 +1,5 @@
 import {getCurrentFeatureModel} from './selectors';
-import {validFeatureModel, invalidFeatureModel1} from '../fixtures';
+import {validFeatureModel, invalidFeatureModel} from '../fixtures';
 import FeatureModel from '../modeling/FeatureModel';
 import {initialState} from './types';
 
@@ -13,19 +13,19 @@ describe('selectors', () => {
             const state = <any>{
                 collaborativeSessions: [{
                     artifactPath: {project: 'project', artifact: 'artifact'},
-                    serializedFeatureModel: validFeatureModel,
+                    kernelFeatureModel: validFeatureModel,
                     collapsedFeatureIDs: []
                 }],
                 currentArtifactPath: {project: 'project', artifact: 'artifact'}
             };
-            expect(getCurrentFeatureModel(state)!.serializedFeatureModel)
-                .toEqual(FeatureModel.fromJSON(validFeatureModel).toJSON());
+            expect(getCurrentFeatureModel(state)!.kernelFeatureModel)
+                .toEqual(FeatureModel.fromKernel(validFeatureModel).toKernel());
         });
 
         it('recomputes when the store state changes', () => {
             const collaborativeSessions = [{
                     artifactPath: {project: 'project', artifact: 'artifact'},
-                    serializedFeatureModel: invalidFeatureModel1,
+                    kernelFeatureModel: invalidFeatureModel,
                     collapsedFeatureIDs: ['test1']
                 }],
                 currentArtifactPath = {project: 'project', artifact: 'artifact'};
@@ -42,7 +42,7 @@ describe('selectors', () => {
             state = {collaborativeSessions, currentArtifactPath};
             state.collaborativeSessions = [{
                 artifactPath: {project: 'project', artifact: 'artifact'},
-                serializedFeatureModel: validFeatureModel,
+                kernelFeatureModel: validFeatureModel,
                 collapsedFeatureIDs: ['test1']
             }];
             getCurrentFeatureModel(state);
@@ -56,7 +56,7 @@ describe('selectors', () => {
             state = {collaborativeSessions: state.collaborativeSessions, currentArtifactPath};
             state.collaborativeSessions = [{
                 artifactPath: {project: 'project', artifact: 'artifact'},
-                serializedFeatureModel: validFeatureModel,
+                kernelFeatureModel: validFeatureModel,
                 collapsedFeatureIDs: []
             }];
             getCurrentFeatureModel(state);
@@ -65,7 +65,7 @@ describe('selectors', () => {
             state = {collaborativeSessions: state.collaborativeSessions, currentArtifactPath};
             state.collaborativeSessions = [{
                 artifactPath: {project: 'project', artifact: 'artifact'},
-                serializedFeatureModel: validFeatureModel,
+                kernelFeatureModel: validFeatureModel,
                 collapsedFeatureIDs: state.collaborativeSessions[0].collapsedFeatureIDs
             }];
             getCurrentFeatureModel(state);

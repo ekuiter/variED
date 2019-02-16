@@ -13,7 +13,7 @@ import {Feature, PropertyType, GroupType} from '../modeling/types';
 import Kernel from '../modeling/Kernel';
 
 export const SERVER_SEND_MESSAGE = 'server/sendMessage';
-export const KERNEL_FEATURE_MODEL = 'kernel/featureModel';
+export const KERNEL_GENERATE_OPERATION = 'kernel/generateOperation';
 
 function createMessageAction<P>(fn: (payload: P) => Message): (payload: P) => ThunkAction<Promise<ReduxAction>, State, any, any> {
     return (payload: P) => {
@@ -31,13 +31,13 @@ function createOperationAction<P>(makePOSequence: (payload: P, kernel: Kernel) =
         return async (dispatch: Dispatch<AnyAction>, getState: () => State) => {
             const state = getState(),
                 artifactPath = state.currentArtifactPath;
-            const [kernelContext, [serializedFeatureModel, operation]] =
+            const [kernelContext, [kernelFeatureModel, operation]] =
                 Kernel.run(state, artifactPath, kernel =>
                     kernel.generateOperation(makePOSequence(payload, kernel)));
             const message: Message = {type: MessageType.KERNEL, message: operation};
             sendMessage(message, artifactPath, state.settings.developer.delay); // TODO: message queue
-            return dispatch(action(KERNEL_FEATURE_MODEL, {serializedFeatureModel, kernelContext}));
-            };
+            return dispatch(action(KERNEL_GENERATE_OPERATION, {kernelFeatureModel, kernelContext}));
+        };
     };
 }
 

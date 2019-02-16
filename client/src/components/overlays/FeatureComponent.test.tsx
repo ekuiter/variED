@@ -9,7 +9,7 @@ describe('FeatureComponent', () => {
     const featureComponent = (
         {featureComponent, featureID = 'FeatureIDE', mockRenderIfFeature = true, onDismiss = jest.fn()}:
         {featureComponent?: object, featureID?: string, mockRenderIfFeature?: boolean, onDismiss?: jest.Mock} = {}) => {
-        const featureModel = FeatureModel.fromJSON(validFeatureModel),
+        const featureModel = FeatureModel.fromKernel(validFeatureModel),
             FeatureComponent = getFeatureComponent(featureComponent);
         if (mockRenderIfFeature)
             FeatureComponent.prototype.renderIfFeature =

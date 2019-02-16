@@ -9,7 +9,7 @@ import {defaultSettings} from '../../store/settings';
 
 describe('FeaturePanel', () => {
     const featurePanel = (featureID = 'FeatureIDE') => {
-        const featureModel = FeatureModel.fromJSON(validFeatureModel),
+        const featureModel = FeatureModel.fromKernel(validFeatureModel),
             mock = jest.fn();
         return shallow(
             <FeaturePanel

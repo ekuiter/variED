@@ -9,7 +9,7 @@ import {FeatureDiagramLayoutType} from '../../types';
 
 describe('FeatureCallout', () => {
     const featureCallout = (featureID = 'FeatureIDE') => {
-        const featureModel = FeatureModel.fromJSON(validFeatureModel),
+        const featureModel = FeatureModel.fromKernel(validFeatureModel),
             mock = jest.fn();
         featureModel.hasElement = jest.fn().mockReturnValue(true);
         featureModel.getElement = jest.fn().mockReturnValue({

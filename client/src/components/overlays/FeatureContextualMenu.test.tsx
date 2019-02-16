@@ -10,7 +10,7 @@ import {FeatureDiagramLayoutType} from '../../types';
 
 describe('FeatureContextualMenu', () => {
     const featureContextualMenu = (selectedFeatureIDs: string[] = []) => {
-        const featureModel = FeatureModel.fromJSON(validFeatureModel),
+        const featureModel = FeatureModel.fromKernel(validFeatureModel),
             mock = jest.fn();
         featureModel.hasElement = jest.fn().mockReturnValue(true);
         featureModel.getElement = jest.fn().mockReturnValue({

@@ -10,7 +10,7 @@ import {defaultSettings, getNewSettings} from './settings';
 import {OverlayType, isMessageType, MessageType, isFloatingFeatureOverlay, OverlayProps, isArtifactPathEqual, ArtifactPath, Message} from '../types';
 import {setAdd, setRemove, SetOperationFunction, arrayReplace} from '../helpers/array';
 import {getFeatureModel, isEditingFeatureModel, getCollaborativeSession, getCurrentFeatureModel, getCurrentCollaborativeSession, isFeatureDiagramCollaborativeSession} from './selectors';
-import actions, {Action, SERVER_SEND_MESSAGE, KERNEL_FEATURE_MODEL} from './actions';
+import actions, {Action, SERVER_SEND_MESSAGE, KERNEL_GENERATE_OPERATION} from './actions';
 import {getType, isActionOf} from 'typesafe-actions';
 import {State, initialState, CollaborativeSession, FeatureDiagramCollaborativeSession, initialFeatureDiagramCollaborativeSessionState, KernelContext} from './types';
 import objectPath from 'object-path';
@@ -18,10 +18,10 @@ import objectPathImmutable from 'object-path-immutable';
 import logger, {setLogLevel, LogLevel, defaultLogLevel} from '../helpers/logger';
 import {AnyAction, Store} from 'redux';
 import Kernel from '../modeling/Kernel';
-import {SerializedFeatureModel} from '../modeling/types';
+import {KernelFeatureModel} from '../modeling/types';
 
 function getNewState(state: State, ...args: any[]): State {
-    if (args.length % 2 == 1)
+    if (args.length % 2 === 1)
         throw new Error('getNewState expects pairs of path and value');
     for (let i = 0; i < args.length; i += 2) {
         if (typeof args[i] !== 'string')
@@ -98,14 +98,14 @@ function fitToScreen(state: State, collaborativeSession: CollaborativeSession): 
 }
 
 function kernelReducer(state: State, action: AnyAction): State {
-    if (action.type === KERNEL_FEATURE_MODEL) {
-        const {serializedFeatureModel, kernelContext}:
-            {serializedFeatureModel: SerializedFeatureModel, kernelContext: KernelContext} = action.payload;
+    if (action.type === KERNEL_GENERATE_OPERATION) {
+        const {kernelFeatureModel, kernelContext, artifactPath}:
+            {kernelFeatureModel: KernelFeatureModel, kernelContext: KernelContext, artifactPath: ArtifactPath} = action.payload;
         state = getNewState(state, 'collaborativeSessions',
-            getNewCollaborativeSessions(state, action.payload.artifactPath!,
+            getNewCollaborativeSessions(state, artifactPath,
                 (collaborativeSession: CollaborativeSession) =>
-                    ({...collaborativeSession, kernelContext, serializedFeatureModel}))); // TODO: FM format
-        state = updateFeatureModel(state, action.payload.artifactPath!);
+                    ({...collaborativeSession, kernelContext, kernelFeatureModel})));
+        state = updateFeatureModel(state, artifactPath);
         return state;
     }
     return state;
@@ -151,12 +151,12 @@ function serverReceiveReducer(state: State, action: Action): State {
             case MessageType.INITIALIZE:
                 if (!state.myself)
                     throw new Error('no site ID assigned to self');
-                const [kernelContext, serializedFeatureModel] = 
+                const [kernelContext, kernelFeatureModel] = 
                     Kernel.initialize(action.payload.artifactPath!, state.myself.siteID, action.payload.context);
                 state = getNewState(state,
                     'collaborativeSessions', [...state.collaborativeSessions,
                         initialFeatureDiagramCollaborativeSessionState(
-                            action.payload.artifactPath!, kernelContext, serializedFeatureModel)],
+                            action.payload.artifactPath!, kernelContext, kernelFeatureModel)],
                     'currentArtifactPath', action.payload.artifactPath!);
                 state = getNewState(state, 'collaborativeSessions',
                     getNewCollaborativeSessions(state, action.payload.artifactPath!,
@@ -171,12 +171,10 @@ function serverReceiveReducer(state: State, action: Action): State {
                 state = getNewState(state, 'collaborativeSessions',
                     getNewCollaborativeSessions(state, action.payload.artifactPath!,
                         (collaborativeSession: CollaborativeSession) => {
-                            const [kernelContext, serializedFeatureModel] =
+                            const [kernelContext, kernelFeatureModel] =
                                 Kernel.run(state, collaborativeSession.artifactPath, kernel =>
                                     kernel.receiveMessage(action.payload.message));
-                            return {...collaborativeSession,
-                                kernelContext,
-                                serializedFeatureModel}; // TODO: FM format!, TODO: do not change on heartbeats
+                            return {...collaborativeSession, kernelContext, kernelFeatureModel};  // TODO: do not change on heartbeats
                         }));
                 state = updateFeatureModel(state, action.payload.artifactPath!);
                 return state;

@@ -14,7 +14,7 @@ import {
 import styles from './styles';
 import {Rect, Point, D3Selection} from '../../../types';
 import {OnToggleFeatureOptionalFunction} from '../../../store/types';
-import {FeatureNode, NodeCoordinateForAxisFunction, NodePointFunction, FeatureType} from '../../../modeling/types';
+import {FeatureNode, NodeCoordinateForAxisFunction, NodePointFunction} from '../../../modeling/types';
 
 declare class AbstractTreeNode {
     rectInfo: Rect;
@@ -99,7 +99,7 @@ export default class {
                         startAngle, endAngle, this.sweepFlag());
                 });
         drawArc(arcSegment, arcSegmentPath);
-        drawArc(arcSlice, arcSlicePath, d => d.feature().type === FeatureType.or);
+        drawArc(arcSlice, arcSlicePath, d => d.feature().isOr);
         drawArc(arcClick, arcSlicePath, () => 'always');
     }
 

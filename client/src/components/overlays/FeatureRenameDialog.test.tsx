@@ -16,7 +16,7 @@ describe('FeatureRenameDialog', () => {
             <FeatureRenameDialog
                 isOpen={true}
                 onDismiss={mock}
-                featureModel={FeatureModel.fromJSON(validFeatureModel)}
+                featureModel={FeatureModel.fromKernel(validFeatureModel)}
                 featureID="FeatureIDE"
                 settings={defaultSettings}
                 onSetFeatureName={onSetFeatureName}/>
