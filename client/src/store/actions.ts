@@ -9,21 +9,35 @@ import {Dispatch, AnyAction, Action as ReduxAction} from 'redux';
 import {sendMessage} from '../server/webSocket';
 import {ThunkAction} from 'redux-thunk';
 import {State} from './types';
-import {Feature} from '../modeling/types';
-import uuidv4 from 'uuid/v4';
+import {Feature, PropertyType, GroupType} from '../modeling/types';
+import Kernel from '../modeling/Kernel';
 
 export const SERVER_SEND_MESSAGE = 'server/sendMessage';
-const SERVER_RECEIVE_MESSAGE = 'server/receiveMessage';
+export const KERNEL_FEATURE_MODEL = 'kernel/featureModel';
 
 function createMessageAction<P>(fn: (payload: P) => Message): (payload: P) => ThunkAction<Promise<ReduxAction>, State, any, any> {
     return (payload: P) => {
         return async (dispatch: Dispatch<AnyAction>, getState: () => State) => {
-            const message = fn(payload),
-                state = getState(),
-                artifactPath = state.currentArtifactPath;
-            await sendMessage(message, artifactPath, state.settings.developer.delay);
+            const state = getState(),
+                artifactPath = state.currentArtifactPath,
+                message = await sendMessage(fn(payload), artifactPath, state.settings.developer.delay);
             return dispatch(action(SERVER_SEND_MESSAGE, message));
         };
+    };
+}
+
+function createOperationAction<P>(makePOSequence: (payload: P, kernel: Kernel) => Message): (payload: P) => ThunkAction<Promise<ReduxAction>, State, any, any> {
+    return (payload: P) => {
+        return async (dispatch: Dispatch<AnyAction>, getState: () => State) => {
+            const state = getState(),
+                artifactPath = state.currentArtifactPath;
+            const [kernelContext, [serializedFeatureModel, operation]] =
+                Kernel.run(state, artifactPath, kernel =>
+                    kernel.generateOperation(makePOSequence(payload, kernel)));
+            const message: Message = {type: MessageType.KERNEL, message: operation};
+            sendMessage(message, artifactPath, state.settings.developer.delay); // TODO: message queue
+            return dispatch(action(KERNEL_FEATURE_MODEL, {serializedFeatureModel, kernelContext}));
+            };
     };
 }
 
@@ -57,68 +71,61 @@ const actions = {
         }
     },
     server: {
-        receive: createStandardAction(SERVER_RECEIVE_MESSAGE)<Message>(),
+        receive: createStandardAction('server/receiveMessage')<Message>(),
         joinRequest: createMessageAction(({artifactPath}: {artifactPath: ArtifactPath}) => ({type: MessageType.JOIN_REQUEST, artifactPath})),
         leaveRequest: createMessageAction(({artifactPath}: {artifactPath: ArtifactPath}) => ({type: MessageType.LEAVE_REQUEST, artifactPath})),
         undo: createMessageAction(() => ({type: MessageType.ERROR})), // TODO
         redo: createMessageAction(() => ({type: MessageType.ERROR})), // TODO
         featureDiagram: {
             feature: {
-                // TODO: use kernel
-                createBelow: createMessageAction(({belowfeatureID}: {belowfeatureID: string}) =>
-                    ({type: MessageType.FEATURE_DIAGRAM_FEATURE_ADD_BELOW, belowfeatureID, newfeatureID: uuidv4()})),
-                createAbove: createMessageAction(({abovefeatureIDs}: {abovefeatureIDs: string[]}) =>
-                    ({type: MessageType.FEATURE_DIAGRAM_FEATURE_ADD_ABOVE, abovefeatureIDs, newfeatureID: uuidv4()})),
-                remove: createMessageAction(({featureIDs}: {featureIDs: string[]}) =>
-                    (featureIDs.map(featureID => ({type: MessageType.FEATURE_DIAGRAM_FEATURE_REMOVE, featureID})))),
-                removeSubtree: createMessageAction(({featureIDs}: {featureIDs: string[]}) =>
-                    (featureIDs.map(featureID => ({type: MessageType.FEATURE_DIAGRAM_FEATURE_REMOVE_BELOW, featureID})))),
-                setName: createMessageAction(({featureID, name}: {featureID: string, name: string}) =>
-                    ({type: MessageType.FEATURE_DIAGRAM_FEATURE_RENAME, featureID, name})),
-                setDescription: createMessageAction(({featureID, description}: {featureID: string, description: string}) =>
-                    ({type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_DESCRIPTION, featureID, description})),
+                createBelow: createOperationAction(({featureParentID}: {featureParentID: string}, kernel) =>
+                    kernel!.operationCreateFeatureBelow(featureParentID)),
+                createAbove: createOperationAction(({featureIDs}: {featureIDs: string[]}, kernel) =>
+                    kernel.operationCreateFeatureAbove(...featureIDs)),
+                remove: createOperationAction(({featureIDs}: {featureIDs: string[]}, kernel) =>
+                // TODO: batch operation (ensure preconditions: consider the root feature!)
+                    featureIDs.length === 1 ? kernel.operationRemoveFeature(featureIDs[0]) : (window as any).alert('not currently supported')),
+                removeSubtree: createOperationAction(({featureIDs}: {featureIDs: string[]}, kernel) =>
+                // TODO: batch operation (ensure preconditions: consider subfeatures!)
+                    featureIDs.length === 1 ? kernel.operationRemoveFeatureSubtree(featureIDs[0]) : (window as any).alert('not currently supported')),
+                setName: createOperationAction(({featureID, name}: {featureID: string, name: string}, kernel) =>
+                    kernel.operationSetFeatureProperty(featureID, PropertyType.name, name)),
+                setDescription: createOperationAction(({featureID, description}: {featureID: string, description: string}, kernel) =>
+                    kernel.operationSetFeatureProperty(featureID, PropertyType.description, description)),
                 properties: {
-                    setAbstract: createMessageAction(({featureIDs, value}: {featureIDs: string[], value: boolean}) =>
-                        featureIDs.map(featureID => ({
-                            type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
-                            featureID, property: propertyTypes.abstract, value
-                        }))),
-                    setHidden: createMessageAction(({featureIDs, value}: {featureIDs: string[], value: boolean}) =>
-                        featureIDs.map(featureID => ({
-                            type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
-                            featureID, property: propertyTypes.hidden, value
-                        }))),
-                    setOptional: createMessageAction(({featureIDs, value}: {featureIDs: string[], value: boolean}) =>
-                        featureIDs.map(featureID => ({
-                            type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
-                            featureID, property: propertyTypes.optional, value
-                        }))),
-                    toggleOptional: createMessageAction(({feature}: {feature: Feature}) => ({
-                            type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
-                            featureID: feature.ID, property: propertyTypes.optional, value: !feature.isOptional
-                        })),
-                    setAnd: createMessageAction(({featureIDs}: {featureIDs: string[]}) =>
-                        featureIDs.map(featureID => ({
-                            type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
-                            featureID, property: propertyTypes.group, value: groupValueTypes.and
-                        }))),
-                    setOr: createMessageAction(({featureIDs}: {featureIDs: string[]}) =>
-                        featureIDs.map(featureID => ({
-                            type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
-                            featureID, property: propertyTypes.group, value: groupValueTypes.or
-                        }))),
-                    setAlternative: createMessageAction(({featureIDs}: {featureIDs: string[]}) =>
-                        featureIDs.map(featureID => ({
-                            type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
-                            featureID, property: propertyTypes.group, value: groupValueTypes.alternative
-                        }))),
-                    toggleGroup: createMessageAction(({feature}: {feature: Feature}) => ({
-                            type: MessageType.FEATURE_DIAGRAM_FEATURE_SET_PROPERTY,
-                            featureID: feature.ID, property: propertyTypes.group,
-                            value: feature.isAnd
-                                ? groupValueTypes.or : feature.isOr
-                                    ? groupValueTypes.alternative : groupValueTypes.and
-                        }))
+                    // TODO: might need to check preconditions (such as root mandatory)
+                    setAbstract: createOperationAction(({featureIDs, value}: {featureIDs: string[], value: boolean}, kernel) =>
+                        kernel.operationCompose(...featureIDs.map(featureID =>
+                            kernel.operationSetFeatureProperty(featureID, PropertyType.abstract, value)))),
+
+                    setHidden: createOperationAction(({featureIDs, value}: {featureIDs: string[], value: boolean}, kernel) =>
+                        kernel.operationCompose(...featureIDs.map(featureID =>
+                            kernel.operationSetFeatureProperty(featureID, PropertyType.hidden, value)))),
+
+                    setOptional: createOperationAction(({featureIDs, value}: {featureIDs: string[], value: boolean}, kernel) =>
+                        kernel.operationCompose(...featureIDs.map(featureID =>
+                            kernel.operationSetFeatureOptional(featureID, value)))),
+
+                    toggleOptional: createOperationAction(({feature}: {feature: Feature}, kernel) =>
+                        kernel.operationSetFeatureOptional(feature.ID, !feature.isOptional)),
+                        
+                    setAnd: createOperationAction(({featureIDs}: {featureIDs: string[]}, kernel) =>
+                        kernel.operationCompose(...featureIDs.map(featureID =>
+                            kernel.operationSetFeatureGroupType(featureID, GroupType.and)))),
+
+                    setOr: createOperationAction(({featureIDs}: {featureIDs: string[]}, kernel) =>
+                        kernel.operationCompose(...featureIDs.map(featureID =>
+                            kernel.operationSetFeatureGroupType(featureID, GroupType.or)))),
+
+                    setAlternative: createOperationAction(({featureIDs}: {featureIDs: string[]}, kernel) =>
+                        kernel.operationCompose(...featureIDs.map(featureID =>
+                            kernel.operationSetFeatureGroupType(featureID, GroupType.alternative)))),
+                    
+                    toggleGroup: createOperationAction(({feature}: {feature: Feature}, kernel) =>
+                        kernel.operationSetFeatureGroupType(feature.ID,
+                            feature.isAnd
+                            ? GroupType.or : feature.isOr
+                                ? GroupType.alternative : GroupType.and))
                 }
             }
         } 

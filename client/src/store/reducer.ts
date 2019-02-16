@@ -10,13 +10,15 @@ import {defaultSettings, getNewSettings} from './settings';
 import {OverlayType, isMessageType, MessageType, isFloatingFeatureOverlay, OverlayProps, isArtifactPathEqual, ArtifactPath, Message} from '../types';
 import {setAdd, setRemove, SetOperationFunction, arrayReplace} from '../helpers/array';
 import {getFeatureModel, isEditingFeatureModel, getCollaborativeSession, getCurrentFeatureModel, getCurrentCollaborativeSession, isFeatureDiagramCollaborativeSession} from './selectors';
-import actions, {Action, SERVER_SEND_MESSAGE} from './actions';
+import actions, {Action, SERVER_SEND_MESSAGE, KERNEL_FEATURE_MODEL} from './actions';
 import {getType, isActionOf} from 'typesafe-actions';
-import {State, initialState, CollaborativeSession, FeatureDiagramCollaborativeSession, initialFeatureDiagramCollaborativeSessionState} from './types';
+import {State, initialState, CollaborativeSession, FeatureDiagramCollaborativeSession, initialFeatureDiagramCollaborativeSessionState, KernelContext} from './types';
 import objectPath from 'object-path';
 import objectPathImmutable from 'object-path-immutable';
 import logger, {setLogLevel, LogLevel, defaultLogLevel} from '../helpers/logger';
 import {AnyAction, Store} from 'redux';
+import Kernel from '../modeling/Kernel';
+import {SerializedFeatureModel} from '../modeling/types';
 
 function getNewState(state: State, ...args: any[]): State {
     if (args.length % 2 == 1)
@@ -42,21 +44,21 @@ function getNewCollaborativeSessions(state: State, artifactPath: ArtifactPath,
 
 function removeObsoleteFeaturesFromFeatureList(state: State, artifactPath: ArtifactPath, key: string): State {
     const featureIDList = getCollaborativeSession(state, artifactPath)[key],
-        actualfeatureIDs = getFeatureModel(state, artifactPath)!.getActualfeatureIDs(),
-        obsoletefeatureIDs = featureIDList.filter((featureID: string) => !actualfeatureIDs.includes(featureID));
-    return obsoletefeatureIDs.length > 0
+        actualFeatureIDs = getFeatureModel(state, artifactPath)!.getActualFeatureIDs(),
+        obsoleteFeatureIDs = featureIDList.filter((featureID: string) => !actualFeatureIDs.includes(featureID));
+    return obsoleteFeatureIDs.length > 0
         ? getNewState(state, 'collaborativeSessions',
             getNewCollaborativeSessions(state, artifactPath, (collaborativeSession: CollaborativeSession) =>
-                ({...collaborativeSession, [key]: featureIDList.filter((featureID: string) => !obsoletefeatureIDs.includes(featureID))})))
+                ({...collaborativeSession, [key]: featureIDList.filter((featureID: string) => !obsoleteFeatureIDs.includes(featureID))})))
         : state;
 }
 
 function hideOverlayForObsoleteFeature(state: State): State {
     if (!isEditingFeatureModel(state))
         return state;
-    const visiblefeatureIDs = getCurrentFeatureModel(state)!.getVisiblefeatureIDs();
+    const visibleFeatureIDs = getCurrentFeatureModel(state)!.getVisibleFeatureIDs();
     return state.overlay !== OverlayType.none && state.overlayProps.featureID &&
-        !visiblefeatureIDs.includes(state.overlayProps.featureID)
+        !visibleFeatureIDs.includes(state.overlayProps.featureID)
         ? updateOverlay(state, OverlayType.none, {})
         : state;
 }
@@ -84,39 +86,51 @@ function updateOverlay(state: State, overlay: OverlayType, overlayProps: Overlay
         return getNewState(state, 'overlay', overlay, 'overlayProps', overlayProps);
 }
 
-function getfeatureIDsBelowWithActualChildren(state: State, artifactPath: ArtifactPath, featureIDs: string[]): string[] {
+function getFeatureIDsBelowWithActualChildren(state: State, artifactPath: ArtifactPath, featureIDs: string[]): string[] {
     return featureIDs.map(featureID =>
-        getFeatureModel(state, artifactPath)!.getfeatureIDsBelowWithActualChildren(featureID))
+        getFeatureModel(state, artifactPath)!.getFeatureIDsBelowWithActualChildren(featureID))
         .reduce((acc, children) => acc.concat(children), []);
 }
 
 function fitToScreen(state: State, collaborativeSession: CollaborativeSession): string[] {
-    return getFeatureModel(state, collaborativeSession.artifactPath)!.getFittingfeatureIDs(
+    return getFeatureModel(state, collaborativeSession.artifactPath)!.getFittingFeatureIDs(
         state.settings, (<FeatureDiagramCollaborativeSession>collaborativeSession).layout);
+}
+
+function kernelReducer(state: State, action: AnyAction): State {
+    if (action.type === KERNEL_FEATURE_MODEL) {
+        const {serializedFeatureModel, kernelContext}:
+            {serializedFeatureModel: SerializedFeatureModel, kernelContext: KernelContext} = action.payload;
+        state = getNewState(state, 'collaborativeSessions',
+            getNewCollaborativeSessions(state, action.payload.artifactPath!,
+                (collaborativeSession: CollaborativeSession) =>
+                    ({...collaborativeSession, kernelContext, serializedFeatureModel}))); // TODO: FM format
+        state = updateFeatureModel(state, action.payload.artifactPath!);
+        return state;
+    }
+    return state;
 }
 
 function serverSendReducer(state: State, action: AnyAction): State {
     if (action.type === SERVER_SEND_MESSAGE) {
-        const messages: Message[] = Array.isArray(action.payload) ? action.payload : [action.payload];
-        return messages.reduce((state, message) => {
-            switch (message.type) {
-                case MessageType.LEAVE_REQUEST:
-                    // TODO: we just assume that leaving succeeds here. It would be better to wait for the server's
-                    // acknowledgement (and use promises in actions.ts to dispatch this update), see issue #9.
-                    // Also right now, when the server kicks us from a session, we do not handle this.
-                    return getNewState(state,
-                        'collaborativeSessions',
-                            state.collaborativeSessions.filter(collaborativeSession =>
-                                !isArtifactPathEqual(collaborativeSession.artifactPath, message.artifactPath)),
-                        'currentArtifactPath',
-                            isArtifactPathEqual(state.currentArtifactPath, action.payload.artifactPath!)
-                            ? undefined
-                            : state.currentArtifactPath);
+        const message: Message = action.payload;
+        switch (message.type) {
+            case MessageType.LEAVE_REQUEST:
+                // TODO: we just assume that leaving succeeds here. It would be better to wait for the server's
+                // acknowledgement (and use promises in actions.ts to dispatch this update), see issue #9.
+                // Also right now, when the server kicks us from a session, we do not handle this.
+                return getNewState(state,
+                    'collaborativeSessions',
+                        state.collaborativeSessions.filter(collaborativeSession =>
+                            !isArtifactPathEqual(collaborativeSession.artifactPath, message.artifactPath)),
+                    'currentArtifactPath',
+                        isArtifactPathEqual(state.currentArtifactPath, action.payload.artifactPath!)
+                        ? undefined
+                        : state.currentArtifactPath);
 
-                default:
-                    return state;
-            }
-        }, state);
+            default:
+                return state;
+        }
     }
     return state;
 }
@@ -135,9 +149,14 @@ function serverReceiveReducer(state: State, action: Action): State {
                 return getNewState(state, 'artifactPaths', setAdd(state.artifactPaths, action.payload.artifactPath!));
 
             case MessageType.INITIALIZE:
+                if (!state.myself)
+                    throw new Error('no site ID assigned to self');
+                const [kernelContext, serializedFeatureModel] = 
+                    Kernel.initialize(action.payload.artifactPath!, state.myself.siteID, action.payload.context);
                 state = getNewState(state,
                     'collaborativeSessions', [...state.collaborativeSessions,
-                        initialFeatureDiagramCollaborativeSessionState(action.payload.artifactPath!, {}/*TODO*/)],
+                        initialFeatureDiagramCollaborativeSessionState(
+                            action.payload.artifactPath!, kernelContext, serializedFeatureModel)],
                     'currentArtifactPath', action.payload.artifactPath!);
                 state = getNewState(state, 'collaborativeSessions',
                     getNewCollaborativeSessions(state, action.payload.artifactPath!,
@@ -151,8 +170,14 @@ function serverReceiveReducer(state: State, action: Action): State {
             case MessageType.KERNEL:
                 state = getNewState(state, 'collaborativeSessions',
                     getNewCollaborativeSessions(state, action.payload.artifactPath!,
-                        (collaborativeSession: CollaborativeSession) =>
-                            ({...collaborativeSession, kernelContext: null /*TODO*/}))); // TODO: run kernel receive
+                        (collaborativeSession: CollaborativeSession) => {
+                            const [kernelContext, serializedFeatureModel] =
+                                Kernel.run(state, collaborativeSession.artifactPath, kernel =>
+                                    kernel.receiveMessage(action.payload.message));
+                            return {...collaborativeSession,
+                                kernelContext,
+                                serializedFeatureModel}; // TODO: FM format!, TODO: do not change on heartbeats
+                        }));
                 state = updateFeatureModel(state, action.payload.artifactPath!);
                 return state;
 
@@ -245,7 +270,7 @@ function uiReducer(state: State, action: Action): State {
                 ? getNewState(state, 'collaborativeSessions',
                     getNewCollaborativeSessions(state, state.currentArtifactPath!, (collaborativeSession: CollaborativeSession) => ({
                         ...collaborativeSession,
-                        selectedFeatureIDs: getCurrentFeatureModel(state)!.getVisiblefeatureIDs(),
+                        selectedFeatureIDs: getCurrentFeatureModel(state)!.getVisibleFeatureIDs(),
                         isSelectMultipleFeatures: true
                     })))
                 : state;
@@ -278,7 +303,7 @@ function uiReducer(state: State, action: Action): State {
                 ? getNewState(state, 'collaborativeSessions',
                     getNewCollaborativeSessions(state, state.currentArtifactPath!, (collaborativeSession: CollaborativeSession) => ({
                         ...collaborativeSession,
-                        collapsedFeatureIDs: getCurrentFeatureModel(state)!.getfeatureIDsWithActualChildren()
+                        collapsedFeatureIDs: getCurrentFeatureModel(state)!.getFeatureIDsWithActualChildren()
                     })))
                 : state;
 
@@ -300,7 +325,7 @@ function uiReducer(state: State, action: Action): State {
                         ...collaborativeSession,
                         collapsedFeatureIDs: setOperation(
                             (<FeatureDiagramCollaborativeSession>collaborativeSession).collapsedFeatureIDs,
-                            getfeatureIDsBelowWithActualChildren(state, state.currentArtifactPath!, action.payload.featureIDs))
+                            getFeatureIDsBelowWithActualChildren(state, state.currentArtifactPath!, action.payload.featureIDs))
                     })))
                     : state;
 
@@ -327,6 +352,7 @@ export default <(state?: State, action?: Action) => State>
             logger.infoTagged({tag: 'redux'}, () => action);
             return state;
         },
+        kernelReducer,
         serverSendReducer,
         serverReceiveReducer,
         settingsReducer,
