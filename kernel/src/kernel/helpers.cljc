@@ -11,17 +11,17 @@
                        [cognitect.transit :as transit])]))
 
 (def ^:dynamic *logger-fn* (fn [_]))
+(def ^:dynamic *generate-ID-fn*)
 (def ^:dynamic *semantic-rules* '())
 
 (defn generate-ID
   "Identifiers generated in the system must be unique.
   For simplicity, we utilize pseudo randomly generated UUIDs (version 4).
   The probability for a collision is very small (50% if 1 billion
-  UUIDs are generated per second for about 85 years).
-  **TODO**: Generate identifiers from JavaScript."
+  UUIDs are generated per second for about 85 years)."
   []
   #?(:clj  (-> (UUID/randomUUID) .toString)
-     :cljs "<insert ID generation code here>"))
+     :cljs (*generate-ID-fn*)))
 
 (defn encode [data]
   #?(:clj  (let [out (ByteArrayOutputStream. 4096)
@@ -43,6 +43,10 @@
 
 (defn set-logger-fn [logger-fn]
   (def ^:dynamic *logger-fn* logger-fn)
+  nil)
+
+(defn set-generate-ID-fn [generate-ID-fn]
+  (def ^:dynamic *generate-ID-fn* generate-ID-fn)
   nil)
 
 (defn set-semantic-rules [semantic-rules]

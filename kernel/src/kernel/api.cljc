@@ -220,6 +220,8 @@
   [ID]
   (CO/remove-constraint (*context* :FM) ID))
 
+; helper functions
+
 (defn ^:export getContext
   "Returns the global context.
   May be used to switch between different contexts, e.g., when editing different feature models."
@@ -237,6 +239,13 @@
   logger-fn is expected to take one string argument and not return anything."
   [logger-fn]
   (helpers/set-logger-fn logger-fn))
+
+(defn ^:export setGenerateIDFunction
+  "Sets a function that is used to generate unique identifiers.
+  This function is only used on the client.
+  generate-ID-fn is expected to take no arguments and return a UUIDv4 string."
+  [generate-ID-fn]
+  (helpers/set-generate-ID-fn generate-ID-fn))
 
 (defn ^:export setSemanticRulesFunction
   "Sets a sequence of functions that are used to check semantic consistency of a feature model.

@@ -4,6 +4,7 @@ import logger from '../helpers/logger';
 import {KernelContext, State, KernelData} from '../store/types';
 import {GroupType, KernelFeatureModel} from './types';
 import {isFeatureDiagramCollaborativeSession, getCollaborativeSession} from '../store/selectors';
+import uuidv4 from 'uuid/v4';
 
 declare var window: any;
 declare var kernel: {api: any};
@@ -22,6 +23,7 @@ class Kernel {
         if (this.finalized)
             throw new Error('can not call API function on finalized kernel');
         _kernel.api.setLoggerFunction(this._kernelLogger);
+        _kernel.api.setGenerateIDFunction(uuidv4);
         _kernel.api.setContext(this.context);
         const result: any = fn(_kernel.api);
         this.context = _kernel.api.getContext();
