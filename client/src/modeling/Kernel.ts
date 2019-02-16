@@ -70,7 +70,8 @@ class Kernel {
     }
 
     generateOperation(POSequence: KernelData): [SerializedFeatureModel, string] {
-        const [serializedFeatureModel, operation]: [KernelData, string] = this._callKernel(api => api.clientGenerateOperation(POSequence))
+        const [serializedFeatureModel, operation]: [KernelData, string] =
+            this._callKernel(api => api.clientGenerateOperation(POSequence))
         // TODO: assuming into-array can be destructured like this
         // TODO: which feature model format should be used here?
         return [serializedFeatureModel, operation];

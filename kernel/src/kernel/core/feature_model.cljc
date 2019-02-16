@@ -58,13 +58,21 @@
 
   A cache with the key :children-cache is created for saving children identifiers
   so that the tree can be efficiently traversed in both directions.
-  The graveyard is initially expected to be empty."
+  The graveyard is initially expected to be empty.
+  OPTIMIZE: Instead of transferring the initialized feature model over the wire,
+  we could just transfer the uninitialized feature model and build the children
+  cache at the client (to save bandwidth)."
   [FM]
-  (assoc FM
-    :children-cache
-    (reduce (fn [acc [ID {parent-ID :parent-ID}]]
-              (update acc parent-ID #(if % (conj % ID) #{ID})))
-            {} (FM :features))))
+  (-> FM
+      (assoc :children-cache
+             (reduce-kv (fn [acc ID {parent-ID :parent-ID}]
+                          (update acc parent-ID #(if % (conj % ID) #{ID})))
+                        {} (FM :features)))
+      ; only for the client, so that the tree can be built efficiently together with the :children-cache
+      (assoc :root-cache
+             (some (fn [[ID {parent-ID :parent-ID}]]
+                     (when (nil? parent-ID) ID))
+                   (FM :features)))))
 
 ; default values
 
@@ -178,7 +186,8 @@
                    (assoc-in [:features ID :parent-ID] parent-ID)
                    ; update the children cache
                    (update-in [:children-cache (get-in FM [:features ID :parent-ID])]
-                              #(disj % ID)))]
+                              #(disj % ID))
+                   (update :root-cache #(if (nil? parent-ID) ID %)))] ; assuming that only all COs guarantee a single root
     (if (= parent-ID :graveyard)
       new-FM                                                ; it is unnecessary to cache removed features
       (update-in new-FM

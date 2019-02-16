@@ -15,21 +15,23 @@
             [kernel.core.compound-operation :as CO]
             [kernel.core.message :as message]
             [kernel.shell.context :refer [*context*]]
-            [kernel.helpers :refer [log]]))
+            [kernel.helpers :refer [log]]
+            [kernel.core.feature-model :as FM]))
 
 (defn initialize-context-mesh-topology
   "Initializes global context for a new site in a mesh topology.
   Called when the site is ready to generate and receive operations."
   [site-ID initial-FM]
-  {:site-ID site-ID
-   :VC      (atom (VC/initialize))
-   :CDAG    (atom (CDAG/initialize))
-   :base-FM (atom initial-FM)
-   :HB      (atom (HB/initialize))
-   :CC      (atom (CC/initialize))
-   :MCGS    (atom (MOVIC/MCGS-initialize))
-   :FM      (atom initial-FM)
-   :GC      (atom (GC/initialize))})
+  (let [initial-FM (FM/initialize initial-FM)]
+    {:site-ID site-ID
+     :VC      (atom (VC/initialize))
+     :CDAG    (atom (CDAG/initialize))
+     :base-FM (atom initial-FM)
+     :HB      (atom (HB/initialize))
+     :CC      (atom (CC/initialize))
+     :MCGS    (atom (MOVIC/MCGS-initialize))
+     :FM      (atom initial-FM)
+     :GC      (atom (GC/initialize))}))
 
 (defn next-FM
   "Based on the result the MOVIC algorithm returned, checks whether

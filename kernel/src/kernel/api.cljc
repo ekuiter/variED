@@ -53,7 +53,7 @@
   client must call clientInitialize with."
   [site-ID context]
   (client/initialize-context-star-topology! site-ID (helpers/decode context))
-  (*context* :FM))
+  (helpers/FM-encode @(*context* :FM)))
 
 (defn ^:export clientGenerateOperation
   "At any time the system is not frozen, the client may call
@@ -67,7 +67,7 @@
   to the server."
   [PO-sequence]
   (let [[next-FM operation] (client/generate-operation! PO-sequence)]
-    (into-array [next-FM
+    (into-array [(helpers/FM-encode next-FM)
                  (helpers/encode operation)])))
 
 (defn ^:export clientGenerateInverseOperation
@@ -91,7 +91,10 @@
   **TODO**: When a conflict occurs, before un-freezing the system, all
   conflicting operations have to be completely purged from the system."
   [message]
-  (client/receive-message! (helpers/decode message)))
+  (let [next-FM (client/receive-message! (helpers/decode message))]
+    (if (= next-FM :conflict)
+      "conflict"                                            ; TODO
+      (helpers/FM-encode next-FM))))
 
 (defn ^:export clientGC
   "Periodically (and when no other API calls are in progress and the system

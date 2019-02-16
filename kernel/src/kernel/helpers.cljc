@@ -38,6 +38,9 @@
      :cljs (let [reader (transit/reader :json)]
                 (transit/read reader str))))
 
+(defn FM-encode [FM]
+  #?(:cljs (clj->js FM)))
+
 (defn set-logger-fn [logger-fn]
   (def ^:dynamic *logger-fn* logger-fn)
   nil)
