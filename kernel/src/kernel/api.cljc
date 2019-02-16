@@ -52,7 +52,8 @@
   The server assigns it a site identifier and an initial context, which the
   client must call clientInitialize with."
   [site-ID context]
-  (client/initialize-context-star-topology! site-ID (helpers/decode context)))
+  (client/initialize-context-star-topology! site-ID (helpers/decode context))
+  (*context* :FM))
 
 (defn ^:export clientGenerateOperation
   "At any time the system is not frozen, the client may call

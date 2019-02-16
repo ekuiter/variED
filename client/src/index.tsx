@@ -16,6 +16,7 @@ import reducer, {Store} from './store/reducer';
 import {initializeIcons} from 'office-ui-fabric-react/lib/Icons';
 import actions from './store/actions';
 import {LogLevel, setLogLevel} from './helpers/logger';
+import Kernel from './modeling/Kernel';
 
 if (window.location.protocol !== 'http:')
     window.location.protocol = 'http:'; // TODO: hack until we support WSS
@@ -30,8 +31,10 @@ declare var window: any;
 window.app = {
     setLogLevel,
     LogLevel, // parameter for setLogLevel
-    actions, // can be dispatched with the store
-    store // used by message delay simulation
+    actions, // can be dispatched with the store (for debugging)
+    store, // used by message delay simulation
+    runKernel: (fn: (kernel: Kernel) => any) => // for debugging
+        Kernel.run(store.getState(), store.getState().currentArtifactPath, fn)
 };
 
 ReactDOM.render((

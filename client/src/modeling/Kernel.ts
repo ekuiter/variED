@@ -1,12 +1,14 @@
 import './_kernel';
 import {ArtifactPath, artifactPathToString} from '../types';
 import logger from '../helpers/logger';
-import {KernelContext, State} from '../store/types';
+import {KernelContext, State, KernelData} from '../store/types';
 import {GroupType, SerializedFeatureModel} from './types';
 import {isFeatureDiagramCollaborativeSession, getCollaborativeSession} from '../store/selectors';
 
+declare var window: any;
 declare var kernel: {api: any};
-type KernelData = any;
+const _kernel = kernel;
+delete window.kernel;
 
 class Kernel {
     artifactPath: ArtifactPath;
@@ -19,11 +21,10 @@ class Kernel {
     _callKernel(fn: (api: any) => void): KernelData {
         if (this.finalized)
             throw new Error('can not call API function on finalized kernel');
-        const api = kernel.api;
-        api.setLoggerFunction(this._kernelLogger);
-        api.setContext(this.context);
-        const result: any = fn(api);
-        this.context = api.getContext();
+        _kernel.api.setLoggerFunction(this._kernelLogger);
+        _kernel.api.setContext(this.context);
+        const result: any = fn(_kernel.api);
+        this.context = _kernel.api.getContext();
         return result;
     }
 
@@ -54,9 +55,9 @@ class Kernel {
     static initialize(artifactPath: ArtifactPath, siteID: string, context: string):
     [KernelContext, SerializedFeatureModel] {
         const kernel = new Kernel(artifactPath);
-        kernel._initialize(siteID, context);
+        const serializedFeatureModel = kernel._initialize(siteID, context);
         kernel._finalize();
-        return [kernel.context!, null as unknown as SerializedFeatureModel]; // TODO: extract initial FM
+        return [kernel.context!, serializedFeatureModel]; // TODO: FM format
     }
 
     _finalize(): KernelContext {
@@ -64,8 +65,8 @@ class Kernel {
         return this.context!;
     }
 
-    _initialize(siteID: string, context: string) {
-        this._callKernel(api => api.clientInitialize(siteID, context));
+    _initialize(siteID: string, context: string): SerializedFeatureModel {
+        return this._callKernel(api => api.clientInitialize(siteID, context));
     }
 
     generateOperation(POSequence: KernelData): [SerializedFeatureModel, string] {

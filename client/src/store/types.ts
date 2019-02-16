@@ -13,6 +13,7 @@ export interface CollaborativeSession {
 };
 
 export type KernelContext = object;
+export type KernelData = any;
 
 export interface FeatureDiagramCollaborativeSession extends CollaborativeSession {
     kernelContext: KernelContext,
