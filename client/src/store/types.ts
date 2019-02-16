@@ -101,7 +101,7 @@ export type StateDerivedProps = Partial<{
     currentArtifactPath: ArtifactPath,
     artifactPaths: ArtifactPath[],
     collaborativeSessions: CollaborativeSession[],
-    collaborator: Collaborator,
+    myself: Collaborator,
     collaborators: Collaborator[],
     settings: Settings,
     featureDiagramLayout: FeatureDiagramLayoutType,

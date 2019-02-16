@@ -15,7 +15,7 @@ import {Provider} from 'react-redux';
 import reducer, {Store} from './store/reducer';
 import {initializeIcons} from 'office-ui-fabric-react/lib/Icons';
 import actions from './store/actions';
-import logger, {LogLevel, setLogLevel} from './helpers/logger';
+import {LogLevel, setLogLevel} from './helpers/logger';
 
 if (window.location.protocol !== 'http:')
     window.location.protocol = 'http:'; // TODO: hack until we support WSS
@@ -28,7 +28,6 @@ const store: Store = createStore(reducer, composeEnhancers(applyMiddleware(thunk
 // for debugging purposes
 declare var window: any;
 window.app = {
-    logger, // accessed by BridgeUtils
     setLogLevel,
     LogLevel, // parameter for setLogLevel
     actions, // can be dispatched with the store

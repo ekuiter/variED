@@ -80,18 +80,24 @@ const actions = {
             feature: {
                 createBelow: createOperationAction(({featureParentID}: {featureParentID: string}, kernel) =>
                     kernel!.operationCreateFeatureBelow(featureParentID)),
+                
                 createAbove: createOperationAction(({featureIDs}: {featureIDs: string[]}, kernel) =>
                     kernel.operationCreateFeatureAbove(...featureIDs)),
+                
                 remove: createOperationAction(({featureIDs}: {featureIDs: string[]}, kernel) =>
                 // TODO: batch operation (ensure preconditions: consider the root feature!)
                     featureIDs.length === 1 ? kernel.operationRemoveFeature(featureIDs[0]) : (window as any).alert('not currently supported')),
+                
                 removeSubtree: createOperationAction(({featureIDs}: {featureIDs: string[]}, kernel) =>
                 // TODO: batch operation (ensure preconditions: consider subfeatures!)
                     featureIDs.length === 1 ? kernel.operationRemoveFeatureSubtree(featureIDs[0]) : (window as any).alert('not currently supported')),
+                
                 setName: createOperationAction(({featureID, name}: {featureID: string, name: string}, kernel) =>
                     kernel.operationSetFeatureProperty(featureID, PropertyType.name, name)),
+
                 setDescription: createOperationAction(({featureID, description}: {featureID: string, description: string}, kernel) =>
                     kernel.operationSetFeatureProperty(featureID, PropertyType.description, description)),
+
                 properties: {
                     // TODO: might need to check preconditions (such as root mandatory)
                     setAbstract: createOperationAction(({featureIDs, value}: {featureIDs: string[], value: boolean}, kernel) =>

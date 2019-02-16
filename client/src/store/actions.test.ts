@@ -1,25 +1,20 @@
-import actions, {SERVER_SEND_MESSAGE} from './actions';
-import {FeatureDiagramLayoutType, OverlayType, MessageType, Func} from '../types';
-import constants from '../constants';
-import {sendMessage, sendBatchMessage} from '../server/webSocket';
-import {defaultSettings} from './settings';
+import actions/*, {SERVER_SEND_MESSAGE}*/ from './actions';
+import {FeatureDiagramLayoutType, OverlayType/*, Func*/} from '../types';
+/*import {sendMessage} from '../server/webSocket';
+import {defaultSettings} from './settings';*/
 
 jest.mock('../server/webSocket');
 
-const {propertyTypes, groupValueTypes} = constants.server;
-
-async function expectMessageAction(thunk: Func, payload: any, isSendBatch = false, matcher = 'toEqual'): Promise<void> {
+// unused, see below
+/*async function expectMessageAction(thunk: Func, payload: any, matcher = 'toEqual'): Promise<void> {
     const dispatch = jest.fn(action => action),
         getState = jest.fn(() => ({settings: defaultSettings})),
         action = await thunk(dispatch, getState);
     expect(action)[matcher]({type: SERVER_SEND_MESSAGE, payload});
     expect(dispatch).toBeCalledWith(action);
     if (matcher === 'toEqual')
-        expect(isSendBatch ? sendBatchMessage : sendMessage).lastCalledWith(payload, undefined, 0);
-}
-
-const expectBatchMessageAction = (thunk: Func, payload: any) =>
-    expectMessageAction(thunk, payload, true);
+        expect(sendMessage).lastCalledWith(payload, undefined, 0);
+}*/
 
 describe('actions', () => {
     describe('settings', () => {
@@ -128,17 +123,19 @@ describe('actions', () => {
     });
 
     describe('server', () => {
-        it('undoes a state change', () => {
+        // TODO: currently not available
+        /*it('undoes a state change', () => {
             return expectMessageAction(actions.server.undo({}), {type: MessageType.UNDO});
         });
     
         it('redoes a state change', () => {
             return expectMessageAction(actions.server.redo({}), {type: MessageType.REDO});
-        });
+        });*/
     
         describe('feature', () => {
-            it('adds a feature below', () => {
-                return expectMessageAction(actions.server.featureDiagram.feature.createBelow({parentID: 'FeatureIDE'}),
+            // TODO: requires stubbing the kernel
+            /*it('adds a feature below', () => {
+                return expectMessageAction(actions.server.featureDiagram.feature.createBelow({featureParentID: 'FeatureIDE'}),
                     {type: MessageType.FEATURE_DIAGRAM_FEATURE_ADD_BELOW, parentID: 'FeatureIDE'}, false, 'toMatchObject');
             });
     
@@ -248,13 +245,13 @@ describe('actions', () => {
                             property: propertyTypes.group,
                             value: groupValueTypes.and
                         }));
-            });
+            });*/
         });
     
-        describe('features', () => {
+        /*describe('features', () => {
             it('adds a feature above', () =>
                 expectMessageAction(actions.server.featureDiagram.feature.createAbove({IDs: ['FeatureIDE', 'Eclipse']}),
                     {type: MessageType.FEATURE_DIAGRAM_FEATURE_ADD_ABOVE, IDs: ['FeatureIDE', 'Eclipse']}, false, 'toMatchObject'));
-        });
+        });*/
     });
 });

@@ -8,11 +8,11 @@ import {PersonaSize, PersonaInitialsColor} from 'office-ui-fabric-react/lib/Pers
 import {Tooltip} from 'office-ui-fabric-react/lib/Tooltip';
 import {Settings} from '../store/settings';
 import withDimensions from '../helpers/withDimensions';
-import {User} from '../store/types';
+import {Collaborator} from '../store/types';
 
 interface Props {
-    user?: User,
-    users: User[],
+    user?: Collaborator,
+    users: Collaborator[],
     settings: Settings,
     width: number,
     height: number
@@ -32,8 +32,8 @@ class UserFacepile extends React.Component<Props, State> {
     }
 
     render() {
-        const toPersona = (user: User) => ({
-            personaName: user.name,
+        const toPersona = (collaborator: Collaborator) => ({
+            personaName: collaborator.siteID,
             onMouseMove: (e?: React.MouseEvent, persona?: IFacepilePersona) => {
                 if (typeof e === 'undefined')
                     return;

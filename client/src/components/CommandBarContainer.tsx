@@ -82,9 +82,9 @@ const CommandBarContainer = (props: StateDerivedProps) => (
             key: 'collaboratorFacepile',
             onRender: () =>
                 <CollaboratorFacepile
-                    users={props.users!}
+                    users={props.collaborators!}
                     settings={props.settings!}
-                    user={props.collaborator}/>
+                    user={props.myself}/>
         }]}/>
 );
 
@@ -93,8 +93,8 @@ export default connect(
         const collaborativeSession = getCurrentCollaborativeSession(state),
             props: StateDerivedProps = {
                 settings: state.settings,
-                collaborator: state.user,
-                users: []
+                myself: state.myself,
+                collaborators: []
             };
         if (!collaborativeSession || !isFeatureDiagramCollaborativeSession(collaborativeSession))
             return props;
@@ -103,7 +103,7 @@ export default connect(
             featureDiagramLayout: collaborativeSession.layout,
             isSelectMultipleFeatures: collaborativeSession.isSelectMultipleFeatures,
             selectedFeatureIDs: collaborativeSession.selectedFeatureIDs,
-            users: collaborativeSession.users,
+            collaborators: collaborativeSession.collaborators,
             featureModel: getCurrentFeatureModel(state)
         };
     }),

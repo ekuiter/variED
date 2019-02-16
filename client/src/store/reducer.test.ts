@@ -15,12 +15,13 @@ describe('reducer', () => {
                 ...state,
                 collaborativeSessions: <FeatureDiagramCollaborativeSession[]>[{
                     artifactPath,
-                    users: [],
+                    collaborators: [],
                     layout: FeatureDiagramLayoutType.horizontalTree,
                     isSelectMultipleFeatures: false,
                     collapsedFeatureIDs: [],
                     selectedFeatureIDs: [],
-                    serializedFeatureModel
+                    serializedFeatureModel,
+                    kernelContext: {} // assume no kernel in the unit tests
                 }],
                 currentArtifactPath: artifactPath
             });
@@ -296,13 +297,6 @@ describe('reducer', () => {
             expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).collaborators).toContainEqual({name: 'some user'});
             state = reducer(serializedFeatureModelState(), actions.server.receive({type: MessageType.LEAVE_REQUEST, artifactPath, user: {name: 'some user'}}));
             expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).collaborators).not.toContainEqual({name: 'some user'});
-        });
-    
-        it('updates the feature model', () => {
-            let state = reducer(serializedFeatureModelState(), actions.server.receive({type: MessageType.FEATURE_DIAGRAM_FEATURE_MODEL, artifactPath, featureModel: validFeatureModel}));
-            expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).serializedFeatureModel).toBe(validFeatureModel);
-            state = reducer(serializedFeatureModelState(), actions.server.receive({type: MessageType.FEATURE_DIAGRAM_FEATURE_MODEL, artifactPath, featureModel: validFeatureModelWithRemovedFeatures}));
-            expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).serializedFeatureModel).toBe(validFeatureModelWithRemovedFeatures);
         });
 
         describe('feature model', () => {

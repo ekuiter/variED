@@ -1,25 +1,20 @@
 import './_kernel';
-import {ArtifactPath} from '../types';
+import {ArtifactPath, artifactPathToString} from '../types';
 import logger from '../helpers/logger';
 import {KernelContext, State} from '../store/types';
 import {GroupType, SerializedFeatureModel} from './types';
-import {isFeatureDiagramCollaborativeSession, getCollaborativeSession} from 'src/store/selectors';
+import {isFeatureDiagramCollaborativeSession, getCollaborativeSession} from '../store/selectors';
 
 declare var kernel: {api: any};
 type KernelData = any;
 
 class Kernel {
     artifactPath: ArtifactPath;
-    context: KernelContext;
+    context?: KernelContext;
     finalized = false;
 
-    get tag() {
-        return `kernel [${this.artifactPath}]`;
-    }
-
-    _kernelLogger(str: string): void {
-        logger.logTagged({tag: this.tag}, () => str);
-    }
+    _kernelLogger = (str: string) =>
+        logger.logTagged({tag: 'kernel'}, () => `[${artifactPathToString(this.artifactPath)}] ${str}`);
 
     _callKernel(fn: (api: any) => void): KernelData {
         if (this.finalized)
@@ -32,7 +27,7 @@ class Kernel {
         return result;
     }
 
-    constructor(artifactPath: ArtifactPath, context: KernelContext) {
+    constructor(artifactPath: ArtifactPath, context?: KernelContext) {
         this.artifactPath = artifactPath;
         this.context = context;
     }
@@ -50,23 +45,23 @@ class Kernel {
             throw new Error('no artifact edited currently, can not find kernel');
         const kernel = this._beginFor(state, artifactPath);
         if (!kernel)
-                throw new Error(`can not find a kernel for artifact ${artifactPath}`);
+                throw new Error(`can not find a kernel for artifact ${artifactPathToString(artifactPath)}`);
         const result = fn(kernel);
         kernel._finalize();
-        return [kernel.context, result];
+        return [kernel.context!, result];
     }
 
     static initialize(artifactPath: ArtifactPath, siteID: string, context: string):
     [KernelContext, SerializedFeatureModel] {
-        const kernel = new Kernel(artifactPath, {});
+        const kernel = new Kernel(artifactPath);
         kernel._initialize(siteID, context);
         kernel._finalize();
-        return [kernel.context, null as unknown as SerializedFeatureModel]; // TODO: extract initial FM
+        return [kernel.context!, null as unknown as SerializedFeatureModel]; // TODO: extract initial FM
     }
 
     _finalize(): KernelContext {
         this.finalized = true;
-        return this.context;
+        return this.context!;
     }
 
     _initialize(siteID: string, context: string) {

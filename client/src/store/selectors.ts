@@ -57,7 +57,6 @@ const currentFeatureModelCollaborativeSessionKeySelector = <T>(key: string) => (
     return undefined;
 };
 
-// TODO: use kernel context
 export const getFeatureModel = createCachedSelector(
     featureModelCollaborativeSessionKeySelector('serializedFeatureModel'),
     featureModelCollaborativeSessionKeySelector('collapsedFeatureIDs'),
