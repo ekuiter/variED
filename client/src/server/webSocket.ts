@@ -3,7 +3,7 @@
  */
 
 import constants from '../constants';
-import {Message, ArtifactPath} from '../types';
+import {Message} from '../types';
 import logger from '../helpers/logger';
 import {wait} from '../helpers/wait';
 import {State} from '../store/types';
@@ -14,12 +14,20 @@ type HandleMessageFunction = (data: Message) => void;
 let handleMessage: HandleMessageFunction;
 const tag = 'socket';
 
+function getSimulateDelay() {
+    const state: State | undefined =
+        (window as any).app && (window as any).app.store && (window as any).app.store.getState();
+    if (!state)
+        logger.warn(() => 'store not accessible, can not simulate message delay');
+    return state ? state.settings.developer.simulateDelay : 0;
+}
+
 const getWebSocket = ((): () => Promise<Sockette> => {
     let promise: Promise<Sockette> | undefined;
 
     function connect(): Promise<Sockette> {
         return promise = new Promise((resolve, reject) => {
-            let sockette = new Sockette(constants.server.webSocket, {
+            const sockette = new Sockette(constants.server.webSocket, {
                 onopen() {
                     logger.logTagged({tag}, () => 'open');
                     resolve(sockette);
@@ -46,11 +54,8 @@ const getWebSocket = ((): () => Promise<Sockette> => {
                 },
 
                 onmessage(message) {
-                    let state: State | undefined = (window as any).app && (window as any).app.store && (window as any).app.store.getState();
-                    if (!state)
-                        logger.warn(() => 'store not accessible, can not simulate message delay');
-                    wait(state ? state.settings.developer.delay : 0).then(() => {
-                        let data = JSON.parse(message.data);
+                    wait(getSimulateDelay()).then(() => {
+                        const data = JSON.parse(message.data);
                         logger.logTagged({tag: 'receive'}, () => data);
                         if (handleMessage)
                             handleMessage(data);
@@ -70,12 +75,9 @@ export async function openWebSocket(_handleMessage?: HandleMessageFunction): Pro
     // return nothing to not expose WebSocket object
 }
 
-export async function sendMessage(message: Message, artifactPath?: ArtifactPath, delay = 0): Promise<Message> {
+export async function sendMessage(message: Message): Promise<void> {
     const webSocket = await getWebSocket();
-    if (artifactPath)
-        message = {artifactPath, ...message};
     logger.logTagged({tag: 'send'}, () => message);
-    await wait(delay);
+    await wait(getSimulateDelay());
     webSocket.send(JSON.stringify(message));
-    return message;
 }

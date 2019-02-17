@@ -347,9 +347,10 @@ export default class extends React.Component<Props, State> {
         }, {
             text: i18n.t('commandPalette.developer.debug'),
             icon: 'DeveloperTools',
-            action: this.action(() => this.props.onSetSetting({path: 'developer.debug', value: (bool: boolean) => !bool}))
+            action: this.action(() => this.props.onSetSetting(
+                {path: 'developer.debug', value: (bool: boolean) => !bool}))
         }, {
-            text: i18n.t('commandPalette.developer.delay'),
+            text: i18n.t('commandPalette.developer.simulateDelay'),
             icon: 'DeveloperTools',
             action: this.actionWithArguments(
                 [{
@@ -361,8 +362,13 @@ export default class extends React.Component<Props, State> {
                     if (isNaN(delay) || delay < 0)
                         logger.warn(() => 'invalid delay specified');
                     else
-                        this.props.onSetSetting({path: 'developer.delay', value: delay});
+                        this.props.onSetSetting({path: 'developer.simulateDelay', value: delay});
                 })
+        }, {
+            text: i18n.t('commandPalette.developer.simulateOffline'),
+            icon: 'DeveloperTools',
+            action: this.action(() => this.props.onSetSetting(
+                {path: 'developer.simulateOffline', value: (bool: boolean) => !bool}))
         }
     ];
 

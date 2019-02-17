@@ -17,10 +17,19 @@ import logger from '../helpers/logger';
 import {getCurrentCollaborativeSession, isFeatureDiagramCollaborativeSession, getCurrentFeatureModel} from '../store/selectors';
 import SplitView from './SplitView';
 import {enableConstraintsView} from './constraintsView/ConstraintsView';
+import {flushMessageQueue} from 'src/server/messageQueue';
 
 class AppContainer extends React.Component<StateDerivedProps> {
+    flushMessageQueueInterval: number;
+
     componentDidMount() {
         openWebSocket(this.props.handleMessage);
+        this.flushMessageQueueInterval = window.setInterval(
+            flushMessageQueue, this.props.settings!.intervals.flushMessageQueue);
+    }
+
+    componentWillUnmount() {
+        window.clearInterval(this.flushMessageQueueInterval);
     }
 
     render() {

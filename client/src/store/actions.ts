@@ -6,11 +6,12 @@
 import {createStandardAction, ActionType, action} from 'typesafe-actions';
 import {Message, MessageType, FeatureDiagramLayoutType, OverlayType, OverlayProps, ArtifactPath} from '../types';
 import {Dispatch, AnyAction, Action as ReduxAction} from 'redux';
-import {sendMessage} from '../server/webSocket';
 import {ThunkAction} from 'redux-thunk';
 import {State} from './types';
 import {Feature, PropertyType, GroupType} from '../modeling/types';
 import Kernel from '../modeling/Kernel';
+import {enqueueMessage, flushMessageQueue} from 'src/server/messageQueue';
+import defer from 'src/helpers/defer';
 
 export const SERVER_SEND_MESSAGE = 'server/sendMessage';
 export const KERNEL_GENERATE_OPERATION = 'kernel/generateOperation';
@@ -20,7 +21,8 @@ function createMessageAction<P>(fn: (payload: P) => Message): (payload: P) => Th
         return async (dispatch: Dispatch<AnyAction>, getState: () => State) => {
             const state = getState(),
                 artifactPath = state.currentArtifactPath,
-                message = await sendMessage(fn(payload), artifactPath, state.settings.developer.delay);
+                message = enqueueMessage(fn(payload), artifactPath);
+            defer(flushMessageQueue)();
             return dispatch(action(SERVER_SEND_MESSAGE, message));
         };
     };
@@ -35,7 +37,8 @@ function createOperationAction<P>(makePOSequence: (payload: P, kernel: Kernel) =
                 Kernel.run(state, artifactPath, kernel =>
                     kernel.generateOperation(makePOSequence(payload, kernel)));
             const message: Message = {type: MessageType.KERNEL, message: operation};
-            sendMessage(message, artifactPath, state.settings.developer.delay); // TODO: message queue
+            enqueueMessage(message, artifactPath);
+            defer(flushMessageQueue)();
             return dispatch(action(KERNEL_GENERATE_OPERATION, {kernelFeatureModel, kernelContext}));
         };
     };

@@ -135,7 +135,8 @@ const translationMap = {
         },
         developer: {
             debug: 'Developer: Toggle debug mode',
-            delay: 'Developer: Simulate message delay'
+            simulateDelay: 'Developer: Simulate message delay',
+            simulateOffline: 'Developer: Simulate offline'
         }
     },
     constraint: {

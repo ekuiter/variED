@@ -11,7 +11,8 @@ import {getViewportWidth, getViewportHeight} from '../helpers/withDimensions';
 export interface Settings {
     developer: {
         debug: boolean, // whether to show detailed logs and the estimated bounding box and node anchors for feature diagrams
-        delay: number // simulate message delay when developing on localhost
+        simulateDelay: number, // simulate message delay when developing on localhost
+        simulateOffline: boolean // simulate that the web socket connection is closed (e.g., no internet connection)
     },
     views: {
         splitDirection: 'horizontal' | 'vertical', // at which axis to split views
@@ -75,13 +76,18 @@ export interface Settings {
         settingsPanel: {
             debounceUpdate: number // after which time continuous (e.g., slider) settings should be applied
         }
+    },
+    intervals: {
+        flushMessageQueue: number // how often the message queue should additionally be flushed, interval in ms
+        // TODO: GC, heartbeat
     }
 };
 
 export const defaultSettings: Settings = {
     developer: {
         debug: false,
-        delay: 0
+        simulateDelay: 0,
+        simulateOffline: false
     },
     views: {
         splitDirection: getViewportWidth() > getViewportHeight() ? 'horizontal' : 'vertical',
@@ -142,6 +148,9 @@ export const defaultSettings: Settings = {
         settingsPanel: {
             debounceUpdate: 200
         }
+    },
+    intervals: {
+        flushMessageQueue: 2000
     }
 };
 

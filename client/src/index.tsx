@@ -32,7 +32,7 @@ window.app = {
     setLogLevel,
     LogLevel, // parameter for setLogLevel
     actions, // can be dispatched with the store (for debugging)
-    store, // used by message delay simulation
+    store, // used by message delay/offline simulation
     runKernel: (fn: (kernel: Kernel) => any) => // for debugging
         Kernel.run(store.getState(), store.getState().currentArtifactPath, fn)
 };
