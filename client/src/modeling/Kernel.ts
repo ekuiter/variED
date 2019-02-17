@@ -14,14 +14,14 @@ delete window.kernel;
 class Kernel {
     artifactPath: ArtifactPath;
     context?: KernelContext;
-    finalized = false;
+    running = false;
 
     _kernelLogger = (str: string) =>
         logger.logTagged({tag: 'kernel'}, () => `[${artifactPathToString(this.artifactPath)}] ${str}`);
 
     _callKernel(fn: (api: any) => void): KernelData {
-        if (this.finalized)
-            throw new Error('can not call API function on finalized kernel');
+        if (!this.running)
+            throw new Error('can only call API function on running kernel');
         _kernel.api.setLoggerFunction(this._kernelLogger);
         _kernel.api.setGenerateIDFunction(uuidv4);
         _kernel.api.setContext(this.context);
@@ -49,22 +49,19 @@ class Kernel {
         const kernel = this._beginFor(state, artifactPath);
         if (!kernel)
                 throw new Error(`can not find a kernel for artifact ${artifactPathToString(artifactPath)}`);
+        kernel.running = true;
         const result = fn(kernel);
-        kernel._finalize();
+        kernel.running = false;
         return [kernel.context!, result];
     }
 
     static initialize(artifactPath: ArtifactPath, siteID: string, context: string):
     [KernelContext, KernelFeatureModel] {
         const kernel = new Kernel(artifactPath);
+        kernel.running = true;
         const kernelFeatureModel = kernel._initialize(siteID, context);
-        kernel._finalize();
+        kernel.running = false;
         return [kernel.context!, kernelFeatureModel];
-    }
-
-    _finalize(): KernelContext {
-        this.finalized = true;
-        return this.context!;
     }
 
     _initialize(siteID: string, context: string): KernelFeatureModel {

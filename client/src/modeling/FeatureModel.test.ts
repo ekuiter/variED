@@ -20,11 +20,10 @@ describe('feature', () => {
         const feature = featureModel.getFeature('FeatureIDE');
         expect(feature).toMatchObject({
             name: 'FeatureIDE',
-            type: 'or',
             description: 'A sample description',
             isAbstract: false,
             isHidden: false,
-            isOptional: true,
+            isOptional: false,
             isAnd: false,
             isOr: true,
             isAlternative: false,

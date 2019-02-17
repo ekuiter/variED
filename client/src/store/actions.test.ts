@@ -4,6 +4,7 @@ import {FeatureDiagramLayoutType, OverlayType/*, Func*/} from '../types';
 import {defaultSettings} from './settings';*/
 
 jest.mock('../server/webSocket');
+jest.mock('../modeling/Kernel');
 
 // unused, see below
 /*async function expectMessageAction(thunk: Func, payload: any, matcher = 'toEqual'): Promise<void> {

@@ -13,6 +13,7 @@ describe('selectors', () => {
             const state = <any>{
                 collaborativeSessions: [{
                     artifactPath: {project: 'project', artifact: 'artifact'},
+                    kernelContext: {},
                     kernelFeatureModel: validFeatureModel,
                     collapsedFeatureIDs: []
                 }],
@@ -25,6 +26,7 @@ describe('selectors', () => {
         it('recomputes when the store state changes', () => {
             const collaborativeSessions = [{
                     artifactPath: {project: 'project', artifact: 'artifact'},
+                    kernelContext: {},
                     kernelFeatureModel: invalidFeatureModel,
                     collapsedFeatureIDs: ['test1']
                 }],
@@ -42,6 +44,7 @@ describe('selectors', () => {
             state = {collaborativeSessions, currentArtifactPath};
             state.collaborativeSessions = [{
                 artifactPath: {project: 'project', artifact: 'artifact'},
+                kernelContext: {},
                 kernelFeatureModel: validFeatureModel,
                 collapsedFeatureIDs: ['test1']
             }];
@@ -56,6 +59,7 @@ describe('selectors', () => {
             state = {collaborativeSessions: state.collaborativeSessions, currentArtifactPath};
             state.collaborativeSessions = [{
                 artifactPath: {project: 'project', artifact: 'artifact'},
+                kernelContext: {},
                 kernelFeatureModel: validFeatureModel,
                 collapsedFeatureIDs: []
             }];
@@ -65,6 +69,7 @@ describe('selectors', () => {
             state = {collaborativeSessions: state.collaborativeSessions, currentArtifactPath};
             state.collaborativeSessions = [{
                 artifactPath: {project: 'project', artifact: 'artifact'},
+                kernelContext: {},
                 kernelFeatureModel: validFeatureModel,
                 collapsedFeatureIDs: state.collaborativeSessions[0].collapsedFeatureIDs
             }];
