@@ -10,8 +10,8 @@ import {ThunkAction} from 'redux-thunk';
 import {State} from './types';
 import {Feature, PropertyType, GroupType} from '../modeling/types';
 import Kernel from '../modeling/Kernel';
-import {enqueueMessage, flushMessageQueue} from 'src/server/messageQueue';
-import defer from 'src/helpers/defer';
+import {enqueueMessage, flushMessageQueue} from '../server/messageQueue';
+import deferred from '../helpers/deferred';
 
 export const SERVER_SEND_MESSAGE = 'server/sendMessage';
 export const KERNEL_GENERATE_OPERATION = 'kernel/generateOperation';
@@ -22,7 +22,7 @@ function createMessageAction<P>(fn: (payload: P) => Message): (payload: P) => Th
             const state = getState(),
                 artifactPath = state.currentArtifactPath,
                 message = enqueueMessage(fn(payload), artifactPath);
-            defer(flushMessageQueue)();
+            deferred(flushMessageQueue)();
             return dispatch(action(SERVER_SEND_MESSAGE, message));
         };
     };
@@ -38,7 +38,7 @@ function createOperationAction<P>(makePOSequence: (payload: P, kernel: Kernel) =
                     kernel.generateOperation(makePOSequence(payload, kernel)));
             const message: Message = {type: MessageType.KERNEL, message: operation};
             enqueueMessage(message, artifactPath);
-            defer(flushMessageQueue)();
+            deferred(flushMessageQueue)();
             return dispatch(action(KERNEL_GENERATE_OPERATION, {kernelFeatureModel, kernelContext}));
         };
     };

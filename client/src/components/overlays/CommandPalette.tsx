@@ -7,7 +7,7 @@ import Palette, {PaletteItem, PaletteAction, getKey} from '../../helpers/Palette
 import {canExport} from '../featureDiagramView/export';
 import FeatureModel from '../../modeling/FeatureModel';
 import {arrayUnique} from '../../helpers/array';
-import defer from '../../helpers/defer';
+import deferred from '../../helpers/deferred';
 import logger from '../../helpers/logger';
 
 interface Props {
@@ -79,7 +79,7 @@ export default class extends React.Component<Props, State> {
     }
 
     onSubmit = (command: PaletteItem) => {
-        defer(() => this.commandUsage[getKey(command)] = +new Date())();
+        deferred(() => this.commandUsage[getKey(command)] = +new Date())();
     }
 
     action = (action: PaletteAction): PaletteAction => {

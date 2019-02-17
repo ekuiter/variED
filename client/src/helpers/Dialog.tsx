@@ -6,7 +6,7 @@ import {Dialog, DialogFooter, IDialogProps} from 'office-ui-fabric-react/lib/Dia
 import {DefaultButton, PrimaryButton} from 'office-ui-fabric-react/lib/Button';
 import i18n from '../i18n';
 import React from 'react';
-import defer from './defer';
+import deferred from './deferred';
 import {TextField, ITextFieldProps, ITextField} from 'office-ui-fabric-react/lib/TextField';
 import {IContextualMenuItem} from 'office-ui-fabric-react/lib/ContextualMenu';
 import {IIconProps} from 'office-ui-fabric-react/lib/Icon';
@@ -105,8 +105,8 @@ export class TextFieldDialog extends React.Component<TextFieldDialogProps, TextF
     textFieldRef = React.createRef<ITextField>();
     onChange = (_event: any, value?: string) => this.setState({value});
 
-    // does not work without defer, god knows why
-    onLayerDidMount = defer(() => {
+    // does not work without deferred, god knows why
+    onLayerDidMount = deferred(() => {
         this.textFieldRef.current!.focus();
         this.textFieldRef.current!.select();
     });

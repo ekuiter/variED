@@ -17,7 +17,7 @@ import logger from '../helpers/logger';
 import {getCurrentCollaborativeSession, isFeatureDiagramCollaborativeSession, getCurrentFeatureModel} from '../store/selectors';
 import SplitView from './SplitView';
 import {enableConstraintsView} from './constraintsView/ConstraintsView';
-import {flushMessageQueue} from 'src/server/messageQueue';
+import {flushMessageQueue} from '../server/messageQueue';
 
 class AppContainer extends React.Component<StateDerivedProps> {
     flushMessageQueueInterval: number;
