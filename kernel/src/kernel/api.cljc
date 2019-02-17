@@ -42,8 +42,10 @@
   (:require [kernel.core.compound-operation :as CO]
             [kernel.shell.client :as client]
             [kernel.shell.server :as server]
-            [kernel.shell.context :refer [*context* set-context]]
-            [kernel.helpers :as helpers]))
+            [kernel.shell.context :refer [*context* get-context set-context]]
+            [kernel.helpers :as helpers :refer [log]]
+            #?(:clj  [taoensso.tufte :as tufte :refer (defnp p profiled profile)]
+               :cljs [taoensso.tufte :as tufte :refer-macros (defnp p profiled profile)])))
 
 ; client API
 
@@ -52,8 +54,10 @@
   The server assigns it a site identifier and an initial context, which the
   client must call clientInitialize with."
   [site-ID context]
-  (client/initialize-context-star-topology! site-ID (helpers/decode context))
-  (helpers/FM-encode @(*context* :FM)))
+  (profile
+    {}
+    (client/initialize-context-star-topology! site-ID (helpers/decode context))
+    (helpers/FM-encode @(*context* :FM))))
 
 (defn ^:export clientGenerateOperation
   "At any time the system is not frozen, the client may call
@@ -66,14 +70,18 @@
   consume. It also returns an operation message that the client must send
   to the server."
   [PO-sequence]
-  (let [[next-FM operation] (client/generate-operation! PO-sequence)]
-    (into-array [(helpers/FM-encode next-FM)
-                 (helpers/encode operation)])))
+  (profile
+    {}
+    (let [[next-FM operation] (client/generate-operation! PO-sequence)]
+      (into-array [(helpers/FM-encode next-FM)
+                   (helpers/encode operation)]))))
 
 (defn ^:export clientGenerateInverseOperation
   "**TODO**: Generate inverse operations."
   []
-  (helpers/encode (client/generate-inverse-operation!)))
+  (profile
+    {}
+    (helpers/encode (client/generate-inverse-operation!))))
 
 (defn ^:export clientGenerateHeartbeat
   "If no operations have been generated for a while (and when no other API
@@ -81,7 +89,9 @@
   clientGenerateHeartbeat and send the resulting message to the server.
   This is to ensure smooth garbage collection."
   []
-  (helpers/encode (client/generate-heartbeat!)))
+  (profile
+    {}
+    (helpers/encode (client/generate-heartbeat!))))
 
 (defn ^:export clientReceiveMessage
   "When a message arrives from the server, the client must call
@@ -91,16 +101,20 @@
   **TODO**: When a conflict occurs, before un-freezing the system, all
   conflicting operations have to be completely purged from the system."
   [message]
-  (let [next-FM (client/receive-message! (helpers/decode message))]
-    (if (= next-FM :conflict)
-      "conflict"                                            ; TODO
-      (helpers/FM-encode next-FM))))
+  (profile
+    {}
+    (let [next-FM (client/receive-message! (helpers/decode message))]
+      (if (= next-FM :conflict)
+        "conflict"                                          ; TODO
+        (helpers/FM-encode next-FM)))))
 
 (defn ^:export clientGC
   "Periodically (and when no other API calls are in progress and the system
   is not frozen), the client must call clientGC."
   []
-  (client/GC!))
+  (profile
+    {}
+    (client/GC!)))
 
 ; server API (not exported to the client)
 
@@ -108,7 +122,9 @@
   "When a client first enters the system and requests to edit a given feature
   model, the server must call serverInitialize with said feature model."
   [initial-FM]
-  (server/initialize-context-star-topology! initial-FM))
+  (profile
+    {}
+    (server/initialize-context-star-topology! initial-FM)))
 
 (defn serverGenerateHeartbeat
   "If the server has not forwarded any operations for a while (and when no other API
@@ -116,14 +132,18 @@
   serverGenerateHeartbeat and send the resulting message to all client sites.
   This may happen for example when only one client site is connected."
   []
-  (helpers/encode (server/generate-heartbeat!)))
+  (profile
+    {}
+    (helpers/encode (server/generate-heartbeat!))))
 
 (defn serverForwardMessage
   "After receiving a message from a client, the server must call
   serverForwardMessage with the received message.
   The returned message is then forwarded to all sites but the original site."
   [message]
-  (helpers/encode (server/forward-message! (helpers/decode message))))
+  (profile
+    {}
+    (helpers/encode (server/forward-message! (helpers/decode message)))))
 
 (defn serverSiteJoined
   "Whenever a new site requests to join, the server must call serverSiteJoined
@@ -142,83 +162,113 @@
   efficient to generate this heartbeat message directly at the server (which
   is equivalent) and forward it everyone else immediately."
   [site-ID]
-  (let [[context heartbeat-message] (server/site-joined! site-ID)]
-    (into-array [(helpers/encode context)
-                 (helpers/encode heartbeat-message)])))
+  (profile
+    {}
+    (let [[context heartbeat-message] (server/site-joined! site-ID)]
+      (into-array [(helpers/encode context)
+                   (helpers/encode heartbeat-message)]))))
 
 (defn serverSiteLeft
   "When a site leaves, the server must call serverSiteLeft and forward
   the returned leave message to all other sites immediately."
   [site-ID]
-  (helpers/encode (server/site-left! site-ID)))
+  (profile
+    {}
+    (helpers/encode (server/site-left! site-ID))))
 
 (defn serverGC
   "Periodically (and when no other API calls are in progress and the system
   is not frozen), the server must call serverGC."
   []
-  (server/GC!))
+  (profile
+    {}
+    (server/GC!)))
 
 ; operations API
 
 (defn ^:export operationCompose
   "Composes multiple compound operations into one compound operation."
   [& PO-sequences]
-  (apply CO/compose-PO-sequences PO-sequences))
+  (profile
+    {}
+    (apply CO/compose-PO-sequences PO-sequences)))
 
 (defn ^:export operationCreateFeatureBelow
   "Creates a feature below another feature."
   [parent-ID]
-  (CO/create-feature-below (*context* :FM) parent-ID))
+  (profile
+    {}
+    (CO/create-feature-below (*context* :FM) parent-ID)))
 
 (defn ^:export operationCreateFeatureAbove
   "Creates a feature above a set of sibling features."
   [& IDs]
-  (apply CO/create-feature-above (*context* :FM) IDs))
+  (profile
+    {}
+    (apply CO/create-feature-above (*context* :FM) IDs)))
 
 (defn ^:export operationRemoveFeatureSubtree
   "Removes an entire feature subtree rooted at a feature."
   [ID]
-  (CO/remove-feature-subtree (*context* :FM) ID))
+  (profile
+    {}
+    (CO/remove-feature-subtree (*context* :FM) ID)))
 
 (defn ^:export operationMoveFeatureSubtree
   "Moves an entire feature subtree rooted at a feature below another feature."
   [ID parent-ID]
-  (CO/move-feature-subtree (*context* :FM) ID parent-ID))
+  (profile
+    {}
+    (CO/move-feature-subtree (*context* :FM) ID parent-ID)))
 
 (defn ^:export operationRemoveFeature
   "Removes a single feature."
   [ID]
-  (CO/remove-feature (*context* :FM) ID))
+  (profile
+    {}
+    (CO/remove-feature (*context* :FM) ID)))
 
 (defn ^:export operationSetFeatureOptional
   "Sets the optional attribute of a feature."
   [ID optional?]
-  (CO/set-feature-optional? (*context* :FM) ID optional?))
+  (profile
+    {}
+    (CO/set-feature-optional? (*context* :FM) ID optional?)))
 
 (defn ^:export operationSetFeatureGroupType
   "Sets the group type attribute of a feature."
   [ID group-type-str]
-  (CO/set-feature-group-type (*context* :FM) ID (keyword group-type-str)))
+  (profile
+    {}
+    (CO/set-feature-group-type (*context* :FM) ID (keyword group-type-str))))
 
 (defn ^:export operationSetFeatureProperty
   "Sets some additional property of a feature."
   [ID property-str value]
-  (CO/set-feature-property (*context* :FM) ID (:keyword property-str) value))
+  (profile
+    {}
+    (CO/set-feature-property (*context* :FM) ID (:keyword property-str) value)))
 
 (defn ^:export operationCreateConstraint
   "Creates a constraint and initializes it with a given propositional formula."
   [formula]
-  (CO/create-constraint (*context* :FM) formula))
+  (profile
+    {}
+    (CO/create-constraint (*context* :FM) formula)))
 
 (defn ^:export operationSetConstraint
   "Sets the propositional formula of a constraint."
   [ID formula]
-  (CO/set-constraint (*context* :FM) ID formula))
+  (profile
+    {}
+    (CO/set-constraint (*context* :FM) ID formula)))
 
 (defn ^:export operationRemoveConstraint
   "Removes a constraint."
   [ID]
-  (CO/remove-constraint (*context* :FM) ID))
+  (profile
+    {}
+    (CO/remove-constraint (*context* :FM) ID)))
 
 ; helper functions
 
@@ -226,30 +276,50 @@
   "Returns the global context.
   May be used to switch between different contexts, e.g., when editing different feature models."
   []
-  *context*)
+  (profile
+    {}
+    (get-context)))
 
 (defn ^:export setContext
   "Returns the global context.
   May be used to switch between different contexts, e.g., when editing different feature models."
   [context]
-  (set-context context))
+  (profile
+    {}
+    (set-context context)))
 
 (defn ^:export setLoggerFunction
   "Sets a function that is used to allow for verbose logging.
   logger-fn is expected to take one string argument and not return anything."
   [logger-fn]
-  (helpers/set-logger-fn logger-fn))
+  (profile
+    {}
+    (helpers/set-logger-fn logger-fn)))
 
 (defn ^:export setGenerateIDFunction
   "Sets a function that is used to generate unique identifiers.
   This function is only used on the client.
   generate-ID-fn is expected to take no arguments and return a UUIDv4 string."
   [generate-ID-fn]
-  (helpers/set-generate-ID-fn generate-ID-fn))
+  (profile
+    {}
+    (helpers/set-generate-ID-fn generate-ID-fn)))
 
 (defn ^:export setSemanticRulesFunction
   "Sets a sequence of functions that are used to check semantic consistency of a feature model.
   Each function is expected to take an encoded feature model and return true if the feature
   model is inconsistent, false otherwise."
   [semantic-rules-fn]
-  (helpers/set-semantic-rules semantic-rules-fn))
+  (profile
+    {}
+    (helpers/set-semantic-rules semantic-rules-fn)))
+
+; profiling
+
+(def stats-accumulator (tufte/add-accumulating-handler! {}))
+
+(defn ^:export logProfile
+  []
+  (log (tufte/format-grouped-pstats
+         @stats-accumulator
+         {:format-pstats-opts {:columns [:n-calls :min :p50 :p90 :p95 :p99 :max :mean :clock :total]}})))

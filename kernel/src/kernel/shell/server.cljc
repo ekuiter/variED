@@ -10,7 +10,9 @@
             [kernel.core.message :as message]
             [kernel.shell.site :as site]
             [kernel.shell.context :refer [*context* set-context]]
-            [kernel.helpers :refer [log]]))
+            [kernel.helpers :refer [log]]
+            #?(:clj  [taoensso.tufte :as tufte :refer (defnp p profiled profile)]
+               :cljs [taoensso.tufte :as tufte :refer-macros (defnp p profiled profile)])))
 
 ; constructors
 
@@ -37,7 +39,8 @@
   "Initializes global context for the server site in a star topology.
   Resets the global context."
   [initial-FM]
-  (set-context (initialize-context-star-topology initial-FM)))
+  (p ::initialize-context-star-topology!
+     (set-context (initialize-context-star-topology initial-FM))))
 
 ; server API
 
@@ -47,10 +50,11 @@
   Only sent explicitly if no messages have been forwarded for a while."
   []
   (log "generating heartbeat message")
-  (swap! (*context* :VC) #(VC/increment % :server))         ; not strictly necessary as we ignore this coordinate
-  (let [message (message/make-heartbeat (GC-filter @(*context* :VC)) :server)]
-    (swap! (*context* :GC) #(GC/insert % (message/get-site-ID message) (message/get-VC message)))
-    message))
+  (p ::generate-heartbeat!
+     (swap! (*context* :VC) #(VC/increment % :server))      ; not strictly necessary as we ignore this coordinate
+     (let [message (message/make-heartbeat (GC-filter @(*context* :VC)) :server)]
+       (swap! (*context* :GC) #(GC/insert % (message/get-site-ID message) (message/get-VC message)))
+       message)))
 
 (defn forward-message!
   "Receives, processes and forwards a message from a client site to all other client sites.
@@ -59,11 +63,12 @@
   Returns the message that is to be forwarded."
   [message]
   (log "forwarding message from" (message/get-site-ID message))
-  (let [new-message (message/update-VC message #(reduce VC/remove-site % @(*context* :offline-sites)))]
-    (site/receive-message! new-message)                     ; ignore returned feature model on the server
-    (generate-heartbeat!)
-    (swap! (*context* :GC) #(GC/insert % :server (GC-filter @(*context* :VC))))
-    (message/with-server-VC new-message (GC-filter @(*context* :VC)))))
+  (p ::forward-message!
+     (let [new-message (message/update-VC message #(reduce VC/remove-site % @(*context* :offline-sites)))]
+       (site/receive-message! new-message)                  ; ignore returned feature model on the server
+       (generate-heartbeat!)
+       (swap! (*context* :GC) #(GC/insert % :server (GC-filter @(*context* :VC))))
+       (message/with-server-VC new-message (GC-filter @(*context* :VC))))))
 
 (defn site-joined!
   "Processes a newly joined site.
@@ -74,22 +79,23 @@
   Returns the new site's initial context and the generated heartbeat message."
   [site-ID]
   (log "new site" site-ID "has joined, generating initial context and heartbeat message")
-  (let [site-VC (VC/increment (GC-filter @(*context* :VC)) site-ID)
-        message (message/make-heartbeat site-VC site-ID)]
-    (swap! (*context* :VC) #(VC/_merge (VC/increment % :server) site-VC))
-    (swap! (*context* :GC) #(GC/insert % :server (GC-filter @(*context* :VC))))
-    (swap! (*context* :GC) #(GC/insert % (message/get-site-ID message) (message/get-VC message)))
-    ; if a site re-joins, it is online again (but passed a completely new context)
-    (swap! (*context* :offline-sites) #(disj % site-ID))
-    [{:VC      site-VC
-      :CDAG    @(*context* :CDAG)
-      :base-FM @(*context* :base-FM)
-      :HB      @(*context* :HB)
-      :CC      @(*context* :CC)
-      :MCGS    @(*context* :MCGS)
-      :FM      @(*context* :FM)                             ; TODO: optimize this away
-      :GC      @(*context* :GC)}
-     (message/with-server-VC message (GC-filter @(*context* :VC)))]))
+  (p ::site-joined!
+     (let [site-VC (VC/increment (GC-filter @(*context* :VC)) site-ID)
+           message (message/make-heartbeat site-VC site-ID)]
+       (swap! (*context* :VC) #(VC/_merge (VC/increment % :server) site-VC))
+       (swap! (*context* :GC) #(GC/insert % :server (GC-filter @(*context* :VC))))
+       (swap! (*context* :GC) #(GC/insert % (message/get-site-ID message) (message/get-VC message)))
+       ; if a site re-joins, it is online again (but passed a completely new context)
+       (swap! (*context* :offline-sites) #(disj % site-ID))
+       [{:VC      site-VC
+         :CDAG    @(*context* :CDAG)
+         :base-FM @(*context* :base-FM)
+         :HB      @(*context* :HB)
+         :CC      @(*context* :CC)
+         :MCGS    @(*context* :MCGS)
+         :FM      @(*context* :FM)                          ; TODO: optimize this away
+         :GC      @(*context* :GC)}
+        (message/with-server-VC message (GC-filter @(*context* :VC)))])))
 
 (defn site-left!
   "Processes a leaving site.
@@ -101,10 +107,11 @@
   (e.g., attach this to a heartbeat that everyone has to succeed)."
   [site-ID]
   (log "site" site-ID "has left, generating leave message")
-  (let [message (message/make-leave site-ID)]
-    (site/receive-leave! message)
-    (swap! (*context* :offline-sites) #(conj % site-ID))
-    message))
+  (p ::site-left!
+     (let [message (message/make-leave site-ID)]
+       (site/receive-leave! message)
+       (swap! (*context* :offline-sites) #(conj % site-ID))
+       message)))
 
 (def GC!
   "Runs the garbage collector at a client site.

@@ -16,7 +16,9 @@
   (:require [clojure.set :as set]
             [kernel.core.history-buffer :as HB]
             [kernel.core.conflict-relation :as conflict-relation]
-            [kernel.helpers :refer [log]]))
+            [kernel.helpers :refer [log]]
+            #?(:clj  [taoensso.tufte :as tufte :refer (defnp p profiled profile)]
+               :cljs [taoensso.tufte :as tufte :refer-macros (defnp p profiled profile)])))
 
 ; constructor
 
@@ -31,7 +33,8 @@
 (defn MCGS-remove
   "Removes an operation from every MCG in the MCGS in O(n) for n MCGs."
   [MCGS CO-ID]
-  (reduce #(conj %1 (disj %2 CO-ID)) #{} MCGS))
+  (p ::MCGS-remove
+     (reduce #(conj %1 (disj %2 CO-ID)) #{} MCGS)))
 
 (defn MOVIC
   "Incrementally constructs an MCGS independent of operation ordering.
@@ -57,40 +60,41 @@
   The history buffer is used to obtain operation metadata for conflict detection."
   [MCGSi-1 Oi CDAG HB base-FM CC&]
   (log "running MOVIC algorithm, starting with" (count MCGSi-1) "maximum compatible groups")
+  (p ::MOVIC
 
-  ; step 1: initialization
-  (let [MCGSi-1& (atom MCGSi-1)
-        MCGSi& (atom #{})                                   ; MCGSi := {}
-        C& (atom (count @MCGSi-1&))                         ; C := |MCGSi-1|
-        Oi-compatible? #(conflict-relation/compatible? (HB/lookup HB %) Oi CDAG HB base-FM CC&)
-        Oi-conflicting? #(conflict-relation/conflicting? (HB/lookup HB %) Oi CDAG HB base-FM CC&)]
+     ; step 1: initialization
+     (let [MCGSi-1& (atom MCGSi-1)
+           MCGSi& (atom #{})                                ; MCGSi := {}
+           C& (atom (count @MCGSi-1&))                      ; C := |MCGSi-1|
+           Oi-compatible? #(conflict-relation/compatible? (HB/lookup HB %) Oi CDAG HB base-FM CC&)
+           Oi-conflicting? #(conflict-relation/conflicting? (HB/lookup HB %) Oi CDAG HB base-FM CC&)]
 
-    ; step 2: check operation against existing CGs (maintains properties 1, 2, 3)
-    (while (seq @MCGSi-1&)                                  ; Repeat until MCGSi-1 = {}
-      (let [CGx& (atom (first @MCGSi-1&))]                  ; Let CGx be a compatible group in MCGSi-1 (order is not significant)
-        (swap! MCGSi-1& #(disj % @CGx&))                    ; Remove CGx from MCGSi-1
-        (cond
-          (every? Oi-compatible? @CGx&)                     ; If Oi is compatible with all operations in CGx, then
-          (swap! CGx& #(conj % (Oi :ID)))                   ; CGx := CGx + {Oi}
-          (every? Oi-conflicting? @CGx&)                    ; Else if Oi conflicts with all operations in CGx, then
-          (swap! C& dec)                                    ; C := C - 1
-          :else                                             ; Else
-          (let [CGnew (set/select Oi-compatible? @CGx&)     ; CGnew := {O|O is in CGx and O is compatible with Oi}
-                CGx' (conj CGnew (Oi :ID))]                 ; CGx' := CGnew + {Oi}
-            (swap! MCGSi& #(conj % CGx'))))                 ; MCGSi := MCGSi + {CGx'}
-        (swap! MCGSi& #(conj % @CGx&))))                    ; MCGSi := MCGSi + {CGx}
+       ; step 2: check operation against existing CGs (maintains properties 1, 2, 3)
+       (while (seq @MCGSi-1&)                               ; Repeat until MCGSi-1 = {}
+         (let [CGx& (atom (first @MCGSi-1&))]               ; Let CGx be a compatible group in MCGSi-1 (order is not significant)
+           (swap! MCGSi-1& #(disj % @CGx&))                 ; Remove CGx from MCGSi-1
+           (cond
+             (every? Oi-compatible? @CGx&)                  ; If Oi is compatible with all operations in CGx, then
+             (swap! CGx& #(conj % (Oi :ID)))                ; CGx := CGx + {Oi}
+             (every? Oi-conflicting? @CGx&)                 ; Else if Oi conflicts with all operations in CGx, then
+             (swap! C& dec)                                 ; C := C - 1
+             :else                                          ; Else
+             (let [CGnew (set/select Oi-compatible? @CGx&)  ; CGnew := {O|O is in CGx and O is compatible with Oi}
+                   CGx' (conj CGnew (Oi :ID))]              ; CGx' := CGnew + {Oi}
+               (swap! MCGSi& #(conj % CGx'))))              ; MCGSi := MCGSi + {CGx'}
+           (swap! MCGSi& #(conj % @CGx&))))                 ; MCGSi := MCGSi + {CGx}
 
-    ; step 3: first operation or conflict with all CGs (maintains property 2)
-    (when (zero? @C&)                                       ; If C = 0, then
-      (let [CGnew #{(Oi :ID)}]                              ; CGnew := {Oi}
-        (swap! MCGSi& #(conj % CGnew))))                    ; MCGSi := MCGSi + {CGnew}
+       ; step 3: first operation or conflict with all CGs (maintains property 2)
+       (when (zero? @C&)                                    ; If C = 0, then
+         (let [CGnew #{(Oi :ID)}]                           ; CGnew := {Oi}
+           (swap! MCGSi& #(conj % CGnew))))                 ; MCGSi := MCGSi + {CGnew}
 
-    ; step 4: remove redundant CGs (maintains property 4)
-    (run! (fn [CGnew]                                       ; For every CGnew in MCGSi,
-            (when (some (fn [CGy]                           ; if there is
-                          (and (not= CGy CGnew)             ; another CGy in MCGSi,
-                               (set/subset? CGnew CGy))) @MCGSi&) ; such that CGnew is a subset of CGy, then
-              (swap! MCGSi& #(disj % CGnew))))              ; MCGSi := MCGSi - {CGnew}
-          @MCGSi&)
+       ; step 4: remove redundant CGs (maintains property 4)
+       (run! (fn [CGnew]                                    ; For every CGnew in MCGSi,
+               (when (some (fn [CGy]                        ; if there is
+                             (and (not= CGy CGnew)          ; another CGy in MCGSi,
+                                  (set/subset? CGnew CGy))) @MCGSi&) ; such that CGnew is a subset of CGy, then
+                 (swap! MCGSi& #(disj % CGnew))))           ; MCGSi := MCGSi - {CGnew}
+             @MCGSi&)
 
-    @MCGSi&))
+       @MCGSi&)))

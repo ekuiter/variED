@@ -67,6 +67,7 @@ public class Kernel {
 
     private void callDone() {
         this.context = callKernel("getContext");
+        callKernel("logProfile");
     }
 
     public Kernel(Artifact.Path artifactPath, IFeatureModel initialFeatureModel) {

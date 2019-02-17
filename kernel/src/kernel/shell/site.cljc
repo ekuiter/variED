@@ -16,7 +16,9 @@
             [kernel.core.feature-model :as FM]
             [kernel.core.message :as message]
             [kernel.shell.context :refer [*context*]]
-            [kernel.helpers :refer [log]]))
+            [kernel.helpers :refer [log]]
+            #?(:clj  [taoensso.tufte :as tufte :refer (defnp p profiled profile)]
+               :cljs [taoensso.tufte :as tufte :refer-macros (defnp p profiled profile)])))
 
 (defn initialize-context-mesh-topology
   "Initializes global context for a new site in a mesh topology.
@@ -92,28 +94,30 @@
   Checks which kind of message has been received and dispatches to the according receive function.
   Returns the (updated) current feature model."
   [message]
-  (when (message/get-server-VC message)
-    (swap! (*context* :GC) #(GC/insert % :server (message/get-server-VC message))))
-  (let [new-message (message/remove-server-VC message)]
-    (case (message/get-type message)
-      :heartbeat (receive-heartbeat! new-message)
-      :leave (receive-leave! new-message)
-      (receive-operation! new-message))))
+  (p ::receive-message!
+     (when (message/get-server-VC message)
+       (swap! (*context* :GC) #(GC/insert % :server (message/get-server-VC message))))
+     (let [new-message (message/remove-server-VC message)]
+       (case (message/get-type message)
+         :heartbeat (receive-heartbeat! new-message)
+         :leave (receive-leave! new-message)
+         (receive-operation! new-message)))))
 
 (defn GC!
   "Runs the garbage collector at a site.
   Updates the global context."
   []
-  (let [{CDAG    :CDAG
-         HB      :HB
-         base-FM :base-FM
-         CC      :CC
-         MCGS    :MCGS}
-        (GC/GC @(*context* :GC) @(*context* :CDAG) @(*context* :HB)
-               @(*context* :base-FM) @(*context* :CC) @(*context* :MCGS))]
-    (reset! (*context* :CDAG) CDAG)
-    (reset! (*context* :HB) HB)
-    (reset! (*context* :base-FM) base-FM)
-    (reset! (*context* :CC) CC)
-    (reset! (*context* :MCGS) MCGS))
-  nil)
+  (p ::GC!
+     (let [{CDAG    :CDAG
+            HB      :HB
+            base-FM :base-FM
+            CC      :CC
+            MCGS    :MCGS}
+           (GC/GC @(*context* :GC) @(*context* :CDAG) @(*context* :HB)
+                  @(*context* :base-FM) @(*context* :CC) @(*context* :MCGS))]
+       (reset! (*context* :CDAG) CDAG)
+       (reset! (*context* :HB) HB)
+       (reset! (*context* :base-FM) base-FM)
+       (reset! (*context* :CC) CC)
+       (reset! (*context* :MCGS) MCGS))
+     nil))

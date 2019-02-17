@@ -15,7 +15,9 @@
             [kernel.core.compound-operation :as CO]
             [kernel.core.message :as message]
             [kernel.shell.site :as site]
-            [kernel.shell.context :refer [*context* set-context]]))
+            [kernel.shell.context :refer [*context* set-context]]
+            #?(:clj  [taoensso.tufte :as tufte :refer (defnp p profiled profile)]
+               :cljs [taoensso.tufte :as tufte :refer-macros (defnp p profiled profile)])))
 
 ; constructors
 
@@ -47,7 +49,8 @@
   "Initializes global context for a new client site in a star topology.
   Resets the global context."
   [site-ID context]
-  (set-context (initialize-context-star-topology site-ID context)))
+  (p ::initialize-context-star-topology!
+     (set-context (initialize-context-star-topology site-ID context))))
 
 ; client API
 
@@ -73,19 +76,20 @@
   Returns the (updated) current feature model and the generated operation message."
   [PO-sequence]
   (log "generating next feature model and operation message from" (count PO-sequence) "primitive operations")
-  (swap! (*context* :VC) #(VC/increment % (*context* :site-ID)))
-  (let [CO (CO/make PO-sequence (helpers/generate-ID) @(*context* :VC))
-        operation (message/make-operation CO (*context* :site-ID))]
-    (swap! (*context* :CDAG) #(CDAG/insert % @(*context* :HB) CO))
-    (swap! (*context* :HB) #(HB/insert % CO))
-    (swap! (*context* :GC) #(GC/insert % (message/get-site-ID operation) (CO/get-VC CO)))
-    (swap! (*context* :CC) #(CC/with-most-recent % (CO/get-ID CO)))
-    (swap! (*context* :MCGS) #(MOVIC/MOVIC % CO @(*context* :CDAG) @(*context* :HB) @(*context* :base-FM) (*context* :CC)))
-    ; not required, just to be clear that this information is only needed by the MOVIC call
-    (swap! (*context* :CC) #(CC/with-most-recent % nil))
-    (let [next-FM (site/next-FM @(*context* :MCGS) @(*context* :CDAG) @(*context* :HB) @(*context* :base-FM))]
-      (reset! (*context* :FM) next-FM)
-      [next-FM operation])))
+  (p ::generate-operation!
+     (swap! (*context* :VC) #(VC/increment % (*context* :site-ID)))
+     (let [CO (CO/make PO-sequence (helpers/generate-ID) @(*context* :VC))
+           operation (message/make-operation CO (*context* :site-ID))]
+       (swap! (*context* :CDAG) #(CDAG/insert % @(*context* :HB) CO))
+       (swap! (*context* :HB) #(HB/insert % CO))
+       (swap! (*context* :GC) #(GC/insert % (message/get-site-ID operation) (CO/get-VC CO)))
+       (swap! (*context* :CC) #(CC/with-most-recent % (CO/get-ID CO)))
+       (swap! (*context* :MCGS) #(MOVIC/MOVIC % CO @(*context* :CDAG) @(*context* :HB) @(*context* :base-FM) (*context* :CC)))
+       ; not required, just to be clear that this information is only needed by the MOVIC call
+       (swap! (*context* :CC) #(CC/with-most-recent % nil))
+       (let [next-FM (site/next-FM @(*context* :MCGS) @(*context* :CDAG) @(*context* :HB) @(*context* :base-FM))]
+         (reset! (*context* :FM) next-FM)
+         [next-FM operation]))))
 
 (defn generate-inverse-operation!
   "**TODO**: Generates an inverse operation concurrent to all following operations.
@@ -99,10 +103,11 @@
   Only required to improve the performance of garbage collection."
   []
   (log "generating heartbeat message")
-  (swap! (*context* :VC) #(VC/increment % (*context* :site-ID)))
-  (let [message (message/make-heartbeat @(*context* :VC) (*context* :site-ID))]
-    (swap! (*context* :GC) #(GC/insert % (message/get-site-ID message) (message/get-VC message)))
-    message))
+  (p ::generate-heartbeat!
+     (swap! (*context* :VC) #(VC/increment % (*context* :site-ID)))
+     (let [message (message/make-heartbeat @(*context* :VC) (*context* :site-ID))]
+       (swap! (*context* :GC) #(GC/insert % (message/get-site-ID message) (message/get-VC message)))
+       message)))
 
 (def receive-message!
   "Receives a message at a client site.

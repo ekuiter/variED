@@ -24,7 +24,9 @@
             [kernel.core.primitive-operation :as PO]
             [kernel.core.compound-operation :as CO]
             [kernel.core.topological-sort :as topological-sort]
-            [kernel.helpers :refer [log]]))
+            [kernel.helpers :refer [log]]
+            #?(:clj  [taoensso.tufte :as tufte :refer (defnp p profiled profile)]
+               :cljs [taoensso.tufte :as tufte :refer-macros (defnp p profiled profile)])))
 
 (defn CO-conflict-reducer
   "For each primitive operation from one compound operation CO-x, checks whether applying
@@ -58,56 +60,58 @@
   These rules assume that CO-y has been applied and everything up to, but excluding PO-x."
   [base-FM+preceding-CO-y base-FM+preceding-CO-y+CO-y]
   (fn [FM-up-to-PO-x PO-x]                                  ; more precise: "base-FM+preceding-CO-y+CO-y+preceding-PO-x"
-    (let [type (PO/get-type PO-x)
-          ID (PO/get-ID PO-x)
-          attribute (PO/get-attribute PO-x)
-          old-value (PO/get-old-value PO-x)
-          new-value (PO/get-new-value PO-x)]
-      (if-let [conflict
-               (or
-                 (when (and (= type :update-feature)
-                            (not (FM/attribute=
-                                   old-value
-                                   (PO/get-feature-attribute FM-up-to-PO-x ID attribute))))
-                   (CC/make-conflict "no-overwrites rule for features"))
-                 (when (and (= type :update-constraint)
-                            (not (FM/attribute=
-                                   old-value
-                                   (PO/get-feature-attribute FM-up-to-PO-x ID attribute))))
-                   (CC/make-conflict "no-overwrites rule for constraints"))
-                 (when (and (= type :update-feature)
-                            (= attribute :parent-ID)
-                            (FM/introduces-cycle? FM-up-to-PO-x ID new-value))
-                   (CC/make-conflict "no-cycles rule"))
-                 (when (and (= type :update-feature)
-                            (FM/graveyarded-feature? FM-up-to-PO-x ID)
-                            ; after the no-overwrites rule, we know for parent updates that old-value == current parent
-                            (not (and (= attribute :parent-ID) (= old-value :graveyard))))
-                   (CC/make-conflict "no-graveyarded rule for targeted features"))
-                 (when (and (= type :update-feature)
-                            (= attribute :parent-ID)
-                            (FM/graveyarded-feature? FM-up-to-PO-x new-value))
-                   (CC/make-conflict "no-graveyarded rule for parent features"))
-                 (when (and (= type :update-constraint)
-                            (FM/graveyarded-constraint? FM-up-to-PO-x ID)
-                            (not (and (= attribute :graveyarded?) (= old-value true))))
-                   (CC/make-conflict "no-graveyarded rule for constraints"))
-                 (when (and (= type :update-feature)
-                            (= attribute :optional?)
-                            (not (FM/part-of-and-group? FM-up-to-PO-x ID)))
-                   (CC/make-conflict "group-children rule"))
-                 (when (and (= type :update-feature)
-                            (= attribute :optional?)
-                            (= new-value true)
-                            (FM/root? FM-up-to-PO-x ID))
-                   (CC/make-conflict "root-mandatory rule"))
-                 (when (and (= type :assert-no-child-added)
-                            (let [children-IDs-before (FM/get-feature-children-IDs base-FM+preceding-CO-y ID)
-                                  children-IDs-after (FM/get-feature-children-IDs base-FM+preceding-CO-y+CO-y ID)]
-                              (not-empty (set/difference children-IDs-after children-IDs-before))))
-                   (CC/make-conflict "assert-no-child-added rule")))]
-        (reduced conflict)                                  ; short-circuiting reduce
-        (PO/_apply FM-up-to-PO-x PO-x)))))
+    (p ::CO-conflict-reducer
+       (let [type (PO/get-type PO-x)
+             ID (PO/get-ID PO-x)
+             attribute (PO/get-attribute PO-x)
+             old-value (PO/get-old-value PO-x)
+             new-value (PO/get-new-value PO-x)]
+         (if-let [conflict
+                  (p ::conflict-rules
+                     (or
+                       (when (and (= type :update-feature)
+                                  (not (FM/attribute=
+                                         old-value
+                                         (PO/get-feature-attribute FM-up-to-PO-x ID attribute))))
+                         (CC/make-conflict "no-overwrites rule for features"))
+                       (when (and (= type :update-constraint)
+                                  (not (FM/attribute=
+                                         old-value
+                                         (PO/get-feature-attribute FM-up-to-PO-x ID attribute))))
+                         (CC/make-conflict "no-overwrites rule for constraints"))
+                       (when (and (= type :update-feature)
+                                  (= attribute :parent-ID)
+                                  (FM/introduces-cycle? FM-up-to-PO-x ID new-value))
+                         (CC/make-conflict "no-cycles rule"))
+                       (when (and (= type :update-feature)
+                                  (FM/graveyarded-feature? FM-up-to-PO-x ID)
+                                  ; after the no-overwrites rule, we know for parent updates that old-value == current parent
+                                  (not (and (= attribute :parent-ID) (= old-value :graveyard))))
+                         (CC/make-conflict "no-graveyarded rule for targeted features"))
+                       (when (and (= type :update-feature)
+                                  (= attribute :parent-ID)
+                                  (FM/graveyarded-feature? FM-up-to-PO-x new-value))
+                         (CC/make-conflict "no-graveyarded rule for parent features"))
+                       (when (and (= type :update-constraint)
+                                  (FM/graveyarded-constraint? FM-up-to-PO-x ID)
+                                  (not (and (= attribute :graveyarded?) (= old-value true))))
+                         (CC/make-conflict "no-graveyarded rule for constraints"))
+                       (when (and (= type :update-feature)
+                                  (= attribute :optional?)
+                                  (not (FM/part-of-and-group? FM-up-to-PO-x ID)))
+                         (CC/make-conflict "group-children rule"))
+                       (when (and (= type :update-feature)
+                                  (= attribute :optional?)
+                                  (= new-value true)
+                                  (FM/root? FM-up-to-PO-x ID))
+                         (CC/make-conflict "root-mandatory rule"))
+                       (when (and (= type :assert-no-child-added)
+                                  (let [children-IDs-before (FM/get-feature-children-IDs base-FM+preceding-CO-y ID)
+                                        children-IDs-after (FM/get-feature-children-IDs base-FM+preceding-CO-y+CO-y ID)]
+                                    (not-empty (set/difference children-IDs-after children-IDs-before))))
+                         (CC/make-conflict "assert-no-child-added rule"))))]
+           (reduced conflict)                               ; short-circuiting reduce
+           (PO/_apply FM-up-to-PO-x PO-x))))))
 
 (defn CO-syntactically-conflicting?
   "Determines whether two compound operations are in syntactic conflict, according
@@ -138,28 +142,30 @@
   `base-FM+preceding-CO-y+CO-y+preceding-CO-x+CO-x`."
   [CO-x CO-y CDAG HB base-FM arg continue]
   (log "checking whether" (CO/get-ID CO-x) "causes a syntactic conflict after" (CO/get-ID CO-y) "has already been applied")
-  (let [CP-x (CDAG/get-CP CDAG (CO/get-ID CO-x))
-        CP-y (CDAG/get-CP CDAG (CO/get-ID CO-y))
-        base-FM+preceding-CO-y
-        (topological-sort/apply-compatible* CDAG HB base-FM CP-y)
-        base-FM+preceding-CO-y+CO-y
-        (CO/_apply base-FM+preceding-CO-y CO-y)
-        base-FM+preceding-CO-y+CO-y+preceding-CO-x
-        (topological-sort/apply-compatible* CDAG HB base-FM+preceding-CO-y+CO-y (set/difference CP-x CP-y))
-        base-FM+preceding-CO-y+CO-y+preceding-CO-x+CO-x
-        (reduce (CO-conflict-reducer base-FM+preceding-CO-y base-FM+preceding-CO-y+CO-y)
-                base-FM+preceding-CO-y+CO-y+preceding-CO-x (CO/get-PO-sequence CO-x))]
-    (if (CC/conflict? base-FM+preceding-CO-y+CO-y+preceding-CO-x+CO-x)
-      base-FM+preceding-CO-y+CO-y+preceding-CO-x+CO-x       ; early return
-      (continue arg base-FM+preceding-CO-y+CO-y+preceding-CO-x+CO-x)))) ; continuation
+  (p ::CO-syntactically-conflicting?
+     (let [CP-x (CDAG/get-CP CDAG (CO/get-ID CO-x))
+           CP-y (CDAG/get-CP CDAG (CO/get-ID CO-y))
+           base-FM+preceding-CO-y
+           (topological-sort/apply-compatible* CDAG HB base-FM CP-y)
+           base-FM+preceding-CO-y+CO-y
+           (CO/_apply base-FM+preceding-CO-y CO-y)
+           base-FM+preceding-CO-y+CO-y+preceding-CO-x
+           (topological-sort/apply-compatible* CDAG HB base-FM+preceding-CO-y+CO-y (set/difference CP-x CP-y))
+           base-FM+preceding-CO-y+CO-y+preceding-CO-x+CO-x
+           (reduce (CO-conflict-reducer base-FM+preceding-CO-y base-FM+preceding-CO-y+CO-y)
+                   base-FM+preceding-CO-y+CO-y+preceding-CO-x (CO/get-PO-sequence CO-x))]
+       (if (CC/conflict? base-FM+preceding-CO-y+CO-y+preceding-CO-x+CO-x)
+         base-FM+preceding-CO-y+CO-y+preceding-CO-x+CO-x    ; early return
+         (continue arg base-FM+preceding-CO-y+CO-y+preceding-CO-x+CO-x))))) ; continuation
 
 (defn CO-semantically-conflicting?
   "Determines whether two compound operations are in semantic conflict, according
   to the rules defined in [[kernel.core.feature-model/semantic-rules]]."
   [FM+preceding-CO-a+CO-a+preceding-CO-b+CO-b]
   (log "checking for semantic conflicts")
-  (when (some #(% FM+preceding-CO-a+CO-a+preceding-CO-b+CO-b) (FM/semantic-rules))
-    (CC/make-conflict "complex semantics rule")))
+  (p ::CO-semantically-conflicting?
+     (when (some #(% FM+preceding-CO-a+CO-a+preceding-CO-b+CO-b) (FM/semantic-rules))
+       (CC/make-conflict "complex semantics rule"))))
 
 (defn CO-conflicting?
   "Determines whether two compound operations are in conflict, assuming that no
@@ -175,19 +181,20 @@
 
   **OPTIMIZE**: Remove the assertion."
   [CO-a CO-b CDAG HB base-FM]
-  (CO-syntactically-conflicting?
-    CO-a CO-b CDAG HB base-FM nil
-    (fn [_ FM+preceding-CO-b+CO-b+preceding-CO-a+CO-a]
-      (CO-syntactically-conflicting?
-        CO-b CO-a CDAG HB base-FM
-        FM+preceding-CO-b+CO-b+preceding-CO-a+CO-a
-        (fn [FM+preceding-CO-b+CO-b+preceding-CO-a+CO-a
-             FM+preceding-CO-a+CO-a+preceding-CO-b+CO-b]
-          ; assert that CO-a and CO-b commute, this is guaranteed by the no-overwrites rule
-          (assert (FM/_=
-                    FM+preceding-CO-b+CO-b+preceding-CO-a+CO-a
-                    FM+preceding-CO-a+CO-a+preceding-CO-b+CO-b))
-          (CO-semantically-conflicting? FM+preceding-CO-a+CO-a+preceding-CO-b+CO-b))))))
+  (p ::CO-conflicting?
+     (CO-syntactically-conflicting?
+       CO-a CO-b CDAG HB base-FM nil
+       (fn [_ FM+preceding-CO-b+CO-b+preceding-CO-a+CO-a]
+         (CO-syntactically-conflicting?
+           CO-b CO-a CDAG HB base-FM
+           FM+preceding-CO-b+CO-b+preceding-CO-a+CO-a
+           (fn [FM+preceding-CO-b+CO-b+preceding-CO-a+CO-a
+                FM+preceding-CO-a+CO-a+preceding-CO-b+CO-b]
+             ; assert that CO-a and CO-b commute, this is guaranteed by the no-overwrites rule
+             (assert (FM/_=
+                       FM+preceding-CO-b+CO-b+preceding-CO-a+CO-a
+                       FM+preceding-CO-a+CO-a+preceding-CO-b+CO-b))
+             (CO-semantically-conflicting? FM+preceding-CO-a+CO-a+preceding-CO-b+CO-b)))))))
 
 ; forward declaration for mutual recursion
 (declare cached-conflicting*?)
@@ -222,20 +229,21 @@
    For better separation of concerns, conflicting? is split up over two functions,
    uncached-conflicting*? and [[cached-conflicting*?]]."
   [CO-a CO-b CDAG HB base-FM CC&]
-  (if (or (not (CO/concurrent? CO-a CO-b))
-          (= (CO/get-ID CO-a) (CO/get-ID CO-b)))
-    false
-    (let [CIP-a (CDAG/get-CIP CDAG (CO/get-ID CO-a))
-          CIP-b (CDAG/get-CIP CDAG (CO/get-ID CO-b))]
-      (or (reduce (fn [_ O-a]
-                    (if-let [conflict (some #(cached-conflicting*? (HB/lookup HB O-a) (HB/lookup HB %)
-                                                                   CDAG HB base-FM CC&) CIP-b)]
-                      (reduced conflict)
-                      false))
-                  false CIP-a)
-          (some #(cached-conflicting*? CO-a (HB/lookup HB %) CDAG HB base-FM CC&) CIP-b)
-          (some #(cached-conflicting*? (HB/lookup HB %) CO-b CDAG HB base-FM CC&) CIP-a)
-          (CO-conflicting? CO-a CO-b CDAG HB base-FM)))))
+  (p ::uncached-conflicting*?
+     (if (or (not (CO/concurrent? CO-a CO-b))
+             (= (CO/get-ID CO-a) (CO/get-ID CO-b)))
+       false
+       (let [CIP-a (CDAG/get-CIP CDAG (CO/get-ID CO-a))
+             CIP-b (CDAG/get-CIP CDAG (CO/get-ID CO-b))]
+         (or (reduce (fn [_ O-a]
+                       (if-let [conflict (some #(cached-conflicting*? (HB/lookup HB O-a) (HB/lookup HB %)
+                                                                      CDAG HB base-FM CC&) CIP-b)]
+                         (reduced conflict)
+                         false))
+                     false CIP-a)
+             (some #(cached-conflicting*? CO-a (HB/lookup HB %) CDAG HB base-FM CC&) CIP-b)
+             (some #(cached-conflicting*? (HB/lookup HB %) CO-b CDAG HB base-FM CC&) CIP-a)
+             (CO-conflicting? CO-a CO-b CDAG HB base-FM))))))
 
 (defn cached-conflicting*?
   "Mutually recurses with [[uncached-conflicting*?]] to cache conflict detection results.
@@ -243,15 +251,16 @@
   The CDAG, HB, base-FM and CC& arguments are passed down as context.
   This function only uses (and modifies) the conflict cache."
   [CO-a CO-b CDAG HB base-FM CC&]
-  (let [CO-ID-a (CO/get-ID CO-a)
-        CO-ID-b (CO/get-ID CO-b)]
-    (if (CC/hittable? @CC& CO-ID-a CO-ID-b)
-      (CC/get-conflict @CC& CO-ID-a CO-ID-b)
-      (if-let [conflict (uncached-conflicting*? CO-a CO-b CDAG HB base-FM CC&)]
-        (do
-          (swap! CC& #(CC/insert % CO-ID-a CO-ID-b conflict))
-          conflict)
-        false))))
+  (p ::cached-conflicting*?
+     (let [CO-ID-a (CO/get-ID CO-a)
+           CO-ID-b (CO/get-ID CO-b)]
+       (if (CC/hittable? @CC& CO-ID-a CO-ID-b)
+         (CC/get-conflict @CC& CO-ID-a CO-ID-b)
+         (if-let [conflict (uncached-conflicting*? CO-a CO-b CDAG HB base-FM CC&)]
+           (do
+             (swap! CC& #(CC/insert % CO-ID-a CO-ID-b conflict))
+             conflict)
+           false)))))
 
 (defn conflicting?
   "Determines whether two compound operations are in conflict with each other.
@@ -261,7 +270,8 @@
   When called with a newly arrived operation, it should be the second one to allow for optimization."
   [CO-a CO-b CDAG HB base-FM CC&]
   (log "determining conflict relation for" (CO/get-ID CO-a) "and" (CO/get-ID CO-b))
-  (cached-conflicting*? CO-a CO-b CDAG HB base-FM CC&))
+  (p ::conflicting?
+     (cached-conflicting*? CO-a CO-b CDAG HB base-FM CC&)))
 
 (def compatible?
   "Determines whether two operations are compatible with each other.

@@ -17,7 +17,9 @@
   those operations will also be stored in the conflict cache.
 
   Without garbage collection, the conflict cache may grow quadratically with time."
-  (:require [kernel.helpers :refer [log]]))
+  (:require [kernel.helpers :refer [log]]
+            #?(:clj  [taoensso.tufte :as tufte :refer (defnp p profiled profile)]
+               :cljs [taoensso.tufte :as tufte :refer-macros (defnp p profiled profile)])))
 
 ; Conflict record
 
@@ -80,6 +82,7 @@
   generation/reception, i.e., the most recent compound operation is always nil
   and does not have to be checked."
   [CC CO-ID]
-  (update CC :conflicts
-          (fn [conflicts]
-            (reduce-kv #(if (contains? %2 CO-ID) %1 (assoc %1 %2 %3)) {} conflicts))))
+  (p ::_remove
+     (update CC :conflicts
+             (fn [conflicts]
+               (reduce-kv #(if (contains? %2 CO-ID) %1 (assoc %1 %2 %3)) {} conflicts)))))

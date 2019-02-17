@@ -16,7 +16,9 @@
   Without garbage collection, the history buffer may grow linearly over time."
   (:require [kernel.core.vector-clock :as VC]
             [kernel.core.compound-operation :as CO]
-            [kernel.helpers :refer [log]]))
+            [kernel.helpers :refer [log]]
+            #?(:clj  [taoensso.tufte :as tufte :refer (defnp p profiled profile)]
+               :cljs [taoensso.tufte :as tufte :refer-macros (defnp p profiled profile)])))
 
 ; constructor
 
@@ -41,11 +43,12 @@
   "Returns a set of all operations in the history buffer that match a given predicate in O(n).
   The predicate is passed an operation."
   [HB fn]
-  (->> HB
-       vals
-       (filter fn)
-       (map CO/get-ID)
-       set))
+  (p ::_filter
+     (->> HB
+          vals
+          (filter fn)
+          (map CO/get-ID)
+          set)))
 
 ; methods
 
@@ -63,4 +66,5 @@
 (defn remove-site
   "Removes the given site from all operations' vector clocks in the history buffer in O(n)."
   [HB site-ID]
-  (into {} (for [[CO-ID CO] HB] [CO-ID (CO/update-VC CO #(VC/remove-site % site-ID))])))
+  (p ::remove-site
+     (into {} (for [[CO-ID CO] HB] [CO-ID (CO/update-VC CO #(VC/remove-site % site-ID))]))))

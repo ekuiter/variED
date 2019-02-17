@@ -13,7 +13,9 @@
 
   Here, a vector clock maps from sites to integers counting events.
   This is not the most efficient implementation (there are garbage collection
-  techniques in the literature).")
+  techniques in the literature)."
+  (:require #?(:clj  [taoensso.tufte :as tufte :refer (defnp p profiled profile)]
+               :cljs [taoensso.tufte :as tufte :refer-macros (defnp p profiled profile)])))
 
 ; constructor
 
@@ -46,7 +48,8 @@
 (defn _merge
   "Merges two vector clocks by taking the maximum component-wise in O(n) for n sites."
   [VC-a VC-b]
-  (merge-with max VC-a VC-b))
+  (p ::_merge
+     (merge-with max VC-a VC-b)))
 
 (defn _<
   "Compares two vector clocks in O(n) for n sites.
@@ -71,11 +74,12 @@
      => then do final not
   ```"
   [VC-a VC-b]
-  (let [site-IDs (set (concat (keys VC-a) (keys VC-b)))]
-    (not (reduce #(let [entry-a (_get VC-a %2)
-                        entry-b (_get VC-b %2)]
-                    (cond
-                      (> entry-a entry-b) (reduced true)
-                      (= entry-a entry-b) %1
-                      (< entry-a entry-b) false))
-                 true site-IDs))))
+  (p ::_<
+     (let [site-IDs (set (concat (keys VC-a) (keys VC-b)))]
+       (not (reduce #(let [entry-a (_get VC-a %2)
+                           entry-b (_get VC-b %2)]
+                       (cond
+                         (> entry-a entry-b) (reduced true)
+                         (= entry-a entry-b) %1
+                         (< entry-a entry-b) false))
+                    true site-IDs)))))

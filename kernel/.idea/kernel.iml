@@ -18,12 +18,16 @@
     <orderEntry type="library" name="Leiningen: com.cognitect/transit-java:0.8.337" level="project" />
     <orderEntry type="library" name="Leiningen: com.fasterxml.jackson.core/jackson-core:2.8.7" level="project" />
     <orderEntry type="library" name="Leiningen: com.googlecode.json-simple/json-simple:1.1.1" level="project" />
+    <orderEntry type="library" name="Leiningen: com.taoensso/encore:2.106.0" level="project" />
+    <orderEntry type="library" name="Leiningen: com.taoensso/truss:1.5.0" level="project" />
+    <orderEntry type="library" name="Leiningen: com.taoensso/tufte:2.1.0-RC4" level="project" />
     <orderEntry type="library" name="Leiningen: commons-codec:1.10" level="project" />
     <orderEntry type="library" name="Leiningen: javax.xml.bind/jaxb-api:2.3.0" level="project" />
     <orderEntry type="library" name="Leiningen: org.clojure/clojure:1.10.0" level="project" />
     <orderEntry type="library" name="Leiningen: org.clojure/core.specs.alpha:0.2.44" level="project" />
     <orderEntry type="library" name="Leiningen: org.clojure/spec.alpha:0.2.176" level="project" />
     <orderEntry type="library" name="Leiningen: org.clojure/tools.nrepl:0.2.12" level="project" />
+    <orderEntry type="library" name="Leiningen: org.clojure/tools.reader:1.3.2" level="project" />
     <orderEntry type="library" name="Leiningen: org.javassist/javassist:3.18.1-GA" level="project" />
     <orderEntry type="library" name="Leiningen: org.msgpack/msgpack:0.6.12" level="project" />
   </component>

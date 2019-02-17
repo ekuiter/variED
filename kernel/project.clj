@@ -15,7 +15,8 @@
   :license {:name "LGPL v3"
             :url  "https://github.com/ekuiter/variED/blob/master/LICENSE.txt"}
   :dependencies [[org.clojure/clojure "1.10.0"]
-                 [com.cognitect/transit-clj "0.8.313"]]
+                 [com.cognitect/transit-clj "0.8.313"]
+                 [com.taoensso/tufte "2.1.0-RC4"]]
   :plugins [[lein-codox "0.10.5" :scope "test"]]
   :aot :all
   :codox {:metadata    {:doc/format :markdown}

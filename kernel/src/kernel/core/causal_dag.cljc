@@ -24,7 +24,9 @@
   (:require [clojure.set :as set]
             [kernel.core.compound-operation :as CO]
             [kernel.core.history-buffer :as HB]
-            [kernel.helpers :refer [log]]))
+            [kernel.helpers :refer [log]]
+            #?(:clj  [taoensso.tufte :as tufte :refer (defnp p profiled profile)]
+               :cljs [taoensso.tufte :as tufte :refer-macros (defnp p profiled profile)])))
 
 ; constructor
 
@@ -62,14 +64,15 @@
   operation in the CP, yielding the maximum elements of the CP or the transitive reduction."
   [CDAG HB CO]
   (log "inserting operation into causal directed acyclic graph with" (count (get-CO-IDs CDAG)) "nodes")
-  (let [CO-CP (reduce #(if (CO/preceding? (HB/lookup HB %2) CO) (conj %1 %2) %1) #{} (get-CO-IDs CDAG))
-        CO-CIP (set/select (fn [CO-ID']
-                             (not-any? #(CO/preceding? (HB/lookup HB CO-ID') (HB/lookup HB %1)) CO-CP))
-                           CO-CP)]
-    (log "found" (count CO-CP) "causally preceding and" (count CO-CIP) "causally immediately preceding operations")
-    (-> CDAG
-        (assoc-in [:CPs (CO/get-ID CO)] CO-CP)
-        (assoc-in [:CIPs (CO/get-ID CO)] CO-CIP))))
+  (p ::insert
+     (let [CO-CP (reduce #(if (CO/preceding? (HB/lookup HB %2) CO) (conj %1 %2) %1) #{} (get-CO-IDs CDAG))
+           CO-CIP (set/select (fn [CO-ID']
+                                (not-any? #(CO/preceding? (HB/lookup HB CO-ID') (HB/lookup HB %1)) CO-CP))
+                              CO-CP)]
+       (log "found" (count CO-CP) "causally preceding and" (count CO-CIP) "causally immediately preceding operations")
+       (-> CDAG
+           (assoc-in [:CPs (CO/get-ID CO)] CO-CP)
+           (assoc-in [:CIPs (CO/get-ID CO)] CO-CIP)))))
 
 (defn remove-all-occurrences
   "Removes all occurrences of a value from all sets that m maps to."
@@ -81,9 +84,10 @@
   Removes the operation's CP and CIP.
   Also removes the operation from all other operations' CPs and CIPs."
   [CDAG CO-ID]
-  (let [update-fn #(-> %
-                       (dissoc CO-ID)
-                       (remove-all-occurrences CO-ID))]
-    (-> CDAG
-        (update :CPs update-fn)
-        (update :CIPs update-fn))))
+  (p ::_remove
+     (let [update-fn #(-> %
+                          (dissoc CO-ID)
+                          (remove-all-occurrences CO-ID))]
+       (-> CDAG
+           (update :CPs update-fn)
+           (update :CIPs update-fn)))))

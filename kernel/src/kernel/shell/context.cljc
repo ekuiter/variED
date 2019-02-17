@@ -21,13 +21,22 @@
   This variable may be rebound to simulate different, interacting sites.
   On a single site (i.e., in production), the context is not rebound
   (but modified using atoms)."
-  (:require [kernel.helpers :refer [log]]))
+  (:require [kernel.helpers :refer [log]]
+            #?(:clj  [taoensso.tufte :as tufte :refer (defnp p profiled profile)]
+               :cljs [taoensso.tufte :as tufte :refer-macros (defnp p profiled profile)])))
 
 (declare ^:dynamic *context*)
+
+(defn get-context
+  "Returns a site's global context."
+  []
+  (p ::get-context
+     *context*))
 
 (defn set-context
   "Sets a site's global context."
   [context]
   (log "context switch")
-  (def ^:dynamic *context* context)
-  nil)
+  (p ::set-context
+     (def ^:dynamic *context* context)
+     nil))

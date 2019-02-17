@@ -6,11 +6,13 @@
   #?@(:clj  [(:import (java.util UUID)
                       [java.io ByteArrayInputStream ByteArrayOutputStream])
              (:require [clojure.string :as string]
-                       [cognitect.transit :as transit])]
+                       [cognitect.transit :as transit]
+                       [taoensso.tufte :as tufte :refer (defnp p profiled profile)])]
       :cljs [(:require [clojure.string :as string]
-                       [cognitect.transit :as transit])]))
+                       [cognitect.transit :as transit]
+                       [taoensso.tufte :as tufte :refer-macros (defnp p profiled profile)])]))
 
-(def ^:dynamic *logger-fn* (fn [_]))
+(def ^:dynamic *logger-fn*)
 (def ^:dynamic *generate-ID-fn*)
 (def ^:dynamic *semantic-rules* '())
 
@@ -24,38 +26,46 @@
      :cljs (*generate-ID-fn*)))
 
 (defn encode [data]
-  #?(:clj  (let [out (ByteArrayOutputStream. 4096)
-                 writer (transit/writer out :json)]
-             (transit/write writer data)
-             (.toString out))
-     :cljs (let [writer (transit/writer :json)]
-                (transit/write writer data))))
+  (p ::encode
+     #?(:clj  (let [out (ByteArrayOutputStream. 4096)
+                    writer (transit/writer out :json)]
+                (transit/write writer data)
+                (.toString out))
+        :cljs (let [writer (transit/writer :json)]
+                   (transit/write writer data)))))
 
 (defn decode [str]
-  #?(:clj  (let [in (ByteArrayInputStream. (.getBytes str))
-                 reader (transit/reader in :json)]
-             (transit/read reader))
-     :cljs (let [reader (transit/reader :json)]
-                (transit/read reader str))))
+  (p ::decode
+     #?(:clj  (let [in (ByteArrayInputStream. (.getBytes str))
+                    reader (transit/reader in :json)]
+                (transit/read reader))
+        :cljs (let [reader (transit/reader :json)]
+                   (transit/read reader str)))))
 
 (defn FM-encode [FM]
-  #?(:cljs (clj->js FM)))
+  (p ::FM-encode
+     #?(:cljs (clj->js FM))))
 
 (defn set-logger-fn [logger-fn]
-  (def ^:dynamic *logger-fn* logger-fn)
+  (p ::set-logger-fn
+     (def ^:dynamic *logger-fn* logger-fn))
   nil)
 
 (defn set-generate-ID-fn [generate-ID-fn]
-  (def ^:dynamic *generate-ID-fn* generate-ID-fn)
+  (p ::set-generate-ID-fn
+     (def ^:dynamic *generate-ID-fn* generate-ID-fn))
   nil)
 
 (defn set-semantic-rules [semantic-rules]
-  (def ^:dynamic *semantic-rules* (map #(fn [FM] (% (encode FM))) semantic-rules))
+  (p ::set-semantic-rules
+     (def ^:dynamic *semantic-rules* (map #(fn [FM] (% (encode FM))) semantic-rules)))
   nil)
 
 (defn log [& args]
-  (*logger-fn* (string/join " " args))
-  nil)
+  (p ::log
+     (when *logger-fn*
+       (*logger-fn* (string/join " " args)))
+     nil))
 
 (defn semantic-rules []
   *semantic-rules*)

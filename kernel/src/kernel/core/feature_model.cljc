@@ -43,7 +43,9 @@
   Provided that all other parameters are then valid, the implementation is expected to again return
   a consistent modified feature model."
   (:require [kernel.helpers :as helpers]
-            [clojure.set :as set]))
+            [clojure.set :as set]
+            #?(:clj  [taoensso.tufte :as tufte :refer (defnp p profiled profile)]
+               :cljs [taoensso.tufte :as tufte :refer-macros (defnp p profiled profile)])))
 
 ; constructor
 
@@ -234,17 +236,21 @@
 
 (defn graveyarded-feature?
   "Returns whether the given feature is im- or explicitly graveyarded."
-  [FM ID]
-  (if-let [parent-ID (get-feature-parent-ID FM ID)]
-    (or (= parent-ID :graveyard)
-        (recur FM parent-ID))
-    false))
+  [_FM _ID]
+  (p ::graveyarded-feature?
+     (loop [FM _FM
+            ID _ID]
+       (if-let [parent-ID (get-feature-parent-ID FM ID)]
+         (or (= parent-ID :graveyard)
+             (recur FM parent-ID))
+         false))))
 
 (defn graveyarded-constraint?
   "Returns whether the given constraint is im- or explicitly graveyarded."
   [FM ID]
-  (or (get-constraint-graveyarded? FM ID)
-      (some (partial graveyarded-feature? FM) (get-constraint-referenced-feature-IDs FM ID))))
+  (p ::graveyarded-constraint?
+     (or (get-constraint-graveyarded? FM ID)
+         (some (partial graveyarded-feature? FM) (get-constraint-referenced-feature-IDs FM ID)))))
 
 (defn part-of-and-group?
   "Returns whether the given feature is included in an and group.
@@ -275,9 +281,10 @@
   a cycle, or may throw exceptions, so they may wish to customize this (e.g., a cycle is
   introduced if and only if a respective exception is thrown)."
   [FM ID parent-ID]
-  (-> FM
-      (set-feature-parent-ID ID parent-ID)
-      (cycle-in-path-to-root? ID parent-ID)))
+  (p ::introduces-cycle?
+     (-> FM
+         (set-feature-parent-ID ID parent-ID)
+         (cycle-in-path-to-root? ID parent-ID))))
 
 (defn attribute=
   "Determines whether two attribute values (including custom properties) are the same.

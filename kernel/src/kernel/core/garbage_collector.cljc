@@ -19,7 +19,9 @@
             [kernel.core.topological-sort :as topological-sort]
             [kernel.core.movic :as MOVIC]
             [kernel.core.compound-operation :as CO]
-            [kernel.helpers :refer [log]]))
+            [kernel.helpers :refer [log]]
+            #?(:clj  [taoensso.tufte :as tufte :refer (defnp p profiled profile)]
+               :cljs [taoensso.tufte :as tufte :refer-macros (defnp p profiled profile)])))
 
 ; constructor
 
@@ -39,9 +41,10 @@
   **TODO**: This has some interactions with undo/redo (i.e., an operation and its successors
   must not be discarded as long as any site may still request to undo it."
   [GC CO]
-  (->> GC
-       vals
-       (every? (partial VC/_< (CO/get-VC CO)))))
+  (p ::eligible?
+     (->> GC
+          vals
+          (every? (partial VC/_< (CO/get-VC CO))))))
 
 ; methods
 

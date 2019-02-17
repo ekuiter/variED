@@ -120,7 +120,7 @@ export function createConstraintRenderer<T>({neutral, _return, returnFeature, jo
     const isAtom = (formula: KernelConstraintFormula): formula is KernelConstraintFormulaAtom => !Array.isArray(formula),
             renderLiteral = (featureModel: FeatureModel, atom: KernelConstraintFormulaAtom): T => {
             const feature = featureModel.getFeature(atom);
-            return returnFeature(feature ? feature.name : atom, i++);
+            return returnFeature(feature ? feature.name : 'GRAVEYARDED', i++);
         },
         renderFormula = (featureModel: FeatureModel, formula: KernelConstraintFormula, parentType: ConstraintType): T => {
         if (isAtom(formula))
@@ -208,7 +208,7 @@ class FeatureModel {
     _actualNodes: FeatureNode[];
     _visibleNodes: FeatureNode[];
     _constraints: Constraint[];
-    _IDsToFeatures: {[x: string]: FeatureNode} = {};
+    _IDsToFeatureNodes: {[x: string]: FeatureNode} = {};
 
     // feature model as supplied by feature model messages from the server
     static fromKernel(kernelFeatureModel: KernelFeatureModel): FeatureModel {
@@ -266,7 +266,7 @@ class FeatureModel {
                 if (isVisible(node))
                     this._visibleNodes.push(node);
 
-                this._IDsToFeatures[getID(node)] = node;
+                this._IDsToFeatureNodes[getID(node)] = node;
             });
         }
     }
@@ -293,7 +293,7 @@ class FeatureModel {
 
     getNode(featureID: string): FeatureNode | undefined {
         this.prepare();
-        return this._IDsToFeatures[featureID];
+        return this._IDsToFeatureNodes[featureID];
     }
 
     getFeature(featureID: string): Feature | undefined {

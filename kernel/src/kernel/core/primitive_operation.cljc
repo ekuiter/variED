@@ -5,7 +5,9 @@
 
   Primitive operations are also used to detect conflicts for competing operations ([[kernel.core.conflict-relation]])."
   (:require [kernel.helpers :as helpers :refer [log]]
-            [kernel.core.feature-model :as FM]))
+            [kernel.core.feature-model :as FM]
+            #?(:clj  [taoensso.tufte :as tufte :refer (defnp p profiled profile)]
+               :cljs [taoensso.tufte :as tufte :refer-macros (defnp p profiled profile)])))
 
 ; getters
 
@@ -63,40 +65,44 @@
   values defined in [[kernel.core.feature-model]].
   Newly created features are not part of the feature tree until explicitly inserted."
   []
-  (let [ID (helpers/generate-ID)]
-    (log "PO create-feature" ID)
-    {:type :create-feature
-     :ID   ID}))
+  (p ::create-feature
+     (let [ID (helpers/generate-ID)]
+       (log "PO create-feature" ID)
+       {:type :create-feature
+        :ID   ID})))
 
 (defn update-feature
   "Updates a single attribute of a feature.
   For conflict detection and undo/redo, it is also necessary to store an attribute's old value for every update."
   [ID attribute old-value new-value]
   (log "PO update-feature" ID attribute old-value new-value)
-  {:type      :update-feature
-   :ID        ID
-   :attribute attribute
-   :old-value old-value
-   :new-value new-value})
+  (p ::update-feature
+     {:type      :update-feature
+      :ID        ID
+      :attribute attribute
+      :old-value old-value
+      :new-value new-value}))
 
 (defn create-constraint
   "Creates a new constraint."
   []
-  (let [ID (helpers/generate-ID)]
-    (log "PO create-constraint" ID)
-    {:type :create-constraint
-     :ID   ID}))
+  (p ::create-constraint
+     (let [ID (helpers/generate-ID)]
+       (log "PO create-constraint" ID)
+       {:type :create-constraint
+        :ID   ID})))
 
 (defn update-constraint
   "Updates a single attribute of a constraint.
   For conflict detection and undo/redo, it is also necessary to store an attribute's old value for every update."
   [ID attribute old-value new-value]
   (log "PO update-constraint" ID attribute old-value new-value)
-  {:type      :update-constraint
-   :ID        ID
-   :attribute attribute
-   :old-value old-value
-   :new-value new-value})
+  (p ::update-constraint
+     {:type      :update-constraint
+      :ID        ID
+      :attribute attribute
+      :old-value old-value
+      :new-value new-value}))
 
 (defn assert-no-child-added
   "Asserts that no competing operations add children to the targeted feature.
@@ -105,8 +111,9 @@
   it only affects the conflict detection."
   [ID]
   (log "PO assert-no-child-added" ID)
-  {:type :assert-no-child-added
-   :ID   ID})
+  (p ::assert-no-child-added
+     {:type :assert-no-child-added
+      :ID   ID}))
 
 ; inverse operations
 
@@ -157,30 +164,36 @@
 
 (defmethod _apply :create-feature
   [FM {ID :ID}]
-  (FM/create-feature FM ID))
+  (p ::_apply
+     (FM/create-feature FM ID)))
 
 (defmethod _apply :update-feature
   [FM
    {ID        :ID
     attribute :attribute
     new-value :new-value}]
-  (case attribute
-    :parent-ID (FM/set-feature-parent-ID FM ID new-value)
-    :optional? (FM/set-feature-optional? FM ID new-value)
-    :group-type (FM/set-feature-group-type FM ID new-value)
-    (FM/set-feature-property FM ID attribute new-value)))
+  (p ::_apply
+     (case attribute
+       :parent-ID (FM/set-feature-parent-ID FM ID new-value)
+       :optional? (FM/set-feature-optional? FM ID new-value)
+       :group-type (FM/set-feature-group-type FM ID new-value)
+       (FM/set-feature-property FM ID attribute new-value))))
 
 (defmethod _apply :create-constraint
   [FM {ID :ID}]
-  (FM/create-constraint FM ID))
+  (p ::_apply
+     (FM/create-constraint FM ID)))
 
 (defmethod _apply :update-constraint
   [FM
    {ID        :ID
     attribute :attribute
     new-value :new-value}]
-  (case attribute
-    :graveyarded? (FM/set-constraint-graveyarded? FM ID new-value)
-    :formula (FM/set-constraint-formula FM ID new-value)))
+  (p ::_apply
+     (case attribute
+       :graveyarded? (FM/set-constraint-graveyarded? FM ID new-value)
+       :formula (FM/set-constraint-formula FM ID new-value))))
 
-(defmethod _apply :assert-no-child-added [FM _PO] FM)
+(defmethod _apply :assert-no-child-added [FM _PO]
+  (p ::_apply
+     FM))

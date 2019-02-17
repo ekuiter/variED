@@ -17,16 +17,18 @@ class Kernel {
     running = false;
 
     _kernelLogger = (str: string) =>
-        logger.logTagged({tag: 'kernel'}, () => `[${artifactPathToString(this.artifactPath)}] ${str}`);
+        logger.infoTagged({tag: 'kernel'}, () => `[${artifactPathToString(this.artifactPath)}] ${str}`);
 
     _callKernel(fn: (api: any) => void): KernelData {
         if (!this.running)
             throw new Error('can only call API function on running kernel');
-        _kernel.api.setLoggerFunction(this._kernelLogger);
+        _kernel.api.setLoggerFunction(logger.isLoggingInfo() ? this._kernelLogger : null);
         _kernel.api.setGenerateIDFunction(uuidv4);
         _kernel.api.setContext(this.context);
         const result: any = fn(_kernel.api);
         this.context = _kernel.api.getContext();
+        if (logger.isLoggingInfo())
+            _kernel.api.logProfile();
         return result;
     }
 

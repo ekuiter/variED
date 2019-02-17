@@ -18,7 +18,9 @@
             [kernel.core.causal-dag :as CDAG]
             [kernel.core.history-buffer :as HB]
             [kernel.core.compound-operation :as CO]
-            [kernel.helpers :refer [log]]))
+            [kernel.helpers :refer [log]]
+            #?(:clj  [taoensso.tufte :as tufte :refer (defnp p profiled profile)]
+               :cljs [taoensso.tufte :as tufte :refer-macros (defnp p profiled profile)])))
 
 (defn single-dependency-map
   "Constructs a single-key dependence, represented as a map from
@@ -61,7 +63,8 @@
 (defn CO-topological-sort
   "Sorts a set of compatible operations topologically according to the causally-preceding relation."
   [CDAG CO-IDs]
-  (topological-sort (CO-dependency-map CDAG CO-IDs)))
+  (p ::CO-topological-sort
+     (topological-sort (CO-dependency-map CDAG CO-IDs))))
 
 (defn apply-compatible*
   "Applies a set of compatible compound operations to a feature model.
@@ -69,7 +72,8 @@
   then applies the operations in that order."
   [CDAG HB FM CO-IDs]
   (log "applying a set of" (count CO-IDs) "compatible operations on a feature model")
-  (->> CO-IDs
-       (CO-topological-sort CDAG)
-       (HB/lookup* HB)
-       (CO/apply* FM)))
+  (p ::apply-compatible*
+     (->> CO-IDs
+          (CO-topological-sort CDAG)
+          (HB/lookup* HB)
+          (CO/apply* FM))))

@@ -39,7 +39,7 @@ function createOperationAction<P>(makePOSequence: (payload: P, kernel: Kernel) =
             const message: Message = {type: MessageType.KERNEL, message: operation};
             enqueueMessage(message, artifactPath);
             deferred(flushMessageQueue)();
-            return dispatch(action(KERNEL_GENERATE_OPERATION, {kernelFeatureModel, kernelContext}));
+            return dispatch(action(KERNEL_GENERATE_OPERATION, {artifactPath, kernelFeatureModel, kernelContext}));
         };
     };
 }
