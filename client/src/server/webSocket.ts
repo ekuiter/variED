@@ -30,6 +30,14 @@ function getSiteID() {
     return state && state.myself ? state.myself.siteID : 'initialize';
 }
 
+export function isSimulateOffline() {
+    const state: State | undefined =
+        (window as any).app && (window as any).app.store && (window as any).app.store.getState();
+    if (!state)
+        logger.warn(() => 'store not accessible, can not simulate offline site');
+    return state ? state.settings.developer.simulateOffline : 0;
+}
+
 const getWebSocket = ((): () => Promise<Sockette> => {
     let promise: Promise<Sockette> | undefined;
 
@@ -37,6 +45,12 @@ const getWebSocket = ((): () => Promise<Sockette> => {
         return promise = new Promise((resolve, reject) => {
             const url = constants.server.webSocket(getSiteID());
             logger.logTagged({tag}, () => `connecting to ${url}`);
+
+            if (isSimulateOffline()) {
+                reject('simulating offline, abort connect');
+                return;
+            }
+
             const sockette = new Sockette(url, {
                 onopen() {
                     logger.logTagged({tag}, () => `open`);

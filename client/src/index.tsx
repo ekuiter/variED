@@ -50,13 +50,13 @@ if (!window.name)
     updateLastActive();
     window.setInterval(updateLastActive, defaultSettings.intervals.lastActive);
 
-    window.addEventListener('beforeunload', () => {
+    window.addEventListener('beforeunload', (e: BeforeUnloadEvent) => {
         if (numberofUnflushedMessages() > 0)
-            return i18n.getFunction('hasUnflushedMessages')(numberofUnflushedMessages());
+            e.returnValue = i18n.getFunction('hasUnflushedMessages')(numberofUnflushedMessages());
     });
 
     if (window.location.protocol !== 'http:')
-    window.location.protocol = 'http:'; // TODO: hack until we support WSS
+        window.location.protocol = 'http:'; // TODO: hack until we support WSS
 
     initializeIcons('/assets/');
 
