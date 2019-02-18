@@ -41,7 +41,7 @@ const translationMap = {
                     <strong>variED is already active in another tab.</strong>
                 </p>
                 <p>
-                    To use variED in this tab, close all other variED tabs, wait a moment and&nbsp;
+                    To use variED in this tab, close all other variED tabs and&nbsp;
                     <a href="#" onClick={() => window.location.reload()}>reload the page</a>.
                 </p>
             </div>

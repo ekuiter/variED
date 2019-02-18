@@ -3,8 +3,8 @@ export default class Sockette {
     send(data: any): void;
     json(data: any): void;
     close(code?: number, reason?: string): void;
-    reconnect(): void;
-    open(): void;
+    reconnect(): string;
+    open(url: string): void;
 }
 
 export interface SocketteOptions {

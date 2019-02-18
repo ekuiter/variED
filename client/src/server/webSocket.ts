@@ -3,11 +3,12 @@
  */
 
 import constants from '../constants';
-import {Message} from '../types';
+import {Message, MessageType} from '../types';
 import logger from '../helpers/logger';
 import {wait} from '../helpers/wait';
 import {State} from '../store/types';
 import Sockette from './Sockette';
+import {Persistor} from 'redux-persist';
 
 type HandleMessageFunction = (data: Message) => void;
 
@@ -63,7 +64,7 @@ const getWebSocket = ((): () => Promise<Sockette> => {
                     // TODO: notify user that WebSocket was closed
                 },
 
-                onerror(e) {
+                onerror(e: any) {
                     logger.warnTagged({tag}, () => e);
                     // TODO: notify user of error
                     reject(e);
@@ -71,16 +72,28 @@ const getWebSocket = ((): () => Promise<Sockette> => {
 
                 onreconnect() {
                     // TODO: notify user of reconnect
-                    const url = constants.server.webSocket(getSiteID());
                     logger.logTagged({tag}, () => `reconnect to ${url}`);
                     return url;
                 },
 
                 onmessage(message) {
                     wait(getSimulateDelay()).then(() => {
-                        const data = JSON.parse(message.data);
+                        const data: Message = JSON.parse(message.data);
                         logger.logTagged({tag: 'receive'}, () => data);
-                        if (handleMessage)
+                        // TODO: when we have better error handling, revise this
+                        if (data.type === MessageType.ERROR && data.error.indexOf('not registered') !== -1) {
+                            logger.warn(() => `can not register with site ID ${getSiteID()}, will try to obtain new site ID`);
+                            // TODO: this is a duplicate (see CommandPalette)
+                            const persistor: Persistor | undefined =
+                                (window as any).app && (window as any).app.persistor;
+                            if (!persistor)
+                                window.alert('can not obtain persistor');
+                            else {
+                                persistor.pause();
+                                persistor.purge();
+                                window.location.reload();
+                            }
+                        } else if (handleMessage)
                             handleMessage(data);
                     });
                 }

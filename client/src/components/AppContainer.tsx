@@ -18,6 +18,7 @@ import {getCurrentCollaborativeSession, isFeatureDiagramCollaborativeSession, ge
 import SplitView from './SplitView';
 import {enableConstraintsView} from './constraintsView/ConstraintsView';
 import {flushMessageQueue} from '../server/messageQueue';
+import {artifactPathToString} from '../types';
 
 class AppContainer extends React.Component<StateDerivedProps> {
     flushMessageQueueInterval: number;
@@ -31,6 +32,12 @@ class AppContainer extends React.Component<StateDerivedProps> {
 
     componentWillUnmount() {
         window.clearInterval(this.flushMessageQueueInterval);
+    }
+
+    componentDidUpdate() {
+        document.title = this.props.currentArtifactPath
+            ? `${artifactPathToString(this.props.currentArtifactPath)} | variED`
+            : 'variED';
     }
 
     render() {
@@ -56,7 +63,8 @@ export default connect(
     logger.mapStateToProps('AppContainer', (state: State): StateDerivedProps => {
         const collaborativeSession = getCurrentCollaborativeSession(state),
             props: StateDerivedProps = {
-                settings: state.settings
+                settings: state.settings,
+                currentArtifactPath: state.currentArtifactPath
             };
         if (!collaborativeSession || !isFeatureDiagramCollaborativeSession(collaborativeSession))
             return props;
