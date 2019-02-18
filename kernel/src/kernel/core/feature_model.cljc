@@ -89,6 +89,11 @@
   []
   :and)
 
+(defn default-feature-name
+  "Returns the default name attribute for a newly created feature."
+  []
+  "New Feature")
+
 (defn default-constraint-graveyarded?
   "Returns the default graveyarded attribute for a newly created constraint.
   Newly created constraints are graveyarded until explicitly shown."
@@ -171,7 +176,8 @@
     (assoc-in FM [:features ID]
               {:parent-ID  (default-feature-parent)
                :optional?  (default-feature-optional?)
-               :group-type (default-feature-group-type)})))
+               :group-type (default-feature-group-type)
+               :name       (default-feature-name)})))
 
 (defn set-feature-parent-ID
   "Sets the identifier of the given feature's parent.

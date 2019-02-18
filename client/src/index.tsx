@@ -89,9 +89,6 @@ if (!window.name)
             Kernel.run(store.getState(), store.getState().currentArtifactPath, fn)
     };
 
-    if (store.getState().settings.developer.debug)
-        setLogLevel(LogLevel.info);
-
     ReactDOM.render((
         <Provider store={store}>
             <PersistGate persistor={persistor}>
@@ -99,6 +96,4 @@ if (!window.name)
             </PersistGate>
         </Provider>
     ), document.getElementById('root'));
-
-    store.dispatch<any>(actions.server.joinRequest({artifactPath: {project: 'FeatureModeling', artifact: 'CTV'}}));
 })();

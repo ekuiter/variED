@@ -13,7 +13,7 @@ import ShortcutContainer from './ShortcutContainer';
 import actions from '../store/actions';
 import {StateDerivedProps, State} from '../store/types';
 import ConstraintsViewContainer from './constraintsView/ConstraintsViewContainer';
-import logger from '../helpers/logger';
+import logger, {setLogLevel, LogLevel} from '../helpers/logger';
 import {getCurrentCollaborativeSession, isFeatureDiagramCollaborativeSession, getCurrentFeatureModel} from '../store/selectors';
 import SplitView from './SplitView';
 import {enableConstraintsView} from './constraintsView/ConstraintsView';
@@ -28,6 +28,11 @@ class AppContainer extends React.Component<StateDerivedProps> {
 
         this.flushMessageQueueInterval = window.setInterval(
             flushMessageQueue, this.props.settings!.intervals.flushMessageQueue);
+
+        if (this.props.settings!.developer.debug)
+            setLogLevel(LogLevel.info);
+
+        this.props.onJoinRequest!({artifactPath: {project: 'FeatureModeling', artifact: 'CTV'}});
     }
 
     componentWillUnmount() {
@@ -75,6 +80,7 @@ export default connect(
     }),
     (dispatch): StateDerivedProps => ({
         handleMessage: message => dispatch(actions.server.receive(message)),
-        onSetSetting: payload => dispatch(actions.settings.set(payload))
+        onSetSetting: payload => dispatch(actions.settings.set(payload)),
+        onJoinRequest: payload => dispatch<any>(actions.server.joinRequest(payload))
     })
 )(AppContainer);

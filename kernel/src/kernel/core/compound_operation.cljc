@@ -170,9 +170,9 @@
            ID (PO/get-ID PO-create-feature)]
        (apply make-PO-sequence
               PO-create-feature
-              (concat (when parent-ID                       ; update group type if not creating above root
+              (concat (when parent-ID
                         (list (PO/update-feature ID :parent-ID (FM/default-feature-parent) parent-ID)
-                              (PO/update-feature
+                              (PO/update-feature            ; update group type if not creating above root
                                 ID :group-type
                                 (FM/default-feature-group-type)
                                 (FM/get-feature-group-type FM parent-ID))))
