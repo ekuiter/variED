@@ -4,7 +4,6 @@ import SettingsPanel, {Setting} from './SettingsPanel';
 import {defaultSettings, getNewSettings, getSetting} from '../../store/settings';
 import {FeatureDiagramLayoutType} from '../../types';
 import {Panel} from 'office-ui-fabric-react/lib/Panel';
-import {DefaultButton} from 'office-ui-fabric-react/lib/Button';
 import {ColorPicker} from 'office-ui-fabric-react/lib/ColorPicker';
 import {Slider} from 'office-ui-fabric-react/lib/Slider';
 import i18n from '../../i18n';
