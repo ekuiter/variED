@@ -15,7 +15,7 @@ const close = (mockServer: any) => {
 
 describe('webSocket', () => {
     it('opens a web socket', async () => {
-        const mockServer = new Server(constants.server.webSocket),
+        const mockServer = new Server(constants.server.webSocket()),
             connectionMock = jest.fn();
         mockServer.on('connection', connectionMock);
         expect(connectionMock).not.toBeCalled();
@@ -25,7 +25,7 @@ describe('webSocket', () => {
     });
 
     it('does not open a web socket if it is already open', async () => {
-        const mockServer = new Server(constants.server.webSocket),
+        const mockServer = new Server(constants.server.webSocket()),
             connectionMock = jest.fn();
         mockServer.on('connection', connectionMock);
         expect(connectionMock).toHaveBeenCalledTimes(0);
@@ -37,14 +37,14 @@ describe('webSocket', () => {
     });
 
     it('closes a web socket', async () => {
-        const mockServer = new Server(constants.server.webSocket);
+        const mockServer = new Server(constants.server.webSocket());
         await openWebSocket();
         await close(mockServer);
     });
 
     it('reports errors', async () => {
         (logger.warnTagged as any).mockReset();
-        const mockServer: any = new Server(constants.server.webSocket);
+        const mockServer: any = new Server(constants.server.webSocket());
         expect(logger.warnTagged).not.toBeCalled();
         await openWebSocket();
         mockServer.emit('error');
@@ -53,7 +53,7 @@ describe('webSocket', () => {
     });
 
     it('receives messages', async () => {
-        const mockServer: any = new Server(constants.server.webSocket),
+        const mockServer: any = new Server(constants.server.webSocket()),
             handleMessage = jest.fn();
         await openWebSocket(handleMessage);
         mockServer.emit('message', '{"type":"MESSAGE_TEST"}');
@@ -63,7 +63,7 @@ describe('webSocket', () => {
     });
 
     const sendMessageTest = async (getPromise: () => Promise<void>) => {
-        const mockServer: any = new Server(constants.server.webSocket),
+        const mockServer: any = new Server(constants.server.webSocket()),
             messageMock = jest.fn();
         mockServer.on('connection', (webSocket: any) => {
             webSocket.on('message', messageMock);

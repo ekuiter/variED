@@ -7,7 +7,7 @@ import {Message} from '../types';
 import logger from '../helpers/logger';
 import {wait} from '../helpers/wait';
 import {State} from '../store/types';
-import Sockette from 'sockette';
+import Sockette from './Sockette';
 
 type HandleMessageFunction = (data: Message) => void;
 
@@ -22,14 +22,24 @@ function getSimulateDelay() {
     return state ? state.settings.developer.simulateDelay : 0;
 }
 
+function getSiteID() {
+    const state: State | undefined =
+        (window as any).app && (window as any).app.store && (window as any).app.store.getState();
+    if (!state)
+        logger.warn(() => 'store not accessible, can not obtain site ID');
+    return state && state.myself ? state.myself.siteID : 'initialize';
+}
+
 const getWebSocket = ((): () => Promise<Sockette> => {
     let promise: Promise<Sockette> | undefined;
 
     function connect(): Promise<Sockette> {
         return promise = new Promise((resolve, reject) => {
-            const sockette = new Sockette(constants.server.webSocket, {
+            const url = constants.server.webSocket(getSiteID());
+            logger.logTagged({tag}, () => `connecting to ${url}`);
+            const sockette = new Sockette(url, {
                 onopen() {
-                    logger.logTagged({tag}, () => 'open');
+                    logger.logTagged({tag}, () => `open`);
                     resolve(sockette);
                 },
 
@@ -46,11 +56,10 @@ const getWebSocket = ((): () => Promise<Sockette> => {
                 },
 
                 onreconnect() {
-                    logger.logTagged({tag}, () => 'reconnect');
                     // TODO: notify user of reconnect
-                    // Re-opening a WebSocket is involved because the existing Redux state has to be considered.
-                    // For example, we should log in as the same user participating in the same collaboration sessions,
-                    // as if she never left. (For optimistic UI, pending operations have to be submitted as well.)
+                    const url = constants.server.webSocket(getSiteID());
+                    logger.logTagged({tag}, () => `reconnect to ${url}`);
+                    return url;
                 },
 
                 onmessage(message) {

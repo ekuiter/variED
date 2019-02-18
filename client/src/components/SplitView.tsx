@@ -19,6 +19,7 @@ class SplitView extends React.Component<Props> {
     contentRef = React.createRef<HTMLDivElement>();
     handlerRef = React.createRef<HTMLDivElement>();
 
+    // TODO: this sucks on touch devices.
     componentDidMount() {
         let isDragging = false, wasDragged = false, wasSwitched = false;
 
@@ -68,15 +69,18 @@ class SplitView extends React.Component<Props> {
     render() {
         const enableSecondaryView = this.props.enableSecondaryView();
 
+        if (!this.contentRef.current)
+            this.forceUpdate(); // TODO: this is not ideal - instead, pass width/height of view as props?
+
         return (
             <div className={'content ' + this.props.settings!.views.splitDirection} ref={this.contentRef}>
-                {this.props.renderPrimaryView(
+                {this.contentRef.current && this.props.renderPrimaryView(
                     enableSecondaryView
                         ? {
                             flex: '0 0 auto',
                             ...this.props.settings!.views.splitDirection === 'horizontal'
-                            ? {width: this.props.settings!.views.splitAt * (this.contentRef.current!.offsetWidth - 12)}
-                            : {height: this.props.settings!.views.splitAt * (this.contentRef.current!.offsetHeight - 12)}
+                            ? {width: this.props.settings!.views.splitAt * (this.contentRef.current.offsetWidth - 12)}
+                            : {height: this.props.settings!.views.splitAt * (this.contentRef.current.offsetHeight - 12)}
                         }
                         : {})}
                 <div className="handler" ref={this.handlerRef} style={{

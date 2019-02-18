@@ -35,8 +35,9 @@ public abstract class CollaborativeSession {
 
     public void join(Collaborator newCollaborator) {
         Logger.info("{} joins collaborative session {}", newCollaborator, this);
-        if (!collaborators.add(newCollaborator))
-            throw new RuntimeException("collaborator already joined");
+        // collaborator may re-join to obtain new initialization context,
+        // therefore do not check "add" return value here
+        collaborators.add(newCollaborator);
         _join(newCollaborator);
     }
 

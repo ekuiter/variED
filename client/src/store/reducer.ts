@@ -135,6 +135,8 @@ function serverSendReducer(state: State, action: AnyAction): State {
     return state;
 }
 
+// Calls the kernel, which makes this reducer _not pure_.
+// Thus, time travel etc. is not supported.
 function serverReceiveReducer(state: State, action: Action): State {
     if (isActionOf(actions.server.receive, action) && isMessageType(action.payload.type)) {
         switch (action.payload.type) {

@@ -9,6 +9,7 @@ import FeatureModel from '../../modeling/FeatureModel';
 import {arrayUnique} from '../../helpers/array';
 import deferred from '../../helpers/deferred';
 import logger from '../../helpers/logger';
+import {Persistor} from 'redux-persist';
 
 interface Props {
     artifactPaths: ArtifactPath[],
@@ -369,6 +370,20 @@ export default class extends React.Component<Props, State> {
             icon: 'DeveloperTools',
             action: this.action(() => this.props.onSetSetting(
                 {path: 'developer.simulateOffline', value: (bool: boolean) => !bool}))
+        }, {
+            text: i18n.t('commandPalette.developer.clearLocalStorage'),
+            icon: 'DeveloperTools',
+            action: () => {
+                const persistor: Persistor | undefined =
+                    (window as any).app && (window as any).app.persistor;
+                if (!persistor)
+                    window.alert('can not obtain persistor');
+                else {
+                    persistor.pause();
+                    persistor.purge();
+                    window.location.reload();
+                }
+            }
         }
     ];
 

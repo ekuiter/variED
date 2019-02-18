@@ -273,15 +273,14 @@
 ; helper functions
 
 (defn ^:export getContext
-  "Returns the global context.
-  May be used to switch between different contexts, e.g., when editing different feature models."
+  "Returns the global context."
   []
   (profile
     {}
     (get-context)))
 
 (defn ^:export setContext
-  "Returns the global context.
+  "Sets the global context.
   May be used to switch between different contexts, e.g., when editing different feature models."
   [context]
   (profile

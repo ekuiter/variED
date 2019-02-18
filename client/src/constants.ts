@@ -27,7 +27,8 @@ const constants = {
         }
     },
     server: {
-        webSocket: process.env.REACT_APP_WEBSOCKET || `ws://${window.location.host}/websocket/new` // WebSocket URI to connect to, TODO: reuse existing site ID
+        // WebSocket URI to connect to
+        webSocket: (siteID = 'initialize') => `ws://${process.env.REACT_APP_SERVER || window.location.host}/websocket/${siteID}`
     },
     helpers: {
         withDimensions: {

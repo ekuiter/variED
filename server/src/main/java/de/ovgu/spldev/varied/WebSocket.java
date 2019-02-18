@@ -30,7 +30,7 @@ public class WebSocket {
                 Logger.debug("WebSocket opened", siteID);
                 this.session = session;
                 try {
-                    UUID siteID = _siteID.equals("new") ? null : UUID.fromString(_siteID);
+                    UUID siteID = _siteID.equals("initialize") ? null : UUID.fromString(_siteID);
                     session.setMaxIdleTimeout(0); // this is not always respected by the servlet container!
                     this.siteID = CollaboratorManager.getInstance().register(this, siteID);
                 } catch (Throwable t) {

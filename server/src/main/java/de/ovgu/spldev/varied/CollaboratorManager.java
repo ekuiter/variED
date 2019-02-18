@@ -25,7 +25,7 @@ public class CollaboratorManager {
                 collaborator.setWebSocket(webSocket);
                 collaborator.sendPending();
             } else
-                throw new RuntimeException("site ID " + siteID + " not yet registered");
+                throw new RuntimeException("site ID " + siteID + " not registered");
         } else {
             collaborator = new Collaborator(webSocket);
             collaborators.put(collaborator.getSiteID(), collaborator);
