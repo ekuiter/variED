@@ -21,6 +21,10 @@ export function enqueueMessage(message: Message, artifactPath?: ArtifactPath): M
     return message;
 }
 
+export function numberofUnflushedMessages(): number {
+    return messageQueue.length;
+}
+
 export async function flushMessageQueue(): Promise<void> {
     if (isSimulateOffline()) {
         logger.warnTagged({tag}, () => `simulating offline, abort flushing message queue`);

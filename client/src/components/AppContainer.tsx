@@ -24,6 +24,7 @@ class AppContainer extends React.Component<StateDerivedProps> {
 
     componentDidMount() {
         openWebSocket(this.props.handleMessage);
+
         this.flushMessageQueueInterval = window.setInterval(
             flushMessageQueue, this.props.settings!.intervals.flushMessageQueue);
     }

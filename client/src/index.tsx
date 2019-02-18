@@ -21,51 +21,84 @@ import actions from './store/actions';
 import {LogLevel, setLogLevel} from './helpers/logger';
 import Kernel from './modeling/Kernel';
 import {initialState} from './store/types';
+import {numberofUnflushedMessages} from './server/messageQueue';
+import i18n from './i18n';
+import uuidv4 from 'uuid/v4';
+import {defaultSettings} from './store/settings';
 
-if (window.location.protocol !== 'http:')
+declare var window: any;
+
+if (!window.name)
+    window.name = uuidv4();
+
+(() => {
+    const lastActive = localStorage.getItem('lastActive');
+    const [lastActiveWindow, lastActiveTimestamp]: [string, number] =
+        lastActive ? JSON.parse(lastActive) : [undefined, undefined];
+
+    if (lastActiveWindow && lastActiveTimestamp &&
+        (+new Date) - lastActiveTimestamp < 1.5 * defaultSettings.intervals.lastActive &&
+        lastActiveWindow !== window.name) {
+            ReactDOM.render(
+                i18n.getFunction('alreadyActive')(),
+                document.getElementById('root'));
+        return;
+    }
+
+    const updateLastActive = () =>
+        localStorage.setItem('lastActive', JSON.stringify([window.name, +new Date]));
+    updateLastActive();
+    window.setInterval(updateLastActive, defaultSettings.intervals.lastActive);
+
+    window.addEventListener('beforeunload', () => {
+        if (numberofUnflushedMessages() > 0)
+            return i18n.getFunction('hasUnflushedMessages')(numberofUnflushedMessages());
+    });
+
+    if (window.location.protocol !== 'http:')
     window.location.protocol = 'http:'; // TODO: hack until we support WSS
 
-initializeIcons('/assets/');
+    initializeIcons('/assets/');
 
-const composeEnhancers = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-const substateTransform = createTransform(
-    // ignore the state keys whitelisted below
-    // (redux-persist white/blacklist does not work for some reason)
-    (inboundState, key) => initialState[key],
-    (outboundState, key) => outboundState,
-    {'whitelist': ['overlay', 'overlayProps', 'collaborativeSessions', 'currentArtifactPath']}
-);
-const persistedReducer = persistReducer({
-    key: 'root',
-    storage,
-    transforms: [substateTransform]
-}, reducer);
-const store: Store = createStore(
-    persistedReducer,
-    composeEnhancers(applyMiddleware(thunk)));
-const persistor = persistStore(store);
+    const composeEnhancers = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+    const substateTransform = createTransform(
+        // ignore the state keys whitelisted below
+        // (redux-persist white/blacklist does not work for some reason)
+        (inboundState, key) => initialState[key],
+        (outboundState, key) => outboundState,
+        {'whitelist': ['overlay', 'overlayProps', 'collaborativeSessions', 'currentArtifactPath']}
+    );
+    const persistedReducer = persistReducer({
+        key: 'root',
+        storage,
+        transforms: [substateTransform]
+    }, reducer);
+    const store: Store = createStore(
+        persistedReducer,
+        composeEnhancers(applyMiddleware(thunk)));
+    const persistor = persistStore(store);
 
-// for debugging purposes
-declare var window: any;
-window.app = {
-    setLogLevel,
-    LogLevel, // parameter for setLogLevel
-    actions, // can be dispatched with the store (for debugging)
-    store, // used by message delay/offline simulation
-    persistor, // used to clear local storage
-    runKernel: (fn: (kernel: Kernel) => any) => // for debugging
-        Kernel.run(store.getState(), store.getState().currentArtifactPath, fn)
-};
+    // for debugging purposes
+    window.app = {
+        setLogLevel,
+        LogLevel, // parameter for setLogLevel
+        actions, // can be dispatched with the store (for debugging)
+        store, // used by message delay/offline simulation
+        persistor, // used to clear local storage
+        runKernel: (fn: (kernel: Kernel) => any) => // for debugging
+            Kernel.run(store.getState(), store.getState().currentArtifactPath, fn)
+    };
 
-ReactDOM.render((
-    <Provider store={store}>
-        <PersistGate persistor={persistor}>
-            <AppContainer/>
-        </PersistGate>
-    </Provider>
-), document.getElementById('root'));
+    if (store.getState().settings.developer.debug)
+        setLogLevel(LogLevel.info);
 
-if (store.getState().settings.developer.debug)
-    setLogLevel(LogLevel.info);
+    ReactDOM.render((
+        <Provider store={store}>
+            <PersistGate persistor={persistor}>
+                <AppContainer/>
+            </PersistGate>
+        </Provider>
+    ), document.getElementById('root'));
 
-store.dispatch<any>(actions.server.joinRequest({artifactPath: {project: 'FeatureModeling', artifact: 'CTV'}}));
+    store.dispatch<any>(actions.server.joinRequest({artifactPath: {project: 'FeatureModeling', artifact: 'CTV'}}));
+})();
