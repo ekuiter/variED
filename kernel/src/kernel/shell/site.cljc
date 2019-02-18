@@ -75,7 +75,7 @@
   (log "receiving heartbeat message from" (message/get-site-ID message))
   (swap! (*context* :VC) #(VC/_merge (VC/increment % (*context* :site-ID)) (message/get-VC message)))
   (swap! (*context* :GC) #(GC/insert % (message/get-site-ID message) (message/get-VC message)))
-  (*context* :FM))
+  @(*context* :FM))
 
 (defn receive-leave!
   "Receives a leave message at a site.
@@ -86,7 +86,7 @@
     (swap! (*context* :VC) #(VC/remove-site % site-ID))
     (swap! (*context* :HB) #(HB/remove-site % site-ID))
     (swap! (*context* :GC) #(GC/remove-site % site-ID)))
-  (*context* :FM))
+  @(*context* :FM))
 
 (defn receive-message!
   "Receives a message at a site.

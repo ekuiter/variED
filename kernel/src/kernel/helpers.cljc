@@ -12,7 +12,7 @@
                        [cognitect.transit :as transit]
                        [taoensso.tufte :as tufte :refer-macros (defnp p profiled profile)])]))
 
-(def ^:dynamic *logger-fn*)
+(def ^:dynamic *logger-fn* nil)
 (def ^:dynamic *generate-ID-fn*)
 (def ^:dynamic *semantic-rules* '())
 

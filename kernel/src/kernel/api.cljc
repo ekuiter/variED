@@ -198,77 +198,77 @@
   [parent-ID]
   (profile
     {}
-    (CO/create-feature-below (*context* :FM) parent-ID)))
+    (CO/create-feature-below @(*context* :FM) parent-ID)))
 
 (defn ^:export operationCreateFeatureAbove
   "Creates a feature above a set of sibling features."
   [& IDs]
   (profile
     {}
-    (apply CO/create-feature-above (*context* :FM) IDs)))
+    (apply CO/create-feature-above @(*context* :FM) IDs)))
 
 (defn ^:export operationRemoveFeatureSubtree
   "Removes an entire feature subtree rooted at a feature."
   [ID]
   (profile
     {}
-    (CO/remove-feature-subtree (*context* :FM) ID)))
+    (CO/remove-feature-subtree @(*context* :FM) ID)))
 
 (defn ^:export operationMoveFeatureSubtree
   "Moves an entire feature subtree rooted at a feature below another feature."
   [ID parent-ID]
   (profile
     {}
-    (CO/move-feature-subtree (*context* :FM) ID parent-ID)))
+    (CO/move-feature-subtree @(*context* :FM) ID parent-ID)))
 
 (defn ^:export operationRemoveFeature
   "Removes a single feature."
   [ID]
   (profile
     {}
-    (CO/remove-feature (*context* :FM) ID)))
+    (CO/remove-feature @(*context* :FM) ID)))
 
 (defn ^:export operationSetFeatureOptional
   "Sets the optional attribute of a feature."
   [ID optional?]
   (profile
     {}
-    (CO/set-feature-optional? (*context* :FM) ID optional?)))
+    (CO/set-feature-optional? @(*context* :FM) ID optional?)))
 
 (defn ^:export operationSetFeatureGroupType
   "Sets the group type attribute of a feature."
   [ID group-type-str]
   (profile
     {}
-    (CO/set-feature-group-type (*context* :FM) ID (keyword group-type-str))))
+    (CO/set-feature-group-type @(*context* :FM) ID (keyword group-type-str))))
 
 (defn ^:export operationSetFeatureProperty
   "Sets some additional property of a feature."
   [ID property-str value]
   (profile
     {}
-    (CO/set-feature-property (*context* :FM) ID (:keyword property-str) value)))
+    (CO/set-feature-property @(*context* :FM) ID (keyword property-str) value)))
 
 (defn ^:export operationCreateConstraint
   "Creates a constraint and initializes it with a given propositional formula."
   [formula]
   (profile
     {}
-    (CO/create-constraint (*context* :FM) formula)))
+    (CO/create-constraint @(*context* :FM) formula)))
 
 (defn ^:export operationSetConstraint
   "Sets the propositional formula of a constraint."
   [ID formula]
   (profile
     {}
-    (CO/set-constraint (*context* :FM) ID formula)))
+    (CO/set-constraint @(*context* :FM) ID formula)))
 
 (defn ^:export operationRemoveConstraint
   "Removes a constraint."
   [ID]
   (profile
     {}
-    (CO/remove-constraint (*context* :FM) ID)))
+    (CO/remove-constraint @(*context* :FM) ID)))
 
 ; helper functions
 
