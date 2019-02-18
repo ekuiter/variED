@@ -49,6 +49,7 @@ const OverlayContainer = (props: StateDerivedProps) => (
             onSetFeatureDiagramLayout={props.onSetFeatureDiagramLayout!}
             onRemoveFeature={props.onRemoveFeature!}
             onRemoveFeatureSubtree={props.onRemoveFeatureSubtree!}
+            onMoveFeatureSubtree={props.onMoveFeatureSubtree!}
             onSetFeatureAbstract={props.onSetFeatureAbstract!}
             onSetFeatureHidden={props.onSetFeatureHidden!}
             onSetFeatureOptional={props.onSetFeatureOptional!}
@@ -212,6 +213,7 @@ export default connect(
         onCreateFeatureBelow: payload => dispatch<any>(actions.server.featureDiagram.feature.createBelow(payload)),
         onRemoveFeature: payload => dispatch<any>(actions.server.featureDiagram.feature.remove(payload)),
         onRemoveFeatureSubtree: payload => dispatch<any>(actions.server.featureDiagram.feature.removeSubtree(payload)),
+        onMoveFeatureSubtree: payload => dispatch<any>(actions.server.featureDiagram.feature.moveSubtree(payload)),
         onSetFeatureAbstract: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setAbstract(payload)),
         onSetFeatureHidden: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setHidden(payload)),
         onSetFeatureOptional: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setOptional(payload)),

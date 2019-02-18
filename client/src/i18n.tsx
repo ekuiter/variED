@@ -135,6 +135,9 @@ const translationMap = {
             feature: {
                 details: 'Feature details',
                 rename: 'Rename feature',
+                move: 'Move feature',
+                moveSource: 'Move source',
+                moveTarget: 'Move target',
                 setDescription: 'Set feature description',
                 propertiesMenu: {
                     abstract: 'Set feature to abstract',

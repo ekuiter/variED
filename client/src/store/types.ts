@@ -84,6 +84,7 @@ export type OnCreateFeatureBelowFunction = (payload: {featureParentID: string}) 
 export type OnCreateFeatureAboveFunction = (payload: {featureIDs: string[]}) => Promise<void>;
 export type OnRemoveFeatureFunction = (payload: {featureIDs: string[]}) => Promise<void>;
 export type OnRemoveFeatureSubtreeFunction = (payload: {featureIDs: string[]}) => Promise<void>;
+export type OnMoveFeatureSubtreeFunction = (payload: {featureID: string, featureParentID: string}) => Promise<void>;
 export type OnSetFeatureNameFunction = (payload: {featureID: string, name: string}) => Promise<void>;
 export type OnSetFeatureDescriptionFunction = (payload: {featureID: string, description: string}) => Promise<void>;
 export type OnSetFeatureAbstractFunction = (payload: {featureIDs: string[], value: boolean}) => Promise<void>;
@@ -139,6 +140,7 @@ export type StateDerivedProps = Partial<{
     onCreateFeatureAbove: OnCreateFeatureAboveFunction,
     onRemoveFeature: OnRemoveFeatureFunction,
     onRemoveFeatureSubtree: OnRemoveFeatureSubtreeFunction,
+    onMoveFeatureSubtree: OnMoveFeatureSubtreeFunction,
     onSetFeatureName: OnSetFeatureNameFunction,
     onSetFeatureDescription: OnSetFeatureDescriptionFunction,
     onSetFeatureAbstract: OnSetFeatureAbstractFunction,

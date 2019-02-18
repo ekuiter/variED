@@ -99,17 +99,4 @@ describe('SettingsPanel', () => {
         expect(settingsPanel(FeatureDiagramLayoutType.horizontalTree).find(Panel)
             .contains(i18n.t('overlays.settingsPanel.headings.horizontalTree'))).toBe(true);
     });
-
-    it('resets settings', () => {
-        const wrapper = settingsPanel(FeatureDiagramLayoutType.verticalTree),
-            resetButton = (wrapper: any) => wrapper.find(DefaultButton).first();
-        expect(resetButton(wrapper).prop('disabled')).toBe(true);
-        
-        wrapper.find(Panel).find(Setting.SpinButton).first()
-            .simulate('setSetting', 'featureDiagram.font.size', 'Arial');
-        expect(resetButton(wrapper).prop('disabled')).toBe(false);
-
-        resetButton(wrapper).simulate('click');
-        expect(resetButton(wrapper).prop('disabled')).toBe(true);
-    });
 });

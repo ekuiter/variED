@@ -1,6 +1,6 @@
 import React from 'react';
 import i18n from '../../i18n';
-import {OnShowOverlayFunction, OnUndoFunction, OnRedoFunction, OnSetFeatureDiagramLayoutFunction, OnFitToScreenFunction, OnCreateFeatureAboveFunction, OnCreateFeatureBelowFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnRemoveFeatureFunction, OnRemoveFeatureSubtreeFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureOptionalFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction, OnExpandAllFeaturesFunction, OnCollapseAllFeaturesFunction, OnJoinRequestFunction, OnLeaveRequestFunction, CollaborativeSession, OnSetCurrentArtifactPathFunction, OnSetSettingFunction} from '../../store/types';
+import {OnShowOverlayFunction, OnUndoFunction, OnRedoFunction, OnSetFeatureDiagramLayoutFunction, OnFitToScreenFunction, OnCreateFeatureAboveFunction, OnCreateFeatureBelowFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnRemoveFeatureFunction, OnRemoveFeatureSubtreeFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureOptionalFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction, OnExpandAllFeaturesFunction, OnCollapseAllFeaturesFunction, OnJoinRequestFunction, OnLeaveRequestFunction, CollaborativeSession, OnSetCurrentArtifactPathFunction, OnSetSettingFunction, OnMoveFeatureSubtreeFunction} from '../../store/types';
 import {getShortcutText} from '../../shortcuts';
 import {OverlayType, Omit, FeatureDiagramLayoutType, FormatType, isArtifactPathEqual, ArtifactPath} from '../../types';
 import Palette, {PaletteItem, PaletteAction, getKey} from '../../helpers/Palette';
@@ -32,6 +32,7 @@ interface Props {
     onExpandFeaturesBelow: OnExpandFeaturesBelowFunction,
     onRemoveFeature: OnRemoveFeatureFunction,
     onRemoveFeatureSubtree: OnRemoveFeatureSubtreeFunction,
+    onMoveFeatureSubtree: OnMoveFeatureSubtreeFunction,
     onCreateFeatureBelow: OnCreateFeatureBelowFunction,
     onCreateFeatureAbove: OnCreateFeatureAboveFunction,
     onSetFeatureAbstract: OnSetFeatureAbstractFunction,
@@ -261,6 +262,26 @@ export default class extends React.Component<Props, State> {
             text: i18n.t('commands.featureDiagram.feature.removeMenu.removeBelow'),
             icon: 'Remove'
         }, featureID => this.props.onRemoveFeatureSubtree({featureIDs: [featureID]})),
+        
+        {
+            disabled: () => !this.props.featureModel,
+            action: this.actionWithArguments(
+                [{
+                    title: i18n.t('commandPalette.featureDiagram.feature.moveSource'),
+                    items: () => this.props.featureModel!.getVisibleFeatureIDs().map(featureID => ({
+                        key: featureID, text: this.props.featureModel!.getFeature(featureID)!.name
+                    }))
+                }, {
+                    title: i18n.t('commandPalette.featureDiagram.feature.moveTarget'),
+                    // TODO: remove any invalid move targets (i.e., subfeatures)
+                    items: () => this.props.featureModel!.getVisibleFeatureIDs().map(featureID => ({
+                        key: featureID, text: this.props.featureModel!.getFeature(featureID)!.name
+                    }))
+                }],
+                (featureID, featureParentID) => this.props.onMoveFeatureSubtree({featureID, featureParentID})),
+                text: i18n.t('commandPalette.featureDiagram.feature.move'),
+                icon: 'Move'
+        },
         
         this.featureCommand({
             text: i18n.t('commandPalette.featureDiagram.feature.details'),

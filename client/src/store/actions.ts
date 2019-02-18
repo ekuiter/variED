@@ -94,6 +94,9 @@ const actions = {
                 removeSubtree: createOperationAction(({featureIDs}: {featureIDs: string[]}, kernel) =>
                 // TODO: batch operation (ensure preconditions: consider subfeatures!)
                     featureIDs.length === 1 ? kernel.operationRemoveFeatureSubtree(featureIDs[0]) : (window as any).alert('not currently supported')),
+
+                moveSubtree: createOperationAction(({featureID, featureParentID}: {featureID: string, featureParentID: string}, kernel) =>
+                    kernel.operationMoveFeatureSubtree(featureID, featureParentID)),
                 
                 setName: createOperationAction(({featureID, name}: {featureID: string, name: string}, kernel) =>
                     kernel.operationSetFeatureProperty(featureID, PropertyType.name, name)),
