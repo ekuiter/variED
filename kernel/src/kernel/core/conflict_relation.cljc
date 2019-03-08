@@ -8,7 +8,7 @@
   CO-conflicting? checks whether two compound operations are conflicting, provided that all operations
   leading up to (causally preceding) these operations did not trigger a conflict.
   Primitive operations in a compound operation are then subsequently applied to the feature model
-  and a number of consistency properties is checked. If all pass, the operations are considered
+  and a number of consistency properties are checked. If all pass, the operations are considered
   compatible, else a conflict is declared.
 
   conflicting? ensures the precondition of CO-conflicting? that causally preceding operations
@@ -49,8 +49,6 @@
     (setting the parent from :graveyard to something else).
   - The *group-children rule* flags two updates as conflict if one changes a feature group to :or or
     :alternative, and the other sets a child of said feature to mandatory or optional.
-  - The *root-mandatory rule* flags two updates as conflict if one deletes the root feature and
-    the other sets the new root feature to optional.
   - The *assert-no-child-added rule* flags two updates as conflict if one asserts that no feature
     children may be added by the other, but the other adds feature children nonetheless
     (see [[kernel.core.compound-operation/remove-feature]]).
@@ -77,11 +75,13 @@
                        (when (and (= type :update-constraint)
                                   (not (FM/attribute=
                                          old-value
-                                         (PO/get-feature-attribute FM-up-to-PO-x ID attribute))))
+                                         (PO/get-constraint-attribute FM-up-to-PO-x ID attribute))))
                          (CC/make-conflict "no-overwrites rule for constraints"))
                        (when (and (= type :update-feature)
                                   (= attribute :parent-ID)
-                                  (FM/introduces-cycle? FM-up-to-PO-x ID new-value))
+                                  (let [path-before (FM/get-path-to-root base-FM+preceding-CO-y new-value)
+                                        path-after (FM/get-path-to-root base-FM+preceding-CO-y+CO-y new-value)]
+                                    (not= path-before path-after)))
                          (CC/make-conflict "no-cycles rule"))
                        (when (and (= type :update-feature)
                                   (FM/graveyarded-feature? FM-up-to-PO-x ID)
@@ -100,11 +100,6 @@
                                   (= attribute :optional?)
                                   (not (FM/part-of-and-group? FM-up-to-PO-x ID)))
                          (CC/make-conflict "group-children rule"))
-                       (when (and (= type :update-feature)
-                                  (= attribute :optional?)
-                                  (= new-value true)
-                                  (FM/root? FM-up-to-PO-x ID))
-                         (CC/make-conflict "root-mandatory rule"))
                        (when (and (= type :assert-no-child-added)
                                   (let [children-IDs-before (FM/get-feature-children-IDs base-FM+preceding-CO-y ID)
                                         children-IDs-after (FM/get-feature-children-IDs base-FM+preceding-CO-y+CO-y ID)]
@@ -218,7 +213,7 @@
    if CO-a not concurrent CO-b, or CO-a == CO-b: return false (respect causal order and irreflexivity)
    foreach CIP(CO-a) and CIP(CO-b), if (conflicting? CIP(CO-a) CIP(CO-b)), goto return_true
    foreach CIP(CO-b), if (conflicting? CO-a CIP(CO-b)), goto return_true (this one goes first, as we may hit the cache)
-   foreach CIP(CO-a), if (conflicting? CIP(CO-b) CO-b), goto return_true (from here on, the cache is not hittable)
+   foreach CIP(CO-a), if (conflicting? CIP(CO-a) CO-b), goto return_true (from here on, the cache is not hittable)
    if (CO-conflicting? CO-a CO-b), goto return_true
    else return false
    return_true:

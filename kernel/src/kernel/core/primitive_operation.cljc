@@ -45,6 +45,13 @@
     :group-type (FM/get-feature-group-type FM ID)
     (FM/get-feature-property FM ID attribute)))
 
+(defn get-constraint-attribute
+  "Returns the current value of a targeted constraint attribute in a given feature model."
+  [FM ID attribute]
+  (case attribute
+    :formula (FM/get-constraint-formula FM ID)
+    :graveyarded? (FM/get-constraint-graveyarded? FM ID)))
+
 ; operation definitions
 
 (defn nop

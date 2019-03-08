@@ -235,20 +235,14 @@
 
 ; helpers for conflict detection
 
-(defn root?
-  "Returns whether the given feature is the root feature."
-  [FM ID]
-  (nil? (get-feature-parent-ID FM ID)))
-
 (defn graveyarded-feature?
   "Returns whether the given feature is im- or explicitly graveyarded."
-  [_FM _ID]
+  [FM _ID]
   (p ::graveyarded-feature?
-     (loop [FM _FM
-            ID _ID]
+     (loop [ID _ID]
        (if-let [parent-ID (get-feature-parent-ID FM ID)]
          (or (= parent-ID :graveyard)
-             (recur FM parent-ID))
+             (recur parent-ID))
          false))))
 
 (defn graveyarded-constraint?
@@ -258,39 +252,31 @@
      (or (get-constraint-graveyarded? FM ID)
          (some (partial graveyarded-feature? FM) (get-constraint-referenced-feature-IDs FM ID)))))
 
+(defn root?
+  "Returns whether the given feature is the root feature."
+  [FM ID]
+  (nil? (get-feature-parent-ID FM ID)))
+
+(defn get-path-to-root
+  "Computes a feature's path to the root feature. Assumes that no cycles are in the graph."
+  [FM _ID]
+  (p ::get-path-to-root
+     (loop [ID _ID
+            path '()]
+       (let [parent-ID (get-feature-parent-ID FM ID)]
+         (if (or (root? FM parent-ID)
+                 (= parent-ID :graveyard))
+           path
+           (recur parent-ID (conj path parent-ID)))))))
+
 (defn part-of-and-group?
   "Returns whether the given feature is included in an and group.
-  The root feature is, by convention, considered as part of an and group
+  The root feature is, by convention, not considered as part of an and group
   (this avoids a special case in the conflict relation to guarantee that the root is always mandatory)."
   [FM ID]
   (if-let [parent-ID (get-feature-parent-ID FM ID)]
     (= (get-feature-group-type FM parent-ID) :and)
-    true))
-
-(defn cycle-in-path-to-root?
-  "Returns whether a feature's path to root contains itself.
-  This makes use of or's short-circuiting behaviour to guarantee termination."
-  [FM ID parent-ID]
-  (if-let [next-parent-ID (get-feature-parent-ID FM parent-ID)]
-    (or (= next-parent-ID ID)
-        (recur FM ID next-parent-ID))
     false))
-
-(defn introduces-cycle?
-  "Determines whether executing the given set-feature-parent operation would introduce
-  a cycle in the graph. Note that this does not require a complex cycle check on the whole
-  graph, only the feature's path to root (or lack thereof) has to be investigated.
-
-  As the simple hash-table implementation just applies primitive operations in a dumb way
-  we can assume this application to work and then check whether a cycle is included.
-  Other implementations may not allow applying this primitive operation when it introduces
-  a cycle, or may throw exceptions, so they may wish to customize this (e.g., a cycle is
-  introduced if and only if a respective exception is thrown)."
-  [FM ID parent-ID]
-  (p ::introduces-cycle?
-     (-> FM
-         (set-feature-parent-ID ID parent-ID)
-         (cycle-in-path-to-root? ID parent-ID))))
 
 (defn attribute=
   "Determines whether two attribute values (including custom properties) are the same.
