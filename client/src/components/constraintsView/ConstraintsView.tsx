@@ -16,7 +16,7 @@ export default class extends React.Component<Props> {
     render(): JSX.Element {
         const columns: IColumn[] = [{
             key: 'constraint',
-            name: i18n.t('constraint.constraint'),
+            name: i18n.t('commandPalette.constraint'),
             minWidth: 0,
             isRowHeader: true,
             onRender: (constraint: Constraint) => (

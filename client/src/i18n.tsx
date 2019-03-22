@@ -119,6 +119,7 @@ const translationMap = {
         project: 'Project',
         artifact: 'Artifact',
         feature: 'Feature',
+        constraint: 'Constraint',
         format: 'Format',
         layout: 'Layout',
         delay: 'Delay',
@@ -151,6 +152,10 @@ const translationMap = {
                     or: 'Change feature group to or',
                     alternative: 'Change feature group to alternative'
                 }
+            },
+            constraint: {
+                new: 'New constraint',
+                invalid: 'Invalid constraint.'
             }
         },
         developer: {
@@ -159,9 +164,6 @@ const translationMap = {
             simulateOffline: 'Developer: Simulate offline',
             clearLocalStorage: 'Developer: Clear local storage'
         }
-    },
-    constraint: {
-        constraint: 'Constraint'
     },
     overlays: {
         palette: {

@@ -5,7 +5,7 @@ import {getShortcutText} from '../../shortcuts';
 import {OverlayType, Omit, FeatureDiagramLayoutType, FormatType, isArtifactPathEqual, ArtifactPath} from '../../types';
 import Palette, {PaletteItem, PaletteAction, getKey} from '../../helpers/Palette';
 import {canExport} from '../featureDiagramView/export';
-import FeatureModel from '../../modeling/FeatureModel';
+import FeatureModel, {Constraint, paletteConstraintRenderer} from '../../modeling/FeatureModel';
 import {arrayUnique} from '../../helpers/array';
 import deferred from '../../helpers/deferred';
 import logger from '../../helpers/logger';
@@ -54,6 +54,7 @@ interface State {
     getArgumentItems?: () => Promise<PaletteItem[]>,
     argumentItems?: PaletteItem[],
     allowFreeform?: (value: string) => PaletteAction,
+    transformFreeform?: (value: string) => string,
     title?: string
 };
 
@@ -63,6 +64,7 @@ type PaletteItemsFunction = ((...args: string[]) => PaletteItemDescriptor[] | Pr
 interface ArgumentDescriptor {
     items?: PaletteItemsFunction,
     allowFreeform?: boolean,
+    transformFreeform?: (value: string) => string,
     title?: string
 };
 
@@ -74,7 +76,8 @@ export default class extends React.Component<Props, State> {
 
     componentDidUpdate(prevProps: Props, prevState: State) {
         if (!prevProps.isOpen && this.props.isOpen)
-            this.setState({getArgumentItems: undefined, argumentItems: undefined, allowFreeform: undefined, title: undefined});
+            this.setState({getArgumentItems: undefined, argumentItems: undefined,
+                allowFreeform: undefined, transformFreeform: undefined, title: undefined});
 
         if (this.state.getArgumentItems &&
             (prevState.getArgumentItems !== this.state.getArgumentItems ||
@@ -121,6 +124,7 @@ export default class extends React.Component<Props, State> {
                     return {...item, action: recurse(item.key || item.text)};
                 })),
                 allowFreeform: !!argumentDescriptor.allowFreeform ? recurse : undefined,
+                transformFreeform: argumentDescriptor.transformFreeform,
                 title: argumentDescriptor.title
             });
         };
@@ -349,6 +353,22 @@ export default class extends React.Component<Props, State> {
             {text: i18n.t('commandPalette.featureDiagram.feature.propertiesMenu.alternative')},
             featureID => this.props.onSetFeatureAlternative({featureIDs: [featureID]})),
         
+        {
+            text: i18n.t('commandPalette.featureDiagram.constraint.new'),
+            icon: 'Add',
+            disabled: () => !enableConstraintsView(this.props.featureModel),
+            action: this.actionWithArguments(
+                [{
+                    title: i18n.t('commandPalette.constraint'),
+                    allowFreeform: true,
+                    transformFreeform: value =>
+                        Constraint.renderFromString(value, this.props.featureModel!, paletteConstraintRenderer) ||
+                        i18n.t('commandPalette.featureDiagram.constraint.invalid')
+                }],
+                constraintString => {
+                })
+        },
+
         this.featureCommand({
             text: i18n.getFunction('commands.featureDiagram.feature.collapseMenu.collapse')(false),
             shortcut: getShortcutText('featureDiagram.feature.collapse'),
@@ -434,6 +454,7 @@ export default class extends React.Component<Props, State> {
                 items={items}
                 onDismiss={this.props.onDismiss}
                 allowFreeform={this.state.allowFreeform}
+                transformFreeform={this.state.transformFreeform}
                 placeholder={this.state.title}
                 onSubmit={this.onSubmit}
                 itemUsage={this.state.argumentItems ? undefined : this.commandUsage}/>

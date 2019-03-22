@@ -23,6 +23,7 @@ interface Props {
     onDismiss: () => void,
     onSubmit: (item: PaletteItem) => void,
     allowFreeform?: (value: string) => PaletteAction,
+    transformFreeform?: (value: string) => string,
     itemUsage: {
         [x: string]: number
     }
@@ -88,14 +89,17 @@ export default class extends React.Component<Props, State> {
     getSearchResults(search?: string): {searchResults: PaletteItem[], truncatedItems: number} {
         const maxDisplayableItems = 100;
         let searchResults =
-            (search
+            (search && !this.props.transformFreeform
                 ? fuzzysort
                     .go(search, this.props.items, {key: 'text', limit: 20})
                     .map(result => result.obj)
                 : this.sortItems(this.props.items))
             .filter(item => item.disabled ? !item.disabled() : true);
         searchResults = this.props.allowFreeform && this.state.value
-            ? [{text: this.state.value, action: this.props.allowFreeform(this.state.value)}, ...searchResults]
+            ? [{
+                text: this.props.transformFreeform ? this.props.transformFreeform(this.state.value) : this.state.value,
+                action: this.props.allowFreeform(this.state.value)
+            }, ...searchResults]
             : searchResults;
         const numberOfItems = searchResults.length;
         if (searchResults.length > maxDisplayableItems)
@@ -127,7 +131,7 @@ export default class extends React.Component<Props, State> {
                         }}/>
                 </div>
                 <ul className={searchResults.length > 0 && this.props.items.length > 0 ? 'scrollable' : undefined}>
-                    {searchResults.length > 0 && this.props.items.length > 0
+                    {searchResults.length > 0 && (this.props.items.length > 0 || this.props.transformFreeform)
                     ? searchResults.map((item, idx) =>
                         <li key={getKey(item)}
                             onClick={this.onClick(item)}
@@ -137,7 +141,7 @@ export default class extends React.Component<Props, State> {
                             (item.icon
                                 ? <Icon iconName={item.icon} />
                                 : <i>&nbsp;</i>)}
-                            {search
+                            {search && !this.props.transformFreeform
                                 ? <span dangerouslySetInnerHTML={{__html: fuzzysort.highlight(fuzzysort.single(search, item.text)!)!}}/>
                                 : item.text}
                             {showBeak &&

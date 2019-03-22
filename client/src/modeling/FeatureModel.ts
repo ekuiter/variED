@@ -15,6 +15,7 @@ import {present} from '../helpers/present';
 import logger from '../helpers/logger';
 import {FeatureNode, Feature, KernelFeatureModel, DESCRIPTION, ABSTRACT, HIDDEN, OPTIONAL, NAME, KernelFeature, KernelConstraint, CONSTRAINTS, ConstraintType, FEATURES, CHILDREN_CACHE, KernelConstraintFormula, GRAVEYARDED, FORMULA, ID_KEY, KernelConstraintFormulaAtom, GROUP_TYPE, GroupType, NIL} from './types';
 import {getViewportWidth, getViewportHeight} from '../helpers/withDimensions';
+import SParse from './s-expression';
 
 export function getID(node: FeatureNode): string {
     return node.data[ID_KEY]!;
@@ -132,6 +133,8 @@ export function createConstraintRenderer<T>({neutral, _return, returnFeature, jo
         const nodeType = formula[0] as ConstraintType;
 
         if (nodeType === ConstraintType.not) {
+            if (formula.length !== 2)
+                throw new Error('invalid negation formula');
             const child = formula[1];
             if (isAtom(child))
                 return join([_return(operatorMap[ConstraintType.not]), renderLiteral(featureModel, child)], neutral);
@@ -141,6 +144,12 @@ export function createConstraintRenderer<T>({neutral, _return, returnFeature, jo
 
         const operands = formula.slice(1).map(child => renderFormula(featureModel, child, nodeType)),
             operator = operatorMap[nodeType];
+        
+        if (!operator)
+            throw new Error(`invalid operator ${nodeType}`);
+        if (nodeType === ConstraintType.not && operands.length !== 1 ||
+            nodeType !== ConstraintType.not && operands.length !== 2)
+            throw new Error(`invalid number of operations ${operands.length}`);
 
         if (nodeType === ConstraintType.conj || nodeType === ConstraintType.disj ||
             nodeType === ConstraintType.imp || nodeType === ConstraintType.eq) {
@@ -167,6 +176,14 @@ const stringConstraintRenderer = createConstraintRenderer({
     neutral: '',
     _return: s => s,
     returnFeature: f => f ? f.name : 'GRAVEYARDED',
+    join: (ts, t) => ts.join(t),
+    cacheKey: 'string'
+});
+
+export const paletteConstraintRenderer = createConstraintRenderer({
+    neutral: '',
+    _return: s => s,
+    returnFeature: f => f ? f.name : '?',
     join: (ts, t) => ts.join(t),
     cacheKey: 'string'
 });
@@ -210,6 +227,66 @@ export class Constraint {
 
     getKey(): string {
         return this.ID.toString();
+    }
+
+    static renderFromString<T>(constraintString: string, featureModel: FeatureModel,
+        constraintRenderer: ConstraintRenderer<T>): T | undefined {
+        const operatorMap: {[x: string]: string} = {
+            "not": ConstraintType.not,
+            "disj": ConstraintType.disj,
+            "eq": ConstraintType.eq,
+            "imp": ConstraintType.imp,
+            "conj": ConstraintType.conj,
+            "or": ConstraintType.disj,
+            "equals": ConstraintType.eq,
+            "implies": ConstraintType.imp,
+            "and": ConstraintType.conj,
+            "!": ConstraintType.not,
+            "~": ConstraintType.not,
+            "-": ConstraintType.not,
+            "|": ConstraintType.disj,
+            "||": ConstraintType.disj,
+            "<=>": ConstraintType.eq,
+            "<->": ConstraintType.eq,
+            "=>": ConstraintType.imp,
+            "->": ConstraintType.imp,
+            "&": ConstraintType.conj,
+            "&&": ConstraintType.conj
+        };
+
+        function recurse(sexpr: any): any {
+            if (Array.isArray(sexpr))
+                return [operatorMap[sexpr[0].toLowerCase()], ...sexpr.slice(1).map(recurse)];
+            else if (typeof sexpr === 'string' || sexpr instanceof String) {
+                sexpr = sexpr.toString();
+                if (featureModel.isValidFeatureID(sexpr))
+                    return sexpr;
+                const feature = featureModel.getFeatureByName(sexpr);
+                return feature ? feature.ID : undefined;
+            } else
+                throw new Error('invalid constraint s-expression');
+        }
+
+        for (let i = 0; i < 5; i++) {
+            try {
+                let sexpr = SParse(constraintString + ')'.repeat(i));
+                if (sexpr instanceof Error) {
+                    if (sexpr.message.indexOf('Expected `)`') >= 0)
+                        continue;
+                    return;
+                }
+                sexpr = recurse(sexpr);
+    
+                return new Constraint({
+                    [FORMULA]: sexpr,
+                    [GRAVEYARDED]: false
+                }, featureModel).render(constraintRenderer);
+            } catch (e) {
+                continue;
+            }
+        }
+
+        return;
     }
 }
 
@@ -314,6 +391,18 @@ class FeatureModel {
     getFeature(featureID: string): Feature | undefined {
         const node = this.getNode(featureID);
         return node ? node.feature() : undefined;
+    }
+
+    isValidFeatureID(featureID: string): boolean {
+        return !!this.getNode(featureID);
+    }
+
+    // inefficient for large models and can not guarantee uniqueness
+    getFeatureByName(featureName: string): Feature | undefined {
+        this.prepare();
+        const results = this.actualNodes.filter(node =>
+            node.feature().name.toLowerCase() === featureName.toLowerCase());
+        return results.length === 1 ? results[0].feature() : undefined;
     }
 
     getNodes(featureIDs: string[]): FeatureNode[] {
