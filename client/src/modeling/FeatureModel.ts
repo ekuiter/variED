@@ -95,9 +95,13 @@ d3Hierarchy.prototype.feature = function(this: FeatureNode): Feature {
 type ConstraintRenderer<T> = ((featureModel: FeatureModel, formula: KernelConstraintFormula) => T) & {cacheKey: string};
 
 // adapted from FeatureIDE fm.core's org/prop4j/NodeWriter.java
-export function createConstraintRenderer<T>({neutral, _return, returnFeature, join, cacheKey}:
-    {neutral: T, _return: (s: string) => T, returnFeature: (s: string, idx: number) => T,
-        join: (ts: T[], t: T) => T, cacheKey: string}): ConstraintRenderer<T> {
+export function createConstraintRenderer<T>({neutral, _return, returnFeature, join, cacheKey}: {
+        neutral: T,
+        _return: (s: string) => T,
+        returnFeature: (f: Feature | undefined, idx: number) => T,
+        join: (ts: T[], t: T) => T,
+        cacheKey: string
+    }): ConstraintRenderer<T> {
     const operatorMap: {[x: string]: string} = {
         [ConstraintType.not]: '\u00AC',
         [ConstraintType.disj]: '\u2228',
@@ -120,7 +124,7 @@ export function createConstraintRenderer<T>({neutral, _return, returnFeature, jo
     const isAtom = (formula: KernelConstraintFormula): formula is KernelConstraintFormulaAtom => !Array.isArray(formula),
             renderLiteral = (featureModel: FeatureModel, atom: KernelConstraintFormulaAtom): T => {
             const feature = featureModel.getFeature(atom);
-            return returnFeature(feature ? feature.name : 'GRAVEYARDED', i++);
+            return returnFeature(feature, i++);
         },
         renderFormula = (featureModel: FeatureModel, formula: KernelConstraintFormula, parentType: ConstraintType): T => {
         if (isAtom(formula))
@@ -162,9 +166,17 @@ export function createConstraintRenderer<T>({neutral, _return, returnFeature, jo
 const stringConstraintRenderer = createConstraintRenderer({
     neutral: '',
     _return: s => s,
-    returnFeature: s => s,
+    returnFeature: f => f ? f.name : 'GRAVEYARDED',
     join: (ts, t) => ts.join(t),
     cacheKey: 'string'
+});
+
+const isGraveyardedConstraintRenderer = createConstraintRenderer({
+    neutral: false,
+    _return: _ => false,
+    returnFeature: f => !f,
+    join: (ts, _) => ts.reduce((acc, val) => acc || val),
+    cacheKey: 'isGraveyarded'
 });
 
 export class Constraint {
@@ -179,7 +191,7 @@ export class Constraint {
     }
 
     get isGraveyarded(): boolean {
-        return this.kernelConstraint[GRAVEYARDED];
+        return this.kernelConstraint[GRAVEYARDED] || this.render(isGraveyardedConstraintRenderer);
     }
 
     get formula(): KernelConstraintFormula {
@@ -245,8 +257,6 @@ class FeatureModel {
             this._hierarchy = d3Hierarchy(rootFeature, children) as FeatureNode;
             this._actualNodes = this._hierarchy.descendants();
             this._visibleNodes = [];
-            this._constraints = Object.values(constraints).map(
-                kernelConstraint => new Constraint(kernelConstraint, this)); // TODO: visible according to FM/graveyarded-constraint?
 
             const isVisible: (node: FeatureNode) => boolean = memoize(node => {
                 if (isRoot(node))
@@ -268,6 +278,11 @@ class FeatureModel {
 
                 this._IDsToFeatureNodes[getID(node)] = node;
             });
+
+            // TODO: this might be inefficient for large models
+            this._constraints = Object.values(constraints)
+                .map(kernelConstraint => new Constraint(kernelConstraint, this))
+                .filter(kernelConstraint => !kernelConstraint.isGraveyarded);
         }
     }
 

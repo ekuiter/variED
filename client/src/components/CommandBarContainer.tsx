@@ -75,8 +75,8 @@ const CommandBarContainer = (props: StateDerivedProps) => (
                 }]
                 : [],
             {
-                key: 'more',
-                text: i18n.t('commands.more'),
+                key: 'tools',
+                text: i18n.t('commands.tools'),
                 subMenuProps: {
                     items: [
                         commands.commandPalette(props.onShowOverlay!),

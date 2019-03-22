@@ -53,7 +53,7 @@ const translationMap = {
         file: 'File',
         edit: 'Edit',
         view: 'View',
-        more: 'More',
+        tools: 'Tools',
         commandPalette: 'Command Palette…',
         settings: 'Settings…',
         about: 'About…',

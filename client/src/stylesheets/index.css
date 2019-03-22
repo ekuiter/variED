@@ -104,9 +104,11 @@ textarea {
     margin: 0;
 }
 
+/*
 .palette ul.scrollable {
-    overflow: auto;
+    overflow: auto; this inexplicably causes touch scrolling not to work on mobile devices ...
 }
+*/
 
 .palette ul li {
     padding: 8px 12px;

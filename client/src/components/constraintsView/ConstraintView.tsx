@@ -9,7 +9,7 @@ interface Props {
 const reactConstraintRenderer = createConstraintRenderer<ReactNode>({
     neutral: null,
     _return: s => s,
-    returnFeature: (s, idx) => <span key={idx} style={constants.constraint.featureStyle}>{s}</span>,
+    returnFeature: (f, idx) => f ? <span key={idx} style={constants.constraint.featureStyle}>{f.name}</span> : 'GRAVEYARDED',
     join: (ts, t) => ts.reduce((acc: ReactNode[], elem) =>
         acc === null ? [elem] : [...acc, t, elem], null),
     cacheKey: 'react'
