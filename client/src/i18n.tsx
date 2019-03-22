@@ -120,6 +120,8 @@ const translationMap = {
         artifact: 'Artifact',
         feature: 'Feature',
         constraint: 'Constraint',
+        oldConstraint: 'Old constraint',
+        newConstraint: 'New constraint',
         format: 'Format',
         layout: 'Layout',
         delay: 'Delay',
@@ -155,6 +157,8 @@ const translationMap = {
             },
             constraint: {
                 new: 'New constraint',
+                set: 'Set constraint',
+                remove: 'Remove constraint',
                 invalid: 'Invalid constraint.'
             }
         },

@@ -377,6 +377,46 @@ export default class extends React.Component<Props, State> {
                     else
                         this.props.onCreateConstraint({formula});
                 })
+        }, {
+            text: i18n.t('commandPalette.featureDiagram.constraint.set'),
+            icon: 'Edit',
+            disabled: () => !enableConstraintsView(this.props.featureModel),
+            action: this.actionWithArguments(
+                [{
+                    title: i18n.t('commandPalette.oldConstraint'),
+                    items: () => this.props.featureModel!.constraints.map(constraint => ({
+                        key: constraint.ID, text: constraint.render(paletteConstraintRenderer)
+                    }))
+                }, {
+                    title: i18n.t('commandPalette.newConstraint'),
+                    allowFreeform: true,
+                    transformFreeform: value =>
+                        Constraint.readFormulaFromString(value,
+                            this.props.featureModel!, paletteConstraintRenderer).preview ||
+                        i18n.t('commandPalette.featureDiagram.constraint.invalid')
+                }],
+                // TODO: actually, we have to verify if constraintID still exists (someone else
+                // might have deleted it in the meanwhile)
+                (constraintID, formulaString) => {
+                    const {formula, isGraveyarded} = Constraint.readFormulaFromString(formulaString,
+                        this.props.featureModel!, paletteConstraintRenderer);
+                    if (!formula || isGraveyarded)
+                        logger.warn(() => 'invalid formula given'); // TODO: better error reporting UI
+                    else
+                        this.props.onSetConstraint({constraintID, formula});
+                })
+        }, {
+            text: i18n.t('commandPalette.featureDiagram.constraint.remove'),
+            icon: 'Remove',
+            disabled: () => !enableConstraintsView(this.props.featureModel),
+            action: this.actionWithArguments(
+                [{
+                    title: i18n.t('commandPalette.constraint'),
+                    items: () => this.props.featureModel!.constraints.map(constraint => ({
+                        key: constraint.ID, text: constraint.render(paletteConstraintRenderer)
+                    }))
+                }],
+                constraintID => this.props.onRemoveConstraint({constraintID}))
         },
 
         this.featureCommand({
