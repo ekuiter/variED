@@ -254,14 +254,14 @@
   [formula]
   (profile
     {}
-    (CO/create-constraint @(*context* :FM) formula)))
+    (CO/create-constraint @(*context* :FM) (helpers/formula-decode formula))))
 
 (defn ^:export operationSetConstraint
   "Sets the propositional formula of a constraint."
   [ID formula]
   (profile
     {}
-    (CO/set-constraint @(*context* :FM) ID formula)))
+    (CO/set-constraint @(*context* :FM) ID (helpers/formula-decode formula))))
 
 (defn ^:export operationRemoveConstraint
   "Removes a constraint."

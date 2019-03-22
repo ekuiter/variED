@@ -229,8 +229,8 @@ export class Constraint {
         return this.ID.toString();
     }
 
-    static renderFromString<T>(constraintString: string, featureModel: FeatureModel,
-        constraintRenderer: ConstraintRenderer<T>): T | undefined {
+    static readFormulaFromString<T>(formulaString: string, featureModel: FeatureModel,
+        constraintRenderer: ConstraintRenderer<T>): {formula?: KernelConstraintFormula, preview?: T, isGraveyarded?: boolean} {
         const operatorMap: {[x: string]: string} = {
             "not": ConstraintType.not,
             "disj": ConstraintType.disj,
@@ -267,26 +267,30 @@ export class Constraint {
                 throw new Error('invalid constraint s-expression');
         }
 
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 5; i++) { // try to append some parentheses for "eager" preview
             try {
-                let sexpr = SParse(constraintString + ')'.repeat(i));
+                let sexpr = SParse(formulaString + ')'.repeat(i));
                 if (sexpr instanceof Error) {
                     if (sexpr.message.indexOf('Expected `)`') >= 0)
                         continue;
-                    return;
+                    return {};
                 }
                 sexpr = recurse(sexpr);
-    
-                return new Constraint({
+                const constraint = new Constraint({
                     [FORMULA]: sexpr,
                     [GRAVEYARDED]: false
-                }, featureModel).render(constraintRenderer);
+                }, featureModel);
+                return {
+                    formula: sexpr,
+                    preview: constraint.render(constraintRenderer),
+                    isGraveyarded: constraint.isGraveyarded
+                };
             } catch (e) {
                 continue;
             }
         }
 
-        return;
+        return {};
     }
 }
 

@@ -8,7 +8,7 @@ import {Message, MessageType, FeatureDiagramLayoutType, OverlayType, OverlayProp
 import {Dispatch, AnyAction, Action as ReduxAction} from 'redux';
 import {ThunkAction} from 'redux-thunk';
 import {State} from './types';
-import {Feature, PropertyType, GroupType} from '../modeling/types';
+import {Feature, PropertyType, GroupType, KernelConstraintFormula} from '../modeling/types';
 import Kernel from '../modeling/Kernel';
 import {enqueueMessage, flushMessageQueue} from '../server/messageQueue';
 import deferred from '../helpers/deferred';
@@ -139,6 +139,17 @@ const actions = {
                             ? GroupType.or : feature.isOr
                                 ? GroupType.alternative : GroupType.and))
                 }
+            },
+
+            constraint: {
+                create: createOperationAction(({formula}: {formula: KernelConstraintFormula}, kernel) =>
+                    kernel.operationCreateConstraint(formula)),
+                
+                set: createOperationAction(({constraintID, formula}: {constraintID: string, formula: KernelConstraintFormula}, kernel) =>
+                    kernel.operationSetConstraint(constraintID, formula)),
+
+                remove: createOperationAction(({constraintID}: {constraintID: string}, kernel) =>
+                    kernel.operationRemoveConstraint(constraintID)),
             }
         } 
     }

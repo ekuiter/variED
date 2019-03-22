@@ -1,7 +1,7 @@
 import FeatureModel from '../modeling/FeatureModel';
 import {defaultSettings, Settings} from './settings';
 import {Message, FeatureDiagramLayoutType, OverlayType, OverlayProps, ArtifactPath} from '../types';
-import {Feature, KernelFeatureModel} from '../modeling/types';
+import {Feature, KernelFeatureModel, KernelConstraintFormula} from '../modeling/types';
 
 export interface Collaborator {
     siteID: string
@@ -94,6 +94,9 @@ export type OnToggleFeatureOptionalFunction = (payload: {feature: Feature}) => P
 export type OnSetFeatureAndFunction = (payload: {featureIDs: string[]}) => Promise<void>;
 export type OnSetFeatureOrFunction = (payload: {featureIDs: string[]}) => Promise<void>;
 export type OnSetFeatureAlternativeFunction = (payload: {featureIDs: string[]}) => Promise<void>;
+export type OnCreateConstraintFunction = (payload: {formula: KernelConstraintFormula}) => Promise<void>;
+export type OnSetConstraintFunction = (payload: {constraintID: string, formula: KernelConstraintFormula}) => Promise<void>;
+export type OnRemoveConstraintFunction = (payload: {constraintID: string}) => Promise<void>;
 export type OnToggleFeatureGroupTypeFunction = (payload: {feature: Feature}) => Promise<void>;
 
 // Props that may derived from the state to use in React components.
@@ -150,5 +153,8 @@ export type StateDerivedProps = Partial<{
     onSetFeatureAnd: OnSetFeatureAndFunction,
     onSetFeatureOr: OnSetFeatureOrFunction,
     onSetFeatureAlternative: OnSetFeatureAlternativeFunction,
+    onCreateConstraint: OnCreateConstraintFunction,
+    onSetConstraint: OnSetConstraintFunction,
+    onRemoveConstraint: OnRemoveConstraintFunction,
     onToggleFeatureGroupType: OnToggleFeatureGroupTypeFunction
 }>;

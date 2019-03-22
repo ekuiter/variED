@@ -1,6 +1,6 @@
 import React from 'react';
 import i18n from '../../i18n';
-import {OnShowOverlayFunction, OnUndoFunction, OnRedoFunction, OnSetFeatureDiagramLayoutFunction, OnFitToScreenFunction, OnCreateFeatureAboveFunction, OnCreateFeatureBelowFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnRemoveFeatureFunction, OnRemoveFeatureSubtreeFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureOptionalFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction, OnExpandAllFeaturesFunction, OnCollapseAllFeaturesFunction, OnJoinRequestFunction, OnLeaveRequestFunction, CollaborativeSession, OnSetCurrentArtifactPathFunction, OnSetSettingFunction, OnMoveFeatureSubtreeFunction} from '../../store/types';
+import {OnShowOverlayFunction, OnUndoFunction, OnRedoFunction, OnSetFeatureDiagramLayoutFunction, OnFitToScreenFunction, OnCreateFeatureAboveFunction, OnCreateFeatureBelowFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnRemoveFeatureFunction, OnRemoveFeatureSubtreeFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureOptionalFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction, OnExpandAllFeaturesFunction, OnCollapseAllFeaturesFunction, OnJoinRequestFunction, OnLeaveRequestFunction, CollaborativeSession, OnSetCurrentArtifactPathFunction, OnSetSettingFunction, OnMoveFeatureSubtreeFunction, OnCreateConstraintFunction, OnSetConstraintFunction, OnRemoveConstraintFunction} from '../../store/types';
 import {getShortcutText} from '../../shortcuts';
 import {OverlayType, Omit, FeatureDiagramLayoutType, FormatType, isArtifactPathEqual, ArtifactPath} from '../../types';
 import Palette, {PaletteItem, PaletteAction, getKey} from '../../helpers/Palette';
@@ -43,7 +43,10 @@ interface Props {
     onSetFeatureOptional: OnSetFeatureOptionalFunction,
     onSetFeatureAnd: OnSetFeatureAndFunction,
     onSetFeatureOr: OnSetFeatureOrFunction,
-    onSetFeatureAlternative: OnSetFeatureAlternativeFunction
+    onSetFeatureAlternative: OnSetFeatureAlternativeFunction,
+    onCreateConstraint: OnCreateConstraintFunction,
+    onSetConstraint: OnSetConstraintFunction,
+    onRemoveConstraint: OnRemoveConstraintFunction,
     onSetFeatureDiagramLayout: OnSetFeatureDiagramLayoutFunction,
     onSetCurrentArtifactPath: OnSetCurrentArtifactPathFunction,
     onSetSetting: OnSetSettingFunction
@@ -362,10 +365,17 @@ export default class extends React.Component<Props, State> {
                     title: i18n.t('commandPalette.constraint'),
                     allowFreeform: true,
                     transformFreeform: value =>
-                        Constraint.renderFromString(value, this.props.featureModel!, paletteConstraintRenderer) ||
+                        Constraint.readFormulaFromString(value,
+                            this.props.featureModel!, paletteConstraintRenderer).preview ||
                         i18n.t('commandPalette.featureDiagram.constraint.invalid')
                 }],
-                constraintString => {
+                formulaString => {
+                    const {formula, isGraveyarded} = Constraint.readFormulaFromString(formulaString,
+                        this.props.featureModel!, paletteConstraintRenderer);
+                    if (!formula || isGraveyarded)
+                        logger.warn(() => 'invalid formula given'); // TODO: better error reporting UI
+                    else
+                        this.props.onCreateConstraint({formula});
                 })
         },
 

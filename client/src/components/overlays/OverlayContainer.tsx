@@ -57,6 +57,9 @@ const OverlayContainer = (props: StateDerivedProps) => (
             onSetFeatureAnd={props.onSetFeatureAnd!}
             onSetFeatureOr={props.onSetFeatureOr!}
             onSetFeatureAlternative={props.onSetFeatureAlternative!}
+            onCreateConstraint={props.onCreateConstraint!}
+            onSetConstraint={props.onSetConstraint!}
+            onRemoveConstraint={props.onRemoveConstraint!}
             onSetCurrentArtifactPath={props.onSetCurrentArtifactPath!}
             onSetSetting={props.onSetSetting!}/>
 
@@ -221,6 +224,9 @@ export default connect(
         onSetFeatureAnd: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setAnd(payload)),
         onSetFeatureOr: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setOr(payload)),
         onSetFeatureAlternative: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setAlternative(payload)),
+        onCreateConstraint: payload => dispatch<any>(actions.server.featureDiagram.constraint.create(payload)),
+        onSetConstraint: payload => dispatch<any>(actions.server.featureDiagram.constraint.set(payload)),
+        onRemoveConstraint: payload => dispatch<any>(actions.server.featureDiagram.constraint.remove(payload)),
         onSetFeatureName: payload => dispatch<any>(actions.server.featureDiagram.feature.setName(payload)),
         onSetFeatureDescription: payload => dispatch<any>(actions.server.featureDiagram.feature.setDescription(payload))
     })

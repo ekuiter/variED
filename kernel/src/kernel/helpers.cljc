@@ -46,6 +46,10 @@
   (p ::FM-encode
      #?(:cljs (clj->js FM))))
 
+(defn formula-decode [formula]
+  (p ::formula-decode
+     #?(:cljs (js->clj formula))))
+
 (defn set-logger-fn [logger-fn]
   (p ::set-logger-fn
      (def ^:dynamic *logger-fn* logger-fn))

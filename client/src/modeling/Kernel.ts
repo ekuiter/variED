@@ -2,7 +2,7 @@ import './_kernel';
 import {ArtifactPath, artifactPathToString} from '../types';
 import logger from '../helpers/logger';
 import {KernelContext, State, KernelData} from '../store/types';
-import {GroupType, KernelFeatureModel} from './types';
+import {GroupType, KernelFeatureModel, KernelConstraintFormula} from './types';
 import {isFeatureDiagramCollaborativeSession, getCollaborativeSession} from '../store/selectors';
 import uuidv4 from 'uuid/v4';
 
@@ -126,13 +126,11 @@ class Kernel {
         return this._callKernel(api => api.operationSetFeatureProperty(ID, property, value));
     }
 
-    operationCreateConstraint(formula: KernelData): KernelData {
-        // TODO: constraint formula format (js->clj?)
+    operationCreateConstraint(formula: KernelConstraintFormula): KernelData {
         return this._callKernel(api => api.operationCreateConstraint(formula));
     }
 
-    operationSetConstraint(ID: string, formula: KernelData): KernelData {
-        // TODO: constraint formula format
+    operationSetConstraint(ID: string, formula: KernelConstraintFormula): KernelData {
         return this._callKernel(api => api.operationSetConstraint(ID, formula));
     }
 
