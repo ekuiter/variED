@@ -18,6 +18,11 @@ export function numberofUnflushedMessages(): number {
 }
 
 export async function flushMessageQueue(): Promise<void> {
+    if (numberofUnflushedMessages() > 0) {
+        if (!document.title.startsWith('(*) '))
+            document.title = '(*) ' + document.title;
+    }
+    
     if (isSimulateOffline()) {
         logger.warnTagged({tag}, () => 'simulating offline, abort flushing message queue');
         return;
@@ -30,7 +35,7 @@ export async function flushMessageQueue(): Promise<void> {
 
     isFlushingMessageQueue = true;
     const numberOfMessages = messageQueue.length;
-    while (messageQueue.length) {
+    while (numberofUnflushedMessages() > 0) {
         try {
             await sendMessage(messageQueue[0]);
         } catch (e) {
@@ -42,6 +47,9 @@ export async function flushMessageQueue(): Promise<void> {
         }
         messageQueue.shift();
     }
+
+    if (document.title.startsWith('(*) '))
+        document.title = document.title.substr(4);
 
     if (numberOfMessages > 0)
         logger.infoTagged({tag}, () => `successfully sent ${numberOfMessages} messages`);

@@ -20,7 +20,10 @@ const constants = {
     overlays: {
         aboutPanel: {
             githubUri: 'https://github.com/ekuiter/variED',
-            licenseUri: 'https://github.com/ekuiter/variED/blob/master/LICENSE.txt'
+            feedbackUri: 'https://goo.gl/forms/uUJmj68FYir9vEI13',
+            licenseUri: 'https://github.com/ekuiter/variED/blob/master/LICENSE.txt',
+            researchGroupUri: 'http://www.dbse.ovgu.de/',
+            mailto: 'mailto:kuiter@ovgu.de'
         }
     },
     server: {

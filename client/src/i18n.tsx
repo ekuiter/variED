@@ -4,9 +4,9 @@
  */
 
 import objectPath from 'object-path';
+import {Link} from 'office-ui-fabric-react/lib/Link';
 import React from 'react';
 import constants from './constants';
-import {Link} from 'office-ui-fabric-react/lib/Link';
 import {getShortcutText} from './shortcuts';
 
 type TranslationFunction = (...args: any[]) => any;
@@ -181,8 +181,12 @@ const translationMap = {
                     <h3>variED: The variability editor</h3>
                     <p>View, edit and analyze feature models in the browser - with support for real-time
                         collaboration.</p>
-                    <p>This project is released under the <Link href={constants.overlays.aboutPanel.licenseUri}
+                    <p>This project is a research effort of
+                        the <Link href={constants.overlays.aboutPanel.researchGroupUri} target="_blank">DBSE working group</Link> and
+                        has been released under the <Link href={constants.overlays.aboutPanel.licenseUri}
                         target="_blank">LGPL v3 license</Link>.</p>
+                    <p>If you would like to leave any feedback, use our <Link
+                        href={constants.overlays.aboutPanel.feedbackUri} target="_blank">online form</Link> or <Link href={constants.overlays.aboutPanel.mailto}>mail me</Link>.</p>
                     <p><Link href={constants.overlays.aboutPanel.githubUri} target="_blank">View source code on
                         GitHub</Link></p>
                 </div>
