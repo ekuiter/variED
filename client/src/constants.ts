@@ -17,9 +17,6 @@ const constants = {
             color: '#050'
         }
     },
-    views: {
-        splitMiddle: 0.6
-    },
     overlays: {
         aboutPanel: {
             githubUri: 'https://github.com/ekuiter/variED',

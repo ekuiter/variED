@@ -42,6 +42,8 @@ export default class extends React.Component<Props, State> {
 
     componentDidMount() {
         document.addEventListener('keydown', this.onKeyPress);
+        if (document.activeElement)
+            (document.activeElement as any).blur(); // if any, remove menu focus to avoid opening menu on hitting return
     }
 
     componentWillUnmount() {

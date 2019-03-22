@@ -1,8 +1,6 @@
 import React, {CSSProperties} from 'react';
 import {OnSetSettingFunction} from '../store/types';
 import withDimensions from '../helpers/withDimensions';
-import {wait} from '../helpers/wait';
-import constants from '../constants';
 import {Settings} from '../store/settings';
 
 interface Props {
@@ -19,50 +17,51 @@ class SplitView extends React.Component<Props> {
     contentRef = React.createRef<HTMLDivElement>();
     handlerRef = React.createRef<HTMLDivElement>();
 
-    // TODO: this sucks on touch devices.
     componentDidMount() {
-        let isDragging = false, wasDragged = false, wasSwitched = false;
+        let isDragging = false;
 
-        this.handlerRef.current!.addEventListener('mousedown', () => {
-            isDragging = true;
-        });
+        function isTouchEvent(e: MouseEvent | TouchEvent | Touch): e is TouchEvent {
+            return (window as any).TouchEvent && e instanceof TouchEvent;
+        }
 
-        document.addEventListener('mousemove', e => {
-            if (!isDragging)
-                return false;
+        const dragStart = () => {
+                isDragging = true;
+            },
+            dragMove = (e: MouseEvent | TouchEvent | Touch) => {
+                if (!isDragging)
+                    return false;
 
-            const content = this.contentRef.current!,
-                value = this.props.settings!.views.splitDirection === 'horizontal'
-                ? (e.clientX - content.offsetLeft) / content.offsetWidth
-                : (e.clientY - content.offsetTop) / content.offsetHeight;
-            this.props.onSetSetting!({
-                path: 'views.splitAt',
-                value: Math.min(1, Math.max(0, value))
-            });
-            wasDragged = true;
+                if (isTouchEvent(e))
+                    e = e.touches[0];
 
-            return true;
-        });
-
-        document.addEventListener('mouseup', (e) => {
-            if (!wasDragged && this.handlerRef.current!.contains(e.target as any))
-                wait(200).then(() => {
-                    if (!wasSwitched)
-                        this.props.onSetSetting!({
-                            path: 'views.splitAt',
-                            value: this.props.settings!.views.splitAt === 1 ? constants.views.splitMiddle :
-                                this.props.settings!.views.splitAt === constants.views.splitMiddle ? 0 : 1
-                        });
+                const content = this.contentRef.current!,
+                    value = this.props.settings!.views.splitDirection === 'horizontal'
+                    ? (e.clientX - content.offsetLeft) / content.offsetWidth
+                    : (e.clientY - content.offsetTop) / content.offsetHeight;
+                this.props.onSetSetting!({
+                    path: 'views.splitAt',
+                    value: Math.min(1, Math.max(0, value))
                 });
-            wasDragged = isDragging = wasSwitched = false;
-        });
+
+                return true;
+            },
+            dragEnd = () => {
+                isDragging = false;
+            };
+
+        this.handlerRef.current!.addEventListener('mousedown', dragStart);
+        document.addEventListener('mousemove', dragMove);
+        document.addEventListener('mouseup', dragEnd);
+
+        this.handlerRef.current!.addEventListener('touchstart', dragStart);
+        document.addEventListener('touchmove', dragMove);
+        document.addEventListener('touchend', dragEnd);
 
         this.handlerRef.current!.addEventListener('dblclick', () => {
             this.props.onSetSetting!({
                 path: 'views.splitDirection',
                 value: this.props.settings!.views.splitDirection === 'horizontal' ? 'vertical' : 'horizontal'
             });
-            wasSwitched = true;
         });
     }
 
@@ -85,9 +84,7 @@ class SplitView extends React.Component<Props> {
                         : {})}
                 <div className="handler" ref={this.handlerRef} style={{
                     display: enableSecondaryView ? 'block' : 'none'
-                }}>
-                    <div className="handler-content">…</div>
-                </div>
+                }}/>
                 {enableSecondaryView && this.props.renderSecondaryView()}
             </div>
         );
