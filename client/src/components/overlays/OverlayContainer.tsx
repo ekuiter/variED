@@ -31,6 +31,7 @@ const OverlayContainer = (props: StateDerivedProps) => (
             isOpen={props.overlay === OverlayType.commandPalette}
             featureDiagramLayout={props.featureDiagramLayout}
             featureModel={props.featureModel}
+            settings={props.settings!}
             onDismiss={() => props.onHideOverlay!({overlay: OverlayType.commandPalette})}
             onShowOverlay={props.onShowOverlay!}
             onJoinRequest={props.onJoinRequest!}

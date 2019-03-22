@@ -10,6 +10,8 @@ import {arrayUnique} from '../../helpers/array';
 import deferred from '../../helpers/deferred';
 import logger from '../../helpers/logger';
 import {Persistor} from 'redux-persist';
+import {enableConstraintsView} from '../constraintsView/ConstraintsView';
+import {defaultSettings, Settings} from '../../store/settings';
 
 interface Props {
     artifactPaths: ArtifactPath[],
@@ -17,6 +19,7 @@ interface Props {
     isOpen: boolean,
     featureDiagramLayout?: FeatureDiagramLayoutType,
     featureModel?: FeatureModel,
+    settings: Settings,
     onDismiss: () => void,
     onShowOverlay: OnShowOverlayFunction,
     onJoinRequest: OnJoinRequestFunction,
@@ -225,7 +228,7 @@ export default class extends React.Component<Props, State> {
                         this.props.onShowOverlay({overlay: OverlayType.exportDialog, overlayProps: {format}});
                 })
         }, {
-            text: i18n.t('commandPalette.featureDiagram.setLayout'),
+            text: i18n.t('commands.featureDiagram.setLayout'),
             disabled: () => !this.props.featureModel,
             action: this.actionWithArguments(
                 [{
@@ -236,9 +239,23 @@ export default class extends React.Component<Props, State> {
         }, {
             key: 'fitToScreen',
             icon: 'FullScreen',
-            text: i18n.t('commandPalette.featureDiagram.fitToScreen'),
+            text: i18n.t('commands.featureDiagram.fitToScreen'),
             disabled: () => !this.props.featureModel,
             action: this.action(this.props.onFitToScreen)
+        }, {
+            key: 'toggleConstraintView',
+            text: i18n.t('commandPalette.featureDiagram.toggleConstraintView'),
+            disabled: () => !enableConstraintsView(this.props.featureModel),
+            action: this.action(() => this.props.onSetSetting(
+                {path: 'views.splitAt', value: (splitAt: number) =>
+                    splitAt > defaultSettings.views.splitAt ? defaultSettings.views.splitAt : 1}))
+        }, {
+            key: 'toggleConstraintViewSplitDirection',
+            text: i18n.t('commandPalette.featureDiagram.toggleConstraintViewSplitDirection'),
+            disabled: () => !enableConstraintsView(this.props.featureModel),
+            action: this.action(() => this.props.onSetSetting(
+                {path: 'views.splitDirection', value: (splitDirection: 'horizontal' | 'vertical') =>
+                    splitDirection === 'horizontal' ? 'vertical' : 'horizontal'}))
         },
         
         this.featureCommand({

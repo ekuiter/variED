@@ -9,9 +9,10 @@ import {FeatureDiagramLayoutType, OverlayType, FormatType} from '../types';
 import {ContextualMenuItemType} from 'office-ui-fabric-react/lib/ContextualMenu';
 import {getShortcutText} from '../shortcuts';
 import {canExport} from './featureDiagramView/export';
-import {OnShowOverlayFunction, OnCollapseFeaturesFunction, OnExpandFeaturesFunction, OnSetFeatureDiagramLayoutFunction, OnFitToScreenFunction, OnDeselectAllFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesBelowFunction, OnSetSelectMultipleFeaturesFunction, OnSelectAllFeaturesFunction, OnCollapseAllFeaturesFunction, OnExpandAllFeaturesFunction, OnRemoveFeatureFunction, OnUndoFunction, OnRedoFunction, OnCreateFeatureBelowFunction, OnCreateFeatureAboveFunction, OnRemoveFeatureSubtreeFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureOptionalFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction} from '../store/types';
+import {OnShowOverlayFunction, OnCollapseFeaturesFunction, OnExpandFeaturesFunction, OnSetFeatureDiagramLayoutFunction, OnFitToScreenFunction, OnDeselectAllFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesBelowFunction, OnSetSelectMultipleFeaturesFunction, OnSelectAllFeaturesFunction, OnCollapseAllFeaturesFunction, OnExpandAllFeaturesFunction, OnRemoveFeatureFunction, OnUndoFunction, OnRedoFunction, OnCreateFeatureBelowFunction, OnCreateFeatureAboveFunction, OnRemoveFeatureSubtreeFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureOptionalFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction, OnSetSettingFunction} from '../store/types';
 import FeatureModel from '../modeling/FeatureModel';
 import {Feature} from '../modeling/types';
+import {defaultSettings} from '../store/settings';
 
 const exportFormatItem = (featureDiagramLayout: FeatureDiagramLayoutType,
     onShowOverlay: OnShowOverlayFunction, format: FormatType) =>
@@ -117,6 +118,24 @@ const commands = {
             text: i18n.t('commands.featureDiagram.fitToScreen'),
             iconProps: {iconName: 'FullScreen'},
             onClick: onFitToScreen
+        }),
+        showConstraintView: (onSetSetting: OnSetSettingFunction, splitAt: number) => ({
+            key: 'showConstraintView',
+            text: i18n.t('commands.featureDiagram.showConstraintView'),
+            canCheck: true,
+            isChecked: splitAt < 0.95,
+            onClick: () => onSetSetting(
+                {path: 'views.splitAt', value: (splitAt: number) =>
+                    splitAt > defaultSettings.views.splitAt ? defaultSettings.views.splitAt : 1})
+        }),
+        splitConstraintViewHorizontally: (onSetSetting: OnSetSettingFunction, splitDirection: 'horizontal' | 'vertical') => ({
+            key: 'splitConstraintViewHorizontally',
+            text: i18n.t('commands.featureDiagram.splitConstraintViewHorizontally'),
+            canCheck: true,
+            isChecked: splitDirection === 'horizontal',
+            onClick: () => onSetSetting(
+                {path: 'views.splitDirection', value: (splitDirection: 'horizontal' | 'vertical') =>
+                    splitDirection === 'horizontal' ? 'vertical' : 'horizontal'})
         }),
         feature: {
             newMenu: (featureID: string, onCreateFeatureBelow: OnCreateFeatureBelowFunction,

@@ -25,12 +25,14 @@ export default class extends React.Component<Props> {
         }];
 
         return (
-            <DetailsList
-                items={this.props.featureModel.constraints}
-                columns={columns}
-                compact={true}
-                selectionMode={SelectionMode.none}
-                isHeaderVisible={false}/>
+            <div data-is-scrollable={true} className="scrollable">
+                <DetailsList
+                    items={this.props.featureModel.constraints}
+                    columns={columns}
+                    compact={true}
+                    selectionMode={SelectionMode.none}
+                    isHeaderVisible={false}/>
+            </div>
         );
     }
 }

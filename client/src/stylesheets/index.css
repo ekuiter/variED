@@ -27,6 +27,7 @@
     flex: 1 1 auto;
     box-sizing: border-box;
     overflow: scroll;
+    height: calc(100vh - 40px);
 }
 
 .ms-Fabric.fabricRoot .content > .handler {
@@ -44,6 +45,11 @@
 .ms-Fabric.fabricRoot .content.vertical > .handler {
     height: 12px;
     cursor: row-resize;
+}
+
+.ms-Fabric.fabricRoot .content .scrollable {
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 .ms-Spinner {

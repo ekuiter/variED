@@ -72,8 +72,10 @@ export default class extends React.Component<Props, State> {
     onClick = (item: PaletteItem) => () => this.onSubmit(item);
 
     onSubmit(item: PaletteItem) {
-        item.action();
-        this.props.onSubmit(item);
+        if (this.props.isOpen) {
+            item.action();
+            this.props.onSubmit(item);
+        }
     }
 
     sortItems(items: PaletteItem[]): PaletteItem[] {

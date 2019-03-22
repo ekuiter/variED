@@ -65,10 +65,12 @@ const translationMap = {
             png: 'PNG…',
             jpg: 'JPEG…',
             pdf: 'PDF…',
-            setLayout: 'Layout',
+            setLayout: 'Feature model layout',
             verticalTree: 'Vertical tree',
             horizontalTree: 'Horizontal tree',
-            fitToScreen: 'Fit to screen',
+            fitToScreen: 'Fit feature model to screen',
+            showConstraintView: 'Show constraint view',
+            splitConstraintViewHorizontally: 'Constraint view sidebar',
             feature: {
                 newMenu: {
                     title: 'New',
@@ -130,8 +132,8 @@ const translationMap = {
             png: 'PNG',
             jpg: 'JPEG',
             pdf: 'PDF',
-            setLayout: 'Feature model layout',
-            fitToScreen: 'Fit feature model to screen',
+            toggleConstraintView: 'Toggle constraint view',
+            toggleConstraintViewSplitDirection: 'Toggle constraint view sidebar',
             feature: {
                 details: 'Feature details',
                 rename: 'Rename feature',

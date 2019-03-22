@@ -12,6 +12,7 @@ import actions from '../store/actions';
 import i18n from '../i18n';
 import {State, StateDerivedProps} from '../store/types';
 import logger from '../helpers/logger';
+import {enableConstraintsView} from './constraintsView/ConstraintsView';
 
 const CommandBarContainer = (props: StateDerivedProps) => (
     <CommandBar
@@ -58,6 +59,13 @@ const CommandBarContainer = (props: StateDerivedProps) => (
                             commands.featureDiagram.setLayout(
                                 props.featureDiagramLayout!,
                                 props.onSetFeatureDiagramLayout!),
+                            ...enableConstraintsView(props.featureModel)
+                                ? [makeDivider(),
+                                    commands.featureDiagram.showConstraintView(
+                                        props.onSetSetting!, props.settings!.views.splitAt),
+                                    commands.featureDiagram.splitConstraintViewHorizontally(
+                                        props.onSetSetting!, props.settings!.views.splitDirection)]
+                                : [],
                             makeDivider(),
                             commands.featureDiagram.feature.collapseAll(props.onCollapseAllFeatures!),
                             commands.featureDiagram.feature.expandAll(props.onExpandAllFeatures!),
@@ -130,6 +138,7 @@ export default connect(
         onSetFeatureOptional: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setOptional(payload)),
         onSetFeatureAnd: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setAnd(payload)),
         onSetFeatureOr: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setOr(payload)),
-        onSetFeatureAlternative: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setAlternative(payload))
+        onSetFeatureAlternative: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setAlternative(payload)),
+        onSetSetting: payload => dispatch(actions.settings.set(payload))
     })
 )(CommandBarContainer);
