@@ -34,9 +34,10 @@ const CommandBarContainer = (props: StateDerivedProps) => (
                     text: i18n.t('commands.edit'),
                     subMenuProps: {
                         items: [
-                            commands.undo(props.onUndo!),
-                            commands.redo(props.onRedo!),
-                            makeDivider(),
+                            // TODO: until we have proper undo/redo support
+                            //commands.undo(props.onUndo!),
+                            //commands.redo(props.onRedo!),
+                            //makeDivider(),
                             commands.featureDiagram.feature.selectAll(props.onSelectAllFeatures!),
                             commands.featureDiagram.feature.deselectAll(props.onDeselectAllFeatures!),
                             commands.featureDiagram.feature.selection(

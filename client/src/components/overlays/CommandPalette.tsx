@@ -12,6 +12,7 @@ import logger from '../../helpers/logger';
 import {Persistor} from 'redux-persist';
 import {enableConstraintsView} from '../constraintsView/ConstraintsView';
 import {defaultSettings, Settings} from '../../store/settings';
+import {preconditions} from 'src/modeling/preconditions';
 
 interface Props {
     artifactPaths: ArtifactPath[],
@@ -208,19 +209,21 @@ export default class extends React.Component<Props, State> {
             text: i18n.t('commandPalette.about'),
             icon: 'Info',
             action: this.action(() => this.props.onShowOverlay({overlay: OverlayType.aboutPanel, overlayProps: {}}))
-        }, {
+        }, /*{
             text: i18n.t('commands.undo'),
             icon: 'Undo',
-            disabled: () => !this.props.featureModel,
+            disabled: () => true, // TODO: until we have proper undo/redo support
+            // disabled: () => !this.props.featureModel,
             shortcut: getShortcutText('undo'),
             action: this.action(this.props.onUndo)
         }, {
             text: i18n.t('commands.redo'),
             icon: 'Redo',
-            disabled: () => !this.props.featureModel,
+            disabled: () => true, // TODO: until we have proper undo/redo support
+            // disabled: () => !this.props.featureModel,
             shortcut: getShortcutText('redo'),
             action: this.action(this.props.onRedo)
-        }, {
+        },*/ {
             text: i18n.t('commandPalette.featureDiagram.export'),
             icon: 'Share',
             disabled: () => !this.props.featureModel,
@@ -269,23 +272,43 @@ export default class extends React.Component<Props, State> {
             text: i18n.t('commands.featureDiagram.feature.newMenu.newBelow'),
             shortcut: getShortcutText('featureDiagram.feature.new'),
             icon: 'Add'
-        }, featureID => this.props.onCreateFeatureBelow({featureParentID: featureID})),
+        }, featureID => {
+            if (preconditions.featureDiagram.feature.createBelow(featureID, this.props.featureModel!))
+                this.props.onCreateFeatureBelow({featureParentID: featureID});
+            else
+                logger.warn(() => `feature ${featureID} vanished`);
+        }),
         
         this.featureCommand({
             text: i18n.t('commands.featureDiagram.feature.newMenu.newAbove'),
             icon: 'Add'
-        }, featureID => this.props.onCreateFeatureAbove({featureIDs: [featureID]})),
+        }, featureID => {
+            if (preconditions.featureDiagram.feature.createAbove([featureID], this.props.featureModel!))
+                this.props.onCreateFeatureAbove({featureIDs: [featureID]});
+            else
+                logger.warn(() => `feature ${featureID} vanished`);
+        }),
         
         this.featureCommand({
             text: i18n.getFunction('commands.featureDiagram.feature.removeMenu.remove')({length: 1}),
             shortcut: getShortcutText('featureDiagram.feature.remove'),
             icon: 'Remove'
-        }, featureID => this.props.onRemoveFeature({featureIDs: [featureID]})),
+        }, featureID => {
+            if (preconditions.featureDiagram.feature.remove([featureID], this.props.featureModel!))
+                this.props.onRemoveFeature({featureIDs: [featureID]});
+            else
+                logger.warn(() => `feature ${featureID} vanished`);
+        }),
         
         this.featureCommand({
             text: i18n.t('commands.featureDiagram.feature.removeMenu.removeBelow'),
             icon: 'Remove'
-        }, featureID => this.props.onRemoveFeatureSubtree({featureIDs: [featureID]})),
+        }, featureID => {
+            if (preconditions.featureDiagram.feature.removeSubtree([featureID], this.props.featureModel!))
+                this.props.onRemoveFeatureSubtree({featureIDs: [featureID]});
+            else
+                logger.warn(() => `feature ${featureID} vanished`);
+        }),
         
         {
             disabled: () => !this.props.featureModel,
@@ -297,14 +320,22 @@ export default class extends React.Component<Props, State> {
                     }))
                 }, {
                     title: i18n.t('commandPalette.featureDiagram.feature.moveTarget'),
-                    // TODO: remove any invalid move targets (i.e., subfeatures)
-                    items: () => this.props.featureModel!.getVisibleFeatureIDs().map(featureID => ({
-                        key: featureID, text: this.props.featureModel!.getFeature(featureID)!.name
-                    }))
+                    items: moveSourceID => {
+                        const getFeature = (featureID: string) => this.props.featureModel!.getFeature(featureID)!,
+                            featureIDsBelowMoveSource = getFeature(moveSourceID).getFeatureIDsBelow();
+                        return this.props.featureModel!.getVisibleFeatureIDs()
+                            .filter(featureID => !featureIDsBelowMoveSource.includes(featureID))
+                            .map(featureID => ({key: featureID, text: getFeature(featureID).name}))
+                    }
                 }],
-                (featureID, featureParentID) => this.props.onMoveFeatureSubtree({featureID, featureParentID})),
-                text: i18n.t('commandPalette.featureDiagram.feature.move'),
-                icon: 'Move'
+                (featureID, featureParentID) => {
+                    if (preconditions.featureDiagram.feature.moveSubtree(featureID, featureParentID, this.props.featureModel!))
+                        this.props.onMoveFeatureSubtree({featureID, featureParentID});
+                    else
+                        logger.warn(() => `feature ${featureID} vanished`);
+                }),
+            text: i18n.t('commandPalette.featureDiagram.feature.move'),
+            icon: 'Move'
         },
         
         this.featureCommand({
@@ -326,35 +357,75 @@ export default class extends React.Component<Props, State> {
         
         this.featureCommand(
             {text: i18n.t('commandPalette.featureDiagram.feature.propertiesMenu.abstract')},
-            featureID => this.props.onSetFeatureAbstract({featureIDs: [featureID], value: true})),
+            featureID => {
+                if (preconditions.featureDiagram.feature.properties.setAbstract([featureID], this.props.featureModel!))
+                    this.props.onSetFeatureAbstract({featureIDs: [featureID], value: true});
+                else
+                    logger.warn(() => `feature ${featureID} vanished`);
+            }),
         
         this.featureCommand(
             {text: i18n.t('commandPalette.featureDiagram.feature.propertiesMenu.concrete')},
-            featureID => this.props.onSetFeatureAbstract({featureIDs: [featureID], value: false})),
+            featureID => {
+                if (preconditions.featureDiagram.feature.properties.setAbstract([featureID], this.props.featureModel!))
+                    this.props.onSetFeatureAbstract({featureIDs: [featureID], value: false});
+                else
+                    logger.warn(() => `feature ${featureID} vanished`);
+            }),
         
         this.featureCommand(
             {text: i18n.t('commandPalette.featureDiagram.feature.propertiesMenu.hidden')},
-            featureID => this.props.onSetFeatureHidden({featureIDs: [featureID], value: !this.props.featureModel!.getFeature(featureID)!.isHidden})),
+            featureID => {
+                if (preconditions.featureDiagram.feature.properties.setHidden([featureID], this.props.featureModel!))
+                    this.props.onSetFeatureHidden({featureIDs: [featureID], value: !this.props.featureModel!.getFeature(featureID)!.isHidden});
+                else
+                    logger.warn(() => `feature ${featureID} vanished`);
+            }),
         
         this.featureCommand(
             {text: i18n.t('commandPalette.featureDiagram.feature.propertiesMenu.optional')},
-            featureID => this.props.onSetFeatureOptional({featureIDs: [featureID], value: true})),
+            featureID => {
+                if (preconditions.featureDiagram.feature.properties.setOptional([featureID], this.props.featureModel!))
+                    this.props.onSetFeatureOptional({featureIDs: [featureID], value: true});
+                else
+                    logger.warn(() => `feature ${featureID} vanished`);
+            }),
     
         this.featureCommand(
             {text: i18n.t('commandPalette.featureDiagram.feature.propertiesMenu.mandatory')},
-            featureID => this.props.onSetFeatureOptional({featureIDs: [featureID], value: false})),
+            featureID => {
+                if (preconditions.featureDiagram.feature.properties.setOptional([featureID], this.props.featureModel!))
+                    this.props.onSetFeatureOptional({featureIDs: [featureID], value: false});
+                else
+                    logger.warn(() => `feature ${featureID} vanished`);
+            }),
                 
         this.featureCommand(
             {text: i18n.t('commandPalette.featureDiagram.feature.propertiesMenu.and')},
-            featureID => this.props.onSetFeatureAnd({featureIDs: [featureID]})),
+            featureID => {
+                if (preconditions.featureDiagram.feature.properties.setGroupType([featureID], this.props.featureModel!))
+                    this.props.onSetFeatureAnd({featureIDs: [featureID]});
+                else
+                    logger.warn(() => `feature ${featureID} vanished`);
+            }),
         
         this.featureCommand(
             {text: i18n.t('commandPalette.featureDiagram.feature.propertiesMenu.or')},
-            featureID => this.props.onSetFeatureOr({featureIDs: [featureID]})),
+            featureID => {
+                if (preconditions.featureDiagram.feature.properties.setGroupType([featureID], this.props.featureModel!))
+                    this.props.onSetFeatureOr({featureIDs: [featureID]});
+                else
+                    logger.warn(() => `feature ${featureID} vanished`);
+            }),
         
         this.featureCommand(
             {text: i18n.t('commandPalette.featureDiagram.feature.propertiesMenu.alternative')},
-            featureID => this.props.onSetFeatureAlternative({featureIDs: [featureID]})),
+            featureID => {
+                if (preconditions.featureDiagram.feature.properties.setGroupType([featureID], this.props.featureModel!))
+                    this.props.onSetFeatureAlternative({featureIDs: [featureID]});
+                else
+                    logger.warn(() => `feature ${featureID} vanished`);
+            }),
         
         {
             text: i18n.t('commandPalette.featureDiagram.constraint.new'),
@@ -370,9 +441,9 @@ export default class extends React.Component<Props, State> {
                         i18n.t('commandPalette.featureDiagram.constraint.invalid')
                 }],
                 formulaString => {
-                    const {formula, isGraveyarded} = Constraint.readFormulaFromString(formulaString,
+                    const {formula} = Constraint.readFormulaFromString(formulaString,
                         this.props.featureModel!, paletteConstraintRenderer);
-                    if (!formula || isGraveyarded)
+                    if (!formula || !preconditions.featureDiagram.constraint.create(formula, this.props.featureModel!))
                         logger.warn(() => 'invalid formula given'); // TODO: better error reporting UI
                     else
                         this.props.onCreateConstraint({formula});
@@ -395,13 +466,11 @@ export default class extends React.Component<Props, State> {
                             this.props.featureModel!, paletteConstraintRenderer).preview ||
                         i18n.t('commandPalette.featureDiagram.constraint.invalid')
                 }],
-                // TODO: actually, we have to verify if constraintID still exists (someone else
-                // might have deleted it in the meanwhile)
                 (constraintID, formulaString) => {
-                    const {formula, isGraveyarded} = Constraint.readFormulaFromString(formulaString,
+                    const {formula} = Constraint.readFormulaFromString(formulaString,
                         this.props.featureModel!, paletteConstraintRenderer);
-                    if (!formula || isGraveyarded)
-                        logger.warn(() => 'invalid formula given'); // TODO: better error reporting UI
+                    if (!formula || !preconditions.featureDiagram.constraint.set(constraintID, formula, this.props.featureModel!))
+                        logger.warn(() => `invalid formula given or constraint ${constraintID} vanished`); // TODO: better error reporting UI
                     else
                         this.props.onSetConstraint({constraintID, formula});
                 })
@@ -416,7 +485,12 @@ export default class extends React.Component<Props, State> {
                         key: constraint.ID, text: constraint.render(paletteConstraintRenderer)
                     }))
                 }],
-                constraintID => this.props.onRemoveConstraint({constraintID}))
+                constraintID => {
+                    if (!preconditions.featureDiagram.constraint.remove(constraintID, this.props.featureModel!))
+                        logger.warn(() => `constraint ${constraintID} vanished`); // TODO: better error reporting UI
+                    else
+                    this.props.onRemoveConstraint({constraintID});
+                })
         },
 
         this.featureCommand({

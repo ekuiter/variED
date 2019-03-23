@@ -5,12 +5,13 @@
 import withKeys from '../helpers/withKeys';
 import {OverlayType, isFloatingFeatureOverlay} from '../types';
 import {getShortcutKeyBinding} from '../shortcuts';
-import {removeCommand, collapseCommand} from './commands';
+import {collapseCommand} from './commands';
 import {connect} from 'react-redux';
 import {getCurrentCollaborativeSession, isFeatureDiagramCollaborativeSession, getCurrentFeatureModel} from '../store/selectors';
 import actions from '../store/actions';
 import {State, StateDerivedProps} from '../store/types';
 import logger from '../helpers/logger';
+import {preconditions} from '../modeling/preconditions';
 
 const ifFeatureModel = (props: StateDerivedProps) => !!props.featureModel,
     ifGlobal = (props: StateDerivedProps) => props.overlay === OverlayType.none,
@@ -49,8 +50,8 @@ export default connect(
     })
 )(withKeys(
     getShortcutKeyBinding('commandPalette', ifGlobal, ({props}: {props: StateDerivedProps}) => props.onShowOverlay!({overlay: OverlayType.commandPalette, overlayProps: {}})),
-    getShortcutKeyBinding('undo', ifGlobal, ({props}: {props: StateDerivedProps}) => props.onUndo!()),
-    getShortcutKeyBinding('redo', ifGlobal, ({props}: {props: StateDerivedProps}) => props.onRedo!()),
+    //getShortcutKeyBinding('undo', ifGlobal, ({props}: {props: StateDerivedProps}) => props.onUndo!()), // TODO: until we have proper undo/redo support
+    //getShortcutKeyBinding('redo', ifGlobal, ({props}: {props: StateDerivedProps}) => props.onRedo!()),
     getShortcutKeyBinding('settings', ifGlobal, ({props}: {props: StateDerivedProps}) => props.onShowOverlay!({overlay: OverlayType.settingsPanel, overlayProps: {}})),
     
     getShortcutKeyBinding(
@@ -67,21 +68,23 @@ export default connect(
         'featureDiagram.feature.new',
         (props: StateDerivedProps) => ifFeatureModel(props) && ifSingleFloatingFeature(props),
         async ({props}: {props: StateDerivedProps}) => {
-            await props.onCreateFeatureBelow!({featureParentID: props.overlayProps!.featureID!});
-            props.onHideOverlay!({overlay: props.overlay!});
+            if (props.overlayProps!.featureID && preconditions.featureDiagram.feature.createBelow(props.overlayProps!.featureID!, props.featureModel!)) {
+                await props.onCreateFeatureBelow!({featureParentID: props.overlayProps!.featureID!});
+                props.onHideOverlay!({overlay: props.overlay!});
+            }
         }),
 
+        
     getShortcutKeyBinding(
         'featureDiagram.feature.remove',
         (props: StateDerivedProps) => ifFeatureModel(props) && (props.isSelectMultipleFeatures || ifFloatingFeature(props)),
         async ({props}: {props: StateDerivedProps}) => {
-            const {disabled, action} = removeCommand(
-                props.featureModel!.getFeatures(
-                    props.isSelectMultipleFeatures
-                    ? props.selectedFeatureIDs!
-                    : [props.overlayProps!.featureID!]), props.onRemoveFeature!);
-            if (!disabled) {
-                await action();
+            const featureIDs = props.isSelectMultipleFeatures
+                ? props.selectedFeatureIDs!
+                : [props.overlayProps!.featureID!];
+                
+            if (featureIDs.length > 0 && preconditions.featureDiagram.feature.remove(featureIDs, props.featureModel!)) {
+                await props.onRemoveFeature!({featureIDs});
                 props.onHideOverlay!({overlay: props.overlay!});
             }
         }),

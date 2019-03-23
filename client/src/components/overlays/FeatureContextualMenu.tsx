@@ -63,15 +63,15 @@ export default class extends FeatureComponent({doUpdate: true})<Props> {
                         this.props.onSetFeatureOptional, this.props.onSetFeatureAnd, this.props.onSetFeatureOr,
                         this.props.onSetFeatureAlternative, featureModel!)
                     : [
-                        commands.featureDiagram.feature.newMenu(feature.ID, this.props.onCreateFeatureBelow, this.props.onCreateFeatureAbove, onDismiss),
-                        commands.featureDiagram.feature.removeMenu([feature], this.props.onRemoveFeature, this.props.onRemoveFeatureSubtree, onDismiss),
+                        commands.featureDiagram.feature.newMenu(feature.ID, this.props.featureModel, this.props.onCreateFeatureBelow, this.props.onCreateFeatureAbove, onDismiss),
+                        commands.featureDiagram.feature.removeMenu([feature.ID], this.props.featureModel, this.props.onRemoveFeature, this.props.onRemoveFeatureSubtree, onDismiss),
                         commands.featureDiagram.feature.collapseMenu(
                             [feature], this.props.onCollapseFeatures, this.props.onExpandFeatures,
                             this.props.onCollapseFeaturesBelow, this.props.onExpandFeaturesBelow, onDismiss),
                         makeDivider(),
-                        commands.featureDiagram.feature.rename(feature.ID, this.props.onShowOverlay),
-                        commands.featureDiagram.feature.setDescription(feature.ID, this.props.onShowOverlay),
-                        commands.featureDiagram.feature.properties([feature], this.props.onSetFeatureAbstract,
+                        commands.featureDiagram.feature.rename(feature.ID, this.props.featureModel, this.props.onShowOverlay),
+                        commands.featureDiagram.feature.setDescription(feature.ID, this.props.featureModel, this.props.onShowOverlay),
+                        commands.featureDiagram.feature.properties([feature.ID], this.props.featureModel, this.props.onSetFeatureAbstract,
                             this.props.onSetFeatureHidden, this.props.onSetFeatureOptional, this.props.onSetFeatureAnd,
                             this.props.onSetFeatureOr, this.props.onSetFeatureAlternative, onDismiss),
                         makeDivider(),

@@ -89,6 +89,12 @@ d3Hierarchy.prototype.feature = function(this: FeatureNode): Feature {
                 this.actualChildren
                     .map(child => child.feature().getNumberOfFeaturesBelow())
                     .reduce((acc, val) => acc + val);
+        },
+        getFeatureIDsBelow: () => {
+            if (!this.actualChildren)
+                return [getID(this)];
+            return [getID(this)].concat(
+                ...this.actualChildren.map(child => child.feature().getFeatureIDsBelow()));
         }
     });
 };
@@ -230,7 +236,7 @@ export class Constraint {
     }
 
     static readFormulaFromString<T>(formulaString: string, featureModel: FeatureModel,
-        constraintRenderer: ConstraintRenderer<T>): {formula?: KernelConstraintFormula, preview?: T, isGraveyarded?: boolean} {
+        constraintRenderer: ConstraintRenderer<T>): {formula?: KernelConstraintFormula, preview?: T} {
         const operatorMap: {[x: string]: string} = {
             "not": ConstraintType.not,
             "disj": ConstraintType.disj,
@@ -282,8 +288,7 @@ export class Constraint {
                 }, featureModel);
                 return {
                     formula: sexpr,
-                    preview: constraint.render(constraintRenderer),
-                    isGraveyarded: constraint.isGraveyarded
+                    preview: constraint.render(constraintRenderer)
                 };
             } catch (e) {
                 continue;
@@ -302,6 +307,7 @@ class FeatureModel {
     _visibleNodes: FeatureNode[];
     _constraints: Constraint[];
     _IDsToFeatureNodes: {[x: string]: FeatureNode} = {};
+    _IDsToConstraints: {[x: string]: Constraint} = {};
 
     // feature model as supplied by feature model messages from the server
     static fromKernel(kernelFeatureModel: KernelFeatureModel): FeatureModel {
@@ -364,6 +370,9 @@ class FeatureModel {
             this._constraints = Object.values(constraints)
                 .map(kernelConstraint => new Constraint(kernelConstraint, this))
                 .filter(kernelConstraint => !kernelConstraint.isGraveyarded);
+
+            this._constraints.forEach(constraint =>
+                this._IDsToConstraints[constraint.ID] = constraint);
         }
     }
 
@@ -395,6 +404,16 @@ class FeatureModel {
     getFeature(featureID: string): Feature | undefined {
         const node = this.getNode(featureID);
         return node ? node.feature() : undefined;
+    }
+
+    getConstraint(constraintID: string): Constraint | undefined {
+        this.prepare();
+        return this._IDsToConstraints[constraintID];
+    }
+
+    get rootFeature(): Feature {
+        this.prepare();
+        return this.hierarchy.feature();
     }
 
     isValidFeatureID(featureID: string): boolean {

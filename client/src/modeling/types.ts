@@ -85,7 +85,8 @@ export interface Feature {
     hasChildren: boolean,
     hasActualChildren: boolean,
     getPropertyString: (key: FeaturePropertyKey) => string,
-    getNumberOfFeaturesBelow: () => number
+    getNumberOfFeaturesBelow: () => number,
+    getFeatureIDsBelow: () => string[]
 };
 
 type Datum = KernelFeature; // accessible as node.data

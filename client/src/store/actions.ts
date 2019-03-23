@@ -105,7 +105,6 @@ const actions = {
                     kernel.operationSetFeatureProperty(featureID, PropertyType.description, description)),
 
                 properties: {
-                    // TODO: might need to check preconditions (such as root mandatory)
                     setAbstract: createOperationAction(({featureIDs, value}: {featureIDs: string[], value: boolean}, kernel) =>
                         kernel.operationCompose(...featureIDs.map(featureID =>
                             kernel.operationSetFeatureProperty(featureID, PropertyType.abstract, value)))),

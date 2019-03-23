@@ -8,6 +8,7 @@ import {TextFieldDialog, largeDialogStyle} from '../../helpers/Dialog';
 import FeatureComponent, {FeatureComponentProps} from './FeatureComponent';
 import {Feature} from '../../modeling/types';
 import {OnSetFeatureDescriptionFunction} from '../../store/types';
+import {preconditions} from '../../modeling/preconditions';
 
 type Props = FeatureComponentProps & {
     isOpen: boolean,
@@ -27,7 +28,10 @@ export default class extends FeatureComponent()<Props> {
                 title={i18n.t('overlays.featureSetDescriptionDialog.title')}
                 submitText={i18n.t('overlays.featureSetDescriptionDialog.rename')}
                 defaultValue={feature.description}
-                onSubmit={description => this.props.onSetFeatureDescription({featureID: feature.ID, description})}
+                onSubmit={description => {
+                    if (preconditions.featureDiagram.feature.setDescription(feature.ID, this.props.featureModel))
+                        this.props.onSetFeatureDescription({featureID: feature.ID, description});
+                }}
                 submitOnEnter={false}
                 dialogProps={{styles: largeDialogStyle}}
                 textFieldProps={{multiline: true, rows: 5}}/>

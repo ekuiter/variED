@@ -54,8 +54,8 @@ export default class extends FeatureComponent({doUpdate: true})<Props> {
                         : <div className="inner empty"/>}
                     <CommandBar
                         items={[
-                            commands.featureDiagram.feature.newMenu(feature.ID, this.props.onCreateFeatureBelow, this.props.onCreateFeatureAbove, onDismiss, true),
-                            commands.featureDiagram.feature.removeMenu([feature], this.props.onRemoveFeature, this.props.onRemoveFeatureSubtree, onDismiss, true),
+                            commands.featureDiagram.feature.newMenu(feature.ID, this.props.featureModel, this.props.onCreateFeatureBelow, this.props.onCreateFeatureAbove, onDismiss, true),
+                            commands.featureDiagram.feature.removeMenu([feature.ID], this.props.featureModel, this.props.onRemoveFeature, this.props.onRemoveFeatureSubtree, onDismiss, true),
                             commands.featureDiagram.feature.collapseMenu(
                                 [feature], this.props.onCollapseFeatures, this.props.onExpandFeatures,
                                 this.props.onCollapseFeaturesBelow, this.props.onExpandFeaturesBelow, onDismiss, true),
