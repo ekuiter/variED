@@ -83,7 +83,8 @@ export default class extends React.Component<Props, State> {
             this.setState({getArgumentItems: undefined, argumentItems: undefined,
                 allowFreeform: undefined, transformFreeform: undefined, title: undefined});
 
-        if (this.state.getArgumentItems &&
+        if (this.props.isOpen &&
+            this.state.getArgumentItems &&
             (prevState.getArgumentItems !== this.state.getArgumentItems ||
                 prevProps.featureModel !== this.props.featureModel))
             this.state.getArgumentItems()

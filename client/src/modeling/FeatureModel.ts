@@ -334,8 +334,14 @@ class FeatureModel {
                 childrenCache = this.kernelFeatureModel[CHILDREN_CACHE];
             Object.keys(features).forEach(ID => features[ID][ID_KEY] = ID);
             Object.keys(constraints).forEach(ID => constraints[ID][ID_KEY] = ID);
+
             const children = (kernelFeature: KernelFeature) =>
-                (childrenCache[kernelFeature[ID_KEY]!] || []).map(ID => features[ID]);
+                (childrenCache[kernelFeature[ID_KEY]!] || [])
+                    // sort features by ID as the kernel uses an arbitrary order (to avoid "jumping" features)
+                    // in the future, we may introduce a better ordering criterion
+                    // further, this may be inefficient for large models
+                    .sort()
+                    .map(ID => features[ID]);
 
             if (childrenCache[NIL].length !== 1)
                 throw new Error('feature model does not have a single root');
