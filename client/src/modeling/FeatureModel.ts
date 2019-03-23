@@ -373,6 +373,7 @@ class FeatureModel {
             });
 
             // TODO: this might be inefficient for large models
+            // TODO: do we need to sort the constraints as well? do they "jump"?
             this._constraints = Object.values(constraints)
                 .map(kernelConstraint => new Constraint(kernelConstraint, this))
                 .filter(kernelConstraint => !kernelConstraint.isGraveyarded);

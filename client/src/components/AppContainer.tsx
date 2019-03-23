@@ -19,6 +19,7 @@ import SplitView from './SplitView';
 import {enableConstraintsView} from './constraintsView/ConstraintsView';
 import {flushMessageQueue} from '../server/messageQueue';
 import {artifactPathToString} from '../types';
+import {getRoutedArtifactPath} from '../routing';
 
 class AppContainer extends React.Component<StateDerivedProps> {
     flushMessageQueueInterval: number;
@@ -32,7 +33,9 @@ class AppContainer extends React.Component<StateDerivedProps> {
         if (this.props.settings!.developer.debug)
             setLogLevel(LogLevel.info);
 
-        this.props.onJoinRequest!({artifactPath: {project: 'variED Examples', artifact: 'uvr2web'}});
+        const artifactPath = getRoutedArtifactPath();
+        if (artifactPath)
+            this.props.onJoinRequest!({artifactPath}); // TODO: error handling
     }
 
     componentWillUnmount() {

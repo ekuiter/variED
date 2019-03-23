@@ -83,6 +83,12 @@ const commands = {
             iconProps: {iconName: 'CloudUpload'},
             onClick: () => onShowOverlay({overlay: OverlayType.addArtifactDialog, overlayProps: {}})
         }),
+        share: (onShowOverlay: OnShowOverlayFunction) => ({
+            key: 'share',
+            text: i18n.t('commands.share'),
+            iconProps: {iconName: 'Share'},
+            onClick: () => onShowOverlay({overlay: OverlayType.shareDialog, overlayProps: {}})
+        }),
         export: (featureDiagramLayout: FeatureDiagramLayoutType, onShowOverlay: OnShowOverlayFunction) => ({
             key: 'export',
             text: i18n.t('commands.featureDiagram.export'),

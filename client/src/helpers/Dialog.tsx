@@ -5,7 +5,7 @@
 import {Dialog, DialogFooter, IDialogProps} from 'office-ui-fabric-react/lib/Dialog';
 import {DefaultButton, PrimaryButton} from 'office-ui-fabric-react/lib/Button';
 import i18n from '../i18n';
-import React from 'react';
+import React, {RefObject} from 'react';
 import deferred from './deferred';
 import {TextField, ITextFieldProps, ITextField} from 'office-ui-fabric-react/lib/TextField';
 import {IContextualMenuItem} from 'office-ui-fabric-react/lib/ContextualMenu';
@@ -86,7 +86,7 @@ export class DialogContextualMenu extends React.Component<DialogContextualMenuPr
 interface TextFieldDialogProps {
     isOpen: boolean,
     onDismiss: () => void,
-    onSubmit: (value: string) => void,
+    onSubmit: (value: string, textFieldRef: RefObject<ITextField>) => void,
     title: string,
     defaultValue?: string,
     submitText: string,
@@ -114,7 +114,7 @@ export class TextFieldDialog extends React.Component<TextFieldDialogProps, TextF
     getValue = (): string => typeof this.state.value === 'undefined' ? this.props.defaultValue || '' : this.state.value;
 
     onSubmit = () => {
-        this.props.onSubmit(this.getValue());
+        this.props.onSubmit(this.getValue(), this.textFieldRef);
         this.setState({value: undefined});
         this.props.onDismiss();
     };

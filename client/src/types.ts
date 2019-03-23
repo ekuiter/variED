@@ -29,6 +29,7 @@ export enum OverlayType {
     featureRenameDialog = 'featureRenameDialog',
     featureSetDescriptionDialog = 'featureSetDescriptionDialog',
     addArtifactDialog = 'addArtifact',
+    shareDialog = 'share',
     exportDialog = 'export',
     featureCallout = 'featureCallout',
     featureContextualMenu = 'featureContextualMenu'

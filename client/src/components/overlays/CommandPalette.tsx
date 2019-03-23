@@ -279,6 +279,12 @@ export default class extends React.Component<Props, State> {
                         this.props.onShowOverlay({overlay: OverlayType.exportDialog, overlayProps: {format}});
                 })
         }, {
+            text: i18n.t('commandPalette.share'),
+            icon: 'Share',
+            disabled: () => !this.props.featureModel,
+            action: this.action(() =>
+                this.props.onShowOverlay({overlay: OverlayType.shareDialog, overlayProps: {}}))
+        }, {
             text: i18n.t('commands.featureDiagram.setLayout'),
             disabled: () => !this.props.featureModel,
             action: this.actionWithArguments(

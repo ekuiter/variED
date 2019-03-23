@@ -23,6 +23,7 @@ import {State, StateDerivedProps} from '../../store/types';
 import logger from '../../helpers/logger';
 import CommandPalette from './CommandPalette';
 import AddArtifactDialog from './AddArtifactDialog';
+import ShareDialog from './ShareDialog';
 
 const OverlayContainer = (props: StateDerivedProps) => (
     <React.Fragment>
@@ -128,6 +129,13 @@ const OverlayContainer = (props: StateDerivedProps) => (
             artifactPaths={props.artifactPaths!}
             {...props.overlayProps}/>}
 
+        {props.overlay === OverlayType.shareDialog &&
+        <ShareDialog
+            isOpen={true}
+            onDismiss={() => props.onHideOverlay!({overlay: OverlayType.shareDialog})}
+            currentArtifactPath={props.currentArtifactPath}
+            {...props.overlayProps}/>}
+
         {props.overlay === OverlayType.exportDialog &&
         <ExportDialog
             isOpen={true}
@@ -192,6 +200,7 @@ export default connect(
                 overlay: state.overlay,
                 overlayProps: state.overlayProps,
                 artifactPaths: state.artifactPaths,
+                currentArtifactPath: state.currentArtifactPath,
                 collaborativeSessions: state.collaborativeSessions
             };
         if (!collaborativeSession || !isFeatureDiagramCollaborativeSession(collaborativeSession))

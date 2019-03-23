@@ -12,26 +12,25 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
 
 public class ProjectManager {
     private static ProjectManager instance;
     private ConcurrentHashMap<String, Project> projects = new ConcurrentHashMap<>();
 
-    private Project variEDExamples = new Project("variED Examples");
-    private Project featureIDEExamples = new Project("FeatureIDE Examples");
+    private Project examplesProject = new Project("Examples");
+    private Project featureIDEProject = new Project("FeatureIDE");
 
     {
-        for (String example : new String[]{
+        for (String artifactName : new String[]{
                 "Empty", "uvr2web", "CollaborativeModeling"
         })
-            addExampleArtifact(variEDExamples, example);
-        addProject(variEDExamples);
+            addExampleArtifact(examplesProject, artifactName);
+        addProject(examplesProject);
     }
 
     {
         // adds the FeatureIDE examples as of June 2018
-        for (String example : new String[]{
+        for (String artifactName : new String[]{
                 "aaed2000", "adderII", "adder", "aeb", "aim711", "aki3068net", "am31_sim", "APL-Model", "APL",
                 "asb2305", "asb", "assabet", "at91sam7sek", "at91sam7xek", "atlas_mips32_4kc", "atlas_mips64_5kc",
                 "Automotive01", "Automotive02_V1", "Automotive02_V2", "Automotive02_V3", "Automotive02_V4",
@@ -52,10 +51,10 @@ public class ProjectManager {
                 "uClibc-Base", "uClibc-Distribution", "uClibc", "uE250", "vads", "Violet", "viper", "vrc4373",
                 "vrc4375", "WaterlooGenerated", "XSEngine"
         })
-            addRemoteArtifact(featureIDEExamples, example,
+            addRemoteArtifact(featureIDEProject, artifactName,
                     "https://raw.githubusercontent.com/FeatureIDE/FeatureIDE/56bb944775e2a3087a1bd8f93334aa4f7a6712dc" +
-                            "/plugins/de.ovgu.featureide.examples/featureide_examples/FeatureModels/" + example + "/model.xml");
-        addProject(featureIDEExamples);
+                            "/plugins/de.ovgu.featureide.examples/featureide_examples/FeatureModels/" + artifactName + "/model.xml");
+        addProject(featureIDEProject);
     }
 
     private ProjectManager() {
@@ -66,12 +65,12 @@ public class ProjectManager {
     }
 
     Project getProject(String name) {
-        return projects.get(name);
+        return projects.get(name.toLowerCase());
     }
 
     void addProject(Project project) {
         Logger.info("adding project {}", project);
-        String name = project.getName();
+        String name = project.getName().toLowerCase();
         if (!StringUtils.isPresent(name))
             throw new RuntimeException("no name given for project");
         if (projects.containsValue(project))
@@ -106,7 +105,7 @@ public class ProjectManager {
 
     public void removeProject(Project project) {
         Logger.info("removing project {}", project);
-        projects.remove(project.getName());
+        projects.remove(project.getName().toLowerCase());
     }
 
     Project getProject(Artifact.Path artifactPath) {

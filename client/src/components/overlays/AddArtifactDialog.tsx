@@ -1,7 +1,3 @@
-/**
- * A Fabric dialog for renaming a feature.
- */
-
 import React, {ChangeEvent} from 'react';
 import i18n from '../../i18n';
 import deferred from '../../helpers/deferred';

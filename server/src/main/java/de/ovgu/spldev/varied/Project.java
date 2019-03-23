@@ -25,12 +25,12 @@ public class Project {
     }
 
     Artifact getArtifact(String name) {
-        return artifacts.get(name);
+        return artifacts.get(name.toLowerCase());
     }
 
     void addArtifact(Artifact artifact) {
         Logger.info("adding artifact {} to project {}", artifact, this);
-        String name = artifact.getName();
+        String name = artifact.getName().toLowerCase();
         if (!StringUtils.isPresent(name))
             throw new RuntimeException("no name given for artifact");
         if (artifact.getProject() != this)
@@ -44,7 +44,7 @@ public class Project {
 
     public void removeArtifact(Artifact artifact) {
         Logger.info("removing artifact {} from project {}", artifact, this);
-        artifacts.remove(artifact.getName());
+        artifacts.remove(artifact.getName().toLowerCase());
     }
 
     public Collection<Artifact> getArtifacts() {

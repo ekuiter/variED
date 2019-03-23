@@ -60,6 +60,7 @@ const translationMap = {
         undo: 'Undo',
         redo: 'Redo',
         addArtifact: 'Import…',
+        share: 'Share…',
         featureDiagram: {
             export: 'Export as',
             svg: 'SVG…',
@@ -132,7 +133,8 @@ const translationMap = {
         settings: 'Settings',
         about: 'About',
         addArtifact: 'Import feature model',
-        removeArtifact: 'Remove feature model',
+        removeArtifact: 'Delete feature model',
+        share: 'Share feature model',
         featureDiagram: {
             export: 'Export feature model',
             svg: 'SVG',
@@ -274,6 +276,10 @@ const translationMap = {
                         href="https://featureide.github.io/" target="_blank">FeatureIDE</Link>.
                 </p>
             ),
+        },
+        shareDialog: {
+            title: 'Share feature model',
+            copy: 'Copy'
         },
         exportDialog: {
             export: 'Export',
