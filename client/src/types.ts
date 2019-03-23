@@ -62,7 +62,7 @@ export interface ArtifactPath {
 };
 
 export function artifactPathToString(artifactPath: ArtifactPath): string {
-    return artifactPath ? `${artifactPath.project}::${artifactPath.artifact}` : `(unknown artifact)`;
+    return artifactPath ? `${artifactPath.project}/${artifactPath.artifact}` : `(unknown artifact)`;
 }
 
 export function isArtifactPathEqual(a?: ArtifactPath, b?: ArtifactPath): boolean {

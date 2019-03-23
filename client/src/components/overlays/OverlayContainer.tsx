@@ -37,7 +37,6 @@ const OverlayContainer = (props: StateDerivedProps) => (
             onDismiss={() => props.onHideOverlay!({overlay: OverlayType.commandPalette})}
             onShowOverlay={props.onShowOverlay!}
             onRemoveArtifact={props.onRemoveArtifact!}
-            onJoinRequest={props.onJoinRequest!}
             onLeaveRequest={props.onLeaveRequest!}
             onUndo={props.onUndo!}
             onRedo={props.onRedo!}
@@ -63,7 +62,6 @@ const OverlayContainer = (props: StateDerivedProps) => (
             onCreateConstraint={props.onCreateConstraint!}
             onSetConstraint={props.onSetConstraint!}
             onRemoveConstraint={props.onRemoveConstraint!}
-            onSetCurrentArtifactPath={props.onSetCurrentArtifactPath!}
             onSetSetting={props.onSetSetting!}/>
 
         <SettingsPanel
@@ -218,7 +216,6 @@ export default connect(
         onSetFeatureDiagramLayout: payload => dispatch(actions.ui.featureDiagram.setLayout(payload)),
         onAddArtifact: payload => dispatch<any>(actions.server.addArtifact(payload)),
         onRemoveArtifact: payload => dispatch<any>(actions.server.removeArtifact(payload)),
-        onJoinRequest: payload => dispatch<any>(actions.server.joinRequest(payload)),
         onLeaveRequest: payload => dispatch<any>(actions.server.leaveRequest(payload)),
         onUndo: () => dispatch<any>(actions.server.undo({})),
         onRedo: () => dispatch<any>(actions.server.redo({})),
@@ -227,7 +224,6 @@ export default connect(
         onDeselectAllFeatures: () => dispatch(actions.ui.featureDiagram.feature.deselectAll()),
         onSetSetting: payload => dispatch(actions.settings.set(payload)),
         onResetSettings: () => dispatch(actions.settings.reset()),
-        onSetCurrentArtifactPath: payload => dispatch(actions.ui.setCurrentArtifactPath(payload)),
         onCollapseAllFeatures: () => dispatch(actions.ui.featureDiagram.feature.collapseAll()),
         onExpandAllFeatures: () => dispatch(actions.ui.featureDiagram.feature.expandAll()),
         onCollapseFeatures: payload => dispatch(actions.ui.featureDiagram.feature.collapse(payload)),

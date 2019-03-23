@@ -19,7 +19,7 @@ import SplitView from './SplitView';
 import {enableConstraintsView} from './constraintsView/ConstraintsView';
 import {flushMessageQueue} from '../server/messageQueue';
 import {artifactPathToString} from '../types';
-import {getRoutedArtifactPath} from '../routing';
+import {router} from '../router';
 
 class AppContainer extends React.Component<StateDerivedProps> {
     flushMessageQueueInterval: number;
@@ -33,9 +33,10 @@ class AppContainer extends React.Component<StateDerivedProps> {
         if (this.props.settings!.developer.debug)
             setLogLevel(LogLevel.info);
 
-        const artifactPath = getRoutedArtifactPath();
-        if (artifactPath)
-            this.props.onJoinRequest!({artifactPath}); // TODO: error handling
+        const wrappedRouter = () =>
+            router(this.props.collaborativeSessions!, this.props.onSetCurrentArtifactPath!, this.props.onJoinRequest!);
+        window.addEventListener('hashchange', wrappedRouter);
+        wrappedRouter();
     }
 
     componentWillUnmount() {
@@ -72,7 +73,8 @@ export default connect(
         const collaborativeSession = getCurrentCollaborativeSession(state),
             props: StateDerivedProps = {
                 settings: state.settings,
-                currentArtifactPath: state.currentArtifactPath
+                currentArtifactPath: state.currentArtifactPath,
+                collaborativeSessions: state.collaborativeSessions
             };
         if (!collaborativeSession || !isFeatureDiagramCollaborativeSession(collaborativeSession))
             return props;
@@ -84,6 +86,7 @@ export default connect(
     (dispatch): StateDerivedProps => ({
         handleMessage: message => dispatch(actions.server.receive(message)),
         onSetSetting: payload => dispatch(actions.settings.set(payload)),
+        onSetCurrentArtifactPath: payload => dispatch(actions.ui.setCurrentArtifactPath(payload)),
         onJoinRequest: payload => dispatch<any>(actions.server.joinRequest(payload))
     })
 )(AppContainer);

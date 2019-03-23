@@ -19,6 +19,8 @@ public abstract class Artifact {
         Objects.requireNonNull(project, "no project given");
         if (!StringUtils.isPresent(name))
             throw new RuntimeException("no name given for artifact");
+        if (name.contains(Path.SEPARATOR))
+            throw new RuntimeException(Path.SEPARATOR + " not allowed in artifact name");
         this.name = name;
         this.project = project;
     }
@@ -42,7 +44,7 @@ public abstract class Artifact {
     abstract public CollaborativeSession getCollaborativeSession();
 
     public static class Path {
-        static String SEPARATOR = "::";
+        static String SEPARATOR = "/";
 
         @Expose
         String project;

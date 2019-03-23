@@ -1,6 +1,6 @@
 import React from 'react';
 import i18n from '../../i18n';
-import {OnShowOverlayFunction, OnUndoFunction, OnRedoFunction, OnSetFeatureDiagramLayoutFunction, OnFitToScreenFunction, OnCreateFeatureAboveFunction, OnCreateFeatureBelowFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnRemoveFeatureFunction, OnRemoveFeatureSubtreeFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureOptionalFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction, OnExpandAllFeaturesFunction, OnCollapseAllFeaturesFunction, OnJoinRequestFunction, OnLeaveRequestFunction, CollaborativeSession, OnSetCurrentArtifactPathFunction, OnSetSettingFunction, OnMoveFeatureSubtreeFunction, OnCreateConstraintFunction, OnSetConstraintFunction, OnRemoveConstraintFunction, OnRemoveArtifactFunction} from '../../store/types';
+import {OnShowOverlayFunction, OnUndoFunction, OnRedoFunction, OnSetFeatureDiagramLayoutFunction, OnFitToScreenFunction, OnCreateFeatureAboveFunction, OnCreateFeatureBelowFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnRemoveFeatureFunction, OnRemoveFeatureSubtreeFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureOptionalFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction, OnExpandAllFeaturesFunction, OnCollapseAllFeaturesFunction, OnLeaveRequestFunction, CollaborativeSession, OnSetSettingFunction, OnMoveFeatureSubtreeFunction, OnCreateConstraintFunction, OnSetConstraintFunction, OnRemoveConstraintFunction, OnRemoveArtifactFunction} from '../../store/types';
 import {getShortcutText} from '../../shortcuts';
 import {OverlayType, Omit, FeatureDiagramLayoutType, FormatType, isArtifactPathEqual, ArtifactPath} from '../../types';
 import Palette, {PaletteItem, PaletteAction, getKey} from '../../helpers/Palette';
@@ -13,6 +13,7 @@ import {Persistor} from 'redux-persist';
 import {enableConstraintsView} from '../constraintsView/ConstraintsView';
 import {defaultSettings, Settings} from '../../store/settings';
 import {preconditions} from '../../modeling/preconditions';
+import {routeTo} from '../../router';
 
 interface Props {
     artifactPaths: ArtifactPath[],
@@ -24,7 +25,6 @@ interface Props {
     onDismiss: () => void,
     onShowOverlay: OnShowOverlayFunction,
     onRemoveArtifact: OnRemoveArtifactFunction,
-    onJoinRequest: OnJoinRequestFunction,
     onLeaveRequest: OnLeaveRequestFunction,
     onUndo: OnUndoFunction,
     onRedo: OnRedoFunction,
@@ -50,7 +50,6 @@ interface Props {
     onSetConstraint: OnSetConstraintFunction,
     onRemoveConstraint: OnRemoveConstraintFunction,
     onSetFeatureDiagramLayout: OnSetFeatureDiagramLayoutFunction,
-    onSetCurrentArtifactPath: OnSetCurrentArtifactPathFunction,
     onSetSetting: OnSetSettingFunction
 };
 
@@ -177,7 +176,7 @@ export default class extends React.Component<Props, State> {
                         .filter(collaborativeSession => collaborativeSession.artifactPath.project === project)
                         .map(collaborativeSession => collaborativeSession.artifactPath.artifact)
                 }],
-                (project, artifact) => this.props.onSetCurrentArtifactPath({artifactPath: {project, artifact}}))
+                (project, artifact) => routeTo({project, artifact}))
         }, {
             text: i18n.t('commandPalette.joinRequest'),
             icon: 'JoinOnlineMeeting',
@@ -196,12 +195,7 @@ export default class extends React.Component<Props, State> {
                                 icon: this.isEditing(artifactPath) ? 'FolderOpen' : 'Folder'
                             }))
                 }],
-                (project, artifact) => {
-                    if (this.isEditing({project, artifact}))
-                        this.props.onSetCurrentArtifactPath({artifactPath: {project, artifact}});
-                    else
-                        this.props.onJoinRequest({artifactPath: {project, artifact}});
-                })
+                (project, artifact) => routeTo({project, artifact}))
         }, {
             text: i18n.t('commandPalette.leaveRequest'),
             icon: 'JoinOnlineMeeting',

@@ -13,6 +13,8 @@ public class Project {
     Project(String name) {
         if (!StringUtils.isPresent(name))
             throw new RuntimeException("no name given for project");
+        if (name.contains(Artifact.Path.SEPARATOR))
+            throw new RuntimeException(Artifact.Path.SEPARATOR + " not allowed in project name");
         this.name = name;
     }
 

@@ -2,7 +2,7 @@ import React from 'react';
 import i18n from '../../i18n';
 import {TextFieldDialog} from '../../helpers/Dialog';
 import {ArtifactPath} from '../../types';
-import {getShareableURL} from '../../routing';
+import {getShareableURL} from '../../router';
 
 interface AddArtifactDialogProps {
     isOpen: boolean,

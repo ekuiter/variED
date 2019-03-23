@@ -19,6 +19,7 @@ import logger, {setLogLevel, LogLevel, defaultLogLevel} from '../helpers/logger'
 import {AnyAction, Store} from 'redux';
 import Kernel from '../modeling/Kernel';
 import {KernelFeatureModel} from '../modeling/types';
+import {routeToWithoutHashChange} from '../router';
 
 function getNewState(state: State, ...args: any[]): State {
     if (args.length % 2 === 1)
@@ -119,6 +120,8 @@ function serverSendReducer(state: State, action: AnyAction): State {
                 // TODO: we just assume that leaving succeeds here. It would be better to wait for the server's
                 // acknowledgement (and use promises in actions.ts to dispatch this update), see issue #9.
                 // Also right now, when the server kicks us from a session, we do not handle this.
+                if (isArtifactPathEqual(state.currentArtifactPath, action.payload.artifactPath!))
+                    routeToWithoutHashChange();
                 return getNewState(state,
                     'collaborativeSessions',
                         state.collaborativeSessions.filter(collaborativeSession =>
