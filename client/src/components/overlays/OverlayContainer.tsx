@@ -35,6 +35,7 @@ const OverlayContainer = (props: StateDerivedProps) => (
             settings={props.settings!}
             onDismiss={() => props.onHideOverlay!({overlay: OverlayType.commandPalette})}
             onShowOverlay={props.onShowOverlay!}
+            onRemoveArtifact={props.onRemoveArtifact!}
             onJoinRequest={props.onJoinRequest!}
             onLeaveRequest={props.onLeaveRequest!}
             onUndo={props.onUndo!}

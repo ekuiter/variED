@@ -132,6 +132,7 @@ const translationMap = {
         settings: 'Settings',
         about: 'About',
         addArtifact: 'Import feature model',
+        removeArtifact: 'Remove feature model',
         featureDiagram: {
             export: 'Export feature model',
             svg: 'SVG',

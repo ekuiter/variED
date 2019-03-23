@@ -1,6 +1,6 @@
 import React from 'react';
 import i18n from '../../i18n';
-import {OnShowOverlayFunction, OnUndoFunction, OnRedoFunction, OnSetFeatureDiagramLayoutFunction, OnFitToScreenFunction, OnCreateFeatureAboveFunction, OnCreateFeatureBelowFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnRemoveFeatureFunction, OnRemoveFeatureSubtreeFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureOptionalFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction, OnExpandAllFeaturesFunction, OnCollapseAllFeaturesFunction, OnJoinRequestFunction, OnLeaveRequestFunction, CollaborativeSession, OnSetCurrentArtifactPathFunction, OnSetSettingFunction, OnMoveFeatureSubtreeFunction, OnCreateConstraintFunction, OnSetConstraintFunction, OnRemoveConstraintFunction} from '../../store/types';
+import {OnShowOverlayFunction, OnUndoFunction, OnRedoFunction, OnSetFeatureDiagramLayoutFunction, OnFitToScreenFunction, OnCreateFeatureAboveFunction, OnCreateFeatureBelowFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnRemoveFeatureFunction, OnRemoveFeatureSubtreeFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureOptionalFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction, OnExpandAllFeaturesFunction, OnCollapseAllFeaturesFunction, OnJoinRequestFunction, OnLeaveRequestFunction, CollaborativeSession, OnSetCurrentArtifactPathFunction, OnSetSettingFunction, OnMoveFeatureSubtreeFunction, OnCreateConstraintFunction, OnSetConstraintFunction, OnRemoveConstraintFunction, OnRemoveArtifactFunction} from '../../store/types';
 import {getShortcutText} from '../../shortcuts';
 import {OverlayType, Omit, FeatureDiagramLayoutType, FormatType, isArtifactPathEqual, ArtifactPath} from '../../types';
 import Palette, {PaletteItem, PaletteAction, getKey} from '../../helpers/Palette';
@@ -23,6 +23,7 @@ interface Props {
     settings: Settings,
     onDismiss: () => void,
     onShowOverlay: OnShowOverlayFunction,
+    onRemoveArtifact: OnRemoveArtifactFunction,
     onJoinRequest: OnJoinRequestFunction,
     onLeaveRequest: OnLeaveRequestFunction,
     onUndo: OnUndoFunction,
@@ -247,6 +248,22 @@ export default class extends React.Component<Props, State> {
             icon: 'CloudUpload',
             action: this.action(() =>
                 this.props.onShowOverlay({overlay: OverlayType.addArtifactDialog, overlayProps: {}}))
+        }, {
+            text: i18n.t('commandPalette.removeArtifact'),
+            icon: 'PageRemove',
+            disabled: () => this.props.artifactPaths.length === 0,
+            action: this.actionWithArguments(
+                [{
+                    title: i18n.t('commandPalette.project'),
+                    items: () => arrayUnique(this.props.artifactPaths.map(artifactPath => artifactPath.project))
+                }, {
+                    title: i18n.t('commandPalette.artifact'),
+                    items: (project: string) =>
+                        this.props.artifactPaths
+                            .filter(artifactPath => artifactPath.project === project)
+                            .map(artifactPath => artifactPath.artifact)
+                }],
+                (project, artifact) => this.props.onRemoveArtifact({artifactPath: {project, artifact}}))
         }, {
             text: i18n.t('commandPalette.featureDiagram.export'),
             icon: 'CloudDownload',

@@ -7,7 +7,6 @@ import i18n from '../../i18n';
 import deferred from '../../helpers/deferred';
 import {ITextField, TextField} from 'office-ui-fabric-react/lib/TextField';
 import logger from '../../helpers/logger';
-import {Dropdown, IDropdownOption} from 'office-ui-fabric-react/lib/Dropdown';
 import Dialog, {DialogFooter} from 'office-ui-fabric-react/lib/Dialog';
 import {PrimaryButton} from 'office-ui-fabric-react/lib/Button';
 import {OnAddArtifactFunction} from '../../store/types';
@@ -35,7 +34,8 @@ export default class extends React.Component<AddArtifactDialogProps, AddArtifact
     state: AddArtifactDialogState = {};
     artifactRef = React.createRef<ITextField>();
    
-    onProjectChange = (_event: any, option: IDropdownOption) => this.setState({project: option ? option.text : undefined});
+    onProjectChange = (_event: any, option: IComboBoxOption, index: number, value: string) =>
+        this.setState({project: value || (option ? option.text : undefined)});
     onArtifactChange = (_event: any, artifact?: string) => this.setState({artifact});
     onEncodingChange = (_event: any, option: IComboBoxOption, index: number, value: string) =>
         this.setState({encoding: value || (option ? option.text : undefined)});
@@ -74,6 +74,9 @@ export default class extends React.Component<AddArtifactDialogProps, AddArtifact
             this.props.onAddArtifact({artifactPath: {project: project!, artifact: artifact!}, source});
             this.setState({project: undefined, artifact: undefined, encoding: undefined, file: undefined});
             this.props.onDismiss();
+            // TODO: this does not immediately switch to the new model
+            // further, large models are rejected by the server (traditional POST upload instead?)
+            window.alert('After importing, the feature model will be available for joining in the command palette.');
         };
         reader.readAsText(file, encoding || defaultEncoding);
     };
@@ -89,10 +92,13 @@ export default class extends React.Component<AddArtifactDialogProps, AddArtifact
                 onDismiss={onDismiss}
                 modalProps={{onLayerDidMount: this.onLayerDidMount}}
                 dialogContentProps={{title: i18n.t('overlays.addArtifactDialog.title')}}>
-                <Dropdown
+                <ComboBox
+                    text={this.state.project}
                     label={i18n.t('commandPalette.project')}
-                    onChange={this.onProjectChange}
-                    options={projectOptions}/>
+                    allowFreeform
+                    autoComplete="on"
+                    options={projectOptions}
+                    onChange={this.onProjectChange}/>
                 <TextField
                     componentRef={this.artifactRef}
                     label={i18n.t('commandPalette.artifact')}

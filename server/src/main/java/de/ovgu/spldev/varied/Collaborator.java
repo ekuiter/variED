@@ -94,8 +94,12 @@ public class Collaborator {
             if (ProjectManager.getInstance().getArtifact(artifactPath) != null)
                 throw new RuntimeException("artifact for path " + artifactPath + " already exists");
             Project project = ProjectManager.getInstance().getProject(artifactPath);
-            if (project == null)
-                throw new RuntimeException("project " + artifactPath.getProjectName() + " does not exist");
+            if (project == null) {
+                String projectName = artifactPath.getProjectName();
+                Logger.info("adding new project {}", projectName);
+                project = new Project(projectName);
+                ProjectManager.getInstance().addProject(project);
+            }
             String source = ((Api.AddArtifact) message).source;
             if (source == null)
                 throw new RuntimeException("no artifact source provided");
