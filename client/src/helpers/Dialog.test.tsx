@@ -107,7 +107,7 @@ describe('Dialog', () => {
                 wrapper = textFieldDialog(onSubmit, onDismiss);
             wrapper.find(TextField).simulate('change', null, 'some value');
             wrapper.find(PrimaryButton).simulate('click');
-            expect(onSubmit).toBeCalledWith('some value');
+            expect(onSubmit).toBeCalledWith('some value', {current: null});
             expect(onDismiss).toBeCalled();
         });
 
@@ -117,7 +117,7 @@ describe('Dialog', () => {
                 wrapper = textFieldDialog(onSubmit, onDismiss);
             wrapper.find(TextField).simulate('change', null, 'some value');
             wrapper.find(TextField).simulate('keyPress', {key: 'Enter'});
-            expect(onSubmit).toBeCalledWith('some value');
+            expect(onSubmit).toBeCalledWith('some value', {current: null});
             expect(onDismiss).toBeCalled();
         });
 
