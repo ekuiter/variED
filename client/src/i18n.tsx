@@ -59,6 +59,7 @@ const translationMap = {
         about: 'About…',
         undo: 'Undo',
         redo: 'Redo',
+        addArtifact: 'Import…',
         featureDiagram: {
             export: 'Export as',
             svg: 'SVG…',
@@ -130,6 +131,7 @@ const translationMap = {
         leaveRequest: 'Leave collaborative session',
         settings: 'Settings',
         about: 'About',
+        addArtifact: 'Import feature model',
         featureDiagram: {
             export: 'Export feature model',
             svg: 'SVG',
@@ -259,7 +261,18 @@ const translationMap = {
         },
         featureSetDescriptionDialog: {
             title: 'Set feature description',
-            rename: 'Save'
+            save: 'Save'
+        },
+        addArtifactDialog: {
+            title: 'Import feature model',
+            upload: 'Upload',
+            encoding: 'File encoding',
+            formatNotice: (
+                <p>
+                    You can import any feature model that is compatible with <Link
+                        href="https://featureide.github.io/" target="_blank">FeatureIDE</Link>.
+                </p>
+            ),
         },
         exportDialog: {
             export: 'Export',

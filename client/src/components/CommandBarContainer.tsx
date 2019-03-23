@@ -16,18 +16,18 @@ import {enableConstraintsView} from './constraintsView/ConstraintsView';
 
 const CommandBarContainer = (props: StateDerivedProps) => (
     <CommandBar
-        items={[
-            ...props.featureModel
-                ? [{
-                    key: 'file',
-                    text: i18n.t('commands.file'),
-                    subMenuProps: {
-                        items: [
-                            commands.featureDiagram.export(props.featureDiagramLayout!, props.onShowOverlay!)
-                        ]
-                    }
-                }]
-                : [],
+        items={[{
+                key: 'file',
+                text: i18n.t('commands.file'),
+                subMenuProps: {
+                    items: [
+                        commands.featureDiagram.addArtifact(props.onShowOverlay!),
+                        ...props.featureModel
+                            ? [commands.featureDiagram.export(props.featureDiagramLayout!, props.onShowOverlay!)]
+                            : []
+                    ]
+                }
+            },
             ...props.featureModel
                 ? [{
                     key: 'edit',

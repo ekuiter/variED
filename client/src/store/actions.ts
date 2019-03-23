@@ -75,6 +75,10 @@ const actions = {
     },
     server: {
         receive: createStandardAction('server/receiveMessage')<Message>(),
+        addArtifact: createMessageAction(({artifactPath, source}: {artifactPath: ArtifactPath, source: string}) =>
+            ({type: MessageType.ADD_ARTIFACT, artifactPath, source})),
+        removeArtifact: createMessageAction(({artifactPath}: {artifactPath: ArtifactPath}) =>
+            ({type: MessageType.REMOVE_ARTIFACT, artifactPath})),
         joinRequest: createMessageAction(({artifactPath}: {artifactPath: ArtifactPath}) => ({type: MessageType.JOIN_REQUEST, artifactPath})),
         leaveRequest: createMessageAction(({artifactPath}: {artifactPath: ArtifactPath}) => ({type: MessageType.LEAVE_REQUEST, artifactPath})),
         undo: createMessageAction(() => ({type: MessageType.ERROR})), // TODO

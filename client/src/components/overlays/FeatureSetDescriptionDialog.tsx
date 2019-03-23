@@ -26,7 +26,7 @@ export default class extends FeatureComponent()<Props> {
                 isOpen={this.props.isOpen}
                 onDismiss={this.props.onDismiss}
                 title={i18n.t('overlays.featureSetDescriptionDialog.title')}
-                submitText={i18n.t('overlays.featureSetDescriptionDialog.rename')}
+                submitText={i18n.t('overlays.featureSetDescriptionDialog.save')}
                 defaultValue={feature.description}
                 onSubmit={description => {
                     if (preconditions.featureDiagram.feature.setDescription(feature.ID, this.props.featureModel))

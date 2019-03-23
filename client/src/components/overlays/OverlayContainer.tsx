@@ -22,6 +22,7 @@ import {OverlayType} from '../../types';
 import {State, StateDerivedProps} from '../../store/types';
 import logger from '../../helpers/logger';
 import CommandPalette from './CommandPalette';
+import AddArtifactDialog from './AddArtifactDialog';
 
 const OverlayContainer = (props: StateDerivedProps) => (
     <React.Fragment>
@@ -118,6 +119,14 @@ const OverlayContainer = (props: StateDerivedProps) => (
             onSetFeatureDescription={props.onSetFeatureDescription!}
             {...props.overlayProps}/>}
 
+        {props.overlay === OverlayType.addArtifactDialog &&
+        <AddArtifactDialog
+            isOpen={true}
+            onDismiss={() => props.onHideOverlay!({overlay: OverlayType.addArtifactDialog})}
+            onAddArtifact={props.onAddArtifact!}
+            artifactPaths={props.artifactPaths!}
+            {...props.overlayProps}/>}
+
         {props.overlay === OverlayType.exportDialog &&
         <ExportDialog
             isOpen={true}
@@ -197,6 +206,8 @@ export default connect(
     (dispatch): StateDerivedProps => ({
         onFitToScreen: () => dispatch(actions.ui.featureDiagram.fitToScreen()),
         onSetFeatureDiagramLayout: payload => dispatch(actions.ui.featureDiagram.setLayout(payload)),
+        onAddArtifact: payload => dispatch<any>(actions.server.addArtifact(payload)),
+        onRemoveArtifact: payload => dispatch<any>(actions.server.removeArtifact(payload)),
         onJoinRequest: payload => dispatch<any>(actions.server.joinRequest(payload)),
         onLeaveRequest: payload => dispatch<any>(actions.server.leaveRequest(payload)),
         onUndo: () => dispatch<any>(actions.server.undo({})),

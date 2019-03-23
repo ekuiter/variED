@@ -12,7 +12,7 @@ import logger from '../../helpers/logger';
 import {Persistor} from 'redux-persist';
 import {enableConstraintsView} from '../constraintsView/ConstraintsView';
 import {defaultSettings, Settings} from '../../store/settings';
-import {preconditions} from 'src/modeling/preconditions';
+import {preconditions} from '../../modeling/preconditions';
 
 interface Props {
     artifactPaths: ArtifactPath[],
@@ -243,8 +243,13 @@ export default class extends React.Component<Props, State> {
             shortcut: getShortcutText('redo'),
             action: this.action(this.props.onRedo)
         },*/ {
+            text: i18n.t('commandPalette.addArtifact'),
+            icon: 'CloudUpload',
+            action: this.action(() =>
+                this.props.onShowOverlay({overlay: OverlayType.addArtifactDialog, overlayProps: {}}))
+        }, {
             text: i18n.t('commandPalette.featureDiagram.export'),
-            icon: 'Share',
+            icon: 'CloudDownload',
             disabled: () => !this.props.featureModel,
             action: this.actionWithArguments(
                 [{

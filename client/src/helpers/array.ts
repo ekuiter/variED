@@ -14,7 +14,7 @@ export function setAdd<T>(set: T[], elementOrElements: T | T[],
     let elements: T[];
     elements = Array.isArray(elementOrElements) ? elementOrElements : [elementOrElements];
     elements = arrayUnique(elements, keyFn, eqFn);
-    return setRemove(set, elements, keyFn).concat(elements);
+    return setRemove(set, elements, keyFn, eqFn).concat(elements);
 }
 
 /**

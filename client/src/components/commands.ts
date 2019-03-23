@@ -14,7 +14,7 @@ import FeatureModel from '../modeling/FeatureModel';
 import {Feature} from '../modeling/types';
 import {defaultSettings} from '../store/settings';
 import {preconditions} from '../modeling/preconditions';
-import logger from 'src/helpers/logger';
+import logger from '../helpers/logger';
 
 const exportFormatItem = (featureDiagramLayout: FeatureDiagramLayoutType,
     onShowOverlay: OnShowOverlayFunction, format: FormatType) =>
@@ -77,10 +77,16 @@ const commands = {
         onClick: onRedo
     }),
     featureDiagram: {
+        addArtifact: (onShowOverlay: OnShowOverlayFunction) => ({
+            key: 'addArtifact',
+            text: i18n.t('commands.addArtifact'),
+            iconProps: {iconName: 'CloudUpload'},
+            onClick: () => onShowOverlay({overlay: OverlayType.addArtifactDialog, overlayProps: {}})
+        }),
         export: (featureDiagramLayout: FeatureDiagramLayoutType, onShowOverlay: OnShowOverlayFunction) => ({
             key: 'export',
             text: i18n.t('commands.featureDiagram.export'),
-            iconProps: {iconName: 'Share'},
+            iconProps: {iconName: 'CloudDownload'},
             subMenuProps: {
                 items: [
                     ...exportFormatItem(featureDiagramLayout, onShowOverlay, FormatType.png),
