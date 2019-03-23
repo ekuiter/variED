@@ -1,5 +1,6 @@
 package de.ovgu.spldev.varied;
 
+import com.google.common.io.Resources;
 import com.google.gson.annotations.Expose;
 import de.ovgu.spldev.varied.messaging.Api;
 import de.ovgu.spldev.varied.messaging.Message;
@@ -7,6 +8,7 @@ import me.atrox.haikunator.Haikunator;
 import me.atrox.haikunator.HaikunatorBuilder;
 import org.pmw.tinylog.Logger;
 
+import java.net.URISyntaxException;
 import java.util.*;
 
 public class Collaborator {
@@ -101,9 +103,17 @@ public class Collaborator {
                 ProjectManager.getInstance().addProject(project);
             }
             String source = ((Api.AddArtifact) message).source;
-            if (source == null)
-                throw new RuntimeException("no artifact source provided");
-            project.addArtifact(new Artifact.FeatureModel(project, artifactPath.getArtifactName(), source));
+            Artifact artifact;
+            if (source == null) {
+                try {
+                    artifact = new Artifact.FeatureModel(project, artifactPath.getArtifactName(),
+                            Resources.getResource("examples/" + ProjectManager.EMPTY + ".xml"));
+                } catch (URISyntaxException e) {
+                    throw new RuntimeException("invalid resource path given");
+                }
+            } else
+                artifact = new Artifact.FeatureModel(project, artifactPath.getArtifactName(), source);
+            project.addArtifact(artifact);
             CollaboratorManager.getInstance().broadcast(new Api.AddArtifact(artifactPath));
             return;
         }

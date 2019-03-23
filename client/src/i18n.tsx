@@ -59,7 +59,7 @@ const translationMap = {
         about: 'About…',
         undo: 'Undo',
         redo: 'Redo',
-        addArtifact: 'Import…',
+        addArtifact: 'New…',
         share: 'Share…',
         featureDiagram: {
             export: 'Export as',
@@ -132,8 +132,8 @@ const translationMap = {
         leaveRequest: 'Leave collaborative session',
         settings: 'Settings',
         about: 'About',
-        addArtifact: 'Import feature model',
-        removeArtifact: 'Delete feature model',
+        addArtifact: 'New feature model',
+        removeArtifact: 'Remove feature model',
         share: 'Share feature model',
         featureDiagram: {
             export: 'Export feature model',
@@ -267,8 +267,8 @@ const translationMap = {
             save: 'Save'
         },
         addArtifactDialog: {
-            title: 'Import feature model',
-            upload: 'Upload',
+            title: 'New feature model',
+            create: 'Create',
             encoding: 'File encoding',
             formatNotice: (
                 <p>

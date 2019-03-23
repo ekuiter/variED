@@ -59,14 +59,8 @@ export default class extends React.Component<AddArtifactDialogProps, AddArtifact
             logger.warn(() => 'no artifact path supplied'); // TODO: better error UI
             return;
         }
-        if (!file) {
-            logger.warn(() => 'no file supplied'); // TODO: better error UI
-            return;
-        }
         
-        var reader = new FileReader();
-        reader.onload = (e: any) => {
-            const source = e.target.result;
+        const proceed = (source?: string) => {
             this.props.onAddArtifact({artifactPath: {project: project!, artifact: artifact!}, source});
             this.setState({project: undefined, artifact: undefined, encoding: undefined, file: undefined});
             this.props.onDismiss();
@@ -74,7 +68,15 @@ export default class extends React.Component<AddArtifactDialogProps, AddArtifact
             // further, large models are rejected by the server (traditional POST upload instead?)
             window.alert('After importing, the feature model will be available for joining in the command palette.');
         };
-        reader.readAsText(file, encoding || defaultEncoding);
+
+        if (file) {
+            var reader = new FileReader();
+            reader.onload = (e: any) => {
+                proceed(e.target.result);
+            };
+            reader.readAsText(file, encoding || defaultEncoding);
+        } else
+            proceed();
     };
 
     render() {
@@ -94,12 +96,19 @@ export default class extends React.Component<AddArtifactDialogProps, AddArtifact
                     allowFreeform
                     autoComplete="on"
                     options={projectOptions}
-                    onChange={this.onProjectChange}/>
+                    onChange={this.onProjectChange}
+                    required/>
                 <TextField
                     componentRef={this.artifactRef}
                     label={i18n.t('commandPalette.artifact')}
                     value={this.state.artifact}
-                    onChange={this.onArtifactChange}/>
+                    onChange={this.onArtifactChange}
+                    required/>
+                {i18n.getElement('overlays.addArtifactDialog.formatNotice')}
+                <p>
+                    <input type="file" onChange={this.onSourceChange}/>
+                </p>
+                {this.state.file &&
                 <ComboBox
                     text={this.state.encoding || defaultEncoding}
                     label={i18n.t('overlays.addArtifactDialog.encoding')}
@@ -107,11 +116,9 @@ export default class extends React.Component<AddArtifactDialogProps, AddArtifact
                     autoComplete="on"
                     options={['UTF-8', 'ISO-8859-1', 'Windows-1252']
                         .map(encoding => ({key: encoding, text: encoding}))}
-                    onChange={this.onEncodingChange}/>
-                {i18n.getElement('overlays.addArtifactDialog.formatNotice')}
-                <input type="file" onChange={this.onSourceChange}/>
+                    onChange={this.onEncodingChange}/>}
                 <DialogFooter>
-                    <PrimaryButton onClick={this.onSubmit} text={i18n.t('overlays.addArtifactDialog.upload')}/>
+                    <PrimaryButton onClick={this.onSubmit} text={i18n.t('overlays.addArtifactDialog.create')}/>
                 </DialogFooter>
             </Dialog>
         );

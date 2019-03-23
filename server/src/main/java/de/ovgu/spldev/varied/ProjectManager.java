@@ -19,10 +19,11 @@ public class ProjectManager {
 
     private Project examplesProject = new Project("Examples");
     private Project featureIDEProject = new Project("FeatureIDE");
+    public static String EMPTY = "Empty";
 
     {
         for (String artifactName : new String[]{
-                "Empty", "uvr2web", "CollaborativeModeling"
+                EMPTY, "uvr2web", "CollaborativeModeling"
         })
             addExampleArtifact(examplesProject, artifactName);
         addProject(examplesProject);

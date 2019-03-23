@@ -239,7 +239,7 @@ export default class extends React.Component<Props, State> {
             action: this.action(this.props.onRedo)
         },*/ {
             text: i18n.t('commandPalette.addArtifact'),
-            icon: 'CloudUpload',
+            icon: 'PageAdd',
             action: this.action(() =>
                 this.props.onShowOverlay({overlay: OverlayType.addArtifactDialog, overlayProps: {}}))
         }, {
@@ -259,6 +259,12 @@ export default class extends React.Component<Props, State> {
                 }],
                 (project, artifact) => this.props.onRemoveArtifact({artifactPath: {project, artifact}}))
         }, {
+            text: i18n.t('commandPalette.share'),
+            icon: 'Share',
+            disabled: () => !this.props.featureModel,
+            action: this.action(() =>
+                this.props.onShowOverlay({overlay: OverlayType.shareDialog, overlayProps: {}}))
+        }, {
             text: i18n.t('commandPalette.featureDiagram.export'),
             icon: 'CloudDownload',
             disabled: () => !this.props.featureModel,
@@ -272,12 +278,6 @@ export default class extends React.Component<Props, State> {
                     if (canExport(this.props.featureDiagramLayout!, format))
                         this.props.onShowOverlay({overlay: OverlayType.exportDialog, overlayProps: {format}});
                 })
-        }, {
-            text: i18n.t('commandPalette.share'),
-            icon: 'Share',
-            disabled: () => !this.props.featureModel,
-            action: this.action(() =>
-                this.props.onShowOverlay({overlay: OverlayType.shareDialog, overlayProps: {}}))
         }, {
             text: i18n.t('commands.featureDiagram.setLayout'),
             disabled: () => !this.props.featureModel,
@@ -471,7 +471,7 @@ export default class extends React.Component<Props, State> {
         {
             text: i18n.t('commandPalette.featureDiagram.constraint.new'),
             icon: 'Add',
-            disabled: () => !enableConstraintsView(this.props.featureModel),
+            disabled: () => !this.props.featureModel,
             action: this.actionWithArguments(
                 [{
                     title: i18n.t('commandPalette.constraint'),

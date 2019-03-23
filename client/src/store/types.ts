@@ -76,7 +76,7 @@ export type OnSetSettingFunction = (payload: {path: string, value: any}) => void
 export type OnResetSettingsFunction = () => void;
 export type OnSetCurrentArtifactPathFunction = (payload: {artifactPath?: ArtifactPath}) => void;
 
-export type OnAddArtifactFunction = (payload: {artifactPath: ArtifactPath, source: string}) => Promise<void>;
+export type OnAddArtifactFunction = (payload: {artifactPath: ArtifactPath, source?: string}) => Promise<void>;
 export type OnRemoveArtifactFunction = (payload: {artifactPath: ArtifactPath}) => Promise<void>;
 export type OnJoinRequestFunction = (payload: {artifactPath: ArtifactPath}) => Promise<void>;
 export type OnLeaveRequestFunction = (payload: {artifactPath: ArtifactPath}) => Promise<void>;

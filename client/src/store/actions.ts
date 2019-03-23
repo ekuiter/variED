@@ -75,7 +75,7 @@ const actions = {
     },
     server: {
         receive: createStandardAction('server/receiveMessage')<Message>(),
-        addArtifact: createMessageAction(({artifactPath, source}: {artifactPath: ArtifactPath, source: string}) =>
+        addArtifact: createMessageAction(({artifactPath, source}: {artifactPath: ArtifactPath, source?: string}) =>
             ({type: MessageType.ADD_ARTIFACT, artifactPath, source})),
         removeArtifact: createMessageAction(({artifactPath}: {artifactPath: ArtifactPath}) =>
             ({type: MessageType.REMOVE_ARTIFACT, artifactPath})),

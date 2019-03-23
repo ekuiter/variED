@@ -23,8 +23,8 @@ const CommandBarContainer = (props: StateDerivedProps) => (
                     items: [
                         commands.featureDiagram.addArtifact(props.onShowOverlay!),
                         ...props.featureModel
-                            ? [commands.featureDiagram.export(props.featureDiagramLayout!, props.onShowOverlay!),
-                                commands.featureDiagram.share(props.onShowOverlay!)]
+                            ? [commands.featureDiagram.share(props.onShowOverlay!),
+                                commands.featureDiagram.export(props.featureDiagramLayout!, props.onShowOverlay!)]
                             : []
                     ]
                 }
