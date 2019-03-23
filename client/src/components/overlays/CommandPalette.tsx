@@ -86,7 +86,9 @@ export default class extends React.Component<Props, State> {
         if (this.props.isOpen &&
             this.state.getArgumentItems &&
             (prevState.getArgumentItems !== this.state.getArgumentItems ||
-                prevProps.featureModel !== this.props.featureModel))
+                prevProps.featureModel !== this.props.featureModel ||
+                prevProps.artifactPaths !== this.props.artifactPaths ||
+                prevProps.collaborativeSessions !== this.props.collaborativeSessions))
             this.state.getArgumentItems()
                 .then(argumentItems => this.setState({argumentItems}));
     }
@@ -158,6 +160,24 @@ export default class extends React.Component<Props, State> {
 
     commands: PaletteItem[] = [
         {
+            text: i18n.t('commandPalette.switch'),
+            icon: 'JoinOnlineMeeting',
+            disabled: () => this.props.collaborativeSessions.length < 2,
+            action: this.actionWithArguments(
+                [{
+                    title: i18n.t('commandPalette.project'),
+                    items: () => arrayUnique(
+                        this.props.collaborativeSessions
+                            .map(collaborativeSession => collaborativeSession.artifactPath.project))
+                }, {
+                    title: i18n.t('commandPalette.artifact'),
+                    items: (project: string) =>
+                    this.props.collaborativeSessions
+                        .filter(collaborativeSession => collaborativeSession.artifactPath.project === project)
+                        .map(collaborativeSession => collaborativeSession.artifactPath.artifact)
+                }],
+                (project, artifact) => this.props.onSetCurrentArtifactPath({artifactPath: {project, artifact}}))
+        }, {
             text: i18n.t('commandPalette.joinRequest'),
             icon: 'JoinOnlineMeeting',
             disabled: () => this.props.artifactPaths.length === 0,
@@ -181,8 +201,7 @@ export default class extends React.Component<Props, State> {
                     else
                         this.props.onJoinRequest({artifactPath: {project, artifact}});
                 })
-        },
-        {
+        }, {
             text: i18n.t('commandPalette.leaveRequest'),
             icon: 'JoinOnlineMeeting',
             disabled: () => this.props.collaborativeSessions.length === 0,
@@ -200,8 +219,7 @@ export default class extends React.Component<Props, State> {
                         .map(collaborativeSession => collaborativeSession.artifactPath.artifact)
                 }],
                 (project, artifact) => this.props.onLeaveRequest({artifactPath: {project, artifact}}))
-        },
-        {
+        }, {
             text: i18n.t('commandPalette.settings'),
             icon: 'Settings',
             shortcut: getShortcutText('settings'),

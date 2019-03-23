@@ -125,6 +125,7 @@ const translationMap = {
         format: 'Format',
         layout: 'Layout',
         delay: 'Delay',
+        switch: 'Switch to collaborative session',
         joinRequest: 'Join collaborative session',
         leaveRequest: 'Leave collaborative session',
         settings: 'Settings',
