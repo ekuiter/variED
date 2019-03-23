@@ -30,10 +30,10 @@ function makeRect(settings: Settings, textBbox: Rect): Rect {
         nodeSettings.paddingY + nodeSettings.strokeWidth);
 }
 
-function addFontStyle(selection: D3Selection, settings: Settings): void {
+function addFontStyle(selection: D3Selection, settings: Settings, scale = 1): void {
     selection.attrs({
         'font-family': settings.featureDiagram.font.family,
-        'font-size': settings.featureDiagram.font.size
+        'font-size': settings.featureDiagram.font.size * scale
     });
 }
 
@@ -151,8 +151,19 @@ export default class {
             fn: (circle: D3Selection) => circle.on('dblclick', expandFeature)
         });
 
-        if (this.debug)
+        if (this.debug) {
             appendCross(nodeEnter);
+            const addDebugText = (text: (d: FeatureNode) => string, y: number) => {
+                nodeEnter.append('text')
+                    .call(addFontStyle, this.settings, 0.3)
+                    .text(text)
+                    .call(addStyle, this.getTextStyle())
+                    .attr('opacity', 0.5)
+                    .attr('y', y);
+            };
+            addDebugText(d => d.feature().ID.substr(0, 19), 6);
+            addDebugText(d => d.feature().ID.substr(19), 11);
+        }
 
         return nodeEnter;
     }

@@ -87,7 +87,7 @@ const getWebSocket = ((): () => Promise<Sockette> => {
                             const persistor: Persistor | undefined =
                                 (window as any).app && (window as any).app.persistor;
                             if (!persistor)
-                                window.alert('can not obtain persistor');
+                                logger.warn(() => 'can not obtain persistor');
                             else {
                                 persistor.pause();
                                 persistor.purge();
