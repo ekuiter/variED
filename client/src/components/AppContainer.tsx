@@ -32,7 +32,7 @@ class AppContainer extends React.Component<StateDerivedProps> {
         if (this.props.settings!.developer.debug)
             setLogLevel(LogLevel.info);
 
-        this.props.onJoinRequest!({artifactPath: {project: 'FeatureModeling', artifact: 'CTV'}});
+        this.props.onJoinRequest!({artifactPath: {project: 'variED Examples', artifact: 'uvr2web'}});
     }
 
     componentWillUnmount() {
