@@ -49,8 +49,12 @@ public class ProjectManager {
         projects.remove(project.getName());
     }
 
+    Project getProject(Artifact.Path artifactPath) {
+        return getProject(artifactPath.getProjectName());
+    }
+
     Artifact getArtifact(Artifact.Path artifactPath) {
-        Project project = getProject(artifactPath.getProjectName());
+        Project project = getProject(artifactPath);
         if (project == null)
             return null;
         return project.getArtifact(artifactPath.getArtifactName());

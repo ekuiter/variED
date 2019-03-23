@@ -6,11 +6,14 @@ export type SetOperationFunction<T> = (array: T[], elementOrElements: T | T[]) =
  * @param set a set of elements
  * @param elementOrElements an element or an array of elements to be added
  * @param keyFn extracts a key, defaults to strict equality comparison
+ * @param eqFn defaults to strict equality comparison
  */
-export function setAdd<T>(set: T[], elementOrElements: T | T[], keyFn: (element: T) => any = element => element): T[] {
+export function setAdd<T>(set: T[], elementOrElements: T | T[],
+        keyFn: (element: T) => any = element => element,
+        eqFn: (a: any, b: any) => any = (a, b) => a === b): T[] {
     let elements: T[];
     elements = Array.isArray(elementOrElements) ? elementOrElements : [elementOrElements];
-    elements = arrayUnique(elements, keyFn);
+    elements = arrayUnique(elements, keyFn, eqFn);
     return setRemove(set, elements, keyFn).concat(elements);
 }
 
@@ -19,20 +22,26 @@ export function setAdd<T>(set: T[], elementOrElements: T | T[], keyFn: (element:
  * Elements are kept unique with strict equality comparison.
  * @param set a set of elements
  * @param elementOrElements an element or an array of elements to be removed
- * @param keyFn extracts a key, defaults to strict equality comparison
+ * @param keyFn extracts a key
+ * @param eqFn defaults to strict equality comparison
  */
-export function setRemove<T>(set: T[], elementOrElements: T | T[], keyFn: (element: T) => any = element => element): T[] {
+export function setRemove<T>(set: T[], elementOrElements: T | T[],
+        keyFn: (element: T) => any = element => element,
+        eqFn: (a: any, b: any) => any = (a, b) => a === b): T[] {
     let elements: T[] = Array.isArray(elementOrElements) ? elementOrElements : [elementOrElements];
-    return set.filter(a => !elements.find(b => keyFn(a) === keyFn(b)));
+    return set.filter(a => !elements.find(b => eqFn(keyFn(a), keyFn(b))));
 }
 
 /**
  * Converts an array into a set.
  * @param array an array of elements
  * @param keyFn extracts a key, defaults to strict equality comparison
+ * @param eqFn defaults to strict equality comparison
  */
-export function arrayUnique<T>(array: T[], keyFn: (element: T) => any = element => element) {
-    return array.reduce((acc, val) => [...acc.filter(element => keyFn(element) !== keyFn(val)), val], []);
+export function arrayUnique<T>(array: T[],
+        keyFn: (element: T) => any = element => element,
+        eqFn: (a: any, b: any) => any = (a, b) => a === b) {
+    return array.reduce((acc, val) => [...acc.filter(element => !eqFn(keyFn(element), keyFn(val))), val], []);
 }
 
 /**

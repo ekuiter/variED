@@ -147,8 +147,15 @@ function serverReceiveReducer(state: State, action: Action): State {
             case MessageType.COLLABORATOR_INFO:
                 return getNewState(state, 'myself', {siteID: action.payload.siteID});
 
-            case MessageType.ARTIFACT_INFO:
-                return getNewState(state, 'artifactPaths', setAdd(state.artifactPaths, action.payload.artifactPath!));
+            case MessageType.ADD_ARTIFACT:
+                return getNewState(state, 'artifactPaths',
+                    setAdd(state.artifactPaths, action.payload.artifactPath!,
+                        artifactPath => artifactPath, isArtifactPathEqual));
+
+            case MessageType.REMOVE_ARTIFACT:
+                return getNewState(state, 'artifactPaths', setRemove(
+                    state.artifactPaths, action.payload.artifactPath!,
+                    artifactPath => artifactPath, isArtifactPathEqual));
 
             case MessageType.INITIALIZE:
                 if (!state.myself)

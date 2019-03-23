@@ -16,12 +16,28 @@ public class Api {
      */
     public enum TypeEnum {
         ERROR,
+        ADD_ARTIFACT,
+        REMOVE_ARTIFACT,
         COLLABORATOR_INFO,
-        ARTIFACT_INFO,
         JOIN_REQUEST,
         LEAVE_REQUEST,
         INITIALIZE,
         KERNEL
+    }
+
+    public static class AddArtifact extends Message implements Message.IEncodable, Message.IDecodable {
+        @Expose
+        public String source;
+
+        public AddArtifact(de.ovgu.spldev.varied.Artifact.Path artifactPath) {
+            super(TypeEnum.ADD_ARTIFACT, artifactPath);
+        }
+    }
+
+    public static class RemoveArtifact extends Message implements Message.IEncodable, Message.IDecodable {
+        public RemoveArtifact(de.ovgu.spldev.varied.Artifact.Path artifactPath) {
+            super(TypeEnum.REMOVE_ARTIFACT, artifactPath);
+        }
     }
 
     public static class Error extends Message implements Message.IEncodable {
@@ -42,12 +58,6 @@ public class Api {
         public CollaboratorInfo(UUID siteID) {
             super(TypeEnum.COLLABORATOR_INFO, null);
             this.siteID = siteID;
-        }
-    }
-
-    public static class ArtifactInfo extends Message implements Message.IEncodable {
-        public ArtifactInfo(de.ovgu.spldev.varied.Artifact.Path artifactPath) {
-            super(TypeEnum.ARTIFACT_INFO, artifactPath);
         }
     }
 

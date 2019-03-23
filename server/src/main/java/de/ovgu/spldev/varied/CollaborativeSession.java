@@ -4,20 +4,20 @@ import de.ovgu.featureide.fm.core.base.IFeatureModel;
 import de.ovgu.spldev.varied.kernel.Kernel;
 import de.ovgu.spldev.varied.messaging.Api;
 import de.ovgu.spldev.varied.messaging.Message;
+import de.ovgu.spldev.varied.util.CollaboratorUtils;
 import org.pmw.tinylog.Logger;
 
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.Predicate;
 
 /**
  * A collaborative session consists of a set of collaborators that view and edit a artifact together.
  */
 public abstract class CollaborativeSession {
     protected Artifact.Path artifactPath;
-    private Set<Collaborator> collaborators = new HashSet<>();
+    protected Set<Collaborator> collaborators = new HashSet<>();
 
     CollaborativeSession(Artifact.Path artifactPath) {
         this.artifactPath = artifactPath;
@@ -33,6 +33,10 @@ public abstract class CollaborativeSession {
 
     protected abstract boolean _onMessage(Collaborator collaborator, Message.IDecodable message);
 
+    public boolean isInProcess() {
+        return collaborators.size() > 0;
+    }
+
     public void join(Collaborator newCollaborator) {
         Logger.info("{} joins collaborative session {}", newCollaborator, this);
         // collaborator may re-join to obtain new initialization context,
@@ -46,17 +50,6 @@ public abstract class CollaborativeSession {
         if (!collaborators.remove(oldCollaborator))
             throw new RuntimeException("collaborator already left");
         _leave(oldCollaborator);
-    }
-
-    private void broadcast(Message.IEncodable message, Predicate<Collaborator> predicate) {
-        Objects.requireNonNull(message, "no message given");
-        collaborators.stream()
-                .filter(predicate)
-                .forEach(collaborator -> collaborator.send(message));
-    }
-
-    private void broadcastToOthers(Message.IEncodable message, Collaborator collaborator) {
-        broadcast(message, otherCollaborator -> otherCollaborator != collaborator);
     }
 
     void onMessage(Collaborator collaborator, Message message) throws Message.InvalidMessageException {
@@ -79,7 +72,7 @@ public abstract class CollaborativeSession {
 
             Api.Kernel kernelMessage = (Api.Kernel) message;
             String newMessage = kernel.forwardMessage(kernelMessage.message);
-            super.broadcastToOthers(new Api.Kernel(artifactPath, newMessage), collaborator);
+            CollaboratorUtils.broadcastToOthers(collaborators, new Api.Kernel(artifactPath, newMessage), collaborator);
             return true;
         }
 
@@ -89,13 +82,13 @@ public abstract class CollaborativeSession {
             String context = contextAndHeartbeatMessage[0],
                     heartbeatMessage = contextAndHeartbeatMessage[1];
             newCollaborator.send(new Api.Initialize(artifactPath, context));
-            super.broadcastToOthers(new Api.Kernel(artifactPath, heartbeatMessage), newCollaborator);
+            CollaboratorUtils.broadcastToOthers(collaborators, new Api.Kernel(artifactPath, heartbeatMessage), newCollaborator);
         }
 
         protected void _leave(Collaborator oldCollaborator) {
             UUID siteID = oldCollaborator.getSiteID();
             String leaveMessage = kernel.siteLeft(siteID);
-            super.broadcastToOthers(new Api.Kernel(artifactPath, leaveMessage), oldCollaborator);
+            CollaboratorUtils.broadcastToOthers(collaborators, new Api.Kernel(artifactPath, leaveMessage), oldCollaborator);
         }
     }
 }

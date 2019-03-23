@@ -66,7 +66,7 @@ if (!window.name)
         // (redux-persist white/blacklist does not work for some reason)
         (inboundState, key) => initialState[key],
         (outboundState, key) => outboundState,
-        {'whitelist': ['overlay', 'overlayProps', 'collaborativeSessions', 'currentArtifactPath']}
+        {'whitelist': ['overlay', 'overlayProps', 'collaborativeSessions', 'artifactPaths', 'currentArtifactPath']}
     );
     const persistedReducer = persistReducer({
         key: 'root',

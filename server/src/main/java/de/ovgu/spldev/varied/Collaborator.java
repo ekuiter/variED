@@ -53,7 +53,7 @@ public class Collaborator {
         }
     }
 
-    void send(Message.IEncodable message) {
+    public void send(Message.IEncodable message) {
         outgoingQueue.add(message);
         sendPending();
     }
@@ -62,7 +62,7 @@ public class Collaborator {
         Logger.info("sending initial information to collaborator {}", this);
         send(new Api.CollaboratorInfo(siteID));
         for (Artifact artifact : ProjectManager.getInstance().getArtifacts())
-            send(new Api.ArtifactInfo(artifact.getPath()));
+            send(new Api.AddArtifact(artifact.getPath()));
     }
 
     public String getName() {
@@ -85,12 +85,40 @@ public class Collaborator {
         Objects.requireNonNull(message, "no message given");
         Logger.info("received {} message from collaborator {}", message.getType(), this);
 
-        if (message.getArtifactPath() == null)
+        Artifact.Path artifactPath = message.getArtifactPath();
+        if (artifactPath == null)
             throw new Message.InvalidMessageException("no artifact path given");
 
-        Artifact artifact = ProjectManager.getInstance().getArtifact(message.getArtifactPath());
+        if (message.isType(Api.TypeEnum.ADD_ARTIFACT)) {
+            Logger.info("adding new artifact {}", artifactPath);
+            if (ProjectManager.getInstance().getArtifact(artifactPath) != null)
+                throw new RuntimeException("artifact for path " + artifactPath + " already exists");
+            Project project = ProjectManager.getInstance().getProject(artifactPath);
+            if (project == null)
+                throw new RuntimeException("project " + artifactPath.getProjectName() + " does not exist");
+            String source = ((Api.AddArtifact) message).source;
+            if (source == null)
+                throw new RuntimeException("no artifact source provided");
+            project.addArtifact(new Artifact.FeatureModel(project, artifactPath.getArtifactName(), source));
+            CollaboratorManager.getInstance().broadcast(new Api.AddArtifact(artifactPath));
+            return;
+        }
+
+        if (message.isType(Api.TypeEnum.REMOVE_ARTIFACT)) {
+            Logger.info("removing artifact {}", artifactPath);
+            Artifact artifact = ProjectManager.getInstance().getArtifact(artifactPath);
+            if (artifact == null)
+                throw new RuntimeException("no artifact found for path " + artifactPath);
+            if (artifact.getCollaborativeSession().isInProcess())
+                throw new RuntimeException("collaborative session for artifact is still in process");
+            ProjectManager.getInstance().getProject(artifactPath).removeArtifact(artifact);
+            CollaboratorManager.getInstance().broadcast(new Api.RemoveArtifact(artifactPath));
+            return;
+        }
+
+        Artifact artifact = ProjectManager.getInstance().getArtifact(artifactPath);
         if (artifact == null)
-            throw new Message.InvalidMessageException("no artifact found for path " + message.getArtifactPath());
+            throw new Message.InvalidMessageException("no artifact found for path " + artifactPath);
         CollaborativeSession collaborativeSession = artifact.getCollaborativeSession();
         Logger.debug("message concerns collaborative session {}", collaborativeSession);
 

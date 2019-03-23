@@ -1,6 +1,7 @@
 package de.ovgu.spldev.varied;
 
 import de.ovgu.spldev.varied.messaging.Message;
+import de.ovgu.spldev.varied.util.CollaboratorUtils;
 import org.pmw.tinylog.Logger;
 
 import java.util.UUID;
@@ -29,10 +30,14 @@ public class CollaboratorManager {
         } else {
             collaborator = new Collaborator(webSocket);
             collaborators.put(collaborator.getSiteID(), collaborator);
-            collaborator.sendInitialInformation();
         }
+        collaborator.sendInitialInformation();
         Logger.info("registered site {}", collaborator.getSiteID());
         return collaborator.getSiteID();
+    }
+
+    public void broadcast(Message.IEncodable message) {
+        CollaboratorUtils.broadcast(collaborators.values(), message, collaborator -> true);
     }
 
     void onMessage(UUID siteID, Message message) throws Message.InvalidMessageException {
