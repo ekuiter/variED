@@ -14,6 +14,7 @@ import FeatureModel from '../modeling/FeatureModel';
 import {Feature} from '../modeling/types';
 import {defaultSettings} from '../store/settings';
 import {preconditions} from '../modeling/preconditions';
+import logger from 'src/helpers/logger';
 
 const exportFormatItem = (featureDiagramLayout: FeatureDiagramLayoutType,
     onShowOverlay: OnShowOverlayFunction, format: FormatType) =>
@@ -143,7 +144,10 @@ const commands = {
                 iconOnly,
                 split: true,
                 onClick: () => {
-                    onCreateFeatureBelow({featureParentID: featureID}).then(onClick);
+                    if (preconditions.featureDiagram.feature.createBelow(featureID, featureModel))
+                        onCreateFeatureBelow({featureParentID: featureID}).then(onClick);
+                    else
+                        logger.warn(() => 'can not create below this feature'); // TODO: better error reporting UI
                 },
                 disabled: !preconditions.featureDiagram.feature.createBelow(featureID, featureModel),
                 subMenuProps: {
@@ -180,9 +184,11 @@ const commands = {
                 iconOnly,
                 split: true,
                 onClick: () => {
-                    onRemoveFeature({featureIDs}).then(onClick);
+                    if (preconditions.featureDiagram.feature.remove(featureIDs, featureModel))
+                        onRemoveFeature({featureIDs}).then(onClick);
+                    else
+                        logger.warn(() => 'can not remove selected features');
                 },
-                disabled: !preconditions.featureDiagram.feature.remove(featureIDs, featureModel),
                 subMenuProps: {
                     items: [{
                         key: 'remove',

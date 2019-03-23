@@ -10,24 +10,14 @@ export const preconditions = {
         feature: {
             createBelow: featureExists,
 
-            createAbove: (featureIDs: string[], featureModel: FeatureModel): boolean => {
-                if (featureIDs.length === 0 || !featuresExist(featureIDs, featureModel))
-                    return false;
-                return featureModel.isSiblingFeatures(featureIDs);
-            },
+            createAbove: (featureIDs: string[], featureModel: FeatureModel): boolean =>
+                featureIDs.length > 0 && featuresExist(featureIDs, featureModel) && featureModel.isSiblingFeatures(featureIDs),
 
             remove: (featureIDs: string[], featureModel: FeatureModel): boolean => {
-                if (!featuresExist(featureIDs, featureModel))
-                    return false;
-                let checkFeature = featureModel.rootFeature;
-                while (true) {
-                    if (featureIDs.includes(checkFeature.ID)) {
-                        if (!checkFeature.hasChildren || checkFeature.node.children!.length > 1)
-                            return false;
-                        checkFeature = checkFeature.node.children![0].feature();
-                    } else
-                        return true;
-                }
+                const features = featureModel.getFeatures(featureIDs);
+                return featureIDs.length === features.length
+                    && !features.some(feature => feature.isRoot && (!feature.hasChildren || feature.node.children!.length > 1))
+                    && !features.some(feature => !!feature.node.parent && featureIDs.includes(feature.node.parent.feature().ID));
             },
 
             removeSubtree: (featureIDs: string[], featureModel: FeatureModel): boolean => {

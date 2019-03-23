@@ -88,12 +88,10 @@ const actions = {
                     kernel.operationCreateFeatureAbove(...featureIDs)),
                 
                 remove: createOperationAction(({featureIDs}: {featureIDs: string[]}, kernel) =>
-                // TODO: batch operation (ensure preconditions: consider the root feature!)
-                    featureIDs.length === 1 ? kernel.operationRemoveFeature(featureIDs[0]) : (window as any).alert('not currently supported')),
+                    kernel.operationCompose(...featureIDs.map(featureID => kernel.operationRemoveFeature(featureID)))),
                 
                 removeSubtree: createOperationAction(({featureIDs}: {featureIDs: string[]}, kernel) =>
-                // TODO: batch operation (ensure preconditions: consider subfeatures!)
-                    featureIDs.length === 1 ? kernel.operationRemoveFeatureSubtree(featureIDs[0]) : (window as any).alert('not currently supported')),
+                    kernel.operationCompose(...featureIDs.map(featureID => kernel.operationRemoveFeatureSubtree(featureID)))),
 
                 moveSubtree: createOperationAction(({featureID, featureParentID}: {featureID: string, featureParentID: string}, kernel) =>
                     kernel.operationMoveFeatureSubtree(featureID, featureParentID)),
