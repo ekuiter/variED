@@ -63,8 +63,7 @@ public class Collaborator {
     void sendInitialInformation() {
         Logger.info("sending initial information to collaborator {}", this);
         send(new Api.CollaboratorInfo(siteID));
-        for (Artifact artifact : ProjectManager.getInstance().getArtifacts())
-            send(new Api.AddArtifact(artifact.getPath()));
+        send(new Api.AddArtifact(ProjectManager.getInstance().getArtifactPaths()));
     }
 
     public String getName() {
@@ -114,7 +113,7 @@ public class Collaborator {
             } else
                 artifact = new Artifact.FeatureModel(project, artifactPath.getArtifactName(), source);
             project.addArtifact(artifact);
-            CollaboratorManager.getInstance().broadcast(new Api.AddArtifact(artifactPath));
+            CollaboratorManager.getInstance().broadcast(new Api.AddArtifact(Arrays.asList(artifactPath)));
             return;
         }
 

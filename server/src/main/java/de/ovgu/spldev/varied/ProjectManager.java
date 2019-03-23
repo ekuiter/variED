@@ -130,4 +130,12 @@ public class ProjectManager {
             artifacts.addAll(project.getArtifacts());
         return artifacts;
     }
+
+    Collection<Artifact.Path> getArtifactPaths() {
+        Collection<Artifact.Path> artifactPaths = new HashSet<>();
+        for (Project project : getProjects())
+            for (Artifact artifact : project.getArtifacts())
+                artifactPaths.add(artifact.getPath());
+        return artifactPaths;
+    }
 }

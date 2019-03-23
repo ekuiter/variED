@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 import de.ovgu.spldev.varied.Artifact;
 import org.pmw.tinylog.Logger;
 
+import java.util.Collection;
 import java.util.UUID;
 
 /**
@@ -29,8 +30,12 @@ public class Api {
         @Expose
         public String source;
 
-        public AddArtifact(de.ovgu.spldev.varied.Artifact.Path artifactPath) {
-            super(TypeEnum.ADD_ARTIFACT, artifactPath);
+        @Expose
+        public Artifact.Path[] artifactPaths;
+
+        public AddArtifact(Collection<Artifact.Path> artifactPaths) {
+            super(TypeEnum.ADD_ARTIFACT, null);
+            this.artifactPaths = artifactPaths.toArray(new Artifact.Path[]{});
         }
     }
 

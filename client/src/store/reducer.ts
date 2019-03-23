@@ -152,7 +152,7 @@ function serverReceiveReducer(state: State, action: Action): State {
 
             case MessageType.ADD_ARTIFACT:
                 return getNewState(state, 'artifactPaths',
-                    setAdd(state.artifactPaths, action.payload.artifactPath!,
+                    setAdd(state.artifactPaths, action.payload.artifactPaths,
                         artifactPath => artifactPath, isArtifactPathEqual));
 
             case MessageType.REMOVE_ARTIFACT:
