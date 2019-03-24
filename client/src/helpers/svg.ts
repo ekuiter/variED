@@ -110,7 +110,7 @@ export function drawCircle(selection: D3Selection, selector: string | undefined,
         .call(attrIfPresent, 'r', radius)
         .call(styleIfPresent, style)
         .call(fnIfPresent, fn)
-        .call(selection => {
+        .call((selection: D3Selection) => {
             if (center)
                 selection.attr('transform', (d: FeatureNode) => `translate(${toPath(center(d))})`);
         });

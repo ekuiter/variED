@@ -130,7 +130,7 @@ export class TextFieldDialog extends React.Component<TextFieldDialogProps, TextF
             <Dialog
                 hidden={!isOpen}
                 onDismiss={onDismiss}
-                modalProps={{onLayerDidMount: this.onLayerDidMount}}
+                modalProps={{layerProps: {onLayerDidMount: this.onLayerDidMount}}}
                 dialogContentProps={{title}}
                 {...dialogProps}>
                 <TextField

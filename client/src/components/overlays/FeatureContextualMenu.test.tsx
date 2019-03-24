@@ -49,7 +49,7 @@ describe('FeatureContextualMenu', () => {
     beforeAll(() => {
         FeatureModel.getSvg = jest.fn(() => ({
             getBoundingClientRect: () => ({x: 0, y: 0, width: 1000, height: 1000})
-        }));
+        })) as () => any;
     });
 
     it('renders correctly for a single feature', () => {

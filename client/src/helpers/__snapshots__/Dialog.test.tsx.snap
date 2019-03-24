@@ -51,7 +51,9 @@ exports[`Dialog TextFieldDialog renders correctly 1`] = `
   hidden={false}
   modalProps={
     Object {
-      "onLayerDidMount": [Function],
+      "layerProps": Object {
+        "onLayerDidMount": [Function],
+      },
     }
   }
   onDismiss={[Function]}

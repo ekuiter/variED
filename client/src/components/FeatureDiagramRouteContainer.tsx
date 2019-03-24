@@ -34,7 +34,6 @@ class FeatureDiagramRoute extends React.Component<FeatureDiagramRouteProps> {
     }
 
     render() {
-        console.log('render');
         return <SplitView
             settings={this.props.settings!}
             onSetSetting={this.props.onSetSetting!}

@@ -17,10 +17,10 @@ import {PersistGate} from 'redux-persist/integration/react';
 import {Provider} from 'react-redux';
 import reducer, {Store} from './store/reducer';
 import {initializeIcons} from 'office-ui-fabric-react/lib/Icons';
-import actions from './store/actions';
+import actions, {Action} from './store/actions';
 import {LogLevel, setLogLevel} from './helpers/logger';
 import Kernel from './modeling/Kernel';
-import {initialState} from './store/types';
+import {initialState, State} from './store/types';
 import {numberofUnflushedMessages} from './server/messageQueue';
 import i18n from './i18n';
 import uuidv4 from 'uuid/v4';
@@ -69,7 +69,7 @@ if (!window.name)
         (outboundState, key) => outboundState,
         {'whitelist': ['overlay', 'overlayProps', 'collaborativeSessions', 'artifactPaths']}
     );
-    const persistedReducer = persistReducer({
+    const persistedReducer = persistReducer<State, Action>({
         key: 'root',
         storage,
         transforms: [substateTransform]
