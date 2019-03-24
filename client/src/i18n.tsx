@@ -266,7 +266,7 @@ const translationMap = {
             title: 'Set feature description',
             save: 'Save'
         },
-        addArtifactDialog: {
+        addArtifactPanel: {
             title: 'New feature model',
             create: 'Create',
             encoding: 'File encoding',
@@ -274,6 +274,7 @@ const translationMap = {
                 <p>
                     You can import any feature model that is compatible with <Link
                         href="https://featureide.github.io/" target="_blank">FeatureIDE</Link>.
+                    Leave this blank to create an empty feature model.
                 </p>
             ),
         },

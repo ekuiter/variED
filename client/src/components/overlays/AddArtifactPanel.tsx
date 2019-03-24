@@ -3,21 +3,21 @@ import i18n from '../../i18n';
 import deferred from '../../helpers/deferred';
 import {ITextField, TextField} from 'office-ui-fabric-react/lib/TextField';
 import logger from '../../helpers/logger';
-import Dialog, {DialogFooter} from 'office-ui-fabric-react/lib/Dialog';
 import {PrimaryButton} from 'office-ui-fabric-react/lib/Button';
 import {OnAddArtifactFunction} from '../../store/types';
 import {ComboBox, IComboBoxOption} from 'office-ui-fabric-react/lib/ComboBox';
 import {ArtifactPath} from '../../types';
 import {arrayUnique} from '../../helpers/array';
+import {Panel, PanelType} from 'office-ui-fabric-react/lib/Panel';
 
-interface AddArtifactDialogProps {
+interface AddArtifactPanelProps {
     isOpen: boolean,
-    onDismiss: () => void,
+    onDismissed: () => void,
     onAddArtifact: OnAddArtifactFunction,
     artifactPaths: ArtifactPath[]
 };
 
-interface AddArtifactDialogState {
+interface AddArtifactPanelState {
     project?: string,
     artifact?: string,
     encoding?: string,
@@ -26,8 +26,8 @@ interface AddArtifactDialogState {
 
 const defaultEncoding = 'UTF-8';
 
-export default class extends React.Component<AddArtifactDialogProps, AddArtifactDialogState> {
-    state: AddArtifactDialogState = {};
+export default class extends React.Component<AddArtifactPanelProps, AddArtifactPanelState> {
+    state: AddArtifactPanelState = {};
     artifactRef = React.createRef<ITextField>();
    
     onProjectChange = (_event: any, option: IComboBoxOption, index: number, value: string) =>
@@ -63,7 +63,7 @@ export default class extends React.Component<AddArtifactDialogProps, AddArtifact
         const proceed = (source?: string) => {
             this.props.onAddArtifact({artifactPath: {project: project!, artifact: artifact!}, source});
             this.setState({project: undefined, artifact: undefined, encoding: undefined, file: undefined});
-            this.props.onDismiss();
+            this.props.onDismissed();
             // TODO: this does not immediately switch to the new model
             // further, large models are rejected by the server (traditional POST upload instead?)
             window.alert('After importing, the feature model will be available for joining in the command palette.');
@@ -79,17 +79,23 @@ export default class extends React.Component<AddArtifactDialogProps, AddArtifact
             proceed();
     };
 
+    onRenderFooterContent = () =>
+        <PrimaryButton onClick={this.onSubmit} text={i18n.t('overlays.addArtifactPanel.create')}/>;
+
     render() {
-        const {isOpen, onDismiss} = this.props,
+        const {isOpen, onDismissed} = this.props,
             projectOptions = arrayUnique(this.props.artifactPaths.map(artifactPath => artifactPath.project))
                 .map(project => ({key: project, text: project}));
 
         return (
-            <Dialog
-                hidden={!isOpen}
-                onDismiss={onDismiss}
-                modalProps={{onLayerDidMount: this.onLayerDidMount}}
-                dialogContentProps={{title: i18n.t('overlays.addArtifactDialog.title')}}>
+            <Panel
+                type={PanelType.smallFixedFar}
+                isOpen={isOpen}
+                onDismissed={onDismissed}
+                isLightDismiss={true}
+                layerProps={{onLayerDidMount: this.onLayerDidMount}}
+                headerText={i18n.t('overlays.addArtifactPanel.title')}
+                onRenderFooterContent={this.onRenderFooterContent}>
                 <ComboBox
                     text={this.state.project}
                     label={i18n.t('commandPalette.project')}
@@ -104,23 +110,19 @@ export default class extends React.Component<AddArtifactDialogProps, AddArtifact
                     value={this.state.artifact}
                     onChange={this.onArtifactChange}
                     required/>
-                {i18n.getElement('overlays.addArtifactDialog.formatNotice')}
+                {i18n.getElement('overlays.addArtifactPanel.formatNotice')}
                 <p>
                     <input type="file" onChange={this.onSourceChange}/>
                 </p>
-                {this.state.file &&
                 <ComboBox
                     text={this.state.encoding || defaultEncoding}
-                    label={i18n.t('overlays.addArtifactDialog.encoding')}
+                    label={i18n.t('overlays.addArtifactPanel.encoding')}
                     allowFreeform
                     autoComplete="on"
                     options={['UTF-8', 'ISO-8859-1', 'Windows-1252']
                         .map(encoding => ({key: encoding, text: encoding}))}
-                    onChange={this.onEncodingChange}/>}
-                <DialogFooter>
-                    <PrimaryButton onClick={this.onSubmit} text={i18n.t('overlays.addArtifactDialog.create')}/>
-                </DialogFooter>
-            </Dialog>
+                    onChange={this.onEncodingChange}/>
+            </Panel>
         );
     }
 }

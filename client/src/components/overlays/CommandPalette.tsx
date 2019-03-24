@@ -241,7 +241,7 @@ export default class extends React.Component<Props, State> {
             text: i18n.t('commandPalette.addArtifact'),
             icon: 'PageAdd',
             action: this.action(() =>
-                this.props.onShowOverlay({overlay: OverlayType.addArtifactDialog, overlayProps: {}}))
+                this.props.onShowOverlay({overlay: OverlayType.addArtifactPanel, overlayProps: {}}))
         }, {
             text: i18n.t('commandPalette.removeArtifact'),
             icon: 'PageRemove',

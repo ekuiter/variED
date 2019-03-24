@@ -81,7 +81,7 @@ const commands = {
             key: 'addArtifact',
             text: i18n.t('commands.addArtifact'),
             iconProps: {iconName: 'PageAdd'},
-            onClick: () => onShowOverlay({overlay: OverlayType.addArtifactDialog, overlayProps: {}})
+            onClick: () => onShowOverlay({overlay: OverlayType.addArtifactPanel, overlayProps: {}})
         }),
         share: (onShowOverlay: OnShowOverlayFunction) => ({
             key: 'share',

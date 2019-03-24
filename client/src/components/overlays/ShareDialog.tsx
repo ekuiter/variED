@@ -4,13 +4,13 @@ import {TextFieldDialog} from '../../helpers/Dialog';
 import {ArtifactPath} from '../../types';
 import {getShareableURL} from '../../router';
 
-interface AddArtifactDialogProps {
+interface ShareDialogProps {
     isOpen: boolean,
     onDismiss: () => void,
     currentArtifactPath?: ArtifactPath
 };
 
-export default class extends React.Component<AddArtifactDialogProps> {
+export default class extends React.Component<ShareDialogProps> {
     render() {
         return (
             <TextFieldDialog

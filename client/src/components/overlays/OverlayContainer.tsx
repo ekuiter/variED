@@ -22,7 +22,7 @@ import {OverlayType} from '../../types';
 import {State, StateDerivedProps} from '../../store/types';
 import logger from '../../helpers/logger';
 import CommandPalette from './CommandPalette';
-import AddArtifactDialog from './AddArtifactDialog';
+import AddArtifactPanel from './AddArtifactPanel';
 import ShareDialog from './ShareDialog';
 
 const OverlayContainer = (props: StateDerivedProps) => (
@@ -119,10 +119,10 @@ const OverlayContainer = (props: StateDerivedProps) => (
             onSetFeatureDescription={props.onSetFeatureDescription!}
             {...props.overlayProps}/>}
 
-        {props.overlay === OverlayType.addArtifactDialog &&
-        <AddArtifactDialog
+        {props.overlay === OverlayType.addArtifactPanel &&
+        <AddArtifactPanel
             isOpen={true}
-            onDismiss={() => props.onHideOverlay!({overlay: OverlayType.addArtifactDialog})}
+            onDismissed={() => props.onHideOverlay!({overlay: OverlayType.addArtifactPanel})}
             onAddArtifact={props.onAddArtifact!}
             artifactPaths={props.artifactPaths!}
             {...props.overlayProps}/>}
