@@ -65,6 +65,10 @@ export function artifactPathToString(artifactPath: ArtifactPath): string {
     return artifactPath ? `${artifactPath.project}/${artifactPath.artifact}` : `(unknown artifact)`;
 }
 
+export function artifactPathCacheKey(artifactPath: ArtifactPath): string {
+    return artifactPath ? `${artifactPath.project.toLowerCase()}/${artifactPath.artifact.toLowerCase()}` : '';
+}
+
 export function isArtifactPathEqual(a?: ArtifactPath, b?: ArtifactPath): boolean {
     return typeof a !== 'undefined' && typeof b !== 'undefined' &&
         a.project.toLowerCase() === b.project.toLowerCase() && a.artifact.toLowerCase() === b.artifact.toLowerCase();

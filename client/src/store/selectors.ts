@@ -8,7 +8,7 @@ import createCachedSelector from 're-reselect';
 import FeatureModel from '../modeling/FeatureModel';
 import {State, CollaborativeSession, FeatureDiagramCollaborativeSession} from './types';
 import logger from '../helpers/logger';
-import {ArtifactPath, isArtifactPathEqual, artifactPathToString} from '../types';
+import {ArtifactPath, isArtifactPathEqual, artifactPathToString, artifactPathCacheKey} from '../types';
 import {KernelFeatureModel} from '../modeling/types';
 import {getCurrentArtifactPath} from '../router';
 
@@ -36,7 +36,7 @@ const lookupCollaborativeSession = (collaborativeSessions: CollaborativeSession[
 export const getCollaborativeSession = createCachedSelector(
     (state: State, artifactPath: ArtifactPath) => lookupCollaborativeSession(state.collaborativeSessions, artifactPath),
     collaborativeSession => collaborativeSession)(
-        (_state: State, artifactPath: ArtifactPath) => artifactPathToString(artifactPath));
+        (_state: State, artifactPath: ArtifactPath) => artifactPathCacheKey(artifactPath));
 
 export function getCurrentCollaborativeSession(state: State): CollaborativeSession | undefined {
     const currentArtifactPath = getCurrentArtifactPath(state.collaborativeSessions);
@@ -59,7 +59,7 @@ export const getFeatureModel = createCachedSelector(
             return undefined;
         return FeatureModel.fromKernel(kernelFeatureModel).collapse(collapsedFeatureIDs);
     }
-)((_state: State, artifactPath: ArtifactPath) => artifactPathToString(artifactPath));
+)((_state: State, artifactPath: ArtifactPath) => artifactPathCacheKey(artifactPath));
 
 export function getCurrentFeatureModel(state: State): FeatureModel | undefined {
     const currentArtifactPath = getCurrentArtifactPath(state.collaborativeSessions);

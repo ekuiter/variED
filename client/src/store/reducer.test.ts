@@ -6,9 +6,11 @@ import {validFeatureModel} from '../fixtures';
 import FeatureModel from '../modeling/FeatureModel';
 import {initialState, FeatureDiagramCollaborativeSession, State} from './types';
 import logger from '../helpers/logger';
+import {getCurrentArtifactPath} from '../router';
 
 jest.mock('../helpers/logger');
 jest.mock('../modeling/Kernel');
+jest.mock('../router');
 
 describe('reducer', () => {
     const artifactPath = {project: 'project', artifact: 'artifact'},
@@ -23,9 +25,10 @@ describe('reducer', () => {
                     selectedFeatureIDs: [],
                     kernelFeatureModel: kernelFeatureModel,
                     kernelContext: {} // assume no kernel in the unit tests
-                }],
-                currentArtifactPath: artifactPath
+                }]
             });
+
+    beforeEach(() => (getCurrentArtifactPath as jest.Mock).mockReturnValue(artifactPath));
 
     it('returns the initial state', () => {
         expect(reducer()).toBe(initialState);
@@ -145,9 +148,8 @@ describe('reducer', () => {
                     expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).isSelectMultipleFeatures).toBe(true);
                 });
 
-                it('does nothing if no feature model is available', () => {
-                    const state = reducer(undefined, actions.ui.featureDiagram.feature.selectAll());
-                    expect(state).toEqual(initialState);
+                it('throws if no feature model is available', () => {
+                    expect(() => reducer(undefined, actions.ui.featureDiagram.feature.selectAll())).toThrow();
                 });
             });
 
@@ -166,9 +168,8 @@ describe('reducer', () => {
                     expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).isSelectMultipleFeatures).toBe(false);
                 });
 
-                it('does nothing if no feature model is available', () => {
-                    const state = reducer(undefined, actions.ui.featureDiagram.feature.deselectAll());
-                    expect(state).toEqual(initialState);
+                it('throws if no feature model is available', () => {
+                    expect(() => reducer(undefined, actions.ui.featureDiagram.feature.deselectAll())).toThrow();
                 });
             });
 
@@ -184,9 +185,8 @@ describe('reducer', () => {
                     expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).selectedFeatureIDs).not.toContain('FeatureHouse');
                 });
 
-                it('does nothing if no feature model is available', () => {
-                    const state = reducer(undefined, actions.ui.featureDiagram.feature.collapseAll());
-                    expect(state).toEqual(initialState);
+                it('throws if no feature model is available', () => {
+                    expect(() => reducer(undefined, actions.ui.featureDiagram.feature.collapseAll())).toThrow();
                 });
             });
 
@@ -198,9 +198,8 @@ describe('reducer', () => {
                     expect((<FeatureDiagramCollaborativeSession>state.collaborativeSessions[0]).collapsedFeatureIDs).toHaveLength(0);
                 });
 
-                it('does nothing if no feature model is available', () => {
-                    const state = reducer(undefined, actions.ui.featureDiagram.feature.expandAll());
-                    expect(state).toEqual(initialState);
+                it('throws if no feature model is available', () => {
+                    expect(() => reducer(undefined, actions.ui.featureDiagram.feature.expandAll())).toThrow();
                 });
             });
         });
@@ -208,12 +207,14 @@ describe('reducer', () => {
         describe('overlay', () => {
             describe('show overlay', () => {
                 it('shows the about panel', () => {
+                    (getCurrentArtifactPath as jest.Mock).mockReturnValue(undefined);
                     const state = reducer(undefined, actions.ui.overlay.show({overlay: OverlayType.aboutPanel, overlayProps: {}}));
                     expect(state.overlay).toBe(OverlayType.aboutPanel);
                     expect(state.overlayProps).toEqual({});
                 });
     
                 it('shows a feature callout', () => {
+                    (getCurrentArtifactPath as jest.Mock).mockReturnValue(undefined);
                     let state = reducer(undefined, actions.ui.overlay.show({overlay: OverlayType.featureCallout, overlayProps: {featureID: 'FeatureIDE'}}));
                     expect(state.overlay).toBe(OverlayType.featureCallout);
                     expect(state.overlayProps).toEqual({featureID: 'FeatureIDE'});
@@ -231,6 +232,7 @@ describe('reducer', () => {
 
             describe('hide overlay', () => {
                 it('hides an overlay after showing it', () => {
+                    (getCurrentArtifactPath as jest.Mock).mockReturnValue(undefined);
                     let state = reducer(undefined, actions.ui.overlay.show({overlay: OverlayType.aboutPanel, overlayProps: {}}));
                     expect(state.overlay).toBe(OverlayType.aboutPanel);
                     expect(state.overlayProps).toEqual({});
@@ -240,6 +242,7 @@ describe('reducer', () => {
                 });
 
                 it('does nothing if the currently shown overlay is of another type', () => {
+                    (getCurrentArtifactPath as jest.Mock).mockReturnValue(undefined);
                     let state = reducer(undefined, actions.ui.overlay.show({overlay: OverlayType.aboutPanel, overlayProps: {}}));
                     expect(state.overlay).toBe(OverlayType.aboutPanel);
                     expect(state.overlayProps).toEqual({});
