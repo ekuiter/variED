@@ -13,14 +13,34 @@ import i18n from '../i18n';
 import {State, StateDerivedProps} from '../store/types';
 import logger from '../helpers/logger';
 import {enableConstraintsView} from './constraintsView/ConstraintsView';
+import {withRouter} from 'react-router';
+import {RouteProps, artifactPathToString} from '../types';
+import {redirectToArtifactPath} from 'src/router';
 
-const CommandBarContainer = (props: StateDerivedProps) => (
+const CommandBarContainer = (props: StateDerivedProps & RouteProps) => (
     <CommandBar
         items={[{
                 key: 'file',
                 text: i18n.t('commands.file'),
                 subMenuProps: {
                     items: [
+                        ...props.collaborativeSessions!.length > 1
+                            ? [{
+                                key: 'collaborativeSessions',
+                                text: artifactPathToString(props.currentArtifactPath!),
+                                subMenuProps: {
+                                    items: props.collaborativeSessions!
+                                        .map(collaborativeSession => {
+                                            const artifactPathString = artifactPathToString(collaborativeSession.artifactPath);
+                                            return {
+                                                key: artifactPathString,
+                                                text: artifactPathString,
+                                                onClick: () => redirectToArtifactPath(collaborativeSession.artifactPath)
+                                            };
+                                        })
+                                }
+                            }]
+                            : [],
                         commands.featureDiagram.addArtifact(props.onShowOverlay!),
                         ...props.featureModel
                             ? [commands.featureDiagram.share(props.onShowOverlay!),
@@ -98,13 +118,14 @@ const CommandBarContainer = (props: StateDerivedProps) => (
         }]}/>
 );
 
-export default connect(
+export default withRouter(connect(
     logger.mapStateToProps('CommandBarContainer', (state: State): StateDerivedProps => {
         const collaborativeSession = getCurrentCollaborativeSession(state),
             props: StateDerivedProps = {
                 settings: state.settings,
                 myself: state.myself,
-                collaborators: []
+                collaborators: [],
+                collaborativeSessions: state.collaborativeSessions
             };
         if (!collaborativeSession || !isFeatureDiagramCollaborativeSession(collaborativeSession))
             return props;
@@ -114,7 +135,8 @@ export default connect(
             isSelectMultipleFeatures: collaborativeSession.isSelectMultipleFeatures,
             selectedFeatureIDs: collaborativeSession.selectedFeatureIDs,
             collaborators: collaborativeSession.collaborators,
-            featureModel: getCurrentFeatureModel(state)
+            featureModel: getCurrentFeatureModel(state),
+            currentArtifactPath: collaborativeSession.artifactPath
         };
     }),
     (dispatch): StateDerivedProps => ({
@@ -143,4 +165,4 @@ export default connect(
         onSetFeatureAlternative: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setAlternative(payload)),
         onSetSetting: payload => dispatch(actions.settings.set(payload))
     })
-)(CommandBarContainer);
+)(CommandBarContainer));

@@ -1,7 +1,7 @@
 import React, {CSSProperties} from 'react';
 import {StateDerivedProps, State} from '../store/types';
 import {getArtifactPathFromPath} from '../router';
-import {isArtifactPathEqual} from '../types';
+import {isArtifactPathEqual, RouteProps} from '../types';
 import SplitView from './SplitView';
 import ConstraintsView, {enableConstraintsView} from './constraintsView/ConstraintsView';
 import logger from '../helpers/logger';
@@ -13,7 +13,6 @@ import FeatureDiagramView from './featureDiagramView/FeatureDiagramView';
 import {Spinner, SpinnerSize} from 'office-ui-fabric-react/lib/Spinner';
 import ConflictView from './conflictView/ConflictView';
 
-type RouteProps = {history: any, location: any, match: any};
 type FeatureDiagramRouteProps = StateDerivedProps & RouteProps;
 
 class FeatureDiagramRoute extends React.Component<FeatureDiagramRouteProps> {

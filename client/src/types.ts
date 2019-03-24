@@ -96,3 +96,4 @@ export type D3Selection = Selection<any, any, any, any>;
 export type Func = (...args: any[]) => any;
 // omits a property from a type
 export type Omit<T, K> = Pick<T, Exclude<keyof T, K>>;
+export type RouteProps = {history: any, location: any, match: any};

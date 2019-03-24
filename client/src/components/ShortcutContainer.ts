@@ -12,13 +12,14 @@ import actions from '../store/actions';
 import {State, StateDerivedProps} from '../store/types';
 import logger from '../helpers/logger';
 import {preconditions} from '../modeling/preconditions';
+import {withRouter} from 'react-router';
 
 const ifFeatureModel = (props: StateDerivedProps) => !!props.featureModel,
     ifGlobal = (props: StateDerivedProps) => props.overlay === OverlayType.none,
     ifFloatingFeature = (props: StateDerivedProps) => isFloatingFeatureOverlay(props.overlay!),
     ifSingleFloatingFeature = (props: StateDerivedProps) => ifFloatingFeature(props) && !props.isSelectMultipleFeatures;
 
-export default connect(
+export default withRouter(<any>connect(
     logger.mapStateToProps('ShortcutContainer', (state: State): StateDerivedProps => {
         const collaborativeSession = getCurrentCollaborativeSession(state),
             props: StateDerivedProps = {
@@ -130,4 +131,4 @@ export default connect(
             if (!disabled)
                 action(props.onExpandFeatures);
         })
-)(<any>(() => null)));
+)(<any>(() => null))));

@@ -18,15 +18,16 @@ import FeatureSetDescriptionDialog from './FeatureSetDescriptionDialog';
 import FeatureCallout from './FeatureCallout';
 import FeatureContextualMenu from './FeatureContextualMenu';
 import ExportDialog from './ExportDialog';
-import {OverlayType} from '../../types';
+import {OverlayType, RouteProps} from '../../types';
 import {State, StateDerivedProps} from '../../store/types';
 import logger from '../../helpers/logger';
 import CommandPalette from './CommandPalette';
 import AddArtifactPanel from './AddArtifactPanel';
 import ShareDialog from './ShareDialog';
 import {getCurrentArtifactPath} from '../../router';
+import {withRouter} from 'react-router';
 
-const OverlayContainer = (props: StateDerivedProps) => (
+const OverlayContainer = (props: StateDerivedProps & RouteProps) => (
     <React.Fragment>
         <CommandPalette
             artifactPaths={props.artifactPaths!}
@@ -191,7 +192,7 @@ const OverlayContainer = (props: StateDerivedProps) => (
     </React.Fragment>
 );
 
-export default connect(
+export default withRouter(connect(
     logger.mapStateToProps('OverlayContainer', (state: State): StateDerivedProps => {
         const collaborativeSession = getCurrentCollaborativeSession(state),
             props: StateDerivedProps = {
@@ -248,4 +249,4 @@ export default connect(
         onSetFeatureName: payload => dispatch<any>(actions.server.featureDiagram.feature.setName(payload)),
         onSetFeatureDescription: payload => dispatch<any>(actions.server.featureDiagram.feature.setDescription(payload))
     })
-)(OverlayContainer);
+)(OverlayContainer));
