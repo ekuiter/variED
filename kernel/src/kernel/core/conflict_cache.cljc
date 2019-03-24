@@ -63,6 +63,11 @@
   (log "conflict cache hit for" CO-ID-a "and" CO-ID-b)
   ((CC :conflicts) (hash-set CO-ID-a CO-ID-b)))
 
+(defn get-conflicts
+  [CC CO-ID]
+  (reduce-kv (fn [acc k v] (if (k CO-ID) (assoc acc (first (disj k CO-ID)) v) acc))
+             {} (CC :conflicts)))
+
 (defn with-most-recent
   "Sets the conflict cache's most recently arrived operation."
   [CC CO-ID]

@@ -5,7 +5,7 @@ import {isArtifactPathEqual, RouteProps} from '../types';
 import SplitView from './SplitView';
 import ConstraintsView, {enableConstraintsView} from './constraintsView/ConstraintsView';
 import logger from '../helpers/logger';
-import {getCurrentCollaborativeSession, isFeatureDiagramCollaborativeSession, getCurrentFeatureModel, getCurrentConflict} from '../store/selectors';
+import {getCurrentCollaborativeSession, isFeatureDiagramCollaborativeSession, getCurrentFeatureModel, getCurrentConflictDescriptor} from '../store/selectors';
 import actions from '../store/actions';
 import {withRouter} from 'react-router';
 import {connect} from 'react-redux';
@@ -45,8 +45,8 @@ class FeatureDiagramRoute extends React.Component<FeatureDiagramRouteProps> {
                         settings={this.props.settings!}
                         {...this.props}
                         style={style}/>
-                    : this.props.conflict
-                        ? <ConflictView conflict={this.props.conflict}/>
+                    : this.props.conflictDescriptor
+                        ? <ConflictView conflictDescriptor={this.props.conflictDescriptor}/>
                         : <div style={{display: 'flex'}}>
                             <Spinner size={SpinnerSize.large}/>
                     </div>}
@@ -69,7 +69,7 @@ export default withRouter(connect(
         return {
             ...props,
             featureModel: getCurrentFeatureModel(state),
-            conflict: getCurrentConflict(state),
+            conflictDescriptor: getCurrentConflictDescriptor(state),
             currentArtifactPath: collaborativeSession.artifactPath,
             featureDiagramLayout: collaborativeSession.layout,
             isSelectMultipleFeatures: collaborativeSession.isSelectMultipleFeatures,

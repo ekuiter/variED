@@ -1,7 +1,7 @@
 import FeatureModel from '../modeling/FeatureModel';
 import {defaultSettings, Settings} from './settings';
 import {Message, FeatureDiagramLayoutType, OverlayType, OverlayProps, ArtifactPath} from '../types';
-import {Feature, KernelConstraintFormula, KernelCombinedEffect, KernelConflict} from '../modeling/types';
+import {Feature, KernelConstraintFormula, KernelCombinedEffect, KernelConflictDescriptor} from '../modeling/types';
 
 export interface Collaborator {
     siteID: string
@@ -112,7 +112,7 @@ export type StateDerivedProps = Partial<{
     isSelectMultipleFeatures: boolean,
     selectedFeatureIDs: string[],
     featureModel: FeatureModel,
-    conflict: KernelConflict,
+    conflictDescriptor: KernelConflictDescriptor,
     overlay: OverlayType,
     overlayProps: OverlayProps,
 

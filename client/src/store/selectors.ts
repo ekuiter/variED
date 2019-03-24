@@ -9,7 +9,7 @@ import FeatureModel from '../modeling/FeatureModel';
 import {State, CollaborativeSession, FeatureDiagramCollaborativeSession} from './types';
 import logger from '../helpers/logger';
 import {ArtifactPath, isArtifactPathEqual, artifactPathToString, artifactPathCacheKey} from '../types';
-import {isKernelConflict, KernelCombinedEffect, KernelConflict} from '../modeling/types';
+import {isKernelConflictDescriptor, KernelCombinedEffect, KernelConflictDescriptor} from '../modeling/types';
 import {getCurrentArtifactPath} from '../router';
 
 export function isFeatureDiagramCollaborativeSession(collaborativeSession?: CollaborativeSession): collaborativeSession is FeatureDiagramCollaborativeSession {
@@ -22,7 +22,7 @@ export function isEditingFeatureModel(state: State): boolean {
     if (!currentArtifactPath)
         return false;
     const collaborativeSession = lookupCollaborativeSession(state.collaborativeSessions, currentArtifactPath);
-    return isFeatureDiagramCollaborativeSession(collaborativeSession) && !isKernelConflict(collaborativeSession.kernelCombinedEffect);
+    return isFeatureDiagramCollaborativeSession(collaborativeSession) && !isKernelConflictDescriptor(collaborativeSession.kernelCombinedEffect);
 }
 
 export function isResolvingConflict(state: State): boolean {
@@ -30,7 +30,7 @@ export function isResolvingConflict(state: State): boolean {
     if (!currentArtifactPath)
         return false;
     const collaborativeSession = lookupCollaborativeSession(state.collaborativeSessions, currentArtifactPath);
-    return isFeatureDiagramCollaborativeSession(collaborativeSession) && isKernelConflict(collaborativeSession.kernelCombinedEffect);
+    return isFeatureDiagramCollaborativeSession(collaborativeSession) && isKernelConflictDescriptor(collaborativeSession.kernelCombinedEffect);
 }
 
 const lookupCollaborativeSession = (collaborativeSessions: CollaborativeSession[], artifactPath: ArtifactPath): CollaborativeSession => {
@@ -63,7 +63,7 @@ export const getFeatureModel = createCachedSelector(
     featureModelCollaborativeSessionKeySelector('collapsedFeatureIDs'),
     (kernelCombinedEffect?: KernelCombinedEffect, collapsedFeatureIDs?: string[]): FeatureModel | undefined => {
         logger.infoTagged({tag: 'redux'}, () => 'updating feature model selector');
-        if (!kernelCombinedEffect || !collapsedFeatureIDs || isKernelConflict(kernelCombinedEffect))
+        if (!kernelCombinedEffect || !collapsedFeatureIDs || isKernelConflictDescriptor(kernelCombinedEffect))
             return undefined;
         return FeatureModel.fromKernel(kernelCombinedEffect).collapse(collapsedFeatureIDs);
     }
@@ -74,17 +74,17 @@ export function getCurrentFeatureModel(state: State): FeatureModel | undefined {
     return currentArtifactPath ? getFeatureModel(state, currentArtifactPath) : undefined;
 }
 
-export const getConflict = createCachedSelector(
+export const getConflictDescriptor = createCachedSelector(
     featureModelCollaborativeSessionKeySelector('kernelCombinedEffect'),
-    (kernelCombinedEffect?: KernelCombinedEffect): KernelConflict | undefined => {
-        logger.infoTagged({tag: 'redux'}, () => 'updating conflict selector');
-        if (!kernelCombinedEffect || !isKernelConflict(kernelCombinedEffect))
+    (kernelCombinedEffect?: KernelCombinedEffect): KernelConflictDescriptor | undefined => {
+        logger.infoTagged({tag: 'redux'}, () => 'updating conflict descriptor selector');
+        if (!kernelCombinedEffect || !isKernelConflictDescriptor(kernelCombinedEffect))
             return undefined;
         return kernelCombinedEffect;
     }
 )((_state: State, artifactPath: ArtifactPath) => artifactPathCacheKey(artifactPath));
 
-export function getCurrentConflict(state: State): KernelConflict | undefined {
+export function getCurrentConflictDescriptor(state: State): KernelConflictDescriptor | undefined {
     const currentArtifactPath = getCurrentArtifactPath(state.collaborativeSessions);
-    return currentArtifactPath ? getConflict(state, currentArtifactPath) : undefined;
+    return currentArtifactPath ? getConflictDescriptor(state, currentArtifactPath) : undefined;
 }

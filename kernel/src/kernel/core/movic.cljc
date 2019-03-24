@@ -15,7 +15,9 @@
   be divided in unrelated objects."
   (:require [clojure.set :as set]
             [kernel.core.history-buffer :as HB]
+            [kernel.core.conflict-cache :as CC]
             [kernel.core.conflict-relation :as conflict-relation]
+            [kernel.core.topological-sort :as topological-sort]
             [kernel.helpers :refer [log]]
             #?(:clj  [taoensso.tufte :as tufte :refer (defnp p profiled profile)]
                :cljs [taoensso.tufte :as tufte :refer-macros (defnp p profiled profile)])))
@@ -35,6 +37,24 @@
   [MCGS CO-ID]
   (p ::MCGS-remove
      (reduce #(conj %1 (disj %2 CO-ID)) #{} MCGS)))
+
+(defn conflict-descriptor
+  [MCGS CDAG CC]
+  (p ::conflict-descriptor
+     (let [versions (reduce (fn [acc MCG]
+                              (assoc acc (str (hash MCG))
+                                         (topological-sort/CO-topological-sort CDAG MCG)))
+                            {} MCGS)
+           versions (assoc versions :neutral (reduce set/intersection MCGS))
+           conflicts (reduce (fn [acc MCG]
+                               (assoc acc (str (hash MCG))
+                                          (reduce (fn [acc CO-ID]
+                                                    (assoc acc CO-ID (CC/get-conflicts CC CO-ID)))
+                                                  {} MCG)))
+                             {} MCGS)
+           conflicts (assoc conflicts :neutral #{})]
+       {:versions  versions
+        :conflicts conflicts})))
 
 (defn MOVIC
   "Incrementally constructs an MCGS independent of operation ordering.

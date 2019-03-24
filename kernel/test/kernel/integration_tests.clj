@@ -229,7 +229,7 @@
           _ (is-sync)
           FM (FM :A)
           MCGS (MCGS :A)]
-      (is (= FM {:conflict true}))
+      (is (FM :conflicts))
       ; B4 is in conflict with A2, A3, A4
       ; i.e., one CG will include A1, B1, A2, A3, A4, B2, B3
       ; and the other will include A1, B1, B2, B3, B4
@@ -256,7 +256,7 @@
           _ (is-sync)
           FM (FM :A)
           MCGS (MCGS :A)]
-      (is (= FM {:conflict true}))
+      (is (FM :conflicts))
       ; B4 is in conflict with A3, A4
       ; i.e., one CG will include A1, B1, A2, A3, A4, B2, B3
       ; and the other will include A1, B1, B2, B3, B4, and now also A2
@@ -287,7 +287,7 @@
           _ (is-sync)
           FM (FM :A)
           MCGS (MCGS :A)]
-      (is (= FM {:conflict true}))
+      (is (FM :conflicts))
       ; C2 is in conflict with A3, A4, B2, B3
       ; i.e., one CG will include A1, B1, C1, A2, A3, A4, B2, B3
       ; and the other will include A1, B1, C1, C2, and now also A2
@@ -320,7 +320,7 @@
           _ (is-sync)
           FM (FM :A)
           MCGS (MCGS :A)]
-      (is (= FM {:conflict true}))
+      (is (FM :conflicts))
       ; C2 is in conflict with A3, A4, B2, B3; D1 is in conflict with A4, C2
       ; i.e., one CG will include A1, B1, C1, A2, A3, A4, B2, B3
       ; and the other will include A1, B1, C1, C2, A2
@@ -363,7 +363,7 @@
           _ (is-sync)
           FM (FM :A)
           MCGS (MCGS :A)]
-      (is (= FM {:conflict true}))
+      (is (FM :conflicts))
       ; A1, B1 and C1 are garbage collected because they are the only
       ; operations succeeded by every site
       (is (= MCGS #{#{(A2 :ID) (A3 :ID) (A4 :ID) (B2 :ID) (B3 :ID)}

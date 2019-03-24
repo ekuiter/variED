@@ -39,13 +39,13 @@
   "Based on the result the MOVIC algorithm returned, checks whether
   one CG was produced, in that case applying and returning the correct
   feature model. Otherwise, returns :conflict."
-  [MCGS CDAG HB base-FM]
+  [MCGS CDAG HB CC base-FM]
   (if (= (count MCGS) 1)
     (log "no conflict occured, producing feature model")
     (log "conflicts occured," (count MCGS) "maximum compatible groups created"))
   (if (= (count MCGS) 1)
     (topological-sort/apply-compatible* CDAG HB base-FM (first MCGS))
-    {:conflict true}))
+    (MOVIC/conflict-descriptor MCGS CDAG CC)))
 
 (defn receive-operation!
   "Receives an operation message at a site.
@@ -64,7 +64,7 @@
     (swap! (*context* :CC) #(CC/with-most-recent % (CO/get-ID CO)))
     (swap! (*context* :MCGS) #(MOVIC/MOVIC % CO @(*context* :CDAG) @(*context* :HB) @(*context* :base-FM) (*context* :CC)))
     (swap! (*context* :CC) #(CC/with-most-recent % nil))    ; not required, just to be clear
-    (let [next-FM (next-FM @(*context* :MCGS) @(*context* :CDAG) @(*context* :HB) @(*context* :base-FM))]
+    (let [next-FM (next-FM @(*context* :MCGS) @(*context* :CDAG) @(*context* :HB) @(*context* :CC) @(*context* :base-FM))]
       (reset! (*context* :FM) next-FM)
       next-FM)))
 
