@@ -15,7 +15,8 @@ import {present} from '../helpers/present';
 import logger from '../helpers/logger';
 import {FeatureNode, Feature, KernelFeatureModel, DESCRIPTION, ABSTRACT, HIDDEN, OPTIONAL, NAME, KernelFeature, KernelConstraint, CONSTRAINTS, ConstraintType, FEATURES, CHILDREN_CACHE, KernelConstraintFormula, GRAVEYARDED, FORMULA, ID_KEY, KernelConstraintFormulaAtom, GROUP_TYPE, GroupType, NIL} from './types';
 import {getViewportWidth, getViewportHeight} from '../helpers/withDimensions';
-import SParse from './s-expression';
+// @ts-ignore: no declarations available for s-expression
+import SParse from 's-expression';
 
 export function getID(node: FeatureNode): string {
     return node.data[ID_KEY]!;

@@ -6849,6 +6849,11 @@ rx-lite@*, rx-lite@^4.0.8:
   version "4.0.8"
   resolved "https://registry.yarnpkg.com/rx-lite/-/rx-lite-4.0.8.tgz#0b1e11af8bc44836f04a6407e92da42467b79444"
 
+s-expression@^3.0.3:
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/s-expression/-/s-expression-3.0.3.tgz#80309bfea6bcf80960b61bb22f4498d17860799d"
+  integrity sha1-gDCb/qa8+AlgthuyL0SY0XhgeZ0=
+
 safe-buffer@5.1.2, safe-buffer@^5.0.1, safe-buffer@^5.1.0, safe-buffer@^5.1.1, safe-buffer@^5.1.2, safe-buffer@~5.1.0, safe-buffer@~5.1.1:
   version "5.1.2"
   resolved "https://registry.yarnpkg.com/safe-buffer/-/safe-buffer-5.1.2.tgz#991ec69d296e0313747d59bdfd2b745c35f8828d"
