@@ -5,12 +5,13 @@ import {isArtifactPathEqual} from '../types';
 import SplitView from './SplitView';
 import ConstraintsView, {enableConstraintsView} from './constraintsView/ConstraintsView';
 import logger from '../helpers/logger';
-import {getCurrentCollaborativeSession, isFeatureDiagramCollaborativeSession, getCurrentFeatureModel} from '../store/selectors';
+import {getCurrentCollaborativeSession, isFeatureDiagramCollaborativeSession, getCurrentFeatureModel, getCurrentConflict} from '../store/selectors';
 import actions from '../store/actions';
 import {withRouter} from 'react-router';
 import {connect} from 'react-redux';
 import FeatureDiagramView from './featureDiagramView/FeatureDiagramView';
 import {Spinner, SpinnerSize} from 'office-ui-fabric-react/lib/Spinner';
+import ConflictView from './conflictView/ConflictView';
 
 type RouteProps = {history: any, location: any, match: any};
 type FeatureDiagramRouteProps = StateDerivedProps & RouteProps;
@@ -45,8 +46,10 @@ class FeatureDiagramRoute extends React.Component<FeatureDiagramRouteProps> {
                         settings={this.props.settings!}
                         {...this.props}
                         style={style}/>
-                    : <div style={{display: 'flex'}}>
-                        <Spinner size={SpinnerSize.large}/>
+                    : this.props.conflict
+                        ? <ConflictView conflict={this.props.conflict}/>
+                        : <div style={{display: 'flex'}}>
+                            <Spinner size={SpinnerSize.large}/>
                     </div>}
             renderSecondaryView={() => <ConstraintsView featureModel={this.props.featureModel!}/>}
             enableSecondaryView={() => enableConstraintsView(this.props.featureModel)}/>;
@@ -67,6 +70,7 @@ export default withRouter(connect(
         return {
             ...props,
             featureModel: getCurrentFeatureModel(state),
+            conflict: getCurrentConflict(state),
             currentArtifactPath: collaborativeSession.artifactPath,
             featureDiagramLayout: collaborativeSession.layout,
             isSelectMultipleFeatures: collaborativeSession.isSelectMultipleFeatures,

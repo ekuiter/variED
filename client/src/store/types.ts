@@ -1,7 +1,7 @@
 import FeatureModel from '../modeling/FeatureModel';
 import {defaultSettings, Settings} from './settings';
 import {Message, FeatureDiagramLayoutType, OverlayType, OverlayProps, ArtifactPath} from '../types';
-import {Feature, KernelFeatureModel, KernelConstraintFormula} from '../modeling/types';
+import {Feature, KernelConstraintFormula, KernelCombinedEffect, KernelConflict} from '../modeling/types';
 
 export interface Collaborator {
     siteID: string
@@ -17,7 +17,7 @@ export type KernelData = any;
 
 export interface FeatureDiagramCollaborativeSession extends CollaborativeSession {
     kernelContext: KernelContext,
-    kernelFeatureModel: KernelFeatureModel,
+    kernelCombinedEffect: KernelCombinedEffect,
     layout: FeatureDiagramLayoutType,
     isSelectMultipleFeatures: boolean,
     selectedFeatureIDs: string[],
@@ -43,12 +43,12 @@ export const initialState: State = {
 };
 
 export const initialFeatureDiagramCollaborativeSessionState =
-    (artifactPath: ArtifactPath, kernelContext: KernelContext, kernelFeatureModel: KernelFeatureModel):
+    (artifactPath: ArtifactPath, kernelContext: KernelContext, kernelCombinedEffect: KernelCombinedEffect):
     FeatureDiagramCollaborativeSession => ({
         artifactPath,
         collaborators: [],
         kernelContext,
-        kernelFeatureModel,
+        kernelCombinedEffect,
         layout: FeatureDiagramLayoutType.verticalTree,
         isSelectMultipleFeatures: false,
         selectedFeatureIDs: [],
@@ -112,6 +112,7 @@ export type StateDerivedProps = Partial<{
     isSelectMultipleFeatures: boolean,
     selectedFeatureIDs: string[],
     featureModel: FeatureModel,
+    conflict: KernelConflict,
     overlay: OverlayType,
     overlayProps: OverlayProps,
 

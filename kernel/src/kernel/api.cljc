@@ -103,10 +103,7 @@
   [message]
   (profile
     {}
-    (let [next-FM (client/receive-message! (helpers/decode message))]
-      (if (= next-FM :conflict)
-        "conflict"                                          ; TODO
-        (helpers/FM-encode next-FM)))))
+    (helpers/FM-encode (client/receive-message! (helpers/decode message)))))
 
 (defn ^:export clientGC
   "Periodically (and when no other API calls are in progress and the system

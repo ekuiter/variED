@@ -66,6 +66,16 @@ export interface KernelFeatureModel {
     [CHILDREN_CACHE]: {[ID: string]: string[]}
 };
 
+export interface KernelConflict {
+    conflict: true
+};
+
+export type KernelCombinedEffect = KernelFeatureModel | KernelConflict;
+
+export function isKernelConflict(kernelCombinedEffect: KernelCombinedEffect): kernelCombinedEffect is KernelConflict {
+    return typeof kernelCombinedEffect !== 'undefined' && (<KernelConflict>kernelCombinedEffect).conflict === true;
+}
+
 export type FeaturePropertyKey = string | ((node: FeatureNode) => string);
 
 export interface Feature {

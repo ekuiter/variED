@@ -66,7 +66,7 @@ function hideOverlayForObsoleteFeature(state: State): State {
 
 function updateFeatureModel(state: State, artifactPath: ArtifactPath): State {
     state = removeObsoleteFeaturesFromFeatureList(state, artifactPath, 'collapsedFeatureIDs');
-    // TODO: warn user that selection change
+    // TODO: warn user that selection changed
     state = removeObsoleteFeaturesFromFeatureList(state, artifactPath, 'selectedFeatureIDs');
     // state: warn user that overlay was hidden
     state = hideOverlayForObsoleteFeature(state);
@@ -107,7 +107,7 @@ function kernelReducer(state: State, action: AnyAction): State {
         state = getNewState(state, 'collaborativeSessions',
             getNewCollaborativeSessions(state, artifactPath,
                 (collaborativeSession: CollaborativeSession) =>
-                    ({...collaborativeSession, kernelContext, kernelFeatureModel})));
+                    ({...collaborativeSession, kernelContext, kernelCombinedEffect: kernelFeatureModel})));
         state = updateFeatureModel(state, artifactPath);
         return state;
     }
@@ -161,31 +161,34 @@ function serverReceiveReducer(state: State, action: Action): State {
             case MessageType.INITIALIZE:
                 if (!state.myself)
                     throw new Error('no site ID assigned to self');
-                const [kernelContext, kernelFeatureModel] = 
+                const [kernelContext, kernelCombinedEffect] = 
                     Kernel.initialize(action.payload.artifactPath!, state.myself.siteID, action.payload.context);
                 state = getNewState(state,
                     'collaborativeSessions', [...state.collaborativeSessions,
                         initialFeatureDiagramCollaborativeSessionState(
-                            action.payload.artifactPath!, kernelContext, kernelFeatureModel)]);
-                state = getNewState(state, 'collaborativeSessions',
+                            action.payload.artifactPath!, kernelContext, kernelCombinedEffect)]);
+                if (isEditingFeatureModel(state)) {
+                    state = getNewState(state, 'collaborativeSessions',
                     getNewCollaborativeSessions(state, action.payload.artifactPath!,
                         (collaborativeSession: CollaborativeSession) => ({
                             ...collaborativeSession,
                             collapsedFeatureIDs: fitToScreen(state, getCollaborativeSession(state, action.payload.artifactPath!))
                         })));
-                state = updateFeatureModel(state, action.payload.artifactPath!);
+                    state = updateFeatureModel(state, action.payload.artifactPath!);
+                }
                 return state;
 
             case MessageType.KERNEL:
                 state = getNewState(state, 'collaborativeSessions',
                     getNewCollaborativeSessions(state, action.payload.artifactPath!,
                         (collaborativeSession: CollaborativeSession) => {
-                            const [kernelContext, kernelFeatureModel] =
+                            const [kernelContext, kernelCombinedEffect] =
                                 Kernel.run(state, collaborativeSession.artifactPath, kernel =>
                                     kernel.receiveMessage(action.payload.message));
-                            return {...collaborativeSession, kernelContext, kernelFeatureModel};  // TODO: do not change on heartbeats
+                            return {...collaborativeSession, kernelContext, kernelCombinedEffect};  // TODO: do not change on heartbeats
                         }));
-                state = updateFeatureModel(state, action.payload.artifactPath!);
+                if (isEditingFeatureModel(state))
+                    state = updateFeatureModel(state, action.payload.artifactPath!);
                 return state;
 
             default:

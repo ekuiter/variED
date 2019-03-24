@@ -9,7 +9,7 @@ import FeatureModel from '../modeling/FeatureModel';
 import {State, CollaborativeSession, FeatureDiagramCollaborativeSession} from './types';
 import logger from '../helpers/logger';
 import {ArtifactPath, isArtifactPathEqual, artifactPathToString, artifactPathCacheKey} from '../types';
-import {KernelFeatureModel} from '../modeling/types';
+import {isKernelConflict, KernelCombinedEffect, KernelConflict} from '../modeling/types';
 import {getCurrentArtifactPath} from '../router';
 
 export function isFeatureDiagramCollaborativeSession(collaborativeSession?: CollaborativeSession): collaborativeSession is FeatureDiagramCollaborativeSession {
@@ -22,7 +22,15 @@ export function isEditingFeatureModel(state: State): boolean {
     if (!currentArtifactPath)
         return false;
     const collaborativeSession = lookupCollaborativeSession(state.collaborativeSessions, currentArtifactPath);
-    return isFeatureDiagramCollaborativeSession(collaborativeSession);
+    return isFeatureDiagramCollaborativeSession(collaborativeSession) && !isKernelConflict(collaborativeSession.kernelCombinedEffect);
+}
+
+export function isResolvingConflict(state: State): boolean {
+    const currentArtifactPath = getCurrentArtifactPath(state.collaborativeSessions);
+    if (!currentArtifactPath)
+        return false;
+    const collaborativeSession = lookupCollaborativeSession(state.collaborativeSessions, currentArtifactPath);
+    return isFeatureDiagramCollaborativeSession(collaborativeSession) && isKernelConflict(collaborativeSession.kernelCombinedEffect);
 }
 
 const lookupCollaborativeSession = (collaborativeSessions: CollaborativeSession[], artifactPath: ArtifactPath): CollaborativeSession => {
@@ -51,17 +59,32 @@ const featureModelCollaborativeSessionKeySelector = <T>(key: string) => (state: 
 };
 
 export const getFeatureModel = createCachedSelector(
-    featureModelCollaborativeSessionKeySelector('kernelFeatureModel'),
+    featureModelCollaborativeSessionKeySelector('kernelCombinedEffect'),
     featureModelCollaborativeSessionKeySelector('collapsedFeatureIDs'),
-    (kernelFeatureModel?: KernelFeatureModel, collapsedFeatureIDs?: string[]): FeatureModel | undefined => {
+    (kernelCombinedEffect?: KernelCombinedEffect, collapsedFeatureIDs?: string[]): FeatureModel | undefined => {
         logger.infoTagged({tag: 'redux'}, () => 'updating feature model selector');
-        if (!kernelFeatureModel || !collapsedFeatureIDs)
+        if (!kernelCombinedEffect || !collapsedFeatureIDs || isKernelConflict(kernelCombinedEffect))
             return undefined;
-        return FeatureModel.fromKernel(kernelFeatureModel).collapse(collapsedFeatureIDs);
+        return FeatureModel.fromKernel(kernelCombinedEffect).collapse(collapsedFeatureIDs);
     }
 )((_state: State, artifactPath: ArtifactPath) => artifactPathCacheKey(artifactPath));
 
 export function getCurrentFeatureModel(state: State): FeatureModel | undefined {
     const currentArtifactPath = getCurrentArtifactPath(state.collaborativeSessions);
     return currentArtifactPath ? getFeatureModel(state, currentArtifactPath) : undefined;
+}
+
+export const getConflict = createCachedSelector(
+    featureModelCollaborativeSessionKeySelector('kernelCombinedEffect'),
+    (kernelCombinedEffect?: KernelCombinedEffect): KernelConflict | undefined => {
+        logger.infoTagged({tag: 'redux'}, () => 'updating conflict selector');
+        if (!kernelCombinedEffect || !isKernelConflict(kernelCombinedEffect))
+            return undefined;
+        return kernelCombinedEffect;
+    }
+)((_state: State, artifactPath: ArtifactPath) => artifactPathCacheKey(artifactPath));
+
+export function getCurrentConflict(state: State): KernelConflict | undefined {
+    const currentArtifactPath = getCurrentArtifactPath(state.collaborativeSessions);
+    return currentArtifactPath ? getConflict(state, currentArtifactPath) : undefined;
 }

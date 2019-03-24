@@ -9,7 +9,7 @@ import {ComboBox, IComboBoxOption} from 'office-ui-fabric-react/lib/ComboBox';
 import {ArtifactPath} from '../../types';
 import {arrayUnique} from '../../helpers/array';
 import {Panel, PanelType} from 'office-ui-fabric-react/lib/Panel';
-import {redirectToArtifactPath} from 'src/router';
+import {redirectToArtifactPath} from '../../router';
 
 interface AddArtifactPanelProps {
     isOpen: boolean,

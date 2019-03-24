@@ -2,7 +2,7 @@ import './_kernel';
 import {ArtifactPath, artifactPathToString} from '../types';
 import logger from '../helpers/logger';
 import {KernelContext, State, KernelData} from '../store/types';
-import {GroupType, KernelFeatureModel, KernelConstraintFormula} from './types';
+import {GroupType, KernelFeatureModel, KernelConstraintFormula, KernelCombinedEffect} from './types';
 import {isFeatureDiagramCollaborativeSession, getCollaborativeSession} from '../store/selectors';
 import uuidv4 from 'uuid/v4';
 
@@ -10,6 +10,7 @@ declare var window: any;
 declare var kernel: {api: any};
 const _kernel = kernel;
 delete window.kernel;
+const tag = 'kernel';
 
 class Kernel {
     artifactPath: ArtifactPath;
@@ -17,7 +18,7 @@ class Kernel {
     running = false;
 
     _kernelLogger = (str: string) =>
-        logger.infoTagged({tag: 'kernel'}, () => `[${artifactPathToString(this.artifactPath)}] ${str}`);
+        logger.infoTagged({tag}, () => `[${artifactPathToString(this.artifactPath)}] ${str}`);
 
     _callKernel(fn: (api: any) => void): KernelData {
         if (!this.running)
@@ -58,22 +59,21 @@ class Kernel {
     }
 
     static initialize(artifactPath: ArtifactPath, siteID: string, context: string):
-    [KernelContext, KernelFeatureModel] {
+    [KernelContext, KernelCombinedEffect] {
         const kernel = new Kernel(artifactPath);
         kernel.running = true;
-        const kernelFeatureModel = kernel._initialize(siteID, context);
+        const kernelCombinedEffect = kernel._initialize(siteID, context);
         kernel.running = false;
-        return [kernel.context!, kernelFeatureModel];
+        return [kernel.context!, kernelCombinedEffect];
     }
 
-    _initialize(siteID: string, context: string): KernelFeatureModel {
+    _initialize(siteID: string, context: string): KernelCombinedEffect {
         return this._callKernel(api => api.clientInitialize(siteID, context));
     }
 
     generateOperation(POSequence: KernelData): [KernelFeatureModel, string] {
         const [kernelFeatureModel, operation]: [KernelData, string] =
             this._callKernel(api => api.clientGenerateOperation(POSequence))
-        // TODO: assuming into-array can be destructured like this
         return [kernelFeatureModel, operation];
     }
 
@@ -81,8 +81,7 @@ class Kernel {
         return this._callKernel(api => api.clientGenerateHeartbeat())
     }
 
-    receiveMessage(message: string): KernelFeatureModel /* | ConflictResolutionDetails */ {
-        // TODO: might return conflict resolution information
+    receiveMessage(message: string): KernelCombinedEffect {
         return this._callKernel(api => api.clientReceiveMessage(message));
     }
 

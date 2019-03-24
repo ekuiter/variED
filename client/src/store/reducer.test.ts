@@ -23,7 +23,7 @@ describe('reducer', () => {
                     isSelectMultipleFeatures: false,
                     collapsedFeatureIDs: [],
                     selectedFeatureIDs: [],
-                    kernelFeatureModel: kernelFeatureModel,
+                    kernelCombinedEffect: kernelFeatureModel,
                     kernelContext: {} // assume no kernel in the unit tests
                 }]
             });

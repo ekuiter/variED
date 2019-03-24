@@ -45,7 +45,7 @@
     (log "conflicts occured," (count MCGS) "maximum compatible groups created"))
   (if (= (count MCGS) 1)
     (topological-sort/apply-compatible* CDAG HB base-FM (first MCGS))
-    :conflict))
+    {:conflict true}))
 
 (defn receive-operation!
   "Receives an operation message at a site.
