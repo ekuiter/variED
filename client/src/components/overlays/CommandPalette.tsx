@@ -13,7 +13,7 @@ import {Persistor} from 'redux-persist';
 import {enableConstraintsView} from '../constraintsView/ConstraintsView';
 import {defaultSettings, Settings} from '../../store/settings';
 import {preconditions} from '../../modeling/preconditions';
-import {routeTo} from '../../router';
+import {redirectToArtifactPath} from '../../router';
 
 interface Props {
     artifactPaths: ArtifactPath[],
@@ -176,7 +176,7 @@ export default class extends React.Component<Props, State> {
                         .filter(collaborativeSession => collaborativeSession.artifactPath.project === project)
                         .map(collaborativeSession => collaborativeSession.artifactPath.artifact)
                 }],
-                (project, artifact) => routeTo({project, artifact}))
+                (project, artifact) => redirectToArtifactPath({project, artifact}))
         }, {
             text: i18n.t('commandPalette.joinRequest'),
             icon: 'JoinOnlineMeeting',
@@ -195,7 +195,7 @@ export default class extends React.Component<Props, State> {
                                 icon: this.isEditing(artifactPath) ? 'FolderOpen' : 'Folder'
                             }))
                 }],
-                (project, artifact) => routeTo({project, artifact}))
+                (project, artifact) => redirectToArtifactPath({project, artifact}))
         }, {
             text: i18n.t('commandPalette.leaveRequest'),
             icon: 'JoinOnlineMeeting',

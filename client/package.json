@@ -3,6 +3,7 @@
   "homepage": "/",
   "private": true,
   "dependencies": {
+    "@types/react-router-dom": "^4.3.1",
     "blob-polyfill": "^3.0.20180112",
     "blueimp-canvas-to-blob": "^3.14.0",
     "canvg": "^1.5.3",
@@ -23,6 +24,7 @@
     "react": "^16.5.2",
     "react-dom": "^16.5.2",
     "react-redux": "^5.0.7",
+    "react-router-dom": "^5.0.0",
     "react-scripts-ts": "^3.1.0",
     "reduce-reducers": "^0.4.3",
     "redux": "^4.0.1",

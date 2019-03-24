@@ -12,6 +12,7 @@ import {Feature, PropertyType, GroupType, KernelConstraintFormula} from '../mode
 import Kernel from '../modeling/Kernel';
 import {enqueueMessage, flushMessageQueue} from '../server/messageQueue';
 import deferred from '../helpers/deferred';
+import {getCurrentArtifactPath} from '../router';
 
 export const SERVER_SEND_MESSAGE = 'server/sendMessage';
 export const KERNEL_GENERATE_OPERATION = 'kernel/generateOperation';
@@ -20,7 +21,7 @@ function createMessageAction<P>(fn: (payload: P) => Message): (payload: P) => Th
     return (payload: P) => {
         return async (dispatch: Dispatch<AnyAction>, getState: () => State) => {
             const state = getState(),
-                artifactPath = state.currentArtifactPath,
+                artifactPath = getCurrentArtifactPath(state.collaborativeSessions),
                 message = enqueueMessage(fn(payload), artifactPath);
             deferred(flushMessageQueue)();
             return dispatch(action(SERVER_SEND_MESSAGE, message));
@@ -32,7 +33,7 @@ function createOperationAction<P>(makePOSequence: (payload: P, kernel: Kernel) =
     return (payload: P) => {
         return async (dispatch: Dispatch<AnyAction>, getState: () => State) => {
             const state = getState(),
-                artifactPath = state.currentArtifactPath;
+                artifactPath = getCurrentArtifactPath(state.collaborativeSessions);
             const [kernelContext, [kernelFeatureModel, operation]] =
                 Kernel.run(state, artifactPath, kernel =>
                     kernel.generateOperation(makePOSequence(payload, kernel)));
@@ -50,7 +51,6 @@ const actions = {
         reset: createStandardAction('settings/reset')<void>()
     },
     ui: {
-        setCurrentArtifactPath: createStandardAction('ui/setCurrentArtifactPath')<{artifactPath?: ArtifactPath}>(),
         featureDiagram: {
             setLayout: createStandardAction('ui/featureDiagram/setLayout')<{layout: FeatureDiagramLayoutType}>(),
             fitToScreen: createStandardAction('ui/featureDiagram/fitToScreen')<void>(),

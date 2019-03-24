@@ -8,6 +8,8 @@ import {Link} from 'office-ui-fabric-react/lib/Link';
 import React from 'react';
 import constants from './constants';
 import {getShortcutText} from './shortcuts';
+import {OverlayType} from './types';
+import {OnShowOverlayFunction} from './store/types';
 
 type TranslationFunction = (...args: any[]) => any;
 type Translation = string | JSX.Element | TranslationFunction;
@@ -25,12 +27,14 @@ function isTranslationFunction(translation: Translation): translation is Transla
 }
 
 const translationMap = {
-    noCollaborativeSessions: (onShowCommandPalette: () => void) => (
+    noCollaborativeSessions: (onShowOverlay: OnShowOverlayFunction) => (
         <div className="standout">
             <div>
                 <p>You are not currently participating in any collaborative session.</p>
-                <p>To join one, open the <Link onClick={onShowCommandPalette}><strong>command palette</strong></Link> <strong>(
-                {getShortcutText('commandPalette')})</strong>.</p>
+                <p>To join one, open the <Link
+                    onClick={() => onShowOverlay({overlay: OverlayType.commandPalette, overlayProps: {}})}><strong>command palette</strong></Link> <strong>(
+                {getShortcutText('commandPalette')})</strong> or create a <Link
+                    onClick={() => onShowOverlay({overlay: OverlayType.addArtifactPanel, overlayProps: {}})}><strong>new feature model</strong></Link>.</p>
             </div>
         </div>
     ),

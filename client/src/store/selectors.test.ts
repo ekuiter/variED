@@ -1,10 +1,10 @@
-import {getCurrentFeatureModel} from './selectors';
+/*import {getCurrentFeatureModel} from './selectors';
 import {validFeatureModel, invalidFeatureModel} from '../fixtures';
 import FeatureModel from '../modeling/FeatureModel';
-import {initialState} from './types';
+import {initialState} from './types';*/
 
 describe('selectors', () => {
-    describe('getCurrentFeatureModel', () => {
+    /*describe('getCurrentFeatureModel', () => {
         it('gets no feature model from the initial store state', () => {
             expect(getCurrentFeatureModel(initialState)).toBeUndefined();
         });
@@ -76,5 +76,5 @@ describe('selectors', () => {
             getCurrentFeatureModel(state);
             expect(getCurrentFeatureModel.recomputations()).toBe(3);
         });
-    });
+    });*/
 });

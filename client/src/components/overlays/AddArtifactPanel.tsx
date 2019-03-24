@@ -9,6 +9,7 @@ import {ComboBox, IComboBoxOption} from 'office-ui-fabric-react/lib/ComboBox';
 import {ArtifactPath} from '../../types';
 import {arrayUnique} from '../../helpers/array';
 import {Panel, PanelType} from 'office-ui-fabric-react/lib/Panel';
+import {redirectToArtifactPath} from 'src/router';
 
 interface AddArtifactPanelProps {
     isOpen: boolean,
@@ -59,14 +60,14 @@ export default class extends React.Component<AddArtifactPanelProps, AddArtifactP
             logger.warn(() => 'no artifact path supplied'); // TODO: better error UI
             return;
         }
-        
+
+        const artifactPath = {project, artifact};
         const proceed = (source?: string) => {
-            this.props.onAddArtifact({artifactPath: {project: project!, artifact: artifact!}, source});
+            this.props.onAddArtifact({artifactPath, source});
             this.setState({project: undefined, artifact: undefined, encoding: undefined, file: undefined});
             this.props.onDismissed();
-            // TODO: this does not immediately switch to the new model
-            // further, large models are rejected by the server (traditional POST upload instead?)
-            window.alert('After importing, the feature model will be available for joining in the command palette.');
+            redirectToArtifactPath(artifactPath);
+            // TODO: large models are rejected by the server (traditional POST upload instead?)
         };
 
         if (file) {

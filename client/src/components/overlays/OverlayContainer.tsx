@@ -24,6 +24,7 @@ import logger from '../../helpers/logger';
 import CommandPalette from './CommandPalette';
 import AddArtifactPanel from './AddArtifactPanel';
 import ShareDialog from './ShareDialog';
+import {getCurrentArtifactPath} from '../../router';
 
 const OverlayContainer = (props: StateDerivedProps) => (
     <React.Fragment>
@@ -198,7 +199,7 @@ export default connect(
                 overlay: state.overlay,
                 overlayProps: state.overlayProps,
                 artifactPaths: state.artifactPaths,
-                currentArtifactPath: state.currentArtifactPath,
+                currentArtifactPath: getCurrentArtifactPath(state.collaborativeSessions),
                 collaborativeSessions: state.collaborativeSessions
             };
         if (!collaborativeSession || !isFeatureDiagramCollaborativeSession(collaborativeSession))

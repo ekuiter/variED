@@ -67,7 +67,7 @@ export function artifactPathToString(artifactPath: ArtifactPath): string {
 
 export function isArtifactPathEqual(a?: ArtifactPath, b?: ArtifactPath): boolean {
     return typeof a !== 'undefined' && typeof b !== 'undefined' &&
-        a.project === b.project && a.artifact === b.artifact;
+        a.project.toLowerCase() === b.project.toLowerCase() && a.artifact.toLowerCase() === b.artifact.toLowerCase();
 }
 
 export interface Message {

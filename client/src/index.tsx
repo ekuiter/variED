@@ -25,6 +25,7 @@ import {numberofUnflushedMessages} from './server/messageQueue';
 import i18n from './i18n';
 import uuidv4 from 'uuid/v4';
 import {defaultSettings} from './store/settings';
+import {getCurrentArtifactPath} from './router';
 
 declare var window: any;
 
@@ -66,7 +67,7 @@ if (!window.name)
         // (redux-persist white/blacklist does not work for some reason)
         (inboundState, key) => initialState[key],
         (outboundState, key) => outboundState,
-        {'whitelist': ['overlay', 'overlayProps', 'collaborativeSessions', 'artifactPaths', 'currentArtifactPath']}
+        {'whitelist': ['overlay', 'overlayProps', 'collaborativeSessions', 'artifactPaths']}
     );
     const persistedReducer = persistReducer({
         key: 'root',
@@ -86,7 +87,7 @@ if (!window.name)
         store, // used by message delay/offline simulation
         persistor, // used to clear local storage
         runKernel: (fn: (kernel: Kernel) => any) => // for debugging
-            Kernel.run(store.getState(), store.getState().currentArtifactPath, fn)
+            Kernel.run(store.getState(), getCurrentArtifactPath(store.getState().collaborativeSessions), fn)
     };
 
     ReactDOM.render((

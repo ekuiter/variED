@@ -4,13 +4,13 @@
  * store changes, but only when parts related to the feature model change.
  */
 
-import {createSelector} from 'reselect';
 import createCachedSelector from 're-reselect';
 import FeatureModel from '../modeling/FeatureModel';
 import {State, CollaborativeSession, FeatureDiagramCollaborativeSession} from './types';
 import logger from '../helpers/logger';
 import {ArtifactPath, isArtifactPathEqual, artifactPathToString} from '../types';
 import {KernelFeatureModel} from '../modeling/types';
+import {getCurrentArtifactPath} from '../router';
 
 export function isFeatureDiagramCollaborativeSession(collaborativeSession?: CollaborativeSession): collaborativeSession is FeatureDiagramCollaborativeSession {
     return typeof collaborativeSession !== 'undefined' &&
@@ -18,9 +18,10 @@ export function isFeatureDiagramCollaborativeSession(collaborativeSession?: Coll
 }
 
 export function isEditingFeatureModel(state: State): boolean {
-    if (!state.currentArtifactPath)
+    const currentArtifactPath = getCurrentArtifactPath(state.collaborativeSessions);
+    if (!currentArtifactPath)
         return false;
-    const collaborativeSession = lookupCollaborativeSession(state.collaborativeSessions, state.currentArtifactPath);
+    const collaborativeSession = lookupCollaborativeSession(state.collaborativeSessions, currentArtifactPath);
     return isFeatureDiagramCollaborativeSession(collaborativeSession);
 }
 
@@ -37,21 +38,13 @@ export const getCollaborativeSession = createCachedSelector(
     collaborativeSession => collaborativeSession)(
         (_state: State, artifactPath: ArtifactPath) => artifactPathToString(artifactPath));
 
-export const getCurrentCollaborativeSession = createSelector(
-    (state: State) => state.collaborativeSessions,
-    (state: State) => state.currentArtifactPath,
-    (collaborativeSessions: CollaborativeSession[], currentArtifactPath: ArtifactPath): CollaborativeSession | undefined =>
-        currentArtifactPath ? lookupCollaborativeSession(collaborativeSessions, currentArtifactPath) : undefined);
+export function getCurrentCollaborativeSession(state: State): CollaborativeSession | undefined {
+    const currentArtifactPath = getCurrentArtifactPath(state.collaborativeSessions);
+    return currentArtifactPath ? getCollaborativeSession(state, currentArtifactPath) : undefined;
+}
 
 const featureModelCollaborativeSessionKeySelector = <T>(key: string) => (state: State, artifactPath: ArtifactPath): T | undefined => {
     const collaborativeSession = getCollaborativeSession(state, artifactPath);
-    if (collaborativeSession && isFeatureDiagramCollaborativeSession(collaborativeSession))
-        return collaborativeSession[key];
-    return undefined;
-};
-
-const currentFeatureModelCollaborativeSessionKeySelector = <T>(key: string) => (state: State): T | undefined => {
-    const collaborativeSession = getCurrentCollaborativeSession(state);
     if (collaborativeSession && isFeatureDiagramCollaborativeSession(collaborativeSession))
         return collaborativeSession[key];
     return undefined;
@@ -68,13 +61,7 @@ export const getFeatureModel = createCachedSelector(
     }
 )((_state: State, artifactPath: ArtifactPath) => artifactPathToString(artifactPath));
 
-export const getCurrentFeatureModel = createSelector(
-    currentFeatureModelCollaborativeSessionKeySelector('kernelFeatureModel'),
-    currentFeatureModelCollaborativeSessionKeySelector('collapsedFeatureIDs'),
-    (kernelFeatureModel?: KernelFeatureModel, collapsedFeatureIDs?: string[]): FeatureModel | undefined => {
-        logger.infoTagged({tag: 'redux'}, () => 'updating feature model selector');
-        if (!kernelFeatureModel || !collapsedFeatureIDs)
-            return undefined;
-        return FeatureModel.fromKernel(kernelFeatureModel).collapse(collapsedFeatureIDs);
-    }
-);
+export function getCurrentFeatureModel(state: State): FeatureModel | undefined {
+    const currentArtifactPath = getCurrentArtifactPath(state.collaborativeSessions);
+    return currentArtifactPath ? getFeatureModel(state, currentArtifactPath) : undefined;
+}

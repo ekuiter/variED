@@ -30,8 +30,7 @@ export interface State {
     overlayProps: OverlayProps
     myself?: Collaborator,
     collaborativeSessions: CollaborativeSession[],
-    artifactPaths: ArtifactPath[],
-    currentArtifactPath?: ArtifactPath
+    artifactPaths: ArtifactPath[]
 };
 
 export const initialState: State = {
@@ -40,8 +39,7 @@ export const initialState: State = {
     overlayProps: {},
     myself: undefined,
     collaborativeSessions: [],
-    artifactPaths: [],
-    currentArtifactPath: undefined
+    artifactPaths: []
 };
 
 export const initialFeatureDiagramCollaborativeSessionState =
@@ -74,7 +72,6 @@ export type OnHideOverlayFunction = (payload: {overlay: OverlayType}) => void;
 export type OnFitToScreenFunction = () => void;
 export type OnSetSettingFunction = (payload: {path: string, value: any}) => void;
 export type OnResetSettingsFunction = () => void;
-export type OnSetCurrentArtifactPathFunction = (payload: {artifactPath?: ArtifactPath}) => void;
 
 export type OnAddArtifactFunction = (payload: {artifactPath: ArtifactPath, source?: string}) => Promise<void>;
 export type OnRemoveArtifactFunction = (payload: {artifactPath: ArtifactPath}) => Promise<void>;
@@ -135,7 +132,6 @@ export type StateDerivedProps = Partial<{
     onFitToScreen: OnFitToScreenFunction,
     onSetSetting: OnSetSettingFunction,
     onResetSettings: OnResetSettingsFunction,
-    onSetCurrentArtifactPath: OnSetCurrentArtifactPathFunction,
 
     onAddArtifact: OnAddArtifactFunction,
     onRemoveArtifact: OnRemoveArtifactFunction,
