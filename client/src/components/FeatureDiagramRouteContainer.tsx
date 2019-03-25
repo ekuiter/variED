@@ -1,6 +1,6 @@
 import React, {CSSProperties} from 'react';
 import {StateDerivedProps, State} from '../store/types';
-import {getArtifactPathFromPath} from '../router';
+import {getArtifactPathFromLocation} from '../router';
 import {isArtifactPathEqual, RouteProps} from '../types';
 import SplitView from './SplitView';
 import ConstraintsView, {enableConstraintsView} from './constraintsView/ConstraintsView';
@@ -26,7 +26,7 @@ class FeatureDiagramRoute extends React.Component<FeatureDiagramRouteProps> {
     }
 
     onRouteChanged() {
-        const artifactPath = getArtifactPathFromPath();
+        const artifactPath = getArtifactPathFromLocation();
             if (artifactPath && !this.props.collaborativeSessions!.find(collaborativeSession =>
                 isArtifactPathEqual(collaborativeSession.artifactPath, artifactPath))) {
                     this.props.onJoinRequest!({artifactPath}); // TODO: error handling

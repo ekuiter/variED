@@ -1,10 +1,11 @@
 import {ArtifactPath, isArtifactPathEqual} from './types';
-import {createBrowserHistory} from 'history';
+import {createHashHistory} from 'history';
 import {CollaborativeSession} from './store/types';
 
-export const history = createBrowserHistory();
+export const history = createHashHistory();
+(window as any).h = history;
 
-export function getArtifactPathFromPath(): ArtifactPath | undefined {
+export function getArtifactPathFromLocation(): ArtifactPath | undefined {
     let path = history.location.pathname.substr(1);
     if (!path)
         return;
@@ -15,23 +16,23 @@ export function getArtifactPathFromPath(): ArtifactPath | undefined {
 }
 
 export function getCurrentArtifactPath(collaborativeSessions: CollaborativeSession[]): ArtifactPath | undefined {
-    const artifactPath = getArtifactPathFromPath();
+    const artifactPath = getArtifactPathFromLocation();
     return collaborativeSessions.find(collaborativeSession =>
         isArtifactPathEqual(collaborativeSession.artifactPath, artifactPath))
         ? artifactPath
         : undefined;
 }
 
-function getPathFromArtifactPath(artifactPath?: ArtifactPath) {
+function getLocationFromArtifactPath(artifactPath?: ArtifactPath) {
     if (!artifactPath)
         return '/';
     return `/${artifactPath.project}/${artifactPath.artifact}`;
 }
 
 export function getShareableURL(artifactPath: ArtifactPath) {
-    return `${window.location.protocol}//${window.location.host}${getPathFromArtifactPath(artifactPath)}`;
+    return `${window.location.protocol}//${window.location.host}/#${getLocationFromArtifactPath(artifactPath)}`;
 }
 
 export function redirectToArtifactPath(artifactPath?: ArtifactPath) {
-    history.push(getPathFromArtifactPath(artifactPath));
+    history.push(getLocationFromArtifactPath(artifactPath));
 }

@@ -27,7 +27,9 @@ const CommandBarContainer = (props: StateDerivedProps & RouteProps) => (
                         ...props.collaborativeSessions!.length > 1
                             ? [{
                                 key: 'collaborativeSessions',
-                                text: artifactPathToString(props.currentArtifactPath!),
+                                text: props.currentArtifactPath
+                                    ? artifactPathToString(props.currentArtifactPath!)
+                                    : i18n.t('commandPalette.switch'),
                                 subMenuProps: {
                                     items: props.collaborativeSessions!
                                         .map(collaborativeSession => {
