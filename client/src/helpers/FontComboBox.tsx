@@ -43,7 +43,7 @@ export default class extends React.Component<Props, State> {
         return (
             <ComboBox
                 text={this.state.errorMessage ? undefined : selectedFont}
-                allowFreeform={true}
+                allowFreeform
                 autoComplete="on"
                 options={options}
                 onRenderOption={(props?: {text: string}) =>

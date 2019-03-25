@@ -1,94 +1,94 @@
 package de.ovgu.spldev.varied;
 
+import de.ovgu.featureide.fm.core.base.IFeatureModel;
+import de.ovgu.spldev.varied.kernel.Kernel;
 import de.ovgu.spldev.varied.messaging.Api;
 import de.ovgu.spldev.varied.messaging.Message;
-import de.ovgu.spldev.varied.common.operations.Operation;
+import de.ovgu.spldev.varied.util.CollaboratorUtils;
 import org.pmw.tinylog.Logger;
 
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.UUID;
 
 /**
- * A collaborative session consists of a set of users that view and edit a artifact together.
+ * A collaborative session consists of a set of collaborators that view and edit a artifact together.
  */
-public class CollaborativeSession {
-    private StateContext stateContext;
-    private Set<User> users = new HashSet<>();
+public abstract class CollaborativeSession {
+    protected Artifact.Path artifactPath;
+    protected Set<Collaborator> collaborators = new HashSet<>();
 
-    CollaborativeSession(StateContext stateContext) {
-        this.stateContext = Objects.requireNonNull(stateContext, "no state context given");
+    CollaborativeSession(Artifact.Path artifactPath) {
+        this.artifactPath = artifactPath;
     }
 
     public String toString() {
-        return stateContext.toString();
+        return artifactPath.toString();
     }
 
-    public void join(User newUser) {
-        Logger.info("{} joins collaborative session {}", newUser, this);
-        if (!users.add(newUser))
-            throw new RuntimeException("user already joined");
-        stateContext.sendInitialState(newUser);
-        unicast(newUser, artifactPath -> new Api.Join(stateContext.getArtifactPath(), artifactPath), user -> user != newUser);
-        broadcast(new Api.Join(stateContext.getArtifactPath(), newUser), user -> user != newUser);
+    protected abstract void _join(Collaborator newCollaborator);
+
+    protected abstract void _leave(Collaborator oldCollaborator);
+
+    protected abstract boolean _onMessage(Collaborator collaborator, Message.IDecodable message);
+
+    public boolean isInProcess() {
+        return collaborators.size() > 0;
     }
 
-    public void leave(User oldUser) {
-        Logger.info("{} leaves collaborative session {}", oldUser, this);
-        if (users.remove(oldUser))
-            broadcast(new Api.Leave(stateContext.getArtifactPath(), oldUser));
+    public void join(Collaborator newCollaborator) {
+        Logger.info("{} joins collaborative session {}", newCollaborator, this);
+        // collaborator may re-join to obtain new initialization context,
+        // therefore do not check "add" return value here
+        collaborators.add(newCollaborator);
+        _join(newCollaborator);
     }
 
-    private void unicast(User targetUser, Function<User, Message.IEncodable> messageFunction, Predicate<User> predicate) {
-        users.stream()
-                .filter(predicate)
-                .forEach(user -> targetUser.send(messageFunction.apply(user)));
+    public void leave(Collaborator oldCollaborator) {
+        Logger.info("{} leaves collaborative session {}", oldCollaborator, this);
+        if (!collaborators.remove(oldCollaborator))
+            throw new RuntimeException("collaborator already left");
+        _leave(oldCollaborator);
     }
 
-    private void broadcast(Message.IEncodable message, Predicate<User> predicate) {
-        Objects.requireNonNull(message, "no message given");
-        users.stream()
-                .filter(predicate)
-                .forEach(user -> user.send(message));
-    }
-
-    private void broadcast(Message.IEncodable message) {
-        Objects.requireNonNull(message, "no message given");
-        broadcast(message, user -> true);
-    }
-
-    private void broadcast(Message.IEncodable[] messages) {
-        Objects.requireNonNull(messages, "no messages given");
-        for (Message.IEncodable message : messages)
-            broadcast(message);
-    }
-
-    public void onMessage(Message message) throws Operation.InvalidOperationException, Message.InvalidMessageException {
-        Logger.info("decoding message {}", message);
-        Message.IDecodable decodableMessage = (Message.IDecodable) message;
-        if (!decodableMessage.isValid(stateContext))
-            throw new Message.InvalidMessageException("invalid message " + message);
-        Message.IEncodable[] response = null;
-        if (message instanceof Message.IApplicable) {
-            Logger.info("processing applicable message {}", message);
-            Message.IApplicable applicableMessage = (Message.IApplicable) message;
-            response = applicableMessage.apply(stateContext);
-        } else if (message instanceof Message.IUndoable) {
-            Logger.info("processing undoable message {}", message);
-            Message.IUndoable undoableMessage = (Message.IUndoable) message;
-            Operation operation = undoableMessage.getOperation(stateContext);
-            if (operation != null) {
-                Logger.info("applying operation {}", operation);
-                stateContext.getOperationStack().apply(operation);
-                response = undoableMessage.getResponse(stateContext);
-            }
-        } else
+    void onMessage(Collaborator collaborator, Message message) throws Message.InvalidMessageException {
+        if (!_onMessage(collaborator, (Message.IDecodable) message))
             throw new Message.InvalidMessageException("message can not be processed");
-        if (response != null) {
-            Logger.info("broadcasting {} response message(s)", response.length);
-            broadcast(response);
+    }
+
+    static class FeatureModel extends CollaborativeSession {
+        private Kernel kernel;
+
+        FeatureModel(Artifact.Path artifactPath, IFeatureModel initialFeatureModel) {
+            super(artifactPath);
+            Objects.requireNonNull(initialFeatureModel, "no initial feature model given");
+            this.kernel = new Kernel(artifactPath, initialFeatureModel);
+        }
+
+        protected boolean _onMessage(Collaborator collaborator, Message.IDecodable message) {
+            if (!(message instanceof Api.Kernel))
+                return false;
+
+            Api.Kernel kernelMessage = (Api.Kernel) message;
+            String newMessage = kernel.forwardMessage(kernelMessage.message);
+            CollaboratorUtils.broadcastToOthers(collaborators, new Api.Kernel(artifactPath, newMessage), collaborator);
+            return true;
+        }
+
+        protected void _join(Collaborator newCollaborator) {
+            UUID siteID = newCollaborator.getSiteID();
+            String[] contextAndHeartbeatMessage = kernel.siteJoined(siteID);
+            String context = contextAndHeartbeatMessage[0],
+                    heartbeatMessage = contextAndHeartbeatMessage[1];
+            newCollaborator.send(new Api.Initialize(artifactPath, context));
+            CollaboratorUtils.broadcastToOthers(collaborators, new Api.Kernel(artifactPath, heartbeatMessage), newCollaborator);
+        }
+
+        protected void _leave(Collaborator oldCollaborator) {
+            UUID siteID = oldCollaborator.getSiteID();
+            String leaveMessage = kernel.siteLeft(siteID);
+            CollaboratorUtils.broadcastToOthers(collaborators, new Api.Kernel(artifactPath, leaveMessage), oldCollaborator);
         }
     }
 }

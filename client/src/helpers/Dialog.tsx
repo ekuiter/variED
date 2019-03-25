@@ -5,8 +5,8 @@
 import {Dialog, DialogFooter, IDialogProps} from 'office-ui-fabric-react/lib/Dialog';
 import {DefaultButton, PrimaryButton} from 'office-ui-fabric-react/lib/Button';
 import i18n from '../i18n';
-import React from 'react';
-import defer from './defer';
+import React, {RefObject} from 'react';
+import deferred from './deferred';
 import {TextField, ITextFieldProps, ITextField} from 'office-ui-fabric-react/lib/TextField';
 import {IContextualMenuItem} from 'office-ui-fabric-react/lib/ContextualMenu';
 import {IIconProps} from 'office-ui-fabric-react/lib/Icon';
@@ -86,7 +86,7 @@ export class DialogContextualMenu extends React.Component<DialogContextualMenuPr
 interface TextFieldDialogProps {
     isOpen: boolean,
     onDismiss: () => void,
-    onSubmit: (value: string) => void,
+    onSubmit: (value: string, textFieldRef: RefObject<ITextField>) => void,
     title: string,
     defaultValue?: string,
     submitText: string,
@@ -105,8 +105,8 @@ export class TextFieldDialog extends React.Component<TextFieldDialogProps, TextF
     textFieldRef = React.createRef<ITextField>();
     onChange = (_event: any, value?: string) => this.setState({value});
 
-    // does not work without defer, god knows why
-    onLayerDidMount = defer(() => {
+    // does not work without deferred, god knows why
+    onLayerDidMount = deferred(() => {
         this.textFieldRef.current!.focus();
         this.textFieldRef.current!.select();
     });
@@ -114,7 +114,7 @@ export class TextFieldDialog extends React.Component<TextFieldDialogProps, TextF
     getValue = (): string => typeof this.state.value === 'undefined' ? this.props.defaultValue || '' : this.state.value;
 
     onSubmit = () => {
-        this.props.onSubmit(this.getValue());
+        this.props.onSubmit(this.getValue(), this.textFieldRef);
         this.setState({value: undefined});
         this.props.onDismiss();
     };
@@ -130,7 +130,7 @@ export class TextFieldDialog extends React.Component<TextFieldDialogProps, TextF
             <Dialog
                 hidden={!isOpen}
                 onDismiss={onDismiss}
-                modalProps={{onLayerDidMount: this.onLayerDidMount}}
+                modalProps={{layerProps: {onLayerDidMount: this.onLayerDidMount}}}
                 dialogContentProps={{title}}
                 {...dialogProps}>
                 <TextField

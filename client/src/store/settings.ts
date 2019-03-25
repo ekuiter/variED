@@ -11,7 +11,8 @@ import {getViewportWidth, getViewportHeight} from '../helpers/withDimensions';
 export interface Settings {
     developer: {
         debug: boolean, // whether to show detailed logs and the estimated bounding box and node anchors for feature diagrams
-        delay: number // simulate message delay when developing on localhost
+        simulateDelay: number, // simulate message delay when developing on localhost
+        simulateOffline: boolean // simulate that the web socket connection is closed (e.g., no internet connection)
     },
     views: {
         splitDirection: 'horizontal' | 'vertical', // at which axis to split views
@@ -66,8 +67,8 @@ export interface Settings {
             width: number // width of feature callout in px
         }
     },
-    userFacepile: {
-        maxDisplayableUsers: number, // number of users to display before overflowing
+    collaboratorFacepile: {
+        maxDisplayableCollaborators: number, // number of users to display before overflowing
         overflowBreakpoint: number, // viewport width under which all users will be overflowed
         gapSpace: number // space between facepile and overlay
     },
@@ -75,13 +76,19 @@ export interface Settings {
         settingsPanel: {
             debounceUpdate: number // after which time continuous (e.g., slider) settings should be applied
         }
+    },
+    intervals: {
+        flushMessageQueue: number, // how often the message queue should additionally be flushed, interval in ms
+        lastActive: number // used to guarantee that only one tab is active at once, can not be changed at runtime!
+        // TODO: GC, heartbeat
     }
 };
 
 export const defaultSettings: Settings = {
     developer: {
         debug: false,
-        delay: 0
+        simulateDelay: 0,
+        simulateOffline: false
     },
     views: {
         splitDirection: getViewportWidth() > getViewportHeight() ? 'horizontal' : 'vertical',
@@ -133,8 +140,8 @@ export const defaultSettings: Settings = {
             width: 300
         }
     },
-    userFacepile: {
-        maxDisplayableUsers: 3,
+    collaboratorFacepile: {
+        maxDisplayableCollaborators: 3,
         overflowBreakpoint: 768,
         gapSpace: 3
     },
@@ -142,6 +149,10 @@ export const defaultSettings: Settings = {
         settingsPanel: {
             debounceUpdate: 200
         }
+    },
+    intervals: {
+        flushMessageQueue: 2000,
+        lastActive: 2000
     }
 };
 

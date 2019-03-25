@@ -12,7 +12,7 @@ tasks.getByPath(':server:transpileCommon').mustRunAfter ':client:yarn'
 yarn_build.mustRunAfter ':server:transpileCommon'
 
 task build {
-    dependsOn 'clean', ':server:transpileCommon', 'yarn', 'yarn_build'
+    dependsOn 'clean', ':server:transpileCommon', ':kernel:buildClient', 'yarn', 'yarn_build'
     doLast {
         copy {
             from 'build'

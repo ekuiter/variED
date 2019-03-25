@@ -6,8 +6,9 @@ import React from 'react';
 import i18n from '../../i18n';
 import {TextFieldDialog, largeDialogStyle} from '../../helpers/Dialog';
 import FeatureComponent, {FeatureComponentProps} from './FeatureComponent';
-import {GraphicalFeature} from '../../modeling/types';
+import {Feature} from '../../modeling/types';
 import {OnSetFeatureDescriptionFunction} from '../../store/types';
+import {preconditions} from '../../modeling/preconditions';
 
 type Props = FeatureComponentProps & {
     isOpen: boolean,
@@ -16,7 +17,7 @@ type Props = FeatureComponentProps & {
 }
 
 export default class extends FeatureComponent()<Props> {
-    renderIfFeature(feature: GraphicalFeature) {
+    renderIfFeature(feature: Feature) {
         // TODO: warn the user if someone else updated the description (it may happen
         // that the user is working on a new description which is then replaced by
         // another users update)
@@ -25,9 +26,12 @@ export default class extends FeatureComponent()<Props> {
                 isOpen={this.props.isOpen}
                 onDismiss={this.props.onDismiss}
                 title={i18n.t('overlays.featureSetDescriptionDialog.title')}
-                submitText={i18n.t('overlays.featureSetDescriptionDialog.rename')}
+                submitText={i18n.t('overlays.featureSetDescriptionDialog.save')}
                 defaultValue={feature.description}
-                onSubmit={description => this.props.onSetFeatureDescription({featureUUID: feature.uuid, description})}
+                onSubmit={description => {
+                    if (preconditions.featureDiagram.feature.setDescription(feature.ID, this.props.featureModel))
+                        this.props.onSetFeatureDescription({featureID: feature.ID, description});
+                }}
                 submitOnEnter={false}
                 dialogProps={{styles: largeDialogStyle}}
                 textFieldProps={{multiline: true, rows: 5}}/>

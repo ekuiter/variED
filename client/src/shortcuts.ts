@@ -57,8 +57,8 @@ const shiftCommandShortcut = (key: string): Shortcut => ({
 
 export const shortcuts = {
     commandPalette: shiftCommandShortcut('p'),
-    undo: commandShortcut('z'),
-    redo: commandShortcut('y'),
+    //undo: commandShortcut('z'), // TODO: until we have proper undo/redo support
+    //redo: commandShortcut('y'),
     settings: commandShortcut(','),
     featureDiagram: {
         feature: {

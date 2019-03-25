@@ -1,84 +1,97 @@
 import {HierarchyPointNode} from 'd3-hierarchy';
 import {Point} from '../types';
 
-// tags and attributes used in serialized feature models
-export const STRUCT = 'struct';
+// keys and attributes used in kernel feature models
+export const FEATURES = 'features';
 export const CONSTRAINTS = 'constraints';
-export const PROPERTIES = 'properties';
-export const CALCULATIONS = 'calculations';
-export const COMMENTS = 'comments';
-export const FEATURE_ORDER = 'featureOrder';
-export const TYPE = 'type';
+export const CHILDREN_CACHE = 'children-cache';
+export const NIL = 'nil';
+export const ID_KEY = 'ID';
 export const NAME = 'name';
-export const UUID = 'uuid';
 export const DESCRIPTION = 'description';
-export const MANDATORY = 'mandatory';
-export const ABSTRACT = 'abstract';
-export const HIDDEN = 'hidden';
-export const VAR = 'var';
-
-export enum FeatureType {
-    feature = 'feature',
-    or = 'or',
-    alt = 'alt',
-    and = 'and',
-    unknown = 'unknown'
-};
+export const OPTIONAL = 'optional?';
+export const ABSTRACT = 'abstract?';
+export const HIDDEN = 'hidden?';
+export const PARENT_ID = 'parent-ID';
+export const GROUP_TYPE = 'group-type';
+export const GRAVEYARDED = 'graveyarded?';
+export const FORMULA = 'formula';
 
 export enum ConstraintType {
-    var = 'var',
+    unknown = 'unknown',
     not = 'not',
     disj = 'disj',
     eq = 'eq',
     imp = 'imp',
-    conj = 'conj',
-    atmost1 = 'atmost1',
-    unknown = 'unknown'
+    conj = 'conj'
 };
 
-export interface SerializedFeatureNode {
-    [TYPE]: FeatureType,
+export enum GroupType {
+    and = 'and',
+    or = 'or',
+    alternative = 'alternative'
+};
+
+export enum PropertyType {
+    abstract = 'abstract?',
+    hidden = 'hidden?',
+    name = 'name',
+    description = 'description'
+};
+
+export interface KernelFeature {
+    [ID_KEY]?: string, // added dynamically by FeatureModel class
     [NAME]: string,
-    [UUID]: string,
-    [HIDDEN]?: boolean,
-    [MANDATORY]?: boolean,
-    [ABSTRACT]?: boolean,
-    [DESCRIPTION]?: string,
-    children?: SerializedFeatureNode[]
+    [DESCRIPTION]: string | null,
+    [HIDDEN]: boolean,
+    [OPTIONAL]: boolean,
+    [ABSTRACT]: boolean,
+    [PARENT_ID]?: string | null,
+    [GROUP_TYPE]: GroupType
 };
 
-export interface SerializedConstraintNode {
-    [TYPE]: ConstraintType,
-    [VAR]?: string,
-    children?: SerializedConstraintNode[]
+export type KernelConstraintFormulaAtom = ConstraintType | string;
+export interface KernelConstraintNestedFormula extends Array<KernelConstraintNestedFormula | KernelConstraintFormulaAtom> {}
+export type KernelConstraintFormula = KernelConstraintFormulaAtom | KernelConstraintNestedFormula;
+
+export interface KernelConstraint {
+    [ID_KEY]?: string, // added dynamically, see KernelFeature
+    [GRAVEYARDED]: boolean,
+    [FORMULA]: KernelConstraintFormula
 };
 
-export interface SerializedConstraint {
-    [TYPE]: 'rule',
-    children: SerializedConstraintNode[]
+export interface KernelFeatureModel {
+    [FEATURES]: {[ID: string]: KernelFeature},
+    [CONSTRAINTS]: {[ID: string]: KernelConstraint},
+    [CHILDREN_CACHE]: {[ID: string]: string[]}
 };
 
-export interface SerializedFeatureModel {
-    [STRUCT]: SerializedFeatureNode[],
-    [CONSTRAINTS]: SerializedConstraint[],
-    // ignored for now
-    [CALCULATIONS]: never,
-    [COMMENTS]: never,
-    [FEATURE_ORDER]: never
+export interface KernelConflictDescriptor {
+    versions: {[versionID: string]: string[]},
+    conflicts:
+        {[versionID: string]:
+            {[operationID: string]:
+                {[operationID: string]:
+                    {reason: string}}}}
 };
 
-export type FeaturePropertyKey = string | ((node: GraphicalFeatureNode) => string);
+export type KernelCombinedEffect = KernelFeatureModel | KernelConflictDescriptor;
 
-export interface GraphicalFeature {
-    node: GraphicalFeatureNode,
-    uuid: string,
+export function isKernelConflictDescriptor(kernelCombinedEffect: KernelCombinedEffect): kernelCombinedEffect is KernelConflictDescriptor {
+    return typeof kernelCombinedEffect !== 'undefined' && !!(<KernelConflictDescriptor>kernelCombinedEffect).conflicts;
+}
+
+export type FeaturePropertyKey = string | ((node: FeatureNode) => string);
+
+export interface Feature {
+    node: FeatureNode,
+    ID: string,
     name: string,
-    type: FeatureType,
     description?: string,
     isRoot: boolean,
     isAbstract: boolean,
     isHidden: boolean,
-    isMandatory: boolean,
+    isOptional: boolean,
     isAnd: boolean,
     isOr: boolean,
     isAlternative: boolean,
@@ -87,18 +100,19 @@ export interface GraphicalFeature {
     hasChildren: boolean,
     hasActualChildren: boolean,
     getPropertyString: (key: FeaturePropertyKey) => string,
-    getNumberOfFeaturesBelow: () => number
+    getNumberOfFeaturesBelow: () => number,
+    getFeatureIDsBelow: () => string[]
 };
 
-type Datum = SerializedFeatureNode; // accessible as node.data
+type Datum = KernelFeature; // accessible as node.data
 
-export type GraphicalFeatureNode = HierarchyPointNode<Datum> & {
-    children?: GraphicalFeatureNode[];
-    actualChildren?: GraphicalFeatureNode[];
-    _feature: GraphicalFeature;
-    feature: () => GraphicalFeature;
+export type FeatureNode = HierarchyPointNode<Datum> & {
+    children?: FeatureNode[];
+    actualChildren?: FeatureNode[];
+    _feature: Feature;
+    feature: () => Feature;
 }
 
-export type NodeCoordinateFunction = (node: GraphicalFeatureNode) => number;
-export type NodeCoordinateForAxisFunction = (node: GraphicalFeatureNode, axis: string) => number;
-export type NodePointFunction = (node: GraphicalFeatureNode) => Point;
+export type NodeCoordinateFunction = (node: FeatureNode) => number;
+export type NodeCoordinateForAxisFunction = (node: FeatureNode, axis: string) => number;
+export type NodePointFunction = (node: FeatureNode) => Point;

@@ -4,19 +4,19 @@
 
 import AbstractTreeNode from './AbstractTreeNode';
 import {estimateRectWidth} from './estimation';
-import {GraphicalFeatureNode} from '../../../modeling/types';
+import {FeatureNode} from '../../../modeling/types';
 import {StyleDescriptor} from '../../../helpers/svg';
 
 export default class extends AbstractTreeNode {
-    x(node: GraphicalFeatureNode): number {
-        let x = 0, parent: GraphicalFeatureNode | null = node;
+    x(node: FeatureNode): number {
+        let x = 0, parent: FeatureNode | null = node;
         while ((parent = parent.parent))
             x += estimateRectWidth(this.settings, this.getWidestTextOnLayer(parent)) +
                 this.settings.featureDiagram.treeLayout.horizontal.layerMargin;
         return x;
     }
 
-    y(node: GraphicalFeatureNode): number {
+    y(node: FeatureNode): number {
         return node.x;
     }
 

@@ -11,3 +11,4 @@ yarn-error.log*
 .env*.local
 /coverage
 /src/common/*
+/src/modeling/_kernel.js

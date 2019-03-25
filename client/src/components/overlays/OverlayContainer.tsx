@@ -12,29 +12,34 @@ import SettingsPanel from './SettingsPanel';
 import AboutPanel from './AboutPanel';
 import FeaturePanel from './FeaturePanel';
 import actions from '../../store/actions';
-import {getCurrentCollaborativeSession, isFeatureDiagramCollaborativeSession, getCurrentGraphicalFeatureModel} from '../../store/selectors';
+import {getCurrentCollaborativeSession, isFeatureDiagramCollaborativeSession, getCurrentFeatureModel} from '../../store/selectors';
 import FeatureRenameDialog from './FeatureRenameDialog';
 import FeatureSetDescriptionDialog from './FeatureSetDescriptionDialog';
 import FeatureCallout from './FeatureCallout';
 import FeatureContextualMenu from './FeatureContextualMenu';
 import ExportDialog from './ExportDialog';
-import {OverlayType} from '../../types';
+import {OverlayType, RouteProps} from '../../types';
 import {State, StateDerivedProps} from '../../store/types';
 import logger from '../../helpers/logger';
 import CommandPalette from './CommandPalette';
+import AddArtifactPanel from './AddArtifactPanel';
+import ShareDialog from './ShareDialog';
+import {getCurrentArtifactPath} from '../../router';
+import {withRouter} from 'react-router';
 
-const OverlayContainer = (props: StateDerivedProps) => (
+const OverlayContainer = (props: StateDerivedProps & RouteProps) => (
     <React.Fragment>
         <CommandPalette
             artifactPaths={props.artifactPaths!}
             collaborativeSessions={props.collaborativeSessions!}
             isOpen={props.overlay === OverlayType.commandPalette}
             featureDiagramLayout={props.featureDiagramLayout}
-            graphicalFeatureModel={props.graphicalFeatureModel}
+            featureModel={props.featureModel}
+            settings={props.settings!}
             onDismiss={() => props.onHideOverlay!({overlay: OverlayType.commandPalette})}
             onShowOverlay={props.onShowOverlay!}
-            onJoin={props.onJoin!}
-            onLeave={props.onLeave!}
+            onRemoveArtifact={props.onRemoveArtifact!}
+            onLeaveRequest={props.onLeaveRequest!}
             onUndo={props.onUndo!}
             onRedo={props.onRedo!}
             onFitToScreen={props.onFitToScreen!}
@@ -44,18 +49,21 @@ const OverlayContainer = (props: StateDerivedProps) => (
             onExpandAllFeatures={props.onExpandAllFeatures!}
             onCollapseFeaturesBelow={props.onCollapseFeaturesBelow!}
             onExpandFeaturesBelow={props.onExpandFeaturesBelow!}
-            onAddFeatureAbove={props.onAddFeatureAbove!}
-            onAddFeatureBelow={props.onAddFeatureBelow!}
+            onCreateFeatureAbove={props.onCreateFeatureAbove!}
+            onCreateFeatureBelow={props.onCreateFeatureBelow!}
             onSetFeatureDiagramLayout={props.onSetFeatureDiagramLayout!}
-            onRemoveFeatures={props.onRemoveFeatures!}
-            onRemoveFeaturesBelow={props.onRemoveFeaturesBelow!}
+            onRemoveFeature={props.onRemoveFeature!}
+            onRemoveFeatureSubtree={props.onRemoveFeatureSubtree!}
+            onMoveFeatureSubtree={props.onMoveFeatureSubtree!}
             onSetFeatureAbstract={props.onSetFeatureAbstract!}
             onSetFeatureHidden={props.onSetFeatureHidden!}
-            onSetFeatureMandatory={props.onSetFeatureMandatory!}
+            onSetFeatureOptional={props.onSetFeatureOptional!}
             onSetFeatureAnd={props.onSetFeatureAnd!}
             onSetFeatureOr={props.onSetFeatureOr!}
             onSetFeatureAlternative={props.onSetFeatureAlternative!}
-            onSetCurrentArtifactPath={props.onSetCurrentArtifactPath!}
+            onCreateConstraint={props.onCreateConstraint!}
+            onSetConstraint={props.onSetConstraint!}
+            onRemoveConstraint={props.onRemoveConstraint!}
             onSetSetting={props.onSetSetting!}/>
 
         <SettingsPanel
@@ -81,15 +89,15 @@ const OverlayContainer = (props: StateDerivedProps) => (
             onExpandFeatures={props.onExpandFeatures!}
             onCollapseFeaturesBelow={props.onCollapseFeaturesBelow!}
             onExpandFeaturesBelow={props.onExpandFeaturesBelow!}
-            graphicalFeatureModel={props.graphicalFeatureModel!}
+            featureModel={props.featureModel!}
             settings={props.settings!}
-            onAddFeatureAbove={props.onAddFeatureAbove!}
-            onAddFeatureBelow={props.onAddFeatureBelow!}
-            onRemoveFeatures={props.onRemoveFeatures!}
-            onRemoveFeaturesBelow={props.onRemoveFeaturesBelow!}
+            onCreateFeatureAbove={props.onCreateFeatureAbove!}
+            onCreateFeatureBelow={props.onCreateFeatureBelow!}
+            onRemoveFeature={props.onRemoveFeature!}
+            onRemoveFeatureSubtree={props.onRemoveFeatureSubtree!}
             onSetFeatureAbstract={props.onSetFeatureAbstract!}
             onSetFeatureHidden={props.onSetFeatureHidden!}
-            onSetFeatureMandatory={props.onSetFeatureMandatory!}
+            onSetFeatureOptional={props.onSetFeatureOptional!}
             onSetFeatureAnd={props.onSetFeatureAnd!}
             onSetFeatureOr={props.onSetFeatureOr!}
             onSetFeatureAlternative={props.onSetFeatureAlternative!}
@@ -99,18 +107,33 @@ const OverlayContainer = (props: StateDerivedProps) => (
         <FeatureRenameDialog
             isOpen={true}
             onDismiss={() => props.onHideOverlay!({overlay: OverlayType.featureRenameDialog})}
-            graphicalFeatureModel={props.graphicalFeatureModel!}
+            featureModel={props.featureModel!}
             settings={props.settings!}
-            onRenameFeature={props.onRenameFeature!}
+            onSetFeatureName={props.onSetFeatureName!}
             {...props.overlayProps}/>}
 
         {props.overlay === OverlayType.featureSetDescriptionDialog &&
         <FeatureSetDescriptionDialog
             isOpen={true}
             onDismiss={() => props.onHideOverlay!({overlay: OverlayType.featureSetDescriptionDialog})}
-            graphicalFeatureModel={props.graphicalFeatureModel!}
+            featureModel={props.featureModel!}
             settings={props.settings!}
             onSetFeatureDescription={props.onSetFeatureDescription!}
+            {...props.overlayProps}/>}
+
+        {props.overlay === OverlayType.addArtifactPanel &&
+        <AddArtifactPanel
+            isOpen={true}
+            onDismissed={() => props.onHideOverlay!({overlay: OverlayType.addArtifactPanel})}
+            onAddArtifact={props.onAddArtifact!}
+            artifactPaths={props.artifactPaths!}
+            {...props.overlayProps}/>}
+
+        {props.overlay === OverlayType.shareDialog &&
+        <ShareDialog
+            isOpen={true}
+            onDismiss={() => props.onHideOverlay!({overlay: OverlayType.shareDialog})}
+            currentArtifactPath={props.currentArtifactPath}
             {...props.overlayProps}/>}
 
         {props.overlay === OverlayType.exportDialog &&
@@ -133,11 +156,11 @@ const OverlayContainer = (props: StateDerivedProps) => (
             onExpandFeatures={props.onExpandFeatures!}
             onCollapseFeaturesBelow={props.onCollapseFeaturesBelow!}
             onExpandFeaturesBelow={props.onExpandFeaturesBelow!}
-            graphicalFeatureModel={props.graphicalFeatureModel!}
-            onAddFeatureAbove={props.onAddFeatureAbove!}
-            onAddFeatureBelow={props.onAddFeatureBelow!}
-            onRemoveFeatures={props.onRemoveFeatures!}
-            onRemoveFeaturesBelow={props.onRemoveFeaturesBelow!}
+            featureModel={props.featureModel!}
+            onCreateFeatureAbove={props.onCreateFeatureAbove!}
+            onCreateFeatureBelow={props.onCreateFeatureBelow!}
+            onRemoveFeature={props.onRemoveFeature!}
+            onRemoveFeatureSubtree={props.onRemoveFeatureSubtree!}
             {...props.overlayProps}/>}
 
         {props.overlay === OverlayType.featureContextualMenu &&
@@ -152,16 +175,16 @@ const OverlayContainer = (props: StateDerivedProps) => (
             onExpandFeatures={props.onExpandFeatures!}
             onCollapseFeaturesBelow={props.onCollapseFeaturesBelow!}
             onExpandFeaturesBelow={props.onExpandFeaturesBelow!}
-            graphicalFeatureModel={props.graphicalFeatureModel!}
+            featureModel={props.featureModel!}
             isSelectMultipleFeatures={props.isSelectMultipleFeatures!}
-            selectedFeatureUUIDs={props.selectedFeatureUUIDs!}
-            onAddFeatureAbove={props.onAddFeatureAbove!}
-            onAddFeatureBelow={props.onAddFeatureBelow!}
-            onRemoveFeatures={props.onRemoveFeatures!}
-            onRemoveFeaturesBelow={props.onRemoveFeaturesBelow!}
+            selectedFeatureIDs={props.selectedFeatureIDs!}
+            onCreateFeatureAbove={props.onCreateFeatureAbove!}
+            onCreateFeatureBelow={props.onCreateFeatureBelow!}
+            onRemoveFeature={props.onRemoveFeature!}
+            onRemoveFeatureSubtree={props.onRemoveFeatureSubtree!}
             onSetFeatureAbstract={props.onSetFeatureAbstract!}
             onSetFeatureHidden={props.onSetFeatureHidden!}
-            onSetFeatureMandatory={props.onSetFeatureMandatory!}
+            onSetFeatureOptional={props.onSetFeatureOptional!}
             onSetFeatureAnd={props.onSetFeatureAnd!}
             onSetFeatureOr={props.onSetFeatureOr!}
             onSetFeatureAlternative={props.onSetFeatureAlternative!}
@@ -169,7 +192,7 @@ const OverlayContainer = (props: StateDerivedProps) => (
     </React.Fragment>
 );
 
-export default connect(
+export default withRouter(connect(
     logger.mapStateToProps('OverlayContainer', (state: State): StateDerivedProps => {
         const collaborativeSession = getCurrentCollaborativeSession(state),
             props: StateDerivedProps = {
@@ -177,6 +200,7 @@ export default connect(
                 overlay: state.overlay,
                 overlayProps: state.overlayProps,
                 artifactPaths: state.artifactPaths,
+                currentArtifactPath: getCurrentArtifactPath(state.collaborativeSessions),
                 collaborativeSessions: state.collaborativeSessions
             };
         if (!collaborativeSession || !isFeatureDiagramCollaborativeSession(collaborativeSession))
@@ -185,15 +209,16 @@ export default connect(
             ...props,
             featureDiagramLayout: collaborativeSession.layout,
             isSelectMultipleFeatures: collaborativeSession.isSelectMultipleFeatures,
-            selectedFeatureUUIDs: collaborativeSession.selectedFeatureUUIDs,
-            graphicalFeatureModel: getCurrentGraphicalFeatureModel(state)
+            selectedFeatureIDs: collaborativeSession.selectedFeatureIDs,
+            featureModel: getCurrentFeatureModel(state)
         };
     }),
     (dispatch): StateDerivedProps => ({
         onFitToScreen: () => dispatch(actions.ui.featureDiagram.fitToScreen()),
         onSetFeatureDiagramLayout: payload => dispatch(actions.ui.featureDiagram.setLayout(payload)),
-        onJoin: payload => dispatch<any>(actions.server.join(payload)),
-        onLeave: payload => dispatch<any>(actions.server.leave(payload)),
+        onAddArtifact: payload => dispatch<any>(actions.server.addArtifact(payload)),
+        onRemoveArtifact: payload => dispatch<any>(actions.server.removeArtifact(payload)),
+        onLeaveRequest: payload => dispatch<any>(actions.server.leaveRequest(payload)),
         onUndo: () => dispatch<any>(actions.server.undo({})),
         onRedo: () => dispatch<any>(actions.server.redo({})),
         onHideOverlay: payload => dispatch(actions.ui.overlay.hide(payload)),
@@ -201,24 +226,27 @@ export default connect(
         onDeselectAllFeatures: () => dispatch(actions.ui.featureDiagram.feature.deselectAll()),
         onSetSetting: payload => dispatch(actions.settings.set(payload)),
         onResetSettings: () => dispatch(actions.settings.reset()),
-        onSetCurrentArtifactPath: payload => dispatch(actions.ui.setCurrentArtifactPath(payload)),
         onCollapseAllFeatures: () => dispatch(actions.ui.featureDiagram.feature.collapseAll()),
         onExpandAllFeatures: () => dispatch(actions.ui.featureDiagram.feature.expandAll()),
         onCollapseFeatures: payload => dispatch(actions.ui.featureDiagram.feature.collapse(payload)),
         onExpandFeatures: payload => dispatch(actions.ui.featureDiagram.feature.expand(payload)),
         onCollapseFeaturesBelow: payload => dispatch(actions.ui.featureDiagram.feature.collapseBelow(payload)),
         onExpandFeaturesBelow: payload => dispatch(actions.ui.featureDiagram.feature.expandBelow(payload)),
-        onAddFeatureAbove: payload => dispatch<any>(actions.server.featureDiagram.feature.addAbove(payload)),
-        onAddFeatureBelow: payload => dispatch<any>(actions.server.featureDiagram.feature.addBelow(payload)),
-        onRemoveFeatures: payload => dispatch<any>(actions.server.featureDiagram.feature.remove(payload)),
-        onRemoveFeaturesBelow: payload => dispatch<any>(actions.server.featureDiagram.feature.removeBelow(payload)),
+        onCreateFeatureAbove: payload => dispatch<any>(actions.server.featureDiagram.feature.createAbove(payload)),
+        onCreateFeatureBelow: payload => dispatch<any>(actions.server.featureDiagram.feature.createBelow(payload)),
+        onRemoveFeature: payload => dispatch<any>(actions.server.featureDiagram.feature.remove(payload)),
+        onRemoveFeatureSubtree: payload => dispatch<any>(actions.server.featureDiagram.feature.removeSubtree(payload)),
+        onMoveFeatureSubtree: payload => dispatch<any>(actions.server.featureDiagram.feature.moveSubtree(payload)),
         onSetFeatureAbstract: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setAbstract(payload)),
         onSetFeatureHidden: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setHidden(payload)),
-        onSetFeatureMandatory: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setMandatory(payload)),
+        onSetFeatureOptional: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setOptional(payload)),
         onSetFeatureAnd: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setAnd(payload)),
         onSetFeatureOr: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setOr(payload)),
         onSetFeatureAlternative: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.setAlternative(payload)),
-        onRenameFeature: payload => dispatch<any>(actions.server.featureDiagram.feature.rename(payload)),
+        onCreateConstraint: payload => dispatch<any>(actions.server.featureDiagram.constraint.create(payload)),
+        onSetConstraint: payload => dispatch<any>(actions.server.featureDiagram.constraint.set(payload)),
+        onRemoveConstraint: payload => dispatch<any>(actions.server.featureDiagram.constraint.remove(payload)),
+        onSetFeatureName: payload => dispatch<any>(actions.server.featureDiagram.feature.setName(payload)),
         onSetFeatureDescription: payload => dispatch<any>(actions.server.featureDiagram.feature.setDescription(payload))
     })
-)(OverlayContainer);
+)(OverlayContainer));

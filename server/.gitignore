@@ -8,8 +8,10 @@
 /.idea/uiDesigner.xml
 /.idea/libraries
 /.idea/artifacts
+/.idea/ClojureProjectResolveSettings.xml
 *.iml
 /.git_private
 /src/main/webapp/*
 !/src/main/webapp/WEB-INF
 /.jsweet
+/lib/kernel-SNAPSHOT-standalone.jar

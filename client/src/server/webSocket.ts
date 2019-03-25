@@ -3,25 +3,58 @@
  */
 
 import constants from '../constants';
-import {Message, MessageType, ArtifactPath} from '../types';
+import {Message, MessageType} from '../types';
 import logger from '../helpers/logger';
 import {wait} from '../helpers/wait';
 import {State} from '../store/types';
-import Sockette from 'sockette';
+import Sockette from './Sockette';
+import {Persistor} from 'redux-persist';
 
 type HandleMessageFunction = (data: Message) => void;
 
 let handleMessage: HandleMessageFunction;
 const tag = 'socket';
 
+function getSimulateDelay() {
+    const state: State | undefined =
+        (window as any).app && (window as any).app.store && (window as any).app.store.getState();
+    if (!state)
+        logger.warn(() => 'store not accessible, can not simulate message delay');
+    return state ? state.settings.developer.simulateDelay : 0;
+}
+
+function getSiteID() {
+    const state: State | undefined =
+        (window as any).app && (window as any).app.store && (window as any).app.store.getState();
+    if (!state)
+        logger.warn(() => 'store not accessible, can not obtain site ID');
+    return state && state.myself ? state.myself.siteID : 'initialize';
+}
+
+export function isSimulateOffline() {
+    const state: State | undefined =
+        (window as any).app && (window as any).app.store && (window as any).app.store.getState();
+    if (!state)
+        logger.warn(() => 'store not accessible, can not simulate offline site');
+    return state ? state.settings.developer.simulateOffline : 0;
+}
+
 const getWebSocket = ((): () => Promise<Sockette> => {
     let promise: Promise<Sockette> | undefined;
 
     function connect(): Promise<Sockette> {
         return promise = new Promise((resolve, reject) => {
-            let sockette = new Sockette(constants.server.webSocket, {
+            const url = constants.server.webSocket(getSiteID());
+            logger.logTagged({tag}, () => `connecting to ${url}`);
+
+            if (isSimulateOffline()) {
+                reject('simulating offline, abort connect');
+                return;
+            }
+
+            const sockette = new Sockette(url, {
                 onopen() {
-                    logger.logTagged({tag}, () => 'open');
+                    logger.logTagged({tag}, () => `open`);
                     resolve(sockette);
                 },
 
@@ -31,28 +64,36 @@ const getWebSocket = ((): () => Promise<Sockette> => {
                     // TODO: notify user that WebSocket was closed
                 },
 
-                onerror(e) {
+                onerror(e: any) {
                     logger.warnTagged({tag}, () => e);
                     // TODO: notify user of error
                     reject(e);
                 },
 
                 onreconnect() {
-                    logger.logTagged({tag}, () => 'reconnect');
                     // TODO: notify user of reconnect
-                    // Re-opening a WebSocket is involved because the existing Redux state has to be considered.
-                    // For example, we should log in as the same user participating in the same collaboration sessions,
-                    // as if she never left. (For optimistic UI, pending operations have to be submitted as well.)
+                    logger.logTagged({tag}, () => `reconnect to ${url}`);
+                    return url;
                 },
 
                 onmessage(message) {
-                    let state: State | undefined = (window as any).app && (window as any).app.store && (window as any).app.store.getState();
-                    if (!state)
-                        logger.warn(() => 'store not accessible, can not simulate message delay');
-                    wait(state ? state.settings.developer.delay : 0).then(() => {
-                        let data = JSON.parse(message.data);
+                    wait(getSimulateDelay()).then(() => {
+                        const data: Message = JSON.parse(message.data);
                         logger.logTagged({tag: 'receive'}, () => data);
-                        if (handleMessage)
+                        // TODO: when we have better error handling, revise this
+                        if (data.type === MessageType.ERROR && data.error.indexOf('not registered') !== -1) {
+                            logger.warn(() => `can not register with site ID ${getSiteID()}, will try to obtain new site ID`);
+                            // TODO: this is a duplicate (see CommandPalette)
+                            const persistor: Persistor | undefined =
+                                (window as any).app && (window as any).app.persistor;
+                            if (!persistor)
+                                logger.warn(() => 'can not obtain persistor');
+                            else {
+                                persistor.pause();
+                                persistor.purge();
+                                window.location.reload();
+                            }
+                        } else if (handleMessage)
                             handleMessage(data);
                     });
                 }
@@ -70,23 +111,9 @@ export async function openWebSocket(_handleMessage?: HandleMessageFunction): Pro
     // return nothing to not expose WebSocket object
 }
 
-export async function sendMessage(message: Message, artifactPath?: ArtifactPath, delay = 0): Promise<void> {
+export async function sendMessage(message: Message): Promise<void> {
     const webSocket = await getWebSocket();
-    if (artifactPath)
-        message = {artifactPath, ...message};
     logger.logTagged({tag: 'send'}, () => message);
-    wait(delay).then(() => webSocket.send(JSON.stringify(message)));
-}
-
-export async function sendBatchMessage(messages: Message[], artifactPath?: ArtifactPath, delay = 0): Promise<void> {
-    if (!messages || messages.length === 0)
-        return;
-    if (messages.length === 1)
-        await sendMessage(messages[0], artifactPath, delay);
-    else {
-        // TODO: re-enable batch messages
-        alert('batch messages are currently not available');
-        return;
-        await sendMessage({type: MessageType.BATCH, messages}, artifactPath, delay);
-    }
+    await wait(getSimulateDelay());
+    webSocket.send(JSON.stringify(message));
 }

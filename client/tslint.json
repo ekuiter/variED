@@ -5,5 +5,11 @@
       "node_modules/**/*.ts",
       "coverage/lcov-report/*.js"
     ]
+  },
+  "rules": {
+      "encoding": true
+  },
+  "jsRules": {
+      "encoding": true
   }
 }

@@ -4,14 +4,16 @@
  */
 
 import objectPath from 'object-path';
+import {Link} from 'office-ui-fabric-react/lib/Link';
 import React from 'react';
 import constants from './constants';
-import {Link} from 'office-ui-fabric-react/lib/Link';
 import {getShortcutText} from './shortcuts';
+import {OverlayType} from './types';
+import {OnShowOverlayFunction} from './store/types';
 
 type TranslationFunction = (...args: any[]) => any;
 type Translation = string | JSX.Element | TranslationFunction;
-
+    
 function isString(translation: Translation): translation is string {
     return typeof translation === 'string';
 }
@@ -25,35 +27,56 @@ function isTranslationFunction(translation: Translation): translation is Transla
 }
 
 const translationMap = {
-    noCollaborativeSessions: (onShowCommandPalette: () => void) => (
+    noCollaborativeSessions: (onShowOverlay: OnShowOverlayFunction) => (
         <div className="standout">
             <div>
                 <p>You are not currently participating in any collaborative session.</p>
-                <p>To join one, open the <Link onClick={onShowCommandPalette}><strong>command palette</strong></Link> <strong>(
-                {getShortcutText('commandPalette')})</strong>.</p>
+                <p>To join one, open the <Link
+                    onClick={() => onShowOverlay({overlay: OverlayType.commandPalette, overlayProps: {}})}><strong>command palette</strong></Link> <strong>(
+                {getShortcutText('commandPalette')})</strong> or create a <Link
+                    onClick={() => onShowOverlay({overlay: OverlayType.addArtifactPanel, overlayProps: {}})}><strong>new feature model</strong></Link>.</p>
             </div>
         </div>
     ),
+    alreadyActive: () => (
+        <div className="message">
+            <div>
+                <p>
+                    <strong>variED is already active in another tab.</strong>
+                </p>
+                <p>
+                    To use variED in this tab, close all other variED tabs and&nbsp;
+                    <a href="#" onClick={() => window.location.reload()}>reload the page</a>.
+                </p>
+            </div>
+        </div>
+    ),
+    hasUnflushedMessages: (numberofUnflushedMessages: number) =>
+        `${numberofUnflushedMessages} messages have not yet been synchronized.\nIf you proceed, these messages will be lost.`,
     commands: {
         file: 'File',
         edit: 'Edit',
         view: 'View',
-        more: 'More',
+        tools: 'Tools',
         commandPalette: 'Command Palette…',
         settings: 'Settings…',
         about: 'About…',
         undo: 'Undo',
         redo: 'Redo',
+        addArtifact: 'New…',
+        share: 'Share…',
         featureDiagram: {
             export: 'Export as',
             svg: 'SVG…',
             png: 'PNG…',
             jpg: 'JPEG…',
             pdf: 'PDF…',
-            setLayout: 'Layout',
+            setLayout: 'Feature model layout',
             verticalTree: 'Vertical tree',
             horizontalTree: 'Horizontal tree',
-            fitToScreen: 'Fit to screen',
+            fitToScreen: 'Fit feature model to screen',
+            showConstraintView: 'Show constraint view',
+            splitConstraintViewHorizontally: 'Constraint view sidebar',
             feature: {
                 newMenu: {
                     title: 'New',
@@ -79,9 +102,9 @@ const translationMap = {
                     or: 'Or',
                     alternative: 'Alternative'
                 },
-                selection: (isSelectMultipleFeatures: boolean, selectedFeatureUUIDs: string[]) =>
+                selection: (isSelectMultipleFeatures: boolean, selectedFeatureIDs: string[]) =>
                     isSelectMultipleFeatures
-                        ? `Feature selection (${selectedFeatureUUIDs.length})`
+                        ? `Feature selection (${selectedFeatureIDs.length})`
                         : 'Begin feature selection',
                 selectAll: 'Select all features',
                 deselectAll: 'Deselect all features',
@@ -102,24 +125,34 @@ const translationMap = {
         project: 'Project',
         artifact: 'Artifact',
         feature: 'Feature',
+        constraint: 'Constraint',
+        oldConstraint: 'Old constraint',
+        newConstraint: 'New constraint',
         format: 'Format',
         layout: 'Layout',
         delay: 'Delay',
-        join: 'Join collaborative session',
-        leave: 'Leave collaborative session',
+        switch: 'Switch to collaborative session',
+        joinRequest: 'Join collaborative session',
+        leaveRequest: 'Leave collaborative session',
         settings: 'Settings',
         about: 'About',
+        addArtifact: 'New feature model',
+        removeArtifact: 'Remove feature model',
+        share: 'Share feature model',
         featureDiagram: {
             export: 'Export feature model',
             svg: 'SVG',
             png: 'PNG',
             jpg: 'JPEG',
             pdf: 'PDF',
-            setLayout: 'Feature model layout',
-            fitToScreen: 'Fit feature model to screen',
+            toggleConstraintView: 'Toggle constraint view',
+            toggleConstraintViewSplitDirection: 'Toggle constraint view sidebar',
             feature: {
                 details: 'Feature details',
                 rename: 'Rename feature',
+                move: 'Move feature',
+                moveSource: 'Move source',
+                moveTarget: 'Move target',
                 setDescription: 'Set feature description',
                 propertiesMenu: {
                     abstract: 'Set feature to abstract',
@@ -131,15 +164,20 @@ const translationMap = {
                     or: 'Change feature group to or',
                     alternative: 'Change feature group to alternative'
                 }
+            },
+            constraint: {
+                new: 'New constraint',
+                set: 'Set constraint',
+                remove: 'Remove constraint',
+                invalid: 'Invalid constraint.'
             }
         },
         developer: {
             debug: 'Developer: Toggle debug mode',
-            delay: 'Developer: Simulate message delay'
+            simulateDelay: 'Developer: Simulate message delay',
+            simulateOffline: 'Developer: Simulate offline',
+            clearLocalStorage: 'Developer: Clear local storage'
         }
-    },
-    constraint: {
-        constraint: 'Constraint'
     },
     overlays: {
         palette: {
@@ -153,8 +191,12 @@ const translationMap = {
                     <h3>variED: The variability editor</h3>
                     <p>View, edit and analyze feature models in the browser - with support for real-time
                         collaboration.</p>
-                    <p>This project is released under the <Link href={constants.overlays.aboutPanel.licenseUri}
+                    <p>This project is a research effort of
+                        the <Link href={constants.overlays.aboutPanel.researchGroupUri} target="_blank">DBSE working group</Link> and
+                        has been released under the <Link href={constants.overlays.aboutPanel.licenseUri}
                         target="_blank">LGPL v3 license</Link>.</p>
+                    <p>If you would like to leave any feedback, use our <Link
+                        href={constants.overlays.aboutPanel.feedbackUri} target="_blank">online form</Link> or <Link href={constants.overlays.aboutPanel.mailto}>mail me</Link>.</p>
                     <p><Link href={constants.overlays.aboutPanel.githubUri} target="_blank">View source code on
                         GitHub</Link></p>
                 </div>
@@ -226,7 +268,23 @@ const translationMap = {
         },
         featureSetDescriptionDialog: {
             title: 'Set feature description',
-            rename: 'Save'
+            save: 'Save'
+        },
+        addArtifactPanel: {
+            title: 'New feature model',
+            create: 'Create',
+            encoding: 'File encoding',
+            formatNotice: (
+                <p>
+                    You can import any feature model that is compatible with <Link
+                        href="https://featureide.github.io/" target="_blank">FeatureIDE</Link>.
+                    Leave this blank to create an empty feature model.
+                </p>
+            ),
+        },
+        shareDialog: {
+            title: 'Share feature model',
+            copy: 'Copy'
         },
         exportDialog: {
             export: 'Export',

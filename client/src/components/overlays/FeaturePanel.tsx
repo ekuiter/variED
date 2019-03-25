@@ -8,8 +8,8 @@ import i18n from '../../i18n';
 import {CommandBar, ICommandBarItemProps} from 'office-ui-fabric-react/lib/CommandBar';
 import commands from '../commands';
 import FeatureComponent, {FeatureComponentProps} from './FeatureComponent';
-import {GraphicalFeature} from '../../modeling/types';
-import {OnShowOverlayFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnRemoveFeaturesFunction, OnAddFeatureBelowFunction, OnAddFeatureAboveFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureMandatoryFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction, OnRemoveFeaturesBelowFunction} from '../../store/types';
+import {Feature} from '../../modeling/types';
+import {OnShowOverlayFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnRemoveFeatureFunction, OnCreateFeatureBelowFunction, OnCreateFeatureAboveFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureOptionalFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction, OnRemoveFeatureSubtreeFunction} from '../../store/types';
 
 type Props = FeatureComponentProps & {
     onDismissed: () => void,
@@ -19,13 +19,13 @@ type Props = FeatureComponentProps & {
     onCollapseFeaturesBelow: OnCollapseFeaturesBelowFunction,
     onExpandFeatures: OnExpandFeaturesFunction,
     onExpandFeaturesBelow: OnExpandFeaturesBelowFunction,
-    onRemoveFeatures: OnRemoveFeaturesFunction,
-    onRemoveFeaturesBelow: OnRemoveFeaturesBelowFunction,
-    onAddFeatureBelow: OnAddFeatureBelowFunction,
-    onAddFeatureAbove: OnAddFeatureAboveFunction,
+    onRemoveFeature: OnRemoveFeatureFunction,
+    onRemoveFeatureSubtree: OnRemoveFeatureSubtreeFunction,
+    onCreateFeatureBelow: OnCreateFeatureBelowFunction,
+    onCreateFeatureAbove: OnCreateFeatureAboveFunction,
     onSetFeatureAbstract: OnSetFeatureAbstractFunction,
     onSetFeatureHidden: OnSetFeatureHiddenFunction,
-    onSetFeatureMandatory: OnSetFeatureMandatoryFunction,
+    onSetFeatureOptional: OnSetFeatureOptionalFunction,
     onSetFeatureAnd: OnSetFeatureAndFunction,
     onSetFeatureOr: OnSetFeatureOrFunction,
     onSetFeatureAlternative: OnSetFeatureAlternativeFunction
@@ -38,24 +38,24 @@ export default class extends FeatureComponent()<Props> {
     onRenderFooterContent = () => (
         <CommandBar
             items={transparentItems([
-                commands.featureDiagram.feature.newMenu(this.props.featureUUID!, this.props.onAddFeatureBelow, this.props.onAddFeatureAbove, this.props.onDismissed, true),
-                commands.featureDiagram.feature.removeMenu([this.feature], this.props.onRemoveFeatures, this.props.onRemoveFeaturesBelow, this.props.onDismissed, true)
+                commands.featureDiagram.feature.newMenu(this.props.featureID!, this.props.featureModel, this.props.onCreateFeatureBelow, this.props.onCreateFeatureAbove, this.props.onDismissed, true),
+                commands.featureDiagram.feature.removeMenu([this.feature.ID], this.props.featureModel, this.props.onRemoveFeature, this.props.onRemoveFeatureSubtree, this.props.onDismissed, true)
             ])}
             overflowItems={[
                 commands.featureDiagram.feature.collapseMenu(
                     [this.feature], this.props.onCollapseFeatures, this.props.onExpandFeatures,
                     this.props.onCollapseFeaturesBelow, this.props.onExpandFeaturesBelow, this.props.onDismissed),
-                commands.featureDiagram.feature.rename(this.props.featureUUID!, this.props.onShowOverlay),
-                commands.featureDiagram.feature.setDescription(this.props.featureUUID!, this.props.onShowOverlay),
-                commands.featureDiagram.feature.properties([this.feature], this.props.onSetFeatureAbstract,
-                    this.props.onSetFeatureHidden, this.props.onSetFeatureMandatory, this.props.onSetFeatureAnd,
+                commands.featureDiagram.feature.rename(this.props.featureID!, this.props.featureModel, this.props.onShowOverlay),
+                commands.featureDiagram.feature.setDescription(this.props.featureID!, this.props.featureModel, this.props.onShowOverlay),
+                commands.featureDiagram.feature.properties([this.feature.ID], this.props.featureModel, this.props.onSetFeatureAbstract,
+                    this.props.onSetFeatureHidden, this.props.onSetFeatureOptional, this.props.onSetFeatureAnd,
                     this.props.onSetFeatureOr, this.props.onSetFeatureAlternative, this.props.onDismissed)
             ]}
             overflowButtonProps={{styles: buttonStyles}}
             styles={{root: {margin: '0 -40px', padding: '0 35px'}}}/>
     );
 
-    renderIfFeature(feature: GraphicalFeature) {
+    renderIfFeature(feature: Feature) {
         return (
             <Panel
                 isOpen={this.props.isOpen}

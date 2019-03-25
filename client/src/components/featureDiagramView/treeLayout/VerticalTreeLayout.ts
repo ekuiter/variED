@@ -7,7 +7,7 @@ import VerticalTreeLink from './VerticalTreeLink';
 import VerticalTreeNode from './VerticalTreeNode';
 import {estimateXOffset, estimateYOffset} from './estimation';
 import {FeatureDiagramLayoutType} from '../../../types';
-import {GraphicalFeatureNode} from '../../../modeling/types';
+import {FeatureNode} from '../../../modeling/types';
 
 export default class extends AbstractTreeLayout {
     constructor(props: AbstractTreeLayoutProps) {
@@ -22,7 +22,7 @@ export default class extends AbstractTreeLayout {
         return estimateYOffset(this.props.settings, sgn, FeatureDiagramLayoutType.verticalTree);
     }
 
-    getSeparationFn(estimateTextWidth: (node: GraphicalFeatureNode) => number): (a: GraphicalFeatureNode, b: GraphicalFeatureNode) => number {
+    getSeparationFn(estimateTextWidth: (node: FeatureNode) => number): (a: FeatureNode, b: FeatureNode) => number {
         return (a, b) =>
             (estimateTextWidth(a) + estimateTextWidth(b)) / 2 +
             2 * this.props.settings.featureDiagram.treeLayout.node.paddingX +

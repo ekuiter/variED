@@ -1,7 +1,9 @@
-task build {
+task stage {
     dependsOn ':clean'
+    dependsOn ':kernel:clean'
     dependsOn ':client:clean'
     dependsOn ':server:clean'
+    dependsOn ':kernel:build'
     dependsOn ':client:build'
     dependsOn ':server:build'
     doLast() {
@@ -12,12 +14,17 @@ task build {
     }
 }
 
-tasks.getByPath(':client:clean').mustRunAfter ':clean'
+tasks.getByPath(':kernel:clean').mustRunAfter ':clean'
+tasks.getByPath(':client:clean').mustRunAfter ':kernel:clean'
 tasks.getByPath(':server:clean').mustRunAfter ':client:clean'
-tasks.getByPath(':client:build').mustRunAfter ':server:clean'
+tasks.getByPath(':kernel:build').mustRunAfter ':server:clean'
+tasks.getByPath(':client:build').mustRunAfter ':kernel:build'
 tasks.getByPath(':server:build').mustRunAfter ':client:build'
 
-task stage(dependsOn: 'build')
+task build {
+    dependsOn 'stage'
+    dependsOn ':kernel:doc'
+}
 
 task clean {
     doLast {

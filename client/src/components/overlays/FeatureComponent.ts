@@ -4,12 +4,12 @@
 
 import React from 'react';
 import {Settings} from '../../store/settings';
-import GraphicalFeatureModel from '../../modeling/GraphicalFeatureModel';
-import {GraphicalFeature} from '../../modeling/types';
+import FeatureModel from '../../modeling/FeatureModel';
+import {Feature} from '../../modeling/types';
 
 export interface FeatureComponentProps {
-    graphicalFeatureModel: GraphicalFeatureModel,
-    featureUUID?: string,
+    featureModel: FeatureModel,
+    featureID?: string,
     settings: Settings
 };
 
@@ -19,7 +19,7 @@ function contains(a: DOMRect, b: DOMRect): boolean {
 }
 
 export function isFeatureOffscreen(element: Element) {
-    const svgRect = GraphicalFeatureModel.getSvg().getBoundingClientRect() as DOMRect,
+    const svgRect = FeatureModel.getSvg().getBoundingClientRect() as DOMRect,
             elementRect = element.getBoundingClientRect() as DOMRect;
     return !contains(svgRect, elementRect);
 }
@@ -27,7 +27,7 @@ export function isFeatureOffscreen(element: Element) {
 export default ({doUpdate = false} = {}) =>
     class <Props extends FeatureComponentProps> extends React.Component<Props> {
         interval: number;
-        feature: GraphicalFeature;
+        feature: Feature;
 
         componentDidMount() {
             if (doUpdate)
@@ -41,9 +41,10 @@ export default ({doUpdate = false} = {}) =>
                 window.clearInterval(this.interval);
         }
 
-        getFeature = () => this.props.featureUUID && this.props.graphicalFeatureModel.getFeature(this.props.featureUUID!);
+        getFeature = () => this.props.featureID && this.props.featureModel &&
+            this.props.featureModel.getFeature(this.props.featureID!);
 
-        renderIfFeature(_feature: GraphicalFeature): JSX.Element | null {
+        renderIfFeature(_feature: Feature): JSX.Element | null {
             throw new Error('abstract method not implemented');
         }
 

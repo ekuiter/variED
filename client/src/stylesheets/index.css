@@ -27,15 +27,14 @@
     flex: 1 1 auto;
     box-sizing: border-box;
     overflow: scroll;
+    height: calc(100vh - 40px);
 }
 
 .ms-Fabric.fabricRoot .content > .handler {
     flex: 0 0 auto;
     background-color: #f4f4f4;
-}
-
-.ms-Fabric.fabricRoot .content > .handler .handler-content {
-    color: #888;
+    background-image: url("resources/texture.png");
+    overflow: hidden;
 }
 
 .ms-Fabric.fabricRoot .content.horizontal > .handler {
@@ -43,19 +42,14 @@
     cursor: col-resize;
 }
 
-.ms-Fabric.fabricRoot .content.horizontal > .handler .handler-content {
-    line-height: calc(100vh - 40px);
-    transform: rotate(90deg) translate(0, -4px);
-}
-
 .ms-Fabric.fabricRoot .content.vertical > .handler {
     height: 12px;
     cursor: row-resize;
 }
 
-.ms-Fabric.fabricRoot .content.vertical > .handler .handler-content {
-    text-align: center;
-    transform: translate(0, -6px);
+.ms-Fabric.fabricRoot .content .scrollable {
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 .ms-Spinner {
@@ -110,9 +104,11 @@ textarea {
     margin: 0;
 }
 
+/*
 .palette ul.scrollable {
-    overflow: auto;
+    overflow: auto; this inexplicably causes touch scrolling not to work on mobile devices ...
 }
+*/
 
 .palette ul li {
     padding: 8px 12px;

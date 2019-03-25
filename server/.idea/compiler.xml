@@ -4,6 +4,8 @@
     <bytecodeTargetLevel>
       <module name="server_main" target="1.8" />
       <module name="server_test" target="1.8" />
+      <module name="variED.server.main" target="1.8" />
+      <module name="variED.server.test" target="1.8" />
       <module name="variED_main" target="1.8" />
       <module name="variED_test" target="1.8" />
     </bytecodeTargetLevel>

@@ -13,30 +13,30 @@ import {
 } from '../../../helpers/svg';
 import styles from './styles';
 import {Rect, Point, D3Selection} from '../../../types';
-import {OnToggleFeatureMandatoryFunction} from '../../../store/types';
-import {GraphicalFeatureNode, NodeCoordinateForAxisFunction, NodePointFunction, FeatureType} from '../../../modeling/types';
+import {OnToggleFeatureOptionalFunction} from '../../../store/types';
+import {FeatureNode, NodeCoordinateForAxisFunction, NodePointFunction} from '../../../modeling/types';
 
 declare class AbstractTreeNode {
     rectInfo: Rect;
-    x(_node: GraphicalFeatureNode): number;
-    y(_node: GraphicalFeatureNode): number;
-    estimateTextWidth(node: GraphicalFeatureNode): number;
+    x(_node: FeatureNode): number;
+    y(_node: FeatureNode): number;
+    estimateTextWidth(node: FeatureNode): number;
 }
 
 export default class {
     constructor(public settings: Settings, public getCurrentParentCoordinate: NodeCoordinateForAxisFunction,
         public getPreviousParentCoordinate: NodeCoordinateForAxisFunction, public treeNode: AbstractTreeNode,
-        public onToggleFeatureMandatory: OnToggleFeatureMandatoryFunction) {}
+        public onToggleFeatureOptional: OnToggleFeatureOptionalFunction) {}
 
-    nodeX(node: GraphicalFeatureNode): number {
+    nodeX(node: FeatureNode): number {
         return this.treeNode.x(node);
     }
 
-    nodeY(node: GraphicalFeatureNode): number {
+    nodeY(node: FeatureNode): number {
         return this.treeNode.y(node);
     }
 
-    estimateTextWidth(node: GraphicalFeatureNode): number {
+    estimateTextWidth(node: FeatureNode): number {
         return this.treeNode.estimateTextWidth(node);
     }
 
@@ -44,11 +44,11 @@ export default class {
         return this.treeNode.rectInfo;
     }
 
-    groupAnchor(_node: GraphicalFeatureNode): Point {
+    groupAnchor(_node: FeatureNode): Point {
         throw new Error('abstract method not implemented');
     }
 
-    collapseAnchor(_node: GraphicalFeatureNode): Partial<Point> {
+    collapseAnchor(_node: FeatureNode): Partial<Point> {
         throw new Error('abstract method not implemented');
     }
 
@@ -72,18 +72,18 @@ export default class {
         throw new Error('abstract method not implemented');
     }
 
-    from(_node: GraphicalFeatureNode, _phase?: string): Point {
+    from(_node: FeatureNode, _phase?: string): Point {
         throw new Error('abstract method not implemented');
     }
 
-    to(_node: GraphicalFeatureNode, _phase?: string): Point {
+    to(_node: FeatureNode, _phase?: string): Point {
         throw new Error('abstract method not implemented');
     }
 
     drawGroup(arcSegment: D3Selection, arcSlice: D3Selection, arcClick: D3Selection): void {
-        const drawArc = (node: D3Selection, arcPathFn: ArcPathFunction, checkType = (d: GraphicalFeatureNode): boolean | string => true) =>
-            node.attr('opacity', (d: GraphicalFeatureNode) => d.feature().isGroup && d.feature().hasChildren && checkType(d) ? 1 : 0)
-                .attr('d', (d: GraphicalFeatureNode) => {
+        const drawArc = (node: D3Selection, arcPathFn: ArcPathFunction, checkType = (d: FeatureNode): boolean | string => true) =>
+            node.attr('opacity', (d: FeatureNode) => d.feature().isGroup && d.feature().hasChildren && checkType(d) ? 1 : 0)
+                .attr('d', (d: FeatureNode) => {
                     const relativeGroupAnchor = this.groupAnchor(d),
                         absoluteGroupAnchor = {
                             x: relativeGroupAnchor.x + this.nodeX(d),
@@ -99,7 +99,7 @@ export default class {
                         startAngle, endAngle, this.sweepFlag());
                 });
         drawArc(arcSegment, arcSegmentPath);
-        drawArc(arcSlice, arcSlicePath, d => d.feature().type === FeatureType.or);
+        drawArc(arcSlice, arcSlicePath, d => d.feature().isOr);
         drawArc(arcClick, arcSlicePath, () => 'always');
     }
 
@@ -107,8 +107,8 @@ export default class {
         const linkEnter = link.append('g')
                 .attr('class', 'link')
                 .attr('opacity', 0),
-            from = (d: GraphicalFeatureNode) => this.from(d, 'enter'),
-            to = (d: GraphicalFeatureNode) => this.to(d, 'enter');
+            from = (d: FeatureNode) => this.from(d, 'enter'),
+            to = (d: FeatureNode) => this.to(d, 'enter');
 
         if (zIndex === 'inBack')
             linkEnter
@@ -118,16 +118,16 @@ export default class {
             linkEnter.call(drawCircle, null, {
                 center: from,
                 radius: 0,
-                style: styles.link.mandatory(this.settings),
-                fn: (circle: D3Selection) => circle.on('dblclick', d => this.onToggleFeatureMandatory({feature: d.feature()}))
+                style: styles.link.optional(this.settings),
+                fn: (circle: D3Selection) => circle.on('dblclick', d => this.onToggleFeatureOptional({feature: d.feature()}))
             });
 
         return linkEnter;
     }
 
     update(link: D3Selection, zIndex: string): void {
-        const from = (d: GraphicalFeatureNode) => this.from(d, 'update'),
-            to = (d: GraphicalFeatureNode) => this.to(d, 'update'),
+        const from = (d: FeatureNode) => this.from(d, 'update'),
+            to = (d: FeatureNode) => this.to(d, 'update'),
             radius = this.settings.featureDiagram.treeLayout.link.circleRadius;
         link.attr('opacity', 1);
 
@@ -135,12 +135,12 @@ export default class {
             link.call(this.drawLink, '.line', {from, to});
 
         if (zIndex === 'inFront')
-            link.call(drawCircle, 'circle', {center: from, radius, style: styles.link.mandatory(this.settings)});
+            link.call(drawCircle, 'circle', {center: from, radius, style: styles.link.optional(this.settings)});
     }
 
     exit(link: D3Selection, zIndex: string): void {
-        const from = (d: GraphicalFeatureNode) => this.from(d, 'exit'),
-            to = (d: GraphicalFeatureNode) => this.to(d, 'exit');
+        const from = (d: FeatureNode) => this.from(d, 'exit'),
+            to = (d: FeatureNode) => this.to(d, 'exit');
         link.attr('opacity', 0).remove();
 
         if (zIndex === 'inBack')

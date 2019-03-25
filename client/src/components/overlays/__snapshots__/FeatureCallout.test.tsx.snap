@@ -44,6 +44,7 @@ exports[`FeatureCallout renders information for a feature with a description 1`]
       items={
         Array [
           Object {
+            "disabled": false,
             "iconOnly": true,
             "iconProps": Object {
               "iconName": "Add",
@@ -54,6 +55,7 @@ exports[`FeatureCallout renders information for a feature with a description 1`]
             "subMenuProps": Object {
               "items": Array [
                 Object {
+                  "disabled": false,
                   "iconProps": Object {
                     "iconName": "Add",
                   },
@@ -76,7 +78,6 @@ exports[`FeatureCallout renders information for a feature with a description 1`]
             "text": undefined,
           },
           Object {
-            "disabled": false,
             "iconOnly": true,
             "iconProps": Object {
               "iconName": "Remove",
@@ -87,6 +88,7 @@ exports[`FeatureCallout renders information for a feature with a description 1`]
             "subMenuProps": Object {
               "items": Array [
                 Object {
+                  "disabled": false,
                   "iconProps": Object {
                     "iconName": "Remove",
                   },
@@ -199,6 +201,7 @@ exports[`FeatureCallout renders information for a feature without a description 
       items={
         Array [
           Object {
+            "disabled": false,
             "iconOnly": true,
             "iconProps": Object {
               "iconName": "Add",
@@ -209,6 +212,7 @@ exports[`FeatureCallout renders information for a feature without a description 
             "subMenuProps": Object {
               "items": Array [
                 Object {
+                  "disabled": false,
                   "iconProps": Object {
                     "iconName": "Add",
                   },
@@ -231,7 +235,6 @@ exports[`FeatureCallout renders information for a feature without a description 
             "text": undefined,
           },
           Object {
-            "disabled": false,
             "iconOnly": true,
             "iconProps": Object {
               "iconName": "Remove",
@@ -242,6 +245,7 @@ exports[`FeatureCallout renders information for a feature without a description 
             "subMenuProps": Object {
               "items": Array [
                 Object {
+                  "disabled": false,
                   "iconProps": Object {
                     "iconName": "Remove",
                   },

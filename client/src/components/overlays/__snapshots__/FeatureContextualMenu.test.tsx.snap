@@ -18,7 +18,6 @@ exports[`FeatureContextualMenu renders correctly for a selection of features 1`]
         "text": "New feature above",
       },
       Object {
-        "disabled": true,
         "iconOnly": false,
         "iconProps": Object {
           "iconName": "Remove",
@@ -29,6 +28,7 @@ exports[`FeatureContextualMenu renders correctly for a selection of features 1`]
         "subMenuProps": Object {
           "items": Array [
             Object {
+              "disabled": true,
               "iconProps": Object {
                 "iconName": "Remove",
               },
@@ -136,6 +136,7 @@ exports[`FeatureContextualMenu renders correctly for a selection of features 1`]
             },
             Object {
               "canCheck": true,
+              "disabled": false,
               "isChecked": false,
               "key": "hidden",
               "onClick": [Function],
@@ -149,17 +150,17 @@ exports[`FeatureContextualMenu renders correctly for a selection of features 1`]
               "canCheck": true,
               "disabled": true,
               "isChecked": false,
-              "key": "mandatory",
+              "key": "optional",
               "onClick": [Function],
-              "text": "Mandatory",
+              "text": "Optional",
             },
             Object {
               "canCheck": true,
               "disabled": true,
               "isChecked": false,
-              "key": "optional",
+              "key": "mandatory",
               "onClick": [Function],
-              "text": "Optional",
+              "text": "Mandatory",
             },
             Object {
               "itemType": 1,
@@ -209,6 +210,7 @@ exports[`FeatureContextualMenu renders correctly for a single feature 1`] = `
   items={
     Array [
       Object {
+        "disabled": false,
         "iconOnly": false,
         "iconProps": Object {
           "iconName": "Add",
@@ -219,6 +221,7 @@ exports[`FeatureContextualMenu renders correctly for a single feature 1`] = `
         "subMenuProps": Object {
           "items": Array [
             Object {
+              "disabled": false,
               "iconProps": Object {
                 "iconName": "Add",
               },
@@ -241,7 +244,6 @@ exports[`FeatureContextualMenu renders correctly for a single feature 1`] = `
         "text": "New",
       },
       Object {
-        "disabled": false,
         "iconOnly": false,
         "iconProps": Object {
           "iconName": "Remove",
@@ -252,6 +254,7 @@ exports[`FeatureContextualMenu renders correctly for a single feature 1`] = `
         "subMenuProps": Object {
           "items": Array [
             Object {
+              "disabled": false,
               "iconProps": Object {
                 "iconName": "Remove",
               },
@@ -322,6 +325,7 @@ exports[`FeatureContextualMenu renders correctly for a single feature 1`] = `
         "key": "divider",
       },
       Object {
+        "disabled": false,
         "iconProps": Object {
           "iconName": "Rename",
         },
@@ -331,6 +335,7 @@ exports[`FeatureContextualMenu renders correctly for a single feature 1`] = `
         "text": "Rename…",
       },
       Object {
+        "disabled": false,
         "iconProps": Object {
           "iconName": "TextDocument",
         },
@@ -367,6 +372,7 @@ exports[`FeatureContextualMenu renders correctly for a single feature 1`] = `
             },
             Object {
               "canCheck": true,
+              "disabled": false,
               "isChecked": false,
               "key": "hidden",
               "onClick": [Function],
@@ -380,17 +386,17 @@ exports[`FeatureContextualMenu renders correctly for a single feature 1`] = `
               "canCheck": true,
               "disabled": false,
               "isChecked": false,
-              "key": "mandatory",
+              "key": "optional",
               "onClick": [Function],
-              "text": "Mandatory",
+              "text": "Optional",
             },
             Object {
               "canCheck": true,
               "disabled": true,
               "isChecked": true,
-              "key": "optional",
+              "key": "mandatory",
               "onClick": [Function],
-              "text": "Optional",
+              "text": "Mandatory",
             },
             Object {
               "itemType": 1,

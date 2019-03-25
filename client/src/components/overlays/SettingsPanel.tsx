@@ -122,20 +122,11 @@ export const Setting = {
 };
 
 export default class extends React.Component<SettingsPanelProps> {
-    state = {canReset: false};
-
-    resettableSetSetting: OnSetSettingFunction = payload => {
-        this.setState({canReset: true});
-        this.props.onSetSetting(payload);
-    };
-
-    onReset = () => {
-        this.setState({canReset: false});
-        this.props.onResetSettings();
-    };
-
     render() {
-        const props = {settings: this.props.settings, onSetSetting: this.resettableSetSetting},
+        const props = {
+                settings: this.props.settings,
+                onSetSetting: this.props.onSetSetting
+            },
             featureDiagramLayout = this.props.featureDiagramLayout;
         return (
             <Panel
@@ -147,8 +138,7 @@ export default class extends React.Component<SettingsPanelProps> {
                 headerText={i18n.t('overlays.settingsPanel.title')}>
 
                 <DefaultButton
-                    onClick={this.onReset}
-                    disabled={!this.state.canReset}
+                    onClick={this.props.onResetSettings}
                     text={i18n.t('overlays.settingsPanel.resetToDefaults')}/>
 
                 {(featureDiagramLayout === FeatureDiagramLayoutType.verticalTree ||

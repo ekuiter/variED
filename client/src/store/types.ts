@@ -1,93 +1,102 @@
-import GraphicalFeatureModel from '../modeling/GraphicalFeatureModel';
+import FeatureModel from '../modeling/FeatureModel';
 import {defaultSettings, Settings} from './settings';
 import {Message, FeatureDiagramLayoutType, OverlayType, OverlayProps, ArtifactPath} from '../types';
-import {GraphicalFeature, SerializedFeatureModel} from '../modeling/types';
+import {Feature, KernelConstraintFormula, KernelCombinedEffect, KernelConflictDescriptor} from '../modeling/types';
 
-export interface User {
-    name: string
+export interface Collaborator {
+    siteID: string
 };
 
 export interface CollaborativeSession {
     artifactPath: ArtifactPath,
-    users: User[]
+    collaborators: Collaborator[]
 };
 
+export type KernelContext = object;
+export type KernelData = any;
+
 export interface FeatureDiagramCollaborativeSession extends CollaborativeSession {
-    serializedFeatureModel: SerializedFeatureModel,
+    kernelContext: KernelContext,
+    kernelCombinedEffect: KernelCombinedEffect,
     layout: FeatureDiagramLayoutType,
     isSelectMultipleFeatures: boolean,
-    selectedFeatureUUIDs: string[],
-    collapsedFeatureUUIDs: string[]
+    selectedFeatureIDs: string[],
+    collapsedFeatureIDs: string[]
 };
 
 export interface State {
     settings: Settings,
     overlay: OverlayType,
     overlayProps: OverlayProps
-    user?: User,
+    myself?: Collaborator,
     collaborativeSessions: CollaborativeSession[],
-    artifactPaths: ArtifactPath[],
-    currentArtifactPath?: ArtifactPath
+    artifactPaths: ArtifactPath[]
 };
 
 export const initialState: State = {
     settings: defaultSettings,
     overlay: OverlayType.none,
     overlayProps: {},
-    user: undefined,
+    myself: undefined,
     collaborativeSessions: [],
-    artifactPaths: [],
-    currentArtifactPath: undefined
+    artifactPaths: []
 };
 
 export const initialFeatureDiagramCollaborativeSessionState =
-    (artifactPath: ArtifactPath, serializedFeatureModel: SerializedFeatureModel): FeatureDiagramCollaborativeSession => ({
+    (artifactPath: ArtifactPath, kernelContext: KernelContext, kernelCombinedEffect: KernelCombinedEffect):
+    FeatureDiagramCollaborativeSession => ({
         artifactPath,
-        users: [],
-        serializedFeatureModel,
+        collaborators: [],
+        kernelContext,
+        kernelCombinedEffect,
         layout: FeatureDiagramLayoutType.verticalTree,
         isSelectMultipleFeatures: false,
-        selectedFeatureUUIDs: [],
-        collapsedFeatureUUIDs: []
+        selectedFeatureIDs: [],
+        collapsedFeatureIDs: []
     });
 
-export type OnSelectFeatureFunction = (payload: {featureUUID: string}) => void;
-export type OnDeselectFeatureFunction = (payload: {featureUUID: string}) => void;
+export type OnSelectFeatureFunction = (payload: {featureID: string}) => void;
+export type OnDeselectFeatureFunction = (payload: {featureID: string}) => void;
 export type OnSelectAllFeaturesFunction = () => void;
 export type OnDeselectAllFeaturesFunction = () => void;
 export type OnCollapseAllFeaturesFunction = () => void;
 export type OnExpandAllFeaturesFunction = () => void;
 export type OnSetFeatureDiagramLayoutFunction = (payload: {layout: FeatureDiagramLayoutType}) => void;
 export type OnSetSelectMultipleFeaturesFunction = (payload: {isSelectMultipleFeatures: boolean}) => void;
-export type OnCollapseFeaturesFunction = (payload: {featureUUIDs: string[]}) => void;
-export type OnExpandFeaturesFunction = (payload: {featureUUIDs: string[]}) => void;
-export type OnCollapseFeaturesBelowFunction = (payload: {featureUUIDs: string[]}) => void;
-export type OnExpandFeaturesBelowFunction = (payload: {featureUUIDs: string[]}) => void;
-export type OnShowOverlayFunction = (payload: {overlay: OverlayType, overlayProps: OverlayProps, selectOneFeatureUUID?: string}) => void;
+export type OnCollapseFeaturesFunction = (payload: {featureIDs: string[]}) => void;
+export type OnExpandFeaturesFunction = (payload: {featureIDs: string[]}) => void;
+export type OnCollapseFeaturesBelowFunction = (payload: {featureIDs: string[]}) => void;
+export type OnExpandFeaturesBelowFunction = (payload: {featureIDs: string[]}) => void;
+export type OnShowOverlayFunction = (payload: {overlay: OverlayType, overlayProps: OverlayProps, selectOneFeatureID?: string}) => void;
 export type OnHideOverlayFunction = (payload: {overlay: OverlayType}) => void;
 export type OnFitToScreenFunction = () => void;
 export type OnSetSettingFunction = (payload: {path: string, value: any}) => void;
 export type OnResetSettingsFunction = () => void;
-export type OnSetCurrentArtifactPathFunction = (payload: {artifactPath?: ArtifactPath}) => void;
 
-export type OnJoinFunction = (payload: {artifactPath: ArtifactPath}) => Promise<void>;
-export type OnLeaveFunction = (payload: {artifactPath: ArtifactPath}) => Promise<void>;
+export type OnAddArtifactFunction = (payload: {artifactPath: ArtifactPath, source?: string}) => Promise<void>;
+export type OnRemoveArtifactFunction = (payload: {artifactPath: ArtifactPath}) => Promise<void>;
+export type OnJoinRequestFunction = (payload: {artifactPath: ArtifactPath}) => Promise<void>;
+export type OnLeaveRequestFunction = (payload: {artifactPath: ArtifactPath}) => Promise<void>;
 export type OnUndoFunction = () => Promise<void>;
 export type OnRedoFunction = () => Promise<void>;
-export type OnAddFeatureBelowFunction = (payload: {belowFeatureUUID: string}) => Promise<void>;
-export type OnAddFeatureAboveFunction = (payload: {aboveFeatureUUIDs: string[]}) => Promise<void>;
-export type OnRemoveFeaturesFunction = (payload: {featureUUIDs: string[]}) => Promise<void>;
-export type OnRemoveFeaturesBelowFunction = (payload: {featureUUIDs: string[]}) => Promise<void>;
-export type OnRenameFeatureFunction = (payload: {featureUUID: string, name: string}) => Promise<void>;
-export type OnSetFeatureDescriptionFunction = (payload: {featureUUID: string, description: string}) => Promise<void>;
-export type OnSetFeatureAbstractFunction = (payload: {featureUUIDs: string[], value: boolean}) => Promise<void>;
-export type OnSetFeatureHiddenFunction = (payload: {featureUUIDs: string[], value: boolean}) => Promise<void>;
-export type OnSetFeatureMandatoryFunction = (payload: {featureUUIDs: string[], value: boolean}) => Promise<void>;
-export type OnToggleFeatureMandatoryFunction = (payload: {feature: GraphicalFeature}) => Promise<void>;
-export type OnSetFeatureAndFunction = (payload: {featureUUIDs: string[]}) => Promise<void>;
-export type OnSetFeatureOrFunction = (payload: {featureUUIDs: string[]}) => Promise<void>;
-export type OnSetFeatureAlternativeFunction = (payload: {featureUUIDs: string[]}) => Promise<void>;
-export type OnToggleFeatureGroupFunction = (payload: {feature: GraphicalFeature}) => Promise<void>;
+export type OnCreateFeatureBelowFunction = (payload: {featureParentID: string}) => Promise<void>;
+export type OnCreateFeatureAboveFunction = (payload: {featureIDs: string[]}) => Promise<void>;
+export type OnRemoveFeatureFunction = (payload: {featureIDs: string[]}) => Promise<void>;
+export type OnRemoveFeatureSubtreeFunction = (payload: {featureIDs: string[]}) => Promise<void>;
+export type OnMoveFeatureSubtreeFunction = (payload: {featureID: string, featureParentID: string}) => Promise<void>;
+export type OnSetFeatureNameFunction = (payload: {featureID: string, name: string}) => Promise<void>;
+export type OnSetFeatureDescriptionFunction = (payload: {featureID: string, description: string}) => Promise<void>;
+export type OnSetFeatureAbstractFunction = (payload: {featureIDs: string[], value: boolean}) => Promise<void>;
+export type OnSetFeatureHiddenFunction = (payload: {featureIDs: string[], value: boolean}) => Promise<void>;
+export type OnSetFeatureOptionalFunction = (payload: {featureIDs: string[], value: boolean}) => Promise<void>;
+export type OnToggleFeatureOptionalFunction = (payload: {feature: Feature}) => Promise<void>;
+export type OnSetFeatureAndFunction = (payload: {featureIDs: string[]}) => Promise<void>;
+export type OnSetFeatureOrFunction = (payload: {featureIDs: string[]}) => Promise<void>;
+export type OnSetFeatureAlternativeFunction = (payload: {featureIDs: string[]}) => Promise<void>;
+export type OnCreateConstraintFunction = (payload: {formula: KernelConstraintFormula}) => Promise<void>;
+export type OnSetConstraintFunction = (payload: {constraintID: string, formula: KernelConstraintFormula}) => Promise<void>;
+export type OnRemoveConstraintFunction = (payload: {constraintID: string}) => Promise<void>;
+export type OnToggleFeatureGroupTypeFunction = (payload: {feature: Feature}) => Promise<void>;
 
 // Props that may derived from the state to use in React components.
 // This enforces the convention that a prop called 'on...' has the same type in all components.
@@ -96,13 +105,14 @@ export type StateDerivedProps = Partial<{
     currentArtifactPath: ArtifactPath,
     artifactPaths: ArtifactPath[],
     collaborativeSessions: CollaborativeSession[],
-    user: User,
-    users: User[],
+    myself: Collaborator,
+    collaborators: Collaborator[],
     settings: Settings,
     featureDiagramLayout: FeatureDiagramLayoutType,
     isSelectMultipleFeatures: boolean,
-    selectedFeatureUUIDs: string[],
-    graphicalFeatureModel: GraphicalFeatureModel,
+    selectedFeatureIDs: string[],
+    featureModel: FeatureModel,
+    conflictDescriptor: KernelConflictDescriptor,
     overlay: OverlayType,
     overlayProps: OverlayProps,
 
@@ -123,24 +133,29 @@ export type StateDerivedProps = Partial<{
     onFitToScreen: OnFitToScreenFunction,
     onSetSetting: OnSetSettingFunction,
     onResetSettings: OnResetSettingsFunction,
-    onSetCurrentArtifactPath: OnSetCurrentArtifactPathFunction,
 
-    onJoin: OnJoinFunction,
-    onLeave: OnLeaveFunction,
+    onAddArtifact: OnAddArtifactFunction,
+    onRemoveArtifact: OnRemoveArtifactFunction,
+    onJoinRequest: OnJoinRequestFunction,
+    onLeaveRequest: OnLeaveRequestFunction,
     onUndo: OnUndoFunction,
     onRedo: OnRedoFunction,
-    onAddFeatureBelow: OnAddFeatureBelowFunction,
-    onAddFeatureAbove: OnAddFeatureAboveFunction,
-    onRemoveFeatures: OnRemoveFeaturesFunction,
-    onRemoveFeaturesBelow: OnRemoveFeaturesBelowFunction,
-    onRenameFeature: OnRenameFeatureFunction,
+    onCreateFeatureBelow: OnCreateFeatureBelowFunction,
+    onCreateFeatureAbove: OnCreateFeatureAboveFunction,
+    onRemoveFeature: OnRemoveFeatureFunction,
+    onRemoveFeatureSubtree: OnRemoveFeatureSubtreeFunction,
+    onMoveFeatureSubtree: OnMoveFeatureSubtreeFunction,
+    onSetFeatureName: OnSetFeatureNameFunction,
     onSetFeatureDescription: OnSetFeatureDescriptionFunction,
     onSetFeatureAbstract: OnSetFeatureAbstractFunction,
     onSetFeatureHidden: OnSetFeatureHiddenFunction,
-    onSetFeatureMandatory: OnSetFeatureMandatoryFunction,
-    onToggleFeatureMandatory: OnToggleFeatureMandatoryFunction,
+    onSetFeatureOptional: OnSetFeatureOptionalFunction,
+    onToggleFeatureOptional: OnToggleFeatureOptionalFunction,
     onSetFeatureAnd: OnSetFeatureAndFunction,
     onSetFeatureOr: OnSetFeatureOrFunction,
     onSetFeatureAlternative: OnSetFeatureAlternativeFunction,
-    onToggleFeatureGroup: OnToggleFeatureGroupFunction
+    onCreateConstraint: OnCreateConstraintFunction,
+    onSetConstraint: OnSetConstraintFunction,
+    onRemoveConstraint: OnRemoveConstraintFunction,
+    onToggleFeatureGroupType: OnToggleFeatureGroupTypeFunction
 }>;

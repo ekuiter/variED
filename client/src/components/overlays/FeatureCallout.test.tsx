@@ -1,18 +1,18 @@
 import React from 'react';
 import {shallow} from 'enzyme';
 import FeatureCallout from './FeatureCallout';
-import GraphicalFeatureModel from '../../modeling/GraphicalFeatureModel';
+import FeatureModel from '../../modeling/FeatureModel';
 import {validFeatureModel} from '../../fixtures';
 import {defaultSettings} from '../../store/settings';
 import {Callout, DirectionalHint} from 'office-ui-fabric-react/lib/Callout';
 import {FeatureDiagramLayoutType} from '../../types';
 
 describe('FeatureCallout', () => {
-    const featureCallout = (featureUUID = 'FeatureIDE') => {
-        const graphicalFeatureModel = GraphicalFeatureModel.fromJSON(validFeatureModel),
+    const featureCallout = (featureID = 'FeatureIDE') => {
+        const featureModel = FeatureModel.fromKernel(validFeatureModel),
             mock = jest.fn();
-        graphicalFeatureModel.hasElement = jest.fn().mockReturnValue(true);
-        graphicalFeatureModel.getElement = jest.fn().mockReturnValue({
+        featureModel.hasElement = jest.fn().mockReturnValue(true);
+        featureModel.getElement = jest.fn().mockReturnValue({
             querySelector: () => '<target element>',
             getBoundingClientRect: () => ({x: 10, y: 10, width: 100, height: 100})
         });
@@ -27,19 +27,19 @@ describe('FeatureCallout', () => {
                 onExpandFeatures={mock}
                 onCollapseFeaturesBelow={mock}
                 onExpandFeaturesBelow={mock}
-                graphicalFeatureModel={graphicalFeatureModel}
-                featureUUID={featureUUID}
-                onRemoveFeatures={mock}
-                onAddFeatureAbove={mock}
-                onAddFeatureBelow={mock}
-                onRemoveFeaturesBelow={mock}/>
+                featureModel={featureModel}
+                featureID={featureID}
+                onRemoveFeature={mock}
+                onCreateFeatureAbove={mock}
+                onCreateFeatureBelow={mock}
+                onRemoveFeatureSubtree={mock}/>
         );
     };
 
     beforeAll(() => {
-        GraphicalFeatureModel.getSvg = jest.fn(() => ({
+        FeatureModel.getSvg = jest.fn(() => ({
             getBoundingClientRect: () => ({x: 0, y: 0, width: 1000, height: 1000})
-        }));
+        })) as () => any;
     });
 
     it('renders information for a feature with a description', () => {

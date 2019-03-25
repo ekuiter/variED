@@ -6,21 +6,13 @@ import {Selection} from 'd3-selection';
 
 export enum MessageType {
     ERROR = 'ERROR',
-    USER_INFO = 'USER_INFO',
-    ARTIFACT_INFO = 'ARTIFACT_INFO',
-    JOIN = 'JOIN',
-    LEAVE = 'LEAVE',
-    UNDO = 'UNDO',
-    REDO = 'REDO',
-    BATCH = 'BATCH',
-    FEATURE_DIAGRAM_FEATURE_MODEL = 'FEATURE_DIAGRAM_FEATURE_MODEL',
-    FEATURE_DIAGRAM_FEATURE_ADD_BELOW = 'FEATURE_DIAGRAM_FEATURE_ADD_BELOW',
-    FEATURE_DIAGRAM_FEATURE_ADD_ABOVE = 'FEATURE_DIAGRAM_FEATURE_ADD_ABOVE',
-    FEATURE_DIAGRAM_FEATURE_REMOVE = 'FEATURE_DIAGRAM_FEATURE_REMOVE',
-    FEATURE_DIAGRAM_FEATURE_REMOVE_BELOW = 'FEATURE_DIAGRAM_FEATURE_REMOVE_BELOW',
-    FEATURE_DIAGRAM_FEATURE_RENAME = 'FEATURE_DIAGRAM_FEATURE_RENAME',
-    FEATURE_DIAGRAM_FEATURE_SET_DESCRIPTION = 'FEATURE_DIAGRAM_FEATURE_SET_DESCRIPTION',
-    FEATURE_DIAGRAM_FEATURE_SET_PROPERTY = 'FEATURE_DIAGRAM_FEATURE_SET_PROPERTY'
+    COLLABORATOR_INFO = 'COLLABORATOR_INFO',
+    ADD_ARTIFACT = 'ADD_ARTIFACT',
+    REMOVE_ARTIFACT = 'REMOVE_ARTIFACT',
+    JOIN_REQUEST = 'JOIN_REQUEST',
+    LEAVE_REQUEST = 'LEAVE_REQUEST',
+    INITIALIZE = 'INITIALIZE',
+    KERNEL = 'KERNEL'
 };
 
 export enum FeatureDiagramLayoutType {
@@ -36,13 +28,15 @@ export enum OverlayType {
     featurePanel = 'featurePanel',
     featureRenameDialog = 'featureRenameDialog',
     featureSetDescriptionDialog = 'featureSetDescriptionDialog',
+    addArtifactPanel = 'addArtifact',
+    shareDialog = 'share',
     exportDialog = 'export',
     featureCallout = 'featureCallout',
     featureContextualMenu = 'featureContextualMenu'
 };
 
 export interface OverlayProps {
-    featureUUID?: string,
+    featureID?: string,
     format?: FormatType
 };
 
@@ -68,12 +62,16 @@ export interface ArtifactPath {
 };
 
 export function artifactPathToString(artifactPath: ArtifactPath): string {
-    return artifactPath ? `${artifactPath.project}::${artifactPath.artifact}` : `(unknown artifact)`;
+    return artifactPath ? `${artifactPath.project}/${artifactPath.artifact}` : `(unknown artifact)`;
+}
+
+export function artifactPathCacheKey(artifactPath: ArtifactPath): string {
+    return artifactPath ? `${artifactPath.project.toLowerCase()}/${artifactPath.artifact.toLowerCase()}` : '';
 }
 
 export function isArtifactPathEqual(a?: ArtifactPath, b?: ArtifactPath): boolean {
     return typeof a !== 'undefined' && typeof b !== 'undefined' &&
-        a.project === b.project && a.artifact === b.artifact;
+        a.project.toLowerCase() === b.project.toLowerCase() && a.artifact.toLowerCase() === b.artifact.toLowerCase();
 }
 
 export interface Message {
@@ -98,3 +96,4 @@ export type D3Selection = Selection<any, any, any, any>;
 export type Func = (...args: any[]) => any;
 // omits a property from a type
 export type Omit<T, K> = Pick<T, Exclude<keyof T, K>>;
+export type RouteProps = {history: any, location: any, match: any};

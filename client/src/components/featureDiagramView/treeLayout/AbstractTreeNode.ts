@@ -10,11 +10,11 @@ import {addStyle, appendCross, drawCircle, translateTransform, StyleDescriptor, 
 import styles from './styles';
 import {isCommand} from '../../../helpers/withKeys';
 import {OverlayType, Rect, D3Selection, Point} from '../../../types';
-import {OnShowOverlayFunction, OnExpandFeaturesFunction, OnToggleFeatureGroupFunction} from '../../../store/types';
-import {GraphicalFeatureNode} from '../../../modeling/types';
+import {OnShowOverlayFunction, OnExpandFeaturesFunction, OnToggleFeatureGroupTypeFunction} from '../../../store/types';
+import {FeatureNode} from '../../../modeling/types';
 
 declare class AbstractTreeLink {
-    collapseAnchor(_node: GraphicalFeatureNode): Partial<Point>;
+    collapseAnchor(_node: FeatureNode): Partial<Point>;
     drawGroup(arcSegment: D3Selection, arcSlice: D3Selection, arcClick: D3Selection): void;
 }
 
@@ -30,10 +30,10 @@ function makeRect(settings: Settings, textBbox: Rect): Rect {
         nodeSettings.paddingY + nodeSettings.strokeWidth);
 }
 
-function addFontStyle(selection: D3Selection, settings: Settings): void {
+function addFontStyle(selection: D3Selection, settings: Settings, scale = 1): void {
     selection.attrs({
         'font-family': settings.featureDiagram.font.family,
-        'font-size': settings.featureDiagram.font.size
+        'font-size': settings.featureDiagram.font.size * scale
     });
 }
 
@@ -51,7 +51,7 @@ function makeText(settings: Settings, selection: D3Selection, isGettingRectInfo:
         const bboxes: Rect[] = [];
         selection.append('text')
             .call(addFontStyle, settings)
-            .text((d: GraphicalFeatureNode) => d.feature().name)
+            .text((d: FeatureNode) => d.feature().name)
             .call(addStyle, textStyle, styles.node.hidden(settings))
             .each(function(this: SVGGraphicsElement) {
                 bboxes.push(this.getBBox());
@@ -63,18 +63,18 @@ function makeText(settings: Settings, selection: D3Selection, isGettingRectInfo:
 export default class {
     rectInfo: Rect;
     treeLink: AbstractTreeLink;
-    getWidestTextOnLayer: (node: GraphicalFeatureNode) => number;
+    getWidestTextOnLayer: (node: FeatureNode) => number;
 
     constructor(public settings: Settings, public isSelectMultipleFeatures: boolean, public debug: boolean,
-        public setActiveNode: (overlay: OverlayType | 'select', activeNode: GraphicalFeatureNode) => void,
+        public setActiveNode: (overlay: OverlayType | 'select', activeNode: FeatureNode) => void,
         public onShowOverlay: OnShowOverlayFunction, public onExpandFeatures: OnExpandFeaturesFunction,
-        public onToggleFeatureGroup: OnToggleFeatureGroupFunction) {}
+        public onToggleFeatureGroupType: OnToggleFeatureGroupTypeFunction) {}
 
-    x(_node: GraphicalFeatureNode): number {
+    x(_node: FeatureNode): number {
         throw new Error('abstract method not implemented');
     }
 
-    y(_node: GraphicalFeatureNode): number {
+    y(_node: FeatureNode): number {
         throw new Error('abstract method not implemented');
     }
 
@@ -89,19 +89,19 @@ export default class {
     enter(node: D3Selection): D3Selection {
         const nodeEnter = node.append('g')
                 .attr('class', 'node')
-                .attr('data-feature-uuid', (d: GraphicalFeatureNode) => d.feature().uuid)
-                .call(translateTransform, (d: GraphicalFeatureNode) => this.x(d), (d: GraphicalFeatureNode) => this.y(d))
+                .attr('data-feature-id', (d: FeatureNode) => d.feature().ID)
+                .call(translateTransform, (d: FeatureNode) => this.x(d), (d: FeatureNode) => this.y(d))
                 .attr('opacity', 0),
             rectAndText = nodeEnter.append('g')
                 .attr('class', 'rectAndText')
-                .on('click', (d: GraphicalFeatureNode) => this.setActiveNode(isCommand(d3Event) ? 'select' : OverlayType.featureCallout, d))
-                .on('contextmenu', (d: GraphicalFeatureNode) => {
+                .on('click', (d: FeatureNode) => this.setActiveNode(isCommand(d3Event) ? 'select' : OverlayType.featureCallout, d))
+                .on('contextmenu', (d: FeatureNode) => {
                     d3Event.preventDefault();
                     this.setActiveNode(isCommand(d3Event) ? 'select' : OverlayType.featureContextualMenu, d);
                 })
-                .on('dblclick', (d: GraphicalFeatureNode) => {
+                .on('dblclick', (d: FeatureNode) => {
                     if (!this.isSelectMultipleFeatures)
-                        this.onShowOverlay({overlay: OverlayType.featurePanel, overlayProps: {featureUUID: d.feature().uuid}});
+                        this.onShowOverlay({overlay: OverlayType.featurePanel, overlayProps: {featureID: d.feature().ID}});
                 });
 
         let bboxes = makeText(this.settings, rectAndText, false, this.getTextStyle()) as Rect[];
@@ -120,10 +120,10 @@ export default class {
             arcClick = nodeEnter.append('path')
                 .attr('class', 'arcClick')
                 .call(addStyle, styles.node.arcClick(this.settings))
-                .on('dblclick', (d: GraphicalFeatureNode) => this.onToggleFeatureGroup({feature: d.feature()}));
+                .on('dblclick', (d: FeatureNode) => this.onToggleFeatureGroupType({feature: d.feature()}));
         this.treeLink.drawGroup(arcSegment, arcSlice, arcClick);
 
-        const expandFeature = (d: GraphicalFeatureNode) => d.feature().isCollapsed && this.onExpandFeatures({featureUUIDs: [d.feature().uuid]});
+        const expandFeature = (d: FeatureNode) => d.feature().isCollapsed && this.onExpandFeatures({featureIDs: [d.feature().ID]});
         i = 0;
         bboxes = [];
         nodeEnter.insert('text', 'path.arcClick')
@@ -131,9 +131,9 @@ export default class {
             .attr('fill', this.settings.featureDiagram.treeLayout.node.visibleFill)
             .attr('class', 'collapse')
             .attr('text-anchor', 'middle')
-            .attrs((d: GraphicalFeatureNode) => this.treeLink.collapseAnchor(d) as Style)
+            .attrs((d: FeatureNode) => this.treeLink.collapseAnchor(d) as Style)
             .call(addStyle, styles.node.collapseText(this.settings))
-            .text((d: GraphicalFeatureNode) => d.feature().getNumberOfFeaturesBelow())
+            .text((d: FeatureNode) => d.feature().getNumberOfFeaturesBelow())
             .attr('opacity', 0)
             .each(function(this: SVGGraphicsElement) {
                 bboxes.push(this.getBBox());
@@ -151,22 +151,33 @@ export default class {
             fn: (circle: D3Selection) => circle.on('dblclick', expandFeature)
         });
 
-        if (this.debug)
+        if (this.debug) {
             appendCross(nodeEnter);
+            const addDebugText = (text: (d: FeatureNode) => string, y: number) => {
+                nodeEnter.append('text')
+                    .call(addFontStyle, this.settings, 0.3)
+                    .text(text)
+                    .call(addStyle, this.getTextStyle())
+                    .attr('opacity', 0.5)
+                    .attr('y', y);
+            };
+            addDebugText(d => d.feature().ID.substr(0, 19), 6);
+            addDebugText(d => d.feature().ID.substr(19), 11);
+        }
 
         return nodeEnter;
     }
 
     update(node: D3Selection): void {
-        node.call(translateTransform, (d: GraphicalFeatureNode) => this.x(d), (d: GraphicalFeatureNode) => this.y(d))
+        node.call(translateTransform, (d: FeatureNode) => this.x(d), (d: FeatureNode) => this.y(d))
             .attr('opacity', 1);
         node.select('g.rectAndText rect').call(addStyle, styles.node.abstract(this.settings));
         node.select('g.rectAndText text').call(addStyle, styles.node.hidden(this.settings));
         node.select('text.collapse')
-            .text((d: GraphicalFeatureNode) => d.feature().getNumberOfFeaturesBelow())
-            .attr('cursor', (d: GraphicalFeatureNode) => d.feature().isCollapsed ? 'pointer' : null)
-            .attr('opacity', (d: GraphicalFeatureNode) => d.feature().isCollapsed ? 1 : 0);
-        node.select('circle').attr('r', (d: GraphicalFeatureNode) =>
+            .text((d: FeatureNode) => d.feature().getNumberOfFeaturesBelow())
+            .attr('cursor', (d: FeatureNode) => d.feature().isCollapsed ? 'pointer' : null)
+            .attr('opacity', (d: FeatureNode) => d.feature().isCollapsed ? 1 : 0);
+        node.select('circle').attr('r', (d: FeatureNode) =>
             d.feature().isCollapsed ? this.settings.featureDiagram.font.size : 0);
         this.treeLink.drawGroup(node.select('path.arcSegment'), node.select('path.arcSlice'), node.select('path.arcClick'));
     }
@@ -175,7 +186,7 @@ export default class {
         node.attr('opacity', 0).remove();
     }
 
-    estimateTextWidth(node: GraphicalFeatureNode): number {
+    estimateTextWidth(node: FeatureNode): number {
         return measureTextWidth(
             this.settings.featureDiagram.font.family,
             this.settings.featureDiagram.font.size,

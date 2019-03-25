@@ -1,15 +1,15 @@
 import React from 'react';
 import {shallow} from 'enzyme';
 import FeaturePanel from './FeaturePanel';
-import GraphicalFeatureModel from '../../modeling/GraphicalFeatureModel';
+import FeatureModel from '../../modeling/FeatureModel';
 import {validFeatureModel} from '../../fixtures';
 import {Panel} from 'office-ui-fabric-react/lib/Panel';
 import i18n from '../../i18n';
 import {defaultSettings} from '../../store/settings';
 
 describe('FeaturePanel', () => {
-    const featurePanel = (featureUUID = 'FeatureIDE') => {
-        const graphicalFeatureModel = GraphicalFeatureModel.fromJSON(validFeatureModel),
+    const featurePanel = (featureID = 'FeatureIDE') => {
+        const featureModel = FeatureModel.fromKernel(validFeatureModel),
             mock = jest.fn();
         return shallow(
             <FeaturePanel
@@ -20,18 +20,18 @@ describe('FeaturePanel', () => {
                 onExpandFeatures={mock}
                 onCollapseFeaturesBelow={mock}
                 onExpandFeaturesBelow={mock}
-                graphicalFeatureModel={graphicalFeatureModel}
-                featureUUID={featureUUID}
+                featureModel={featureModel}
+                featureID={featureID}
                 settings={defaultSettings}
-                onAddFeatureAbove={mock}
-                onAddFeatureBelow={mock}
-                onRemoveFeatures={mock}
-                onRemoveFeaturesBelow={mock}
+                onCreateFeatureAbove={mock}
+                onCreateFeatureBelow={mock}
+                onRemoveFeature={mock}
+                onRemoveFeatureSubtree={mock}
                 onSetFeatureAbstract={mock}
                 onSetFeatureAlternative={mock}
                 onSetFeatureAnd={mock}
                 onSetFeatureHidden={mock}
-                onSetFeatureMandatory={mock}
+                onSetFeatureOptional={mock}
                 onSetFeatureOr={mock}/>
         );
     };

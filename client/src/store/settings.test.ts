@@ -44,8 +44,8 @@ describe('settings', () => {
             expect(mock).toBeCalledWith('featureDiagram.treeLayout.node.size', 'size',
                 defaultSettings.featureDiagram.treeLayout.node.size);
             expect(mock).not.toBeCalledWith('featureDiagram');
-            expect(mock).toBeCalledWith('userFacepile.maxDisplayableUsers', 'maxDisplayableUsers',
-                defaultSettings.userFacepile.maxDisplayableUsers);
+            expect(mock).toBeCalledWith('collaboratorFacepile.maxDisplayableCollaborators', 'maxDisplayableCollaborators',
+                defaultSettings.collaboratorFacepile.maxDisplayableCollaborators);
         });
     });
 });

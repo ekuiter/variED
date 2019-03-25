@@ -1,6 +1,6 @@
 package de.ovgu.spldev.varied;
 
-import de.ovgu.spldev.varied.common.util.StringUtils;
+import de.ovgu.spldev.varied.util.StringUtils;
 import org.pmw.tinylog.Logger;
 
 import java.util.Collection;
@@ -13,6 +13,8 @@ public class Project {
     Project(String name) {
         if (!StringUtils.isPresent(name))
             throw new RuntimeException("no name given for project");
+        if (name.contains(Artifact.Path.SEPARATOR))
+            throw new RuntimeException(Artifact.Path.SEPARATOR + " not allowed in project name");
         this.name = name;
     }
 
@@ -25,12 +27,12 @@ public class Project {
     }
 
     Artifact getArtifact(String name) {
-        return artifacts.get(name);
+        return artifacts.get(name.toLowerCase());
     }
 
     void addArtifact(Artifact artifact) {
         Logger.info("adding artifact {} to project {}", artifact, this);
-        String name = artifact.getName();
+        String name = artifact.getName().toLowerCase();
         if (!StringUtils.isPresent(name))
             throw new RuntimeException("no name given for artifact");
         if (artifact.getProject() != this)
@@ -44,7 +46,7 @@ public class Project {
 
     public void removeArtifact(Artifact artifact) {
         Logger.info("removing artifact {} from project {}", artifact, this);
-        artifacts.remove(artifact.getName());
+        artifacts.remove(artifact.getName().toLowerCase());
     }
 
     public Collection<Artifact> getArtifacts() {

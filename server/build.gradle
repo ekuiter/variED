@@ -37,11 +37,6 @@ dependencies {
     compile fileTree(dir: 'lib', include: '*.jar')
 }
 
-gretty {
-    httpPort = 8080
-    contextPath = '/'
-}
-
 idea {
     module {
         outputDir file('build/classes/main')
@@ -77,8 +72,22 @@ task copyWebappRunner {
 }
 
 build.mustRunAfter ':client:build'
-build.dependsOn 'war', 'copyWebappRunner'
-task run(dependsOn: 'appRun')
+build.mustRunAfter ':kernel:build'
+build.dependsOn ':kernel:buildServer', 'war', 'copyWebappRunner'
+
+task run {
+    dependsOn 'build'
+    doLast {
+        exec {
+            if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
+                commandLine "$buildDir/libs/variED.bat"
+            } else {
+                commandLine "$buildDir/libs/variED.sh"
+            }
+            workingDir = file("$buildDir/libs")
+        }
+    }
+}
 
 // As of now, this has to be run MANUALLY if any common classes changed.
 task transpileCommon(dependsOn: 'jsweet')

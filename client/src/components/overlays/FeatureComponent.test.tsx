@@ -1,15 +1,15 @@
 import React from 'react';
 import {shallow} from 'enzyme';
-import GraphicalFeatureModel from '../../modeling/GraphicalFeatureModel';
+import FeatureModel from '../../modeling/FeatureModel';
 import {validFeatureModel} from '../../fixtures';
 import {defaultSettings} from '../../store/settings';
 import getFeatureComponent from './FeatureComponent';
 
 describe('FeatureComponent', () => {
     const featureComponent = (
-        {featureComponent, featureUUID = 'FeatureIDE', mockRenderIfFeature = true, onDismiss = jest.fn()}:
-        {featureComponent?: object, featureUUID?: string, mockRenderIfFeature?: boolean, onDismiss?: jest.Mock} = {}) => {
-        const graphicalFeatureModel = GraphicalFeatureModel.fromJSON(validFeatureModel),
+        {featureComponent, featureID = 'FeatureIDE', mockRenderIfFeature = true, onDismiss = jest.fn()}:
+        {featureComponent?: object, featureID?: string, mockRenderIfFeature?: boolean, onDismiss?: jest.Mock} = {}) => {
+        const featureModel = FeatureModel.fromKernel(validFeatureModel),
             FeatureComponent = getFeatureComponent(featureComponent);
         if (mockRenderIfFeature)
             FeatureComponent.prototype.renderIfFeature =
@@ -20,8 +20,8 @@ describe('FeatureComponent', () => {
                     isOpen={true}
                     onDismiss={onDismiss}
                     settings={defaultSettings}
-                    graphicalFeatureModel={graphicalFeatureModel}
-                    featureUUID={featureUUID}/>
+                    featureModel={featureModel}
+                    featureID={featureID}/>
             ),
             renderIfFeature: FeatureComponent.prototype.renderIfFeature
         };
@@ -35,7 +35,7 @@ describe('FeatureComponent', () => {
     });
 
     it('renders nothing for an invalid feature', () => {
-        const {wrapper, renderIfFeature} = featureComponent({featureUUID: '<invalid feature>'});
+        const {wrapper, renderIfFeature} = featureComponent({featureID: '<invalid feature>'});
         expect(renderIfFeature).not.toBeCalled();
         expect(wrapper.get(0)).toBeNull();
     });
@@ -47,7 +47,7 @@ describe('FeatureComponent', () => {
     it('forcibly updates regularly', () => {
         jest.useFakeTimers();
         const throttleUpdate = defaultSettings.featureDiagram.overlay.throttleUpdate,
-            {wrapper} = featureComponent({featureUUID: 'FeatureIDE', featureComponent: {doUpdate: true}}),
+            {wrapper} = featureComponent({featureID: 'FeatureIDE', featureComponent: {doUpdate: true}}),
             forceUpdate = wrapper.instance().forceUpdate = jest.fn();
         expect(typeof (wrapper.instance() as any).interval).toBe('number');
         for (let i = 0; i < 10; i++) {

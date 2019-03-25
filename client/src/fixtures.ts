@@ -1,242 +1,281 @@
-import {SerializedFeatureModel} from './modeling/types';
+import {KernelFeatureModel} from './modeling/types';
 
 /**
  * Some fixtures for use in tests.
  */
 
-export const invalidFeatureModel1 = <SerializedFeatureModel>{};
+export const invalidFeatureModel = <KernelFeatureModel>{};
 
-export const invalidFeatureModel2 = <any>{
-    'struct': [],
-    'constraints': [],
-    'properties': [],
-    'calculations': {
-        'Auto': true,
-        'Features': true,
-        'Constraints': true,
-        'Redundant': true,
-        'Tautology': true
+export const validFeatureModel = <KernelFeatureModel>{
+    "features": {
+        "DeltaJEclipsePlugin": {
+            "description": null,
+            "name": "DeltaJEclipsePlugin",
+            "optional?": false,
+            "hidden?": false,
+            "parent-ID": "Eclipse",
+            "abstract?": false,
+            "group-type": "and",
+            "ID": "DeltaJEclipsePlugin"
+        },
+        "FAMILIAR": {
+            "description": null,
+            "name": "FAMILIAR",
+            "optional?": false,
+            "hidden?": false,
+            "parent-ID": "FeatureModeling",
+            "abstract?": false,
+            "group-type": "and",
+            "ID": "FAMILIAR"
+        },
+        "Antenna": {
+            "description": null,
+            "name": "Antenna",
+            "optional?": true,
+            "hidden?": false,
+            "parent-ID": "FeatureIDE",
+            "abstract?": false,
+            "group-type": "and",
+            "ID": "Antenna"
+        },
+        "FeatureHouse": {
+            "description": null,
+            "name": "FeatureHouse",
+            "optional?": true,
+            "hidden?": false,
+            "parent-ID": "FeatureIDE",
+            "abstract?": false,
+            "group-type": "and",
+            "ID": "FeatureHouse"
+        },
+        "AJDT": {
+            "description": null,
+            "name": "AJDT",
+            "optional?": false,
+            "hidden?": false,
+            "parent-ID": "Eclipse",
+            "abstract?": false,
+            "group-type": "and",
+            "ID": "AJDT"
+        },
+        "FeatureCpp": {
+            "description": null,
+            "name": "FeatureCpp",
+            "optional?": true,
+            "hidden?": false,
+            "parent-ID": "FeatureIDE",
+            "abstract?": false,
+            "group-type": "and",
+            "ID": "FeatureCpp"
+        },
+        "JDT": {
+            "description": null,
+            "name": "JDT",
+            "optional?": false,
+            "hidden?": false,
+            "parent-ID": "Eclipse",
+            "abstract?": false,
+            "group-type": "and",
+            "ID": "JDT"
+        },
+        "DeltaJ": {
+            "description": null,
+            "name": "DeltaJ",
+            "optional?": true,
+            "hidden?": false,
+            "parent-ID": "FeatureIDE",
+            "abstract?": false,
+            "group-type": "and",
+            "ID": "DeltaJ"
+        },
+        "FeatureIDE": {
+            "description": "A sample description",
+            "name": "FeatureIDE",
+            "optional?": false,
+            "hidden?": false,
+            "parent-ID": "FeatureModeling",
+            "abstract?": false,
+            "group-type": "or",
+            "ID": "FeatureIDE"
+        },
+        "AHEAD": {
+            "description": null,
+            "name": "AHEAD",
+            "optional?": true,
+            "hidden?": false,
+            "parent-ID": "FeatureIDE",
+            "abstract?": false,
+            "group-type": "and",
+            "ID": "AHEAD"
+        },
+        "DeltaMontiArc": {
+            "description": null,
+            "name": "DeltaMontiArc",
+            "optional?": true,
+            "hidden?": false,
+            "parent-ID": "FeatureIDE",
+            "abstract?": false,
+            "group-type": "and",
+            "ID": "DeltaMontiArc"
+        },
+        "CIDE": {
+            "description": null,
+            "name": "CIDE",
+            "optional?": false,
+            "hidden?": false,
+            "parent-ID": "FeatureModeling",
+            "abstract?": false,
+            "group-type": "and",
+            "ID": "CIDE"
+        },
+        "FeatureModeling": {
+            "description": null,
+            "name": "FeatureModeling",
+            "optional?": false,
+            "hidden?": false,
+            "parent-ID": "Eclipse",
+            "abstract?": false,
+            "group-type": "and",
+            "ID": "FeatureModeling"
+        },
+        "ExtendedFM": {
+            "description": null,
+            "name": "ExtendedFM",
+            "optional?": false,
+            "hidden?": false,
+            "parent-ID": "FeatureModeling",
+            "abstract?": false,
+            "group-type": "and",
+            "ID": "ExtendedFM"
+        },
+        "Eclipse": {
+            "description": "his is a feature which has a description text",
+            "name": "Eclipse",
+            "optional?": true,
+            "hidden?": false,
+            "parent-ID": null,
+            "abstract?": false,
+            "group-type": "and",
+            "ID": "Eclipse"
+        },
+        "CDT": {
+            "description": null,
+            "name": "CDT",
+            "optional?": false,
+            "hidden?": false,
+            "parent-ID": "Eclipse",
+            "abstract?": false,
+            "group-type": "and",
+            "ID": "CDT"
+        },
+        "AspectJ": {
+            "description": null,
+            "name": "AspectJ",
+            "optional?": true,
+            "hidden?": false,
+            "parent-ID": "FeatureIDE",
+            "abstract?": false,
+            "group-type": "and",
+            "ID": "AspectJ"
+        },
+        "MoSoPoLiTe": {
+            "description": null,
+            "name": "MoSoPoLiTe",
+            "optional?": false,
+            "hidden?": false,
+            "parent-ID": "FeatureModeling",
+            "abstract?": false,
+            "group-type": "and",
+            "ID": "MoSoPoLiTe"
+        },
+        "Munge": {
+            "description": null,
+            "name": "Munge",
+            "optional?": true,
+            "hidden?": false,
+            "parent-ID": "FeatureIDE",
+            "abstract?": false,
+            "group-type": "and",
+            "ID": "Munge"
+        }
     },
-    'comments': [],
-    'featureOrder': {'userDefined': false}
-};
-
-export const validFeatureModel = <SerializedFeatureModel>{
-    'struct': [
-        {
-            'uuid': 'Eclipse',
-            'name': 'Eclipse',
-            'mandatory': true,
-            'description': 'this is a feature which has a description text',
-            'type': 'and',
-            'children': [
-                {'type': 'feature', 'uuid': 'JDT', 'name': 'JDT'},
-                {'type': 'feature', 'uuid': 'CDT', 'name': 'CDT'},
-                {'type': 'feature', 'uuid': 'AJDT', 'name': 'AJDT'},
-                {
-                    'uuid': 'FeatureModeling',
-                    'name': 'FeatureModeling',
-                    'type': 'and',
-                    'children': [
-                        {'type': 'feature', 'uuid': 'CIDE', 'name': 'CIDE'},
-                        {'type': 'feature', 'uuid': 'FAMILIAR', 'name': 'FAMILIAR'},
-                        {
-                            'uuid': 'FeatureIDE',
-                            'name': 'FeatureIDE',
-                            'description': 'A sample description',
-                            'type': 'or',
-                            'children': [
-                                {'type': 'feature', 'uuid': 'AHEAD', 'name': 'AHEAD'},
-                                {'type': 'feature', 'uuid': 'FeatureHouse', 'name': 'FeatureHouse'},
-                                {'type': 'feature', 'uuid': 'FeatureCpp', 'name': 'FeatureCpp'},
-                                {'type': 'feature', 'uuid': 'DeltaJ', 'name': 'DeltaJ'},
-                                {'type': 'feature', 'uuid': 'AspectJ', 'name': 'AspectJ'},
-                                {'type': 'feature', 'uuid': 'Munge', 'name': 'Munge'},
-                                {'type': 'feature', 'uuid': 'Antenna', 'name': 'Antenna'},
-                                {'type': 'feature', 'uuid': 'DeltaMontiArc', 'name': 'DeltaMontiArc'}
-                            ]
-                        },
-                        {'type': 'feature', 'uuid': 'ExtendedFM', 'name': 'ExtendedFM'},
-                        {'type': 'feature', 'uuid': 'MoSoPoLiTe', 'name': 'MoSoPoLiTe'}
+    "constraints": {
+        "607fef7a-0777-4f4b-b655-bb07e0426fe9": {
+            "graveyarded?": false,
+            "formula": [
+                "imp",
+                "FeatureCpp",
+                "CDT"
+            ],
+            "ID": "607fef7a-0777-4f4b-b655-bb07e0426fe9"
+        },
+        "ae2d05d5-b80a-4bfc-a2da-ab9de2fa347b": {
+            "graveyarded?": false,
+            "formula": [
+                "imp",
+                "AspectJ",
+                "AJDT"
+            ],
+            "ID": "ae2d05d5-b80a-4bfc-a2da-ab9de2fa347b"
+        },
+        "3e7a2089-62e7-49d7-b0b7-d43f5f11d16a": {
+            "graveyarded?": false,
+            "formula": [
+                "imp",
+                [
+                    "disj",
+                    "AHEAD",
+                    [
+                        "disj",
+                        "FeatureHouse",
+                        [
+                            "disj",
+                            "Munge",
+                            "Antenna"
+                        ]
                     ]
-                },
-                {'type': 'feature', 'uuid': 'DeltaJEclipsePlugin', 'name': 'DeltaJEclipsePlugin'}
-            ]
+                ],
+                "JDT"
+            ],
+            "ID": "3e7a2089-62e7-49d7-b0b7-d43f5f11d16a"
+        },
+        "713768aa-f9d3-4c0a-bf7c-881d1f711397": {
+            "graveyarded?": false,
+            "formula": [
+                "imp",
+                "DeltaJ",
+                "DeltaJEclipsePlugin"
+            ],
+            "ID": "713768aa-f9d3-4c0a-bf7c-881d1f711397"
         }
-    ],
-    'constraints': [
-        {
-            'type': 'rule',
-            'children': [
-                {
-                    'type': 'imp',
-                    'children': [
-                        {
-                            'type': 'disj',
-                            'children': [
-                                {'type': 'var', 'var': 'AHEAD'},
-                                {
-                                    'type': 'disj',
-                                    'children': [
-                                        {'type': 'var', 'var': 'FeatureHouse'},
-                                        {
-                                            'type': 'disj',
-                                            'children': [
-                                                {'type': 'var', 'var': 'Munge'},
-                                                {'type': 'var', 'var': 'Antenna'}
-                                            ]
-                                        }
-                                    ]
-                                }
-                            ]
-                        },
-                        {'type': 'var', 'var': 'JDT'}
-                    ]
-                }
-            ]
-        },
-        {
-            'type': 'rule',
-            'children': [
-                {
-                    'type': 'imp',
-                    'children': [
-                        {'type': 'var', 'var': 'FeatureCpp'},
-                        {'type': 'var', 'var': 'CDT'}
-                    ]
-                }
-            ]
-        },
-        {
-            'type': 'rule',
-            'children': [
-                {
-                    'type': 'imp',
-                    'children': [
-                        {'type': 'var', 'var': 'AspectJ'},
-                        {'type': 'var', 'var': 'AJDT'}
-                    ]
-                }
-            ]
-        },
-        {
-            'type': 'rule',
-            'children': [
-                {
-                    'type': 'imp',
-                    'children': [
-                        {'type': 'var', 'var': 'DeltaJ'},
-                        {'type': 'var', 'var': 'DeltaJEclipsePlugin'}
-                    ]
-                }
-            ]
-        }
-    ],
-    'calculations': {
-        'Auto': true,
-        'Features': true,
-        'Constraints': true,
-        'Redundant': true,
-        'Tautology': true
     },
-    'comments': [],
-    'featureOrder': {'userDefined': false}
-};
-
-export const validFeatureModelWithRemovedFeatures = <SerializedFeatureModel>{
-    'struct': [
-        {
-            'name': 'Eclipse',
-            'mandatory': true,
-            'description': 'this is a feature which has a description text',
-            'type': 'and',
-            'children': [
-                {'type': 'feature', 'name': 'JDT'},
-                {'type': 'feature', 'name': 'CDT'},
-                {'type': 'feature', 'name': 'AJDT'},
-                {
-                    'name': 'FeatureModeling',
-                    'type': 'and',
-                    'children': [
-                        {'type': 'feature', 'name': 'CIDE'},
-                        {'type': 'feature', 'name': 'FAMILIAR'},
-                        {'type': 'feature', 'name': 'AHEAD'},
-                        {'type': 'feature', 'name': 'FeatureHouse'},
-                        {'type': 'feature', 'name': 'FeatureCpp'},
-                        {'type': 'feature', 'name': 'AspectJ'},
-                        {'type': 'feature', 'name': 'Munge'},
-                        {'type': 'feature', 'name': 'Antenna'},
-                        {'type': 'feature', 'name': 'DeltaMontiArc'},
-                        {'type': 'feature', 'name': 'ExtendedFM'},
-                        {'type': 'feature', 'name': 'MoSoPoLiTe'}
-                    ]
-                }
-            ]
-        }
-    ],
-    'constraints': [
-        {
-            'type': 'rule',
-            'children': [
-                {
-                    'type': 'imp',
-                    'children': [
-                        {
-                            'type': 'disj',
-                            'children': [
-                                {'type': 'var', 'var': 'AHEAD'},
-                                {
-                                    'type': 'disj',
-                                    'children': [
-                                        {'type': 'var', 'var': 'FeatureHouse'},
-                                        {
-                                            'type': 'disj',
-                                            'children': [
-                                                {'type': 'var', 'var': 'Munge'},
-                                                {'type': 'var', 'var': 'Antenna'}
-                                            ]
-                                        }
-                                    ]
-                                }
-                            ]
-                        },
-                        {'type': 'var', 'var': 'JDT'}
-                    ]
-                }
-            ]
-        },
-        {
-            'type': 'rule',
-            'children': [
-                {
-                    'type': 'imp',
-                    'children': [
-                        {'type': 'var', 'var': 'FeatureCpp'},
-                        {'type': 'var', 'var': 'CDT'}
-                    ]
-                }
-            ]
-        },
-        {
-            'type': 'rule',
-            'children': [
-                {
-                    'type': 'imp',
-                    'children': [
-                        {'type': 'var', 'var': 'AspectJ'},
-                        {'type': 'var', 'var': 'AJDT'}
-                    ]
-                }
-            ]
-        }
-    ],
-    'calculations': {
-        'Auto': true,
-        'Features': true,
-        'Constraints': true,
-        'Redundant': true,
-        'Tautology': true
-    },
-    'comments': [],
-    'featureOrder': {'userDefined': false}
+    "children-cache": {
+        "Eclipse": [
+            "DeltaJEclipsePlugin",
+            "AJDT",
+            "JDT",
+            "FeatureModeling",
+            "CDT"
+        ],
+        "FeatureModeling": [
+            "FAMILIAR",
+            "FeatureIDE",
+            "CIDE",
+            "ExtendedFM",
+            "MoSoPoLiTe"
+        ],
+        "FeatureIDE": [
+            "Antenna",
+            "FeatureHouse",
+            "FeatureCpp",
+            "DeltaJ",
+            "AHEAD",
+            "DeltaMontiArc",
+            "AspectJ",
+            "Munge"
+        ],
+        "nil": [
+            "Eclipse"
+        ]
+    }
 };

@@ -4,7 +4,6 @@ import SettingsPanel, {Setting} from './SettingsPanel';
 import {defaultSettings, getNewSettings, getSetting} from '../../store/settings';
 import {FeatureDiagramLayoutType} from '../../types';
 import {Panel} from 'office-ui-fabric-react/lib/Panel';
-import {DefaultButton} from 'office-ui-fabric-react/lib/Button';
 import {ColorPicker} from 'office-ui-fabric-react/lib/ColorPicker';
 import {Slider} from 'office-ui-fabric-react/lib/Slider';
 import i18n from '../../i18n';
@@ -98,18 +97,5 @@ describe('SettingsPanel', () => {
             .contains(i18n.t('overlays.settingsPanel.headings.verticalTree'))).toBe(true);
         expect(settingsPanel(FeatureDiagramLayoutType.horizontalTree).find(Panel)
             .contains(i18n.t('overlays.settingsPanel.headings.horizontalTree'))).toBe(true);
-    });
-
-    it('resets settings', () => {
-        const wrapper = settingsPanel(FeatureDiagramLayoutType.verticalTree),
-            resetButton = (wrapper: any) => wrapper.find(DefaultButton).first();
-        expect(resetButton(wrapper).prop('disabled')).toBe(true);
-        
-        wrapper.find(Panel).find(Setting.SpinButton).first()
-            .simulate('setSetting', 'featureDiagram.font.size', 'Arial');
-        expect(resetButton(wrapper).prop('disabled')).toBe(false);
-
-        resetButton(wrapper).simulate('click');
-        expect(resetButton(wrapper).prop('disabled')).toBe(true);
     });
 });

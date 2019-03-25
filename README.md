@@ -42,12 +42,12 @@ Now you can access the app on port 8080 (e.g.,
 
 The only dependency required for building is [JDK
 1.8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html).
-[Gradle](https://gradle.org/), [npm](https://nodejs.org/) and
-[yarn](https://yarnpkg.com/) are downloaded and set up automatically by the
-build process.
+[Gradle](https://gradle.org/), [npm](https://nodejs.org/),
+[yarn](https://yarnpkg.com/) and [Leiningen](https://leiningen.org/) 
+are downloaded and set up automatically by the build process.
 
 - `./gradlew build` builds a WAR file that can be deployed on Java servlet
-  containers, the `variED.sh` script runs the WAR file in Apache Tomcat
+  containers, the `variED.sh` or `variED.bat` script runs the WAR file in Apache Tomcat
 - `yarn start` inside the `client` directory runs the client on
   `http://localhost:3000`
 - `./gradlew server:run` runs the server on `http://localhost:8080`
@@ -60,6 +60,10 @@ build process.
   heroku buildpacks:add heroku/gradle
   git push heroku master
   ```
+  
+On Windows, unit tests for the client can not currently be run from the default
+command line or PowerShell. Instead, run `yarn test` inside the `client` directory
+from a [WSL](https://docs.microsoft.com/en-us/windows/wsl/install-win10) shell.
 
 ### Implementation
 
@@ -74,6 +78,10 @@ Fabric](https://developer.microsoft.com/en-us/fabric) and
 modeling.
 
 The client-server interface is described in [API.md](API.md).
+
+The Clojure kernel has 
+[documentation](https://s3.eu-central-1.amazonaws.com/de.ovgu.spldev.varied/kernel-documentation/index.html) 
+available. 
 
 Parts of the server code are reused in the client (`common` package) by
 transpiling them to JavaScript. Because of this, classes in the `common` package
@@ -99,8 +107,14 @@ yarn, ESLint/TSLint and Debugger for Chrome plugins is recommended.
 Open the `server` directory in IntelliJ and choose *Import Gradle project*.
 Choose to *use local gradle distribution* and supply the Gradle home, e.g.
 `/usr/local/Cellar/gradle/4.9/libexec` (on macOS, this can be determined with
-`brew info gradle`). Add a *Gradle* run configuration with Gradle project
-`server` and task `run` to run the server from within IntelliJ.
+`brew info gradle`). On Windows, use
+`C:\Users\...\.gradle\wrapper\dists\gradle-...-bin\...\gradle-...`.
+Add a *Gradle* run configuration with Gradle project `server` and task `run`
+to run the server from within IntelliJ.
+
+The `kernel` can also be developed in IntelliJ using
+[Cursive](https://cursive-ide.com/). Add a *Clojure REPL* run configuration
+to run the kernel interactively.
 
 ### License
 

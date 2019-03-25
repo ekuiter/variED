@@ -33,7 +33,6 @@ public class MessageSerializer {
             .excludeFieldsWithoutExposeAnnotation()
             .registerTypeAdapterFactory(runtimeTypeAdapterFactory)
             .registerTypeAdapter(Message.Type.class, new MessageTypeTypeAdapter())
-            .registerTypeAdapter(IFeatureModel.class, new FeatureModelSerializer())
             .create();
 
     /**

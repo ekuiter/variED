@@ -17,28 +17,18 @@ const constants = {
             color: '#050'
         }
     },
-    views: {
-        splitMiddle: 0.6
-    },
     overlays: {
         aboutPanel: {
             githubUri: 'https://github.com/ekuiter/variED',
-            licenseUri: 'https://github.com/ekuiter/variED/blob/master/LICENSE.txt'
+            feedbackUri: 'https://goo.gl/forms/uUJmj68FYir9vEI13',
+            licenseUri: 'https://github.com/ekuiter/variED/blob/master/LICENSE.txt',
+            researchGroupUri: 'http://www.dbse.ovgu.de/',
+            mailto: 'mailto:kuiter@ovgu.de'
         }
     },
     server: {
-        webSocket: process.env.REACT_APP_WEBSOCKET || `ws://${window.location.host}/websocket`, // WebSocket URI to connect to
-        propertyTypes: {
-            abstract: 'abstract',
-            hidden: 'hidden',
-            mandatory: 'mandatory',
-            group: 'group'
-        },
-        groupValueTypes: {
-            and: 'and',
-            or: 'or',
-            alternative: 'alternative'
-        }
+        // WebSocket URI to connect to
+        webSocket: (siteID = 'initialize') => `ws://${process.env.REACT_APP_SERVER || window.location.host}/websocket/${siteID}`
     },
     helpers: {
         withDimensions: {

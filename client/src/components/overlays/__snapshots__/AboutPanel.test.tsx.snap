@@ -16,12 +16,35 @@ exports[`AboutPanel renders correctly 1`] = `
       View, edit and analyze feature models in the browser - with support for real-time collaboration.
     </p>
     <p>
-      This project is released under the 
+      This project is a research effort of the 
+      <StyledLinkBase
+        href="http://www.dbse.ovgu.de/"
+        target="_blank"
+      >
+        DBSE working group
+      </StyledLinkBase>
+       and has been released under the 
       <StyledLinkBase
         href="https://github.com/ekuiter/variED/blob/master/LICENSE.txt"
         target="_blank"
       >
         LGPL v3 license
+      </StyledLinkBase>
+      .
+    </p>
+    <p>
+      If you would like to leave any feedback, use our 
+      <StyledLinkBase
+        href="https://goo.gl/forms/uUJmj68FYir9vEI13"
+        target="_blank"
+      >
+        online form
+      </StyledLinkBase>
+       or 
+      <StyledLinkBase
+        href="mailto:kuiter@ovgu.de"
+      >
+        mail me
       </StyledLinkBase>
       .
     </p>

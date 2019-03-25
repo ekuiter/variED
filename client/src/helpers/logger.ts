@@ -1,6 +1,6 @@
 export enum LogLevel {none, warn, log, info};
 export const defaultLogLevel = LogLevel.log;
-let logLevel = defaultLogLevel;
+let logLevel: LogLevel = defaultLogLevel;
 type LogEntry = () => any;
 type ConsoleFunction = (...args: any[]) => void;
 
@@ -56,10 +56,11 @@ const logger = {
     warnColored: coloredWrapper(consoleWarn, LogLevel.warn),
     logColored: coloredWrapper(consoleLog, LogLevel.log),
     infoColored: coloredWrapper(consoleInfo, LogLevel.info),
+    isLoggingInfo: () => logLevel >= LogLevel.info,
 
-    mapStateToProps(containerName: string, mapStateToProps: (state: object) => object) {
-        return (state: object): object => {
-            const newProps = mapStateToProps(state);
+    mapStateToProps(containerName: string, mapStateToProps: (state: object, ownProps?: object) => object, passOwnProps?: boolean) {
+        return (state: object, ownProps?: object): object => {
+            const newProps = passOwnProps ? mapStateToProps(state, ownProps) : mapStateToProps(state);
             if (logLevel >= LogLevel.info && mapStateToPropsCache[containerName] &&
                 Object.entries(newProps).some(([key, value]) => value !== mapStateToPropsCache[containerName][key])) {
                 logger.infoBeginCollapsed(() => `[mapStateToProps] props changed for ${containerName}`);
