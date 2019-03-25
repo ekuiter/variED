@@ -3,8 +3,8 @@
 [![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/ekuiter/variED/tree/build) [![Deploy to Amazon AWS](https://s3.eu-central-1.amazonaws.com/de.ovgu.spldev.varied/awsdeploy.png)](https://console.aws.amazon.com/elasticbeanstalk/?region=eu-central-1#/newApplication?applicationName=variED&platform=Tomcat%208.5%20with%20Java%208%20running%20on%2064bit%20Amazon%20Linux&sourceBundleUrl=https%3A%2F%2Fs3.eu-central-1.amazonaws.com%2Fde.ovgu.spldev.varied%2Fserver.war&environmentType=SingleInstance&tierName=WebServer)
 
 variED (the *vari*ability *ed*itor) is a software for viewing, editing and
-analyzing feature models. It is currently under active development and therefore
-unstable.
+analyzing feature models that supports real-time collaboration.
+It is currently under active development and therefore considered unstable.
 
 variED relies on a client-server architecture where the client is implemented in
 TypeScript and the server in Java. It requires Java 1.8 and can be deployed on
@@ -45,6 +45,8 @@ The only dependency required for building is [JDK
 [Gradle](https://gradle.org/), [npm](https://nodejs.org/),
 [yarn](https://yarnpkg.com/) and [Leiningen](https://leiningen.org/) 
 are downloaded and set up automatically by the build process.
+The latest release is available as a pre-built WAR file and can be downloaded
+[here](https://github.com/ekuiter/variED/releases/latest).
 
 - `./gradlew build` builds a WAR file that can be deployed on Java servlet
   containers, the `variED.sh` or `variED.bat` script runs the WAR file in Apache Tomcat
@@ -77,11 +79,10 @@ Fabric](https://developer.microsoft.com/en-us/fabric) and
 [D3.js](https://d3js.org/) libraries to provide a user interface for feature
 modeling.
 
-The client-server interface is described in [API.md](API.md).
-
-The Clojure kernel has 
+The client-server interface is described in [API.md](API.md) (although somewhat outdated).
+For the Clojure kernel,
 [documentation](https://s3.eu-central-1.amazonaws.com/de.ovgu.spldev.varied/kernel-documentation/index.html) 
-available. 
+is available.
 
 Parts of the server code are reused in the client (`common` package) by
 transpiling them to JavaScript. Because of this, classes in the `common` package
