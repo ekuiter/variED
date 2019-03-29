@@ -44,8 +44,7 @@ users are isolated.
 
 So far, only the "static" data organization was described. As for real-time
 editing, each artifact is associated with a *collaborative session* which has a
-set of collaborating users and a *state context* that holds the artifact's
-contents (e.g., a feature model). A *user* is associated with a particular
+set of collaborating users and a *kernel context* that holds the collaboration kernel's site-global data structures (e.g., the feature model, all generated operations and data structures for conflict detection and resolution). A *user* is associated with a particular
 WebSocket and the set of collaborative sessions she participates in.
 
 Users and collaborative sessions are in a m:n relationship (a user can
@@ -70,19 +69,7 @@ artifact contain the *artifactPath* property, which is an object with the
 *project* and *artifact* properties. If the client wants to send a message
 regarding a specific artifact, it first has to join its collaborative session.
 
-There are five kinds of messages:
-
-- *encodable*: messages the server may send to the client
-- *decodable*, *applicable*, *undoable*, *batch undoable*: messages the client
-  may send to the server
-
-The latter differ in the way they may be applied on the server (decodable: does
-not refer to state context, applicable: applies a state change, undoable: like
-applicable, but may be [un-/redone](#undo), batch undoable: see
-[BATCH](#batch)). A *state change* models an operation on the state context.
-Applicable and undoable messages may also directly return messages to the
-client.
-
+There are two kinds of messages: *Encodable* messages may be sent from the server to the client, while the client may send *decodable* messages to the server.
 Details are provided for each message type below. Not all preconditions and
 potential errors are listed, in favor of keeping things short and sweet.
 
@@ -97,173 +84,62 @@ fill-in for a proper error handling system. A reference to the concerned
 artifact (if any) is missing, no different error kinds are distinguished, errors
 are not internationalized or formatted (see issue tracker).
 
-#### JOIN
+#### ADD_ARTIFACT
 
 ```
-{type: "JOIN", artifactPath: {project: "project", artifact: "artifact"}}
+{type: "ADD_ARTIFACT", artifactPaths: [{project: "project", artifact: "artifact"}, source: "feature model source"]}
 ```
 
-An en-/decodable message. A client sends this to the server to join the given
-artifact's collaborative session. The server sends this to inform
+An en-/decodable message. The server sends this to inform users about available or added projects and artifacts. The client sends this to create a new artifact. The source parameter is only allowed for the decodable message and optional. It may contain a FeatureIDE-compliant feature model that should be imported.
 
-- the joined client about other participants
-- the other participants about the joined client
-
-#### USER_INFO
+#### REMOVE_ARTIFACT
 
 ```
-{type: "USER_INFO", artifactPath: {project: "project", artifact: "artifact"}, user: {...}}
+{type: "REMOVE_ARTIFACT", artifactPath: {project: "project", artifact: "artifact"}}
+```
+
+An en-/decodable message. The server sends this to inform users about removed projects and artifacts.
+
+#### COLLABORATOR_INFO
+
+```
+{type: "COLLABORATOR_INFO", artifactPath: {project: "project", artifact: "artifact"}, siteID: "UUID"}
 ```
 
 An encodable message. The server sends this to inform new users about their user
 profile.
 
-#### ARTIFACT_INFO
+#### JOIN_REQUEST
 
 ```
-{type: "ARTIFACT_INFO", artifactPath: {project: "project", artifact: "artifact"}}
+{type: "JOIN_REQUEST", artifactPath: {project: "project", artifact: "artifact"}}
 ```
 
-An encodable message. The server sends this to inform new users about available
-projects and artifacts.
+A decodable message. A client sends this to the server to join the given
+artifact's collaborative session. The server sends this to inform the joined client about other participants and the other participants about the joined client.
 
-#### LEAVE
+#### LEAVE_REQUEST
 
 ```
-{type: "JOIN", artifactPath: {project: "project", artifact: "artifact"}}
+{type: "LEAVE_REQUEST", artifactPath: {project: "project", artifact: "artifact"}}
 ```
 
 An en-/decodable message. A client sends this to the server to leave the given
 artifact's collaborative session. The server sends this to inform the other
 participants that the client left.
 
-#### UNDO
+#### INITIALIZE
 
 ```
-{type: "UNDO", artifactPath: {project: "project", artifact: "artifact"}}
+{type: "INITIALIZE", context: "kernel context"}
 ```
 
-An applicable message. A client sends this to the server to undo an operation
-for the given artifact. Which operation is undone depends on the server's
-undo/redo model. As of now, a primitive global undo/redo stack is used.
+An encodable message. The server sends this to newly joined clients. The client's initial kernel context is attached.
 
-Returns the result of the undone state change (e.g., an updated feature model).
-
-#### REDO
+#### KERNEL
 
 ```
-{type: "REDO", artifactPath: {project: "project", artifact: "artifact"}}
+{type: "KERNEL", message: "kernel message"}
 ```
 
-An applicable message. A client sends this to the server to redo an operation
-for the given artifact. Which operation is redone depends on the server's
-undo/redo model. As of now, a primitive global undo/redo stack is used.
-
-Returns the result of the redone state change (e.g., an updated feature model).
-
-#### BATCH
-
-```
-{type: "BATCH", artifactPath: {project: "project", artifact: "artifact"}, messages: [{"type": "...", ...}, ...]}
-```
-
-An undoable message. A client sends this to the server to perform multiple
-operations in one step. The artifact can (and should) be omitted from the
-included messages. All included messages must be batch undoable and have the
-same type.
-
-The server applies the included messages as usual. When a batch message is
-un-/redone, all included messages are un-/redone. If this fails for any message,
-previous state changes (if any) are rolled back to guarantee atomicity.
-
-Returns the result of the last included state change (which, as of now, is
-assumed to include all relevant information of the previous state changes).
-
-#### FEATURE_DIAGRAM_FEATURE_MODEL
-
-```
-{"type": "FEATURE_DIAGRAM_FEATURE_MODEL", "artifactPath": {project: "project", artifact: "artifact"}, "featureModel": ...}
-```
-
-An encodable message. A representation of a feature model artifact. The server
-sends this to the client to notify it about updates. TODO: This is very
-inefficient (see issue tracker). To support proper concurrency, this will most
-likely be rewritten completely.
-
-As of now, feature models are serialized to a tree-like JSON object. This may
-change in the future as well, if there is a more suitable representation.
-
-#### FEATURE_DIAGRAM_FEATURE_ADD_BELOW
-
-```
-{"type": "FEATURE_DIAGRAM_FEATURE_ADD_BELOW", "artifactPath": {project: "project", artifact: "artifact"}, belowFeatureUUID: "featureUUID", newFeatureUUID: "featureUUID"}
-```
-
-An undoable message. Adds a new feature below the specified feature.
-
-Returns the updated feature model.
-
-#### FEATURE_DIAGRAM_FEATURE_ADD_ABOVE
-
-```
-{"type": "FEATURE_DIAGRAM_FEATURE_ADD_ABOVE", "artifactPath": {project: "project", artifact: "artifact"}, aboveFeatureUUIDs: ["featureUUID", ...], newFeatureUUID: "featureUUID"}
-```
-
-An undoable message. Adds a new feature above the specified features.
-
-Returns the updated feature model.
-
-#### FEATURE_DIAGRAM_FEATURE_REMOVE
-
-```
-{"type": "FEATURE_DIAGRAM_FEATURE_REMOVE", "artifactPath": {project: "project", artifact: "artifact"}, featureUUID: "featureUUID"}
-```
-
-A batch undoable message. Removes the specified feature.
-
-Returns the updated feature model.
-
-#### FEATURE_DIAGRAM_FEATURE_REMOVE_BELOW
-
-```
-{"type": "FEATURE_DIAGRAM_FEATURE_REMOVE_BELOW", "artifactPath": {project: "project", artifact: "artifact"}, featureUUID: "featureUUID"}
-```
-
-A batch undoable message. Removes the specified feature and all features below.
-
-Returns the updated feature model.
-
-#### FEATURE_DIAGRAM_FEATURE_RENAME
-
-```
-{"type": "FEATURE_DIAGRAM_FEATURE_RENAME", "artifactPath": {project: "project", artifact: "artifact"}, featureUUID: "featureUUID", name: "name"}
-```
-
-A encodable and undoable message. Renames the specified feature.
-
-Returns the updated feature model and a *FEATURE_DIAGRAM_FEATURE_RENAME* message
-describing the rename operation.
-
-#### FEATURE_DIAGRAM_FEATURE_SET_DESCRIPTION
-
-```
-{"type": "FEATURE_DIAGRAM_FEATURE_SET_DESCRIPTION", "artifactPath": {project: "project", artifact: "artifact"}, featureUUID: "featureUUID", description: "..."}
-```
-
-An undoable message. Sets the specified feature's description.
-
-Returns the updated feature model.
-
-#### FEATURE_DIAGRAM_FEATURE_SET_PROPERTY
-
-```
-{"type": "FEATURE_DIAGRAM_FEATURE_SET_PROPERTY", "artifactPath": {project: "project", artifact: "artifact"}, featureUUID: "featureUUID", property: "...", value: "..."}
-```
-
-A batch undoable message. Sets a property of the specified feature to a given
-value. The property must be one of *abstract*, *hidden*, *mandatory* or *group*.
-The value must be *true* or *false* for the former. For the property *group*,
-the value must be one of *and*, *or* or *alternative*. In a batch message, all
-messages must set the same property.
-
-Returns the updated feature model.
+An en-/decodable message. A client sends this to the server to issue an operation or otherwise communicate with the server's kernel. The server sends this to a client to forward another client's operation.
