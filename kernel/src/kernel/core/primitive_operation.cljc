@@ -122,6 +122,19 @@
      {:type :assert-no-child-added
       :ID   ID}))
 
+(defn metadata
+  "Adds metadata, such as a human-readable description, to a compound operation.
+  Has no execution effect and does not affect conflict detection.
+  Currently supported keys:
+  - :inverted signifies whether an operation has been inverted (only for UI purposes)
+  - :description is a human-readable description of a CO (only for UI purposes)"
+  [key & value]
+  (log "PO metadata" key value)
+  (p ::metadata
+     {:type  :metadata
+      :key   key
+      :value (apply str value)}))
+
 ; inverse operations
 
 (defmulti invert
@@ -161,6 +174,8 @@
   (update-constraint ID attribute new-value old-value))
 
 (defmethod invert :assert-no-child-added [PO] PO)
+
+(defmethod invert :metadata [PO] PO)
 
 ; operation application
 
@@ -202,5 +217,9 @@
        :formula (FM/set-constraint-formula FM ID new-value))))
 
 (defmethod _apply :assert-no-child-added [FM _PO]
+  (p ::_apply
+     FM))
+
+(defmethod _apply :metadata [FM _PO]
   (p ::_apply
      FM))

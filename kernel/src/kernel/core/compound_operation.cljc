@@ -49,6 +49,7 @@
   sibling features. We could introduce a reordering operation that treats concurrent
   writes to the same group of children as conflicts."
   (:require [clojure.string :as string]
+            [kernel.core.i18n :as i18n]
             [kernel.core.vector-clock :as VC]
             [kernel.core.feature-model :as FM]
             [kernel.core.primitive-operation :as PO]
@@ -125,7 +126,10 @@
   "Inverts a compound operation by inverting and reversing its primitive operations (socks-shoes property)."
   [PO-sequence]
   (p ::invert-PO-sequence
-     (PO/remove-nop (map PO/invert (reverse PO-sequence)))))
+     ; TODO: use this to detect whether an operation is inverted in the user interface,
+     ; and swap around the contained :description metadata (an odd number of :inverted metadata means inverted, even means not inverted)
+     (concat (list (PO/metadata :inverted true))
+             (PO/remove-nop (map PO/invert (reverse PO-sequence))))))
 
 ; operation application
 
@@ -147,12 +151,13 @@
 (defn create-feature-below
   "Creates a feature below another feature.
   The parent feature must be valid."
-  [_FM parent-ID]
+  [FM parent-ID]
   (log "CO create-feature-below" parent-ID)
   (p ::create-feature-below
      (let [PO-create-feature (PO/create-feature)
            ID (PO/get-ID PO-create-feature)]
        (make-PO-sequence
+         (i18n/t [:compound-operation :create-feature-below] (FM/get-feature-property FM parent-ID :name))
          PO-create-feature
          (PO/update-feature ID :parent-ID (FM/default-feature-parent) parent-ID)))))
 
@@ -169,6 +174,7 @@
            PO-create-feature (PO/create-feature)
            ID (PO/get-ID PO-create-feature)]
        (apply make-PO-sequence
+              (i18n/t [:compound-operation :create-feature-above] (string/join ", " (map #(FM/get-feature-property FM % :name) IDs)))
               PO-create-feature
               (concat (when parent-ID
                         (list (PO/update-feature            ; update group type if not creating above root
@@ -185,6 +191,7 @@
   (log "CO remove-feature-subtree" ID)
   (p ::remove-feature-subtree
      (make-PO-sequence
+       (i18n/t [:compound-operation :remove-feature-subtree] (FM/get-feature-property FM ID :name))
        (PO/update-feature
          ID :parent-ID
          (FM/get-feature-parent-ID FM ID)
@@ -198,6 +205,7 @@
   (log "CO move-feature-subtree" ID parent-ID)
   (p ::move-feature-subtree
      (make-PO-sequence
+       (i18n/t [:compound-operation :move-feature-subtree] (FM/get-feature-property FM ID :name) (FM/get-feature-property FM parent-ID :name))
        (PO/update-feature
          ID :parent-ID
          (FM/get-feature-parent-ID FM ID)
@@ -240,6 +248,7 @@
      (let [parent-ID (FM/get-feature-parent-ID FM ID)
            children-IDs (FM/get-feature-children-IDs FM ID)]
        (apply make-PO-sequence
+              (i18n/t [:compound-operation :remove-feature] (FM/get-feature-property FM ID :name))
               (PO/assert-no-child-added ID)
               (conj (map #(PO/update-feature % :parent-ID ID parent-ID) children-IDs)
                     (PO/update-feature ID :parent-ID parent-ID :graveyard))))))
@@ -250,7 +259,9 @@
   [FM ID optional?]
   (log "CO set-feature-optional?" ID optional?)
   (p ::set-feature-optional?
-     (make-PO-sequence (PO/update-feature ID :optional? (FM/get-feature-optional? FM ID) optional?))))
+     (make-PO-sequence
+       (i18n/t [:compound-operation :set-feature-optional?] (FM/get-feature-property FM ID :name) optional?)
+       (PO/update-feature ID :optional? (FM/get-feature-optional? FM ID) optional?))))
 
 (defn set-feature-group-type
   "Sets the group type attribute of a feature.
@@ -258,7 +269,9 @@
   [FM ID group-type]
   (log "CO set-feature-group-type" ID group-type)
   (p ::set-feature-group-type
-     (make-PO-sequence (PO/update-feature ID :group-type (FM/get-feature-group-type FM ID) group-type))))
+     (make-PO-sequence
+       (i18n/t [:compound-operation :set-feature-group-type] (FM/get-feature-property FM ID :name) group-type)
+       (PO/update-feature ID :group-type (FM/get-feature-group-type FM ID) group-type))))
 
 (defn set-feature-property
   "Sets some additional property of a feature.
@@ -267,7 +280,9 @@
   [FM ID property value]
   (log "CO set-feature-property" ID property value)
   (p ::set-feature-property
-     (make-PO-sequence (PO/update-feature ID property (FM/get-feature-property FM ID property) value))))
+     (make-PO-sequence
+       (i18n/t [:compound-operation :set-feature-property] (FM/get-feature-property FM ID :name) property value)
+       (PO/update-feature ID property (FM/get-feature-property FM ID property) value))))
 
 (defn create-constraint
   "Creates a constraint and initializes it with a given propositional formula."
@@ -277,6 +292,7 @@
      (let [PO-create-constraint (PO/create-constraint)
            ID (PO/get-ID PO-create-constraint)]
        (make-PO-sequence
+         (i18n/t [:compound-operation :create-constraint] formula)
          PO-create-constraint
          (PO/update-constraint ID :graveyarded? (FM/default-constraint-graveyarded?) false)
          (PO/update-constraint ID :formula (FM/default-constraint-formula) formula)))))
@@ -286,11 +302,15 @@
   [FM ID formula]
   (log "CO set-constraint" ID formula)
   (p ::set-constraint
-     (make-PO-sequence (PO/update-constraint ID :formula (FM/get-constraint-formula FM ID) formula))))
+     (make-PO-sequence
+       (i18n/t [:compound-operation :set-constraint] (FM/get-constraint-formula FM ID) formula)
+       (PO/update-constraint ID :formula (FM/get-constraint-formula FM ID) formula))))
 
 (defn remove-constraint
   "Removes a constraint."
   [FM ID]
   (log "CO remove-constraint" ID)
   (p ::remove-constraint
-     (make-PO-sequence (PO/update-constraint ID :graveyarded? (FM/get-constraint-graveyarded? FM ID) true))))
+     (make-PO-sequence
+       (i18n/t [:compound-operation :remove-constraint] (FM/get-constraint-formula FM ID))
+       (PO/update-constraint ID :graveyarded? (FM/get-constraint-graveyarded? FM ID) true))))
