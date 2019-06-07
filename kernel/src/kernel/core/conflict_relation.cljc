@@ -72,12 +72,12 @@
                                   (not (FM/attribute=
                                          old-value
                                          (PO/get-feature-attribute FM-up-to-PO-x ID attribute))))
-                         (i18n/t [:conflict-relation :no-overwrite-features] attribute (FM/get-feature-property base-FM+preceding-CO-y ID :name)))
+                         (i18n/t [:conflict-relation :no-overwrite-features] (name attribute) (FM/get-feature-property base-FM+preceding-CO-y ID :name)))
                        (when (and (= type :update-constraint)
                                   (not (FM/attribute=
                                          old-value
                                          (PO/get-constraint-attribute FM-up-to-PO-x ID attribute))))
-                         (i18n/t [:conflict-relation :no-overwrite-constraints] attribute (FM/get-constraint-formula base-FM+preceding-CO-y ID)))
+                         (i18n/t [:conflict-relation :no-overwrite-constraints] (name attribute) (FM/get-constraint-formula base-FM+preceding-CO-y ID)))
                        (when (and (= type :update-feature)
                                   (= attribute :parent-ID)
                                   (let [path-before (FM/get-path-to-root base-FM+preceding-CO-y new-value)

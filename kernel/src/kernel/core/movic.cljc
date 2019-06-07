@@ -20,7 +20,8 @@
             [kernel.core.topological-sort :as topological-sort]
             [kernel.helpers :refer [log]]
             #?(:clj  [taoensso.tufte :as tufte :refer (defnp p profiled profile)]
-               :cljs [taoensso.tufte :as tufte :refer-macros (defnp p profiled profile)])))
+               :cljs [taoensso.tufte :as tufte :refer-macros (defnp p profiled profile)])
+            [kernel.core.compound-operation :as CO]))
 
 ; constructor
 
@@ -43,8 +44,9 @@
   It consists of a map of versions, where a CG's string hash is mapped to a sequence
   of topologically ordered operations. Further, a neutral CG is included under
   they key :neutral. The :conflicts key then maps from CG hashes to maps, which
-  in turn map from operations to another map, which maps from operations to conflicts."
-  [MCGS CDAG CC]
+  in turn map from operations to another map, which maps from operations to conflicts.
+  The :descriptions key maps from operation IDs to human-readable descriptions."
+  [MCGS CDAG HB CC]
   (p ::conflict-descriptor
      (let [versions (reduce (fn [acc MCG]
                               (assoc acc (str (hash MCG))
@@ -57,9 +59,12 @@
                                                     (assoc acc CO-ID (CC/get-conflicts CC CO-ID)))
                                                   {} MCG)))
                              {} MCGS)
-           conflicts (assoc conflicts :neutral #{})]
-       {:versions  versions
-        :conflicts conflicts})))
+           conflicts (assoc conflicts :neutral #{})
+           descriptions (reduce #(assoc %1 %2 (CO/get-description (HB/lookup HB %2)))
+                                {} (reduce set/union MCGS))]
+       {:versions     versions
+        :conflicts    conflicts
+        :descriptions descriptions})))
 
 (defn MOVIC
   "Incrementally constructs an MCGS independent of operation ordering.

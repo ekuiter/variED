@@ -19,12 +19,13 @@ export default class extends React.Component<Props> {
                             <ul>
                                 {operationIDs.map(operationID =>
                                 <li key={operationID}>
-                                    <p><strong>{operationID}</strong></p>
+                                    <p dangerouslySetInnerHTML={{__html: conflictDescriptor.descriptions[operationID]}} />
                                     {conflictDescriptor.conflicts[versionID][operationID] &&
                                     Object.entries(conflictDescriptor.conflicts[versionID][operationID]).map(
                                         ([otherOperationID, {reason}]) =>
                                         <span>
-                                            Conflicts with <em>{otherOperationID}</em> due to the {reason}.&nbsp;
+                                            Conflicts with <em>{otherOperationID}</em>.
+                                            Reason: <span dangerouslySetInnerHTML={{__html: reason}} />
                                         </span>)}
                                 </li>)}
                             </ul>

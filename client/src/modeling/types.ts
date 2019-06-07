@@ -72,7 +72,8 @@ export interface KernelConflictDescriptor {
         {[versionID: string]:
             {[operationID: string]:
                 {[operationID: string]:
-                    {reason: string}}}}
+                    {reason: string}}}},
+    descriptions: {[operationID: string]: string}
 };
 
 export type KernelCombinedEffect = KernelFeatureModel | KernelConflictDescriptor;

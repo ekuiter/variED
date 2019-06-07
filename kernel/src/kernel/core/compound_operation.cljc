@@ -91,6 +91,13 @@
   [CO]
   (CO :PO-sequence))
 
+(defn get-description
+  "Returns the human-readable description of a compound operation.
+  Concatenates descriptions for composed COs."
+  [CO]
+  (let [description-POs (filter #(and (= (PO/get-type %) :metadata) (= (PO/get-key %) :description)) (CO :PO-sequence))]
+    (string/join " " (map PO/get-value description-POs))))
+
 ; causal ordering
 
 (defn preceding?
@@ -270,7 +277,7 @@
   (log "CO set-feature-group-type" ID group-type)
   (p ::set-feature-group-type
      (make-PO-sequence
-       (i18n/t [:compound-operation :set-feature-group-type] (FM/get-feature-property FM ID :name) group-type)
+       (i18n/t [:compound-operation :set-feature-group-type] (FM/get-feature-property FM ID :name) (name group-type))
        (PO/update-feature ID :group-type (FM/get-feature-group-type FM ID) group-type))))
 
 (defn set-feature-property
@@ -281,7 +288,7 @@
   (log "CO set-feature-property" ID property value)
   (p ::set-feature-property
      (make-PO-sequence
-       (i18n/t [:compound-operation :set-feature-property] (FM/get-feature-property FM ID :name) property value)
+       (i18n/t [:compound-operation :set-feature-property] (FM/get-feature-property FM ID :name) (name property) value)
        (PO/update-feature ID property (FM/get-feature-property FM ID property) value))))
 
 (defn create-constraint

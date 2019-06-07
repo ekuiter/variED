@@ -36,6 +36,16 @@
   [PO]
   (PO :new-value))
 
+(defn get-key
+  "Returns the key of a metadata PO."
+  [PO]
+  (PO :key))
+
+(defn get-value
+  "Returns the key of a metadata PO."
+  [PO]
+  (PO :value))
+
 (defn get-feature-attribute
   "Returns the current value of a targeted feature attribute in a given feature model."
   [FM ID attribute]
