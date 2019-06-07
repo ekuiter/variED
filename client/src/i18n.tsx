@@ -309,6 +309,11 @@ const translationMap = {
                 title: 'Export as PDF'
             }
         }
+    },
+    conflictResolution: {
+        version: 'Version',
+        neutralVersion: 'Neutral Version',
+        conflict: 'Conflict'
     }
 };
 

@@ -15,7 +15,7 @@ import logger from '../helpers/logger';
 import {enableConstraintsView} from './constraintsView/ConstraintsView';
 import {withRouter} from 'react-router';
 import {RouteProps, artifactPathToString} from '../types';
-import {redirectToArtifactPath} from 'src/router';
+import {redirectToArtifactPath} from '../router';
 
 const CommandBarContainer = (props: StateDerivedProps & RouteProps) => (
     <CommandBar

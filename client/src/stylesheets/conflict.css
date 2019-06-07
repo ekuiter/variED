@@ -8,6 +8,33 @@
     flex-shrink: 0;
 }
 
+.conflict .version > div {
+    padding: 10px;
+}
+
+.conflict .version .header {
+    font-size: 1.3em;
+    font-weight: bold;
+    margin: 5px 0 5px 30px;
+}
+
+.conflict .version .ms-ActivityItem {
+    padding: 3px 3px 3px 6px;
+    margin-top: 7px;
+    line-height: 1.5em;
+    border-radius: 5px;
+}
+
+.conflict .version .ms-ActivityItem.highlight {
+    cursor: pointer;
+    background-color: rgb(255, 200, 200);
+}
+
+.conflict .version .ms-ActivityItem i {
+    font-weight: bold;
+    font-style: normal;
+}
+
 @media screen and (min-width: 1280px) {
     .conflict .version {
         width: 33%;
