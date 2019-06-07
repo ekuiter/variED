@@ -27,9 +27,10 @@
 
 (defn make-conflict
   "Creates a new Conflict record that includes a reason for a conflict."
-  [reason]
-  (log "conflict detected, reason:" reason)
-  (->Conflict reason))
+  [& reason]
+  (let [reason (apply str reason)]
+    (log "conflict detected, reason:" reason)
+    (->Conflict reason)))
 
 (defn conflict?
   "Returns whether a given object is a Conflict record."

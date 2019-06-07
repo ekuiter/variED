@@ -17,6 +17,7 @@
   The conflict detection results are stored in a conflict cache to improve performance
   (because conflicting? is implemented recursively)."
   (:require [clojure.set :as set]
+            [kernel.core.i18n :as i18n]
             [kernel.core.history-buffer :as HB]
             [kernel.core.causal-dag :as CDAG]
             [kernel.core.conflict-cache :as CC]
@@ -71,40 +72,40 @@
                                   (not (FM/attribute=
                                          old-value
                                          (PO/get-feature-attribute FM-up-to-PO-x ID attribute))))
-                         (CC/make-conflict "no-overwrites rule for features"))
+                         (i18n/t [:conflict-relation :no-overwrite-features] attribute (FM/get-feature-property base-FM+preceding-CO-y ID :name)))
                        (when (and (= type :update-constraint)
                                   (not (FM/attribute=
                                          old-value
                                          (PO/get-constraint-attribute FM-up-to-PO-x ID attribute))))
-                         (CC/make-conflict "no-overwrites rule for constraints"))
+                         (i18n/t [:conflict-relation :no-overwrite-constraints] attribute (FM/get-constraint-formula base-FM+preceding-CO-y ID)))
                        (when (and (= type :update-feature)
                                   (= attribute :parent-ID)
                                   (let [path-before (FM/get-path-to-root base-FM+preceding-CO-y new-value)
                                         path-after (FM/get-path-to-root base-FM+preceding-CO-y+CO-y new-value)]
                                     (not= path-before path-after)))
-                         (CC/make-conflict "no-cycles rule"))
+                         (i18n/t [:conflict-relation :no-cycles]))
                        (when (and (= type :update-feature)
                                   (FM/graveyarded-feature? FM-up-to-PO-x ID)
                                   ; after the no-overwrites rule, we know for parent updates that old-value == current parent
                                   (not (and (= attribute :parent-ID) (= old-value :graveyard))))
-                         (CC/make-conflict "no-graveyarded rule for targeted features"))
+                         (i18n/t [:conflict-relation :no-graveyarded-targeted-features] (FM/get-feature-property base-FM+preceding-CO-y ID :name)))
                        (when (and (= type :update-feature)
                                   (= attribute :parent-ID)
                                   (FM/graveyarded-feature? FM-up-to-PO-x new-value))
-                         (CC/make-conflict "no-graveyarded rule for parent features"))
+                         (i18n/t [:conflict-relation :no-graveyarded-parent-features] (FM/get-feature-property base-FM+preceding-CO-y new-value :name)))
                        (when (and (= type :update-constraint)
                                   (FM/graveyarded-constraint? FM-up-to-PO-x ID)
                                   (not (and (= attribute :graveyarded?) (= old-value true))))
-                         (CC/make-conflict "no-graveyarded rule for constraints"))
+                         (i18n/t [:conflict-relation :no-graveyarded-constraints] (FM/get-constraint-formula base-FM+preceding-CO-y ID)))
                        (when (and (= type :update-feature)
                                   (= attribute :optional?)
                                   (not (FM/part-of-and-group? FM-up-to-PO-x ID)))
-                         (CC/make-conflict "group-children rule"))
+                         (i18n/t [:conflict-relation :group-children] (FM/get-feature-property base-FM+preceding-CO-y ID :name)))
                        (when (and (= type :assert-no-child-added)
                                   (let [children-IDs-before (FM/get-feature-children-IDs base-FM+preceding-CO-y ID)
                                         children-IDs-after (FM/get-feature-children-IDs base-FM+preceding-CO-y+CO-y ID)]
                                     (not-empty (set/difference children-IDs-after children-IDs-before))))
-                         (CC/make-conflict "assert-no-child-added rule"))))]
+                         (i18n/t [:conflict-relation :assert-no-child-added] (FM/get-feature-property base-FM+preceding-CO-y ID :name)))))]
            (reduced conflict)                               ; short-circuiting reduce
            (PO/_apply FM-up-to-PO-x PO-x))))))
 
