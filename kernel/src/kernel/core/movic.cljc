@@ -52,7 +52,8 @@
                               (assoc acc (str (hash MCG))
                                          (topological-sort/CO-topological-sort CDAG MCG)))
                             {} MCGS)
-           versions (assoc versions :neutral (reduce set/intersection MCGS))
+           versions (assoc versions :neutral (topological-sort/CO-topological-sort
+                                               CDAG (reduce set/intersection MCGS)))
            conflicts (reduce (fn [acc MCG]
                                (assoc acc (str (hash MCG))
                                           (reduce (fn [acc CO-ID]
