@@ -39,6 +39,11 @@
      (reduce #(conj %1 (disj %2 CO-ID)) #{} MCGS)))
 
 (defn conflict-descriptor
+  "A conflict descriptor contains information about a conflict situation.
+  It consists of a map of versions, where a CG's string hash is mapped to a sequence
+  of topologically ordered operations. Further, a neutral CG is included under
+  they key :neutral. The :conflicts key then maps from CG hashes to maps, which
+  in turn map from operations to another map, which maps from operations to conflicts."
   [MCGS CDAG CC]
   (p ::conflict-descriptor
      (let [versions (reduce (fn [acc MCG]

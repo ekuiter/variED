@@ -12,8 +12,6 @@ export default class extends React.Component<Props> {
 
         return (
             <div className="conflict">
-                <p><strong>A conflict occurred.</strong></p>
-                <div className="versions">
                     {Object.entries(conflictDescriptor.versions).map(
                         ([versionID, operationIDs]) =>
                         <div className="version" key={versionID}>
@@ -31,7 +29,6 @@ export default class extends React.Component<Props> {
                                 </li>)}
                             </ul>
                         </div>)}
-                </div>
             </div>
         );
     }

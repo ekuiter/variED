@@ -1,7 +1,21 @@
-.conflict .versions {
+.conflict {
     display: flex;
+    overflow-x: auto; 
 }
 
-.conflict .versions .version {
-    
+.conflict .version {
+    width: 50%;
+    flex-shrink: 0;
+}
+
+@media screen and (min-width: 1280px) {
+    .conflict .version {
+        width: 33%;
+    }
+}
+
+@media screen and (max-width: 767px) {
+    .conflict .version {
+        width: 100%;
+    }
 }

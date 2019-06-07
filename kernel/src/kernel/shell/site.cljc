@@ -38,7 +38,7 @@
 (defn next-FM
   "Based on the result the MOVIC algorithm returned, checks whether
   one CG was produced, in that case applying and returning the correct
-  feature model. Otherwise, returns :conflict."
+  feature model. Otherwise, returns a conflict descriptor."
   [MCGS CDAG HB CC base-FM]
   (if (= (count MCGS) 1)
     (log "no conflict occured, producing feature model")
