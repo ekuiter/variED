@@ -49,7 +49,7 @@
   sibling features. We could introduce a reordering operation that treats concurrent
   writes to the same group of children as conflicts."
   (:require [clojure.string :as string]
-            [kernel.core.i18n :as i18n]
+            [kernel.i18n :as i18n]
             [kernel.core.vector-clock :as VC]
             [kernel.core.feature-model :as FM]
             [kernel.core.primitive-operation :as PO]

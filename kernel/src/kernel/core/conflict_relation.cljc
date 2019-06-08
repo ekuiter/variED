@@ -17,7 +17,7 @@
   The conflict detection results are stored in a conflict cache to improve performance
   (because conflicting? is implemented recursively)."
   (:require [clojure.set :as set]
-            [kernel.core.i18n :as i18n]
+            [kernel.i18n :as i18n]
             [kernel.core.history-buffer :as HB]
             [kernel.core.causal-dag :as CDAG]
             [kernel.core.conflict-cache :as CC]

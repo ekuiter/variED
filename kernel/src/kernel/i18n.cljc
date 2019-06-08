@@ -1,4 +1,4 @@
-(ns kernel.core.i18n
+(ns kernel.i18n
   "Defines strings for internationalization purposes."
   (:require [kernel.core.conflict-cache :as CC]
             [kernel.core.primitive-operation :as PO]))

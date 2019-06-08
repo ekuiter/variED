@@ -9,12 +9,12 @@
 (deftest single-user
   (testing "simple example of single-user application"
     (let [op (CO/create-feature-below (example-FM) :AHEAD)
-          fm (CO/_apply (example-FM) (CO/make op nil nil))
+          fm (CO/_apply (example-FM) (CO/make op nil nil nil))
           op' (CO/remove-feature fm :AHEAD)
-          fm (CO/_apply fm (CO/make op' nil nil))
-          fm (CO/_apply fm (CO/make (CO/invert-PO-sequence op') nil nil)) ; undo removal
-          fm (CO/_apply fm (CO/make (CO/invert-PO-sequence op) nil nil)) ; undo creation
-          fm (CO/_apply fm (CO/make (CO/invert-PO-sequence (CO/invert-PO-sequence op)) nil nil))] ; redo creation
+          fm (CO/_apply fm (CO/make op' nil nil nil))
+          fm (CO/_apply fm (CO/make (CO/invert-PO-sequence op') nil nil nil)) ; undo removal
+          fm (CO/_apply fm (CO/make (CO/invert-PO-sequence op) nil nil nil)) ; undo creation
+          fm (CO/_apply fm (CO/make (CO/invert-PO-sequence (CO/invert-PO-sequence op)) nil nil nil))] ; redo creation
       fm)))
 
 (deftest vector-clock
