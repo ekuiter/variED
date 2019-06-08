@@ -183,5 +183,5 @@
   "Returns the identifier for a new object an operation creates.
   Assumes that the create primitive operation is first in the compound operation."
   [CO]
-  ; first is PO/metadata, second is create operation
-  (-> CO CO/get-PO-sequence second CO/get-ID))
+  ; first and second are PO/metadata, third is create operation
+  (-> CO CO/get-PO-sequence (nth 2) CO/get-ID))

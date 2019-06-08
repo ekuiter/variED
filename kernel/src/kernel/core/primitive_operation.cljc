@@ -137,13 +137,29 @@
   Has no execution effect and does not affect conflict detection.
   Currently supported keys:
   - :inverted signifies whether an operation has been inverted (only for UI purposes)
-  - :description is a human-readable description of a CO (only for UI purposes)"
+  - :description is a human-readable description of a CO (only for UI purposes)
+  - :icon is an (Office UI Fabric) icon associated with this CO (only for UI purposes)"
   [key & value]
   (log "PO metadata" key value)
   (p ::metadata
      {:type  :metadata
       :key   key
       :value (apply str value)}))
+
+(defn inverted []
+  (metadata :inverted true))
+
+(defn description [& value]
+  (apply metadata :description value))
+
+(defn icon [icon]
+  (metadata :icon icon))
+
+(defn description? [PO]
+  (and (= (get-type PO) :metadata) (= (get-key PO) :description)))
+
+(defn icon? [PO]
+  (and (= (get-type PO) :metadata) (= (get-key PO) :icon)))
 
 ; inverse operations
 

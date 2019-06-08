@@ -62,7 +62,9 @@
                              {} MCGS)
            conflicts (assoc conflicts :neutral #{})
            descriptions (reduce #(assoc %1 %2 (CO/get-description (HB/lookup HB %2)))
-                                {} (reduce set/union MCGS))]
+                                {} (reduce set/union MCGS))
+           icons (reduce #(assoc %1 %2 (CO/get-icon (HB/lookup HB %2)))
+                         {} (reduce set/union MCGS))]
        {:versions     versions
         :conflicts    conflicts
         :descriptions descriptions})))
