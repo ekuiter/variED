@@ -177,7 +177,7 @@
      (let [PO-create-feature (PO/create-feature)
            ID (PO/get-ID PO-create-feature)]
        (make-PO-sequence
-         (PO/icon :Add)
+         (PO/icon "Add")
          (i18n/t [:compound-operation :create-feature-below] (FM/get-feature-property FM parent-ID :name))
          PO-create-feature
          (PO/update-feature ID :parent-ID (FM/default-feature-parent) parent-ID)))))
@@ -195,7 +195,7 @@
            PO-create-feature (PO/create-feature)
            ID (PO/get-ID PO-create-feature)]
        (apply make-PO-sequence
-              (PO/icon :Add)
+              (PO/icon "Add")
               (i18n/t [:compound-operation :create-feature-above] (string/join ", " (map #(FM/get-feature-property FM % :name) IDs)))
               PO-create-feature
               (concat (when parent-ID
@@ -213,7 +213,7 @@
   (log "CO remove-feature-subtree" ID)
   (p ::remove-feature-subtree
      (make-PO-sequence
-       (PO/icon :Remove)
+       (PO/icon "Remove")
        (i18n/t [:compound-operation :remove-feature-subtree] (FM/get-feature-property FM ID :name))
        (PO/update-feature
          ID :parent-ID
@@ -228,7 +228,7 @@
   (log "CO move-feature-subtree" ID parent-ID)
   (p ::move-feature-subtree
      (make-PO-sequence
-       (PO/icon :Move)
+       (PO/icon "Move")
        (i18n/t [:compound-operation :move-feature-subtree] (FM/get-feature-property FM ID :name) (FM/get-feature-property FM parent-ID :name))
        (PO/update-feature
          ID :parent-ID
@@ -272,7 +272,7 @@
      (let [parent-ID (FM/get-feature-parent-ID FM ID)
            children-IDs (FM/get-feature-children-IDs FM ID)]
        (apply make-PO-sequence
-              (PO/icon :Remove)
+              (PO/icon "Remove")
               (i18n/t [:compound-operation :remove-feature] (FM/get-feature-property FM ID :name))
               (PO/assert-no-child-added ID)
               (conj (map #(PO/update-feature % :parent-ID ID parent-ID) children-IDs)
@@ -285,7 +285,7 @@
   (log "CO set-feature-optional?" ID optional?)
   (p ::set-feature-optional?
      (make-PO-sequence
-       (PO/icon :Edit)
+       (PO/icon "Edit")
        (i18n/t [:compound-operation :set-feature-optional?] (FM/get-feature-property FM ID :name) optional?)
        (PO/update-feature ID :optional? (FM/get-feature-optional? FM ID) optional?))))
 
@@ -296,7 +296,7 @@
   (log "CO set-feature-group-type" ID group-type)
   (p ::set-feature-group-type
      (make-PO-sequence
-       (PO/icon :Edit)
+       (PO/icon "Edit")
        (i18n/t [:compound-operation :set-feature-group-type] (FM/get-feature-property FM ID :name) (name group-type))
        (PO/update-feature ID :group-type (FM/get-feature-group-type FM ID) group-type))))
 
@@ -308,7 +308,7 @@
   (log "CO set-feature-property" ID property value)
   (p ::set-feature-property
      (make-PO-sequence
-       (PO/icon :Edit)
+       (PO/icon "Edit")
        (i18n/t [:compound-operation :set-feature-property] (FM/get-feature-property FM ID :name) (name property) value)
        (PO/update-feature ID property (FM/get-feature-property FM ID property) value))))
 
@@ -320,7 +320,7 @@
      (let [PO-create-constraint (PO/create-constraint)
            ID (PO/get-ID PO-create-constraint)]
        (make-PO-sequence
-         (PO/icon :Add)
+         (PO/icon "Add")
          (i18n/t [:compound-operation :create-constraint] formula)
          PO-create-constraint
          (PO/update-constraint ID :graveyarded? (FM/default-constraint-graveyarded?) false)
@@ -332,7 +332,7 @@
   (log "CO set-constraint" ID formula)
   (p ::set-constraint
      (make-PO-sequence
-       (PO/icon :Edit)
+       (PO/icon "Edit")
        (i18n/t [:compound-operation :set-constraint] (FM/get-constraint-formula FM ID) formula)
        (PO/update-constraint ID :formula (FM/get-constraint-formula FM ID) formula))))
 
@@ -342,6 +342,6 @@
   (log "CO remove-constraint" ID)
   (p ::remove-constraint
      (make-PO-sequence
-       (PO/icon :Remove)
+       (PO/icon "Remove")
        (i18n/t [:compound-operation :remove-constraint] (FM/get-constraint-formula FM ID))
        (PO/update-constraint ID :graveyarded? (FM/get-constraint-graveyarded? FM ID) true))))
