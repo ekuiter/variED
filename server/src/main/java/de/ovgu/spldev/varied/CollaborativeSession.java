@@ -43,6 +43,8 @@ public abstract class CollaborativeSession {
         // therefore do not check "add" return value here
         collaborators.add(newCollaborator);
         _join(newCollaborator);
+        CollaboratorUtils.broadcastToOtherCollaborators(collaborators, new Api.CollaboratorJoined(artifactPath, newCollaborator), newCollaborator);
+        CollaboratorUtils.sendForEveryCollaborator(newCollaborator, collaborators, collaborator -> new Api.CollaboratorJoined(artifactPath, collaborator));
     }
 
     public void leave(Collaborator oldCollaborator) {
@@ -50,6 +52,7 @@ public abstract class CollaborativeSession {
         if (!collaborators.remove(oldCollaborator))
             throw new RuntimeException("collaborator already left");
         _leave(oldCollaborator);
+        CollaboratorUtils.broadcastToOtherCollaborators(collaborators, new Api.CollaboratorLeft(artifactPath, oldCollaborator), oldCollaborator);
     }
 
     void onMessage(Collaborator collaborator, Message message) throws Message.InvalidMessageException {
@@ -72,7 +75,7 @@ public abstract class CollaborativeSession {
 
             Api.Kernel kernelMessage = (Api.Kernel) message;
             String newMessage = kernel.forwardMessage(kernelMessage.message);
-            CollaboratorUtils.broadcastToOthers(collaborators, new Api.Kernel(artifactPath, newMessage), collaborator);
+            CollaboratorUtils.broadcastToOtherCollaborators(collaborators, new Api.Kernel(artifactPath, newMessage), collaborator);
             return true;
         }
 
@@ -82,13 +85,13 @@ public abstract class CollaborativeSession {
             String context = contextAndHeartbeatMessage[0],
                     heartbeatMessage = contextAndHeartbeatMessage[1];
             newCollaborator.send(new Api.Initialize(artifactPath, context));
-            CollaboratorUtils.broadcastToOthers(collaborators, new Api.Kernel(artifactPath, heartbeatMessage), newCollaborator);
+            CollaboratorUtils.broadcastToOtherCollaborators(collaborators, new Api.Kernel(artifactPath, heartbeatMessage), newCollaborator);
         }
 
         protected void _leave(Collaborator oldCollaborator) {
             UUID siteID = oldCollaborator.getSiteID();
             String leaveMessage = kernel.siteLeft(siteID);
-            CollaboratorUtils.broadcastToOthers(collaborators, new Api.Kernel(artifactPath, leaveMessage), oldCollaborator);
+            CollaboratorUtils.broadcastToOtherCollaborators(collaborators, new Api.Kernel(artifactPath, leaveMessage), oldCollaborator);
         }
     }
 }

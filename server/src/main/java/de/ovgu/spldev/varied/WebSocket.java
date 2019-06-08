@@ -47,6 +47,10 @@ public class WebSocket {
     public void onClose() {
         synchronized (lock) {
             Logger.debug("WebSocket closed for site {}", siteID);
+            // TODO: users are not logged out here by default. That means users are indefinitely
+            // maintained if they do not properly leave a collaborative session. They should
+            // be removed and kernel-GC'ed after a timeout has passed, allowing some offline
+            // editing period, and while they are offline, shown as "inactive" in the UI.
         }
     }
 

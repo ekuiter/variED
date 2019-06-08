@@ -116,7 +116,7 @@ profile.
 ```
 
 A decodable message. A client sends this to the server to join the given
-artifact's collaborative session. The server sends this to inform the joined client about other participants and the other participants about the joined client.
+artifact's collaborative session.
 
 #### LEAVE_REQUEST
 
@@ -124,9 +124,8 @@ artifact's collaborative session. The server sends this to inform the joined cli
 {type: "LEAVE_REQUEST", artifactPath: {project: "project", artifact: "artifact"}}
 ```
 
-An en-/decodable message. A client sends this to the server to leave the given
-artifact's collaborative session. The server sends this to inform the other
-participants that the client left.
+A decodable message. A client sends this to the server to leave the given
+artifact's collaborative session.
 
 #### INITIALIZE
 

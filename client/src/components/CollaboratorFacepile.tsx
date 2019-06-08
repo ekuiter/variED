@@ -33,7 +33,7 @@ class UserFacepile extends React.Component<Props, State> {
 
     render() {
         const toPersona = (collaborator: Collaborator) => ({
-            personaName: collaborator.siteID,
+            personaName: collaborator.name,
             onMouseMove: (e?: React.MouseEvent, persona?: IFacepilePersona) => {
                 if (typeof e === 'undefined')
                     return;

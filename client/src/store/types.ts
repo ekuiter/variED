@@ -4,7 +4,8 @@ import {Message, FeatureDiagramLayoutType, OverlayType, OverlayProps, ArtifactPa
 import {Feature, KernelConstraintFormula, KernelCombinedEffect, KernelConflictDescriptor} from '../modeling/types';
 
 export interface Collaborator {
-    siteID: string
+    siteID: string,
+    name: string
 };
 
 export interface CollaborativeSession {

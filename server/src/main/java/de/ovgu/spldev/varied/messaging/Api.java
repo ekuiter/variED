@@ -2,6 +2,7 @@ package de.ovgu.spldev.varied.messaging;
 
 import com.google.gson.annotations.Expose;
 import de.ovgu.spldev.varied.Artifact;
+import de.ovgu.spldev.varied.Collaborator;
 import org.pmw.tinylog.Logger;
 
 import java.util.Collection;
@@ -19,7 +20,8 @@ public class Api {
         ERROR,
         ADD_ARTIFACT,
         REMOVE_ARTIFACT,
-        COLLABORATOR_INFO,
+        COLLABORATOR_JOINED,
+        COLLABORATOR_LEFT,
         JOIN_REQUEST,
         LEAVE_REQUEST,
         INITIALIZE,
@@ -56,13 +58,23 @@ public class Api {
         }
     }
 
-    public static class CollaboratorInfo extends Message implements Message.IEncodable {
+    public static class CollaboratorJoined extends Message implements Message.IEncodable {
         @Expose
-        UUID siteID;
+        Collaborator collaborator;
 
-        public CollaboratorInfo(UUID siteID) {
-            super(TypeEnum.COLLABORATOR_INFO, null);
-            this.siteID = siteID;
+        public CollaboratorJoined(de.ovgu.spldev.varied.Artifact.Path artifactPath, Collaborator collaborator) {
+            super(TypeEnum.COLLABORATOR_JOINED, artifactPath);
+            this.collaborator = collaborator;
+        }
+    }
+
+    public static class CollaboratorLeft extends Message implements Message.IEncodable {
+        @Expose
+        Collaborator collaborator;
+
+        public CollaboratorLeft(de.ovgu.spldev.varied.Artifact.Path artifactPath, Collaborator collaborator) {
+            super(TypeEnum.COLLABORATOR_LEFT, artifactPath);
+            this.collaborator = collaborator;
         }
     }
 

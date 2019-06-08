@@ -145,8 +145,26 @@ function serverReceiveReducer(state: State, action: Action): State {
                 logger.warnTagged({tag: 'server'}, () => action.payload.error);
                 return state;
 
-            case MessageType.COLLABORATOR_INFO:
-                return getNewState(state, 'myself', {siteID: action.payload.siteID});
+            case MessageType.COLLABORATOR_JOINED:
+                if (action.payload.artifactPath)
+                    return getNewState(state, 'collaborativeSessions',
+                        getNewCollaborativeSessions(state, action.payload.artifactPath!,
+                            (collaborativeSession: CollaborativeSession) => {
+                                const collaborators = setAdd(collaborativeSession.collaborators,
+                                    action.payload.collaborator, collaborator => collaborator.siteID);
+                                return {...collaborativeSession, collaborators};
+                            }));
+                else
+                    return getNewState(state, 'myself', action.payload.collaborator);
+
+            case MessageType.COLLABORATOR_LEFT:
+                return getNewState(state, 'collaborativeSessions',
+                    getNewCollaborativeSessions(state, action.payload.artifactPath!,
+                        (collaborativeSession: CollaborativeSession) => {
+                            const collaborators = setRemove(collaborativeSession.collaborators,
+                                action.payload.collaborator, collaborator => collaborator.siteID);
+                            return {...collaborativeSession, collaborators};
+                        }));
 
             case MessageType.ADD_ARTIFACT:
                 return getNewState(state, 'artifactPaths',

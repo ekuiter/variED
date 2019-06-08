@@ -62,7 +62,7 @@ public class Collaborator {
 
     void sendInitialInformation() {
         Logger.info("sending initial information to collaborator {}", this);
-        send(new Api.CollaboratorInfo(siteID));
+        send(new Api.CollaboratorJoined(null, this));
         send(new Api.AddArtifact(ProjectManager.getInstance().getArtifactPaths()));
     }
 
