@@ -16,6 +16,9 @@
 (def ^:dynamic *generate-ID-fn*)
 (def ^:dynamic *semantic-rules* '())
 
+(defn timestamp []
+  #?(:cljs (.getTime (js/Date.))))
+
 (defn generate-ID
   "Identifiers generated in the system must be unique.
   For simplicity, we utilize pseudo randomly generated UUIDs (version 4).

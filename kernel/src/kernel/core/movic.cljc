@@ -45,7 +45,7 @@
   of topologically ordered operations. Further, a neutral CG is included under
   they key :neutral. The :conflicts key then maps from CG hashes to maps, which
   in turn map from operations to another map, which maps from operations to conflicts.
-  The :descriptions key maps from operation IDs to human-readable descriptions."
+  The :metadata key maps from operation IDs to metadata, e.g., human-readable descriptions."
   [MCGS CDAG HB CC]
   (p ::conflict-descriptor
      (let [versions (reduce (fn [acc MCG]
@@ -61,14 +61,14 @@
                                                   {} MCG)))
                              {} MCGS)
            conflicts (assoc conflicts :neutral #{})
-           descriptions (reduce #(assoc %1 %2 (CO/get-description (HB/lookup HB %2)))
-                                {} (reduce set/union MCGS))
-           icons (reduce #(assoc %1 %2 (CO/get-icon (HB/lookup HB %2)))
-                         {} (reduce set/union MCGS))]
-       {:versions     versions
-        :conflicts    conflicts
-        :descriptions descriptions
-        :icons        icons})))
+           metadata (reduce #(assoc %1 %2 (let [CO (HB/lookup HB %2)]
+                                            {:description (CO/get-description CO)
+                                             :icon        (name (CO/get-icon CO))
+                                             :timestamp   (CO/get-timestamp CO)}))
+                            {} (reduce set/union MCGS))]
+       {:versions  versions
+        :conflicts conflicts
+        :metadata  metadata})))
 
 (defn MOVIC
   "Incrementally constructs an MCGS independent of operation ordering.

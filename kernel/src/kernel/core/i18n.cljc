@@ -11,7 +11,7 @@
    [:compound-operation :remove-feature]                  #(PO/metadata :description "removed the feature <i>" % "</i>")
    [:compound-operation :set-feature-optional?]           #(PO/metadata :description "set the feature <i>" %1 "</i> to " (if %2 "optional" "mandatory"))
    [:compound-operation :set-feature-group-type]          #(PO/metadata :description "set the feature <i>" %1 "</i> to " %2 "-group")
-   [:compound-operation :set-feature-property]            #(PO/metadata :description "set the <i>" %2 "</i> of the feature <i>" %1 "</i> to <i>" %3 "</i>")
+   [:compound-operation :set-feature-property]            #(PO/metadata :description "set <i>" %2 "</i> of the feature <i>" %1 "</i> to <i>" %3 "</i>")
    [:compound-operation :create-constraint]               #(PO/metadata :description "created the constraint <i>" % "</i>")
    [:compound-operation :set-constraint]                  #(PO/metadata :description "set the constraint <i>" %1 "</i> to <i>" %2 "</i>")
    [:compound-operation :remove-constraint]               #(PO/metadata :description "removed the constraint <i>" % "</i>")

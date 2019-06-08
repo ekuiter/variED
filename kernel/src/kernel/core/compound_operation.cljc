@@ -53,7 +53,7 @@
             [kernel.core.vector-clock :as VC]
             [kernel.core.feature-model :as FM]
             [kernel.core.primitive-operation :as PO]
-            [kernel.helpers :refer [log]]
+            [kernel.helpers :as helpers :refer [log]]
             #?(:clj  [taoensso.tufte :as tufte :refer (defnp p profiled profile)]
                :cljs [taoensso.tufte :as tufte :refer-macros (defnp p profiled profile)])))
 
@@ -67,7 +67,8 @@
   [PO-sequence ID VC]
   {:PO-sequence PO-sequence
    :ID          ID
-   :VC          VC})
+   :VC          VC
+   :timestamp   (helpers/timestamp)})
 
 ; getters and setters
 
@@ -80,6 +81,11 @@
   "Returns the vector clock of a compound operation."
   [CO]
   (CO :VC))
+
+(defn get-timestamp
+  "Returns the timestamp of a compound operation (only for UI purposes)."
+  [CO]
+  (CO :timestamp))
 
 (defn update-VC
   "Updates the vector clock of a compound operation."
