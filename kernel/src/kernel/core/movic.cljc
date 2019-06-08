@@ -67,7 +67,8 @@
                          {} (reduce set/union MCGS))]
        {:versions     versions
         :conflicts    conflicts
-        :descriptions descriptions})))
+        :descriptions descriptions
+        :icons        icons})))
 
 (defn MOVIC
   "Incrementally constructs an MCGS independent of operation ordering.

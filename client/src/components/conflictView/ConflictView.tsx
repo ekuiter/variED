@@ -34,6 +34,7 @@ export default class extends React.Component<Props> {
                                 {operationIDs.map(operationID => {
                                     // TODO: personas & datetime / icon based on operation / "... created a feature below ... ."
                                     const description = conflictDescriptor.descriptions[operationID],
+                                        icon = conflictDescriptor.icons[operationID],
                                         hasConflicts = conflictDescriptor.conflicts[versionID][operationID],
                                         conflictKeys = hasConflicts && Object.keys(conflictDescriptor.conflicts[versionID][operationID]),
                                         conflictEntries = hasConflicts && Object.entries(conflictDescriptor.conflicts[versionID][operationID]);
@@ -41,7 +42,7 @@ export default class extends React.Component<Props> {
                                     <ActivityItem
                                         key={operationID}
                                         activityDescription={<span dangerouslySetInnerHTML={{__html: description}} />}
-                                        activityIcon={<Icon iconName="edit" />}
+                                        activityIcon={<Icon iconName={icon} />}
                                         className={this.state.operationID &&
                                             (operationID === this.state.operationID ||
                                             (hasConflicts && conflictKeys.includes(this.state.operationID)))

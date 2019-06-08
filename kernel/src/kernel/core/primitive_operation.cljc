@@ -135,10 +135,12 @@
 (defn metadata
   "Adds metadata, such as a human-readable description, to a compound operation.
   Has no execution effect and does not affect conflict detection.
+  All of these are only used for UI purposes.
+
   Currently supported keys:
-  - :inverted signifies whether an operation has been inverted (only for UI purposes)
-  - :description is a human-readable description of a CO (only for UI purposes)
-  - :icon is an (Office UI Fabric) icon associated with this CO (only for UI purposes)"
+  - :inverted signifies whether an operation has been inverted
+  - :description is a human-readable description of a CO
+  - :icon is an (Office UI Fabric) icon associated with this CO"
   [key & value]
   (log "PO metadata" key value)
   (p ::metadata

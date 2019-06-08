@@ -192,7 +192,7 @@ export const paletteConstraintRenderer = createConstraintRenderer({
     _return: s => s,
     returnFeature: f => f ? f.name : '?',
     join: (ts, t) => ts.join(t),
-    cacheKey: 'string'
+    cacheKey: 'palette'
 });
 
 const isGraveyardedConstraintRenderer = createConstraintRenderer({
