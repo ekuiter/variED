@@ -18,8 +18,10 @@ import objectPathImmutable from 'object-path-immutable';
 import logger, {setLogLevel, LogLevel, defaultLogLevel} from '../helpers/logger';
 import {AnyAction, Store} from 'redux';
 import Kernel from '../modeling/Kernel';
-import {KernelFeatureModel} from '../modeling/types';
+import {KernelFeatureModel, isKernelConflictDescriptor} from '../modeling/types';
 import {getCurrentArtifactPath, redirectToArtifactPath} from '../router';
+import {enqueueMessage, flushMessageQueue} from '../server/messageQueue';
+import deferred from '../helpers/deferred';
 
 function getNewState(state: State, ...args: any[]): State {
     if (args.length % 2 === 1)
@@ -136,7 +138,7 @@ function serverSendReducer(state: State, action: AnyAction): State {
     return state;
 }
 
-// Calls the kernel, which makes this reducer _not pure_.
+// Calls the kernel and sends messages, which makes this reducer _not pure_.
 // Thus, time travel etc. is not supported.
 function serverReceiveReducer(state: State, action: Action): State {
     if (isActionOf(actions.server.receive, action) && isMessageType(action.payload.type)) {
@@ -200,9 +202,17 @@ function serverReceiveReducer(state: State, action: Action): State {
                 state = getNewState(state, 'collaborativeSessions',
                     getNewCollaborativeSessions(state, action.payload.artifactPath!,
                         (collaborativeSession: CollaborativeSession) => {
-                            const [kernelContext, kernelCombinedEffect] =
+                            let [kernelContext, kernelCombinedEffect] =
                                 Kernel.run(state, collaborativeSession.artifactPath, kernel =>
                                     kernel.receiveMessage(action.payload.message));
+                            if (!isKernelConflictDescriptor((<FeatureDiagramCollaborativeSession>collaborativeSession).kernelCombinedEffect) &&
+                                isKernelConflictDescriptor(kernelCombinedEffect)) {
+                                const artifactPath = collaborativeSession.artifactPath;
+                                let heartbeat;
+                                [kernelContext, heartbeat] = Kernel.run(state, artifactPath, kernel => kernel.generateHeartbeat());
+                                enqueueMessage({type: MessageType.KERNEL, message: heartbeat}, artifactPath);
+                                deferred(flushMessageQueue)();
+                            }
                             return {...collaborativeSession, kernelContext, kernelCombinedEffect};  // TODO: do not change on heartbeats
                         }));
                 if (isEditingFeatureModel(state))
