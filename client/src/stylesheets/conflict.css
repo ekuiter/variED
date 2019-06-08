@@ -1,6 +1,25 @@
+
 .conflict {
+    flex: 1 1 auto;
     display: flex;
-    overflow-x: auto; 
+    flex-direction: column;
+}
+
+.conflict > .header {
+    flex-grow: 0;
+    margin: 16px 16px 5px 16px;
+    line-height: 1.4em;
+}
+
+.conflict > .header span {
+    font-size: 1.3em;
+    font-weight: bold;
+}
+
+.conflict .versions {
+    flex-grow: 1;
+    display: flex;
+    overflow-x: auto;
 }
 
 .conflict .version {
@@ -12,7 +31,7 @@
     padding: 10px;
 }
 
-.conflict .version .header {
+.conflict .version > div > .header {
     font-size: 1.3em;
     font-weight: bold;
     margin: 5px 0 5px 30px;
@@ -26,7 +45,10 @@
 }
 
 .conflict .version .ms-ActivityItem.highlight {
-    cursor: pointer;
+    background-color: rgb(255, 220, 220);
+}
+
+.conflict .version .ms-ActivityItem.hoverHighlight {
     background-color: rgb(255, 200, 200);
 }
 

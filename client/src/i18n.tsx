@@ -318,8 +318,9 @@ const translationMap = {
     },
     conflictResolution: {
         version: 'Version',
-        neutralVersion: 'Neutral Version',
-        conflict: (numberOfConflicts: number) => numberOfConflicts > 1 ? `${numberOfConflicts} conflicts`: 'Conflict'
+        conflict: (numberOfConflicts: number) => numberOfConflicts > 1 ? `${numberOfConflicts} conflicts`: 'Conflict',
+        header: 'Conflicts detected!',
+        cancel: 'Discard all conflicting changes.'
     }
 };
 
