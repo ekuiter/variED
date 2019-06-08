@@ -4,8 +4,10 @@ import com.google.common.io.Resources;
 import com.google.gson.annotations.Expose;
 import de.ovgu.spldev.varied.messaging.Api;
 import de.ovgu.spldev.varied.messaging.Message;
+import de.ovgu.spldev.varied.util.CollaboratorUtils;
 import me.atrox.haikunator.Haikunator;
 import me.atrox.haikunator.HaikunatorBuilder;
+import org.apache.commons.lang3.text.WordUtils;
 import org.pmw.tinylog.Logger;
 
 import java.net.URISyntaxException;
@@ -25,7 +27,7 @@ public class Collaborator {
     private Set<CollaborativeSession> collaborativeSessions = new HashSet<>();
 
     private static String generateName() {
-        return haikunator.haikunate() + " (anonymous)";
+        return WordUtils.capitalize(haikunator.haikunate());
     }
 
     Collaborator(WebSocket webSocket) {
@@ -68,6 +70,15 @@ public class Collaborator {
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+        send(new Api.CollaboratorJoined(null, this));
+        for (CollaborativeSession collaborativeSession : collaborativeSessions)
+            CollaboratorUtils.broadcastToOtherCollaborators(collaborativeSession.collaborators,
+                    new Api.CollaboratorJoined(collaborativeSession.artifactPath, this), this);
+
     }
 
     UUID getSiteID() {
@@ -140,6 +151,13 @@ public class Collaborator {
                 joinCollaborativeSession(collaborativeSession);
             if (message.isType(Api.TypeEnum.LEAVE_REQUEST))
                 leaveCollaborativeSession(collaborativeSession);
+            return;
+        }
+
+        if (message.isType(Api.TypeEnum.MYSELF_SET_NAME)) {
+            String name = ((Api.MyselfSetName) message).name;
+            Logger.info("renaming user {} to {}", this.name, name);
+            this.setName(name);
             return;
         }
 

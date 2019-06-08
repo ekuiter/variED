@@ -98,6 +98,7 @@ export type OnCreateConstraintFunction = (payload: {formula: KernelConstraintFor
 export type OnSetConstraintFunction = (payload: {constraintID: string, formula: KernelConstraintFormula}) => Promise<void>;
 export type OnRemoveConstraintFunction = (payload: {constraintID: string}) => Promise<void>;
 export type OnToggleFeatureGroupTypeFunction = (payload: {feature: Feature}) => Promise<void>;
+export type OnSetMyselfNameFunction = (payload: {name: string}) => Promise<void>;
 
 // Props that may derived from the state to use in React components.
 // This enforces the convention that a prop called 'on...' has the same type in all components.
@@ -158,5 +159,6 @@ export type StateDerivedProps = Partial<{
     onCreateConstraint: OnCreateConstraintFunction,
     onSetConstraint: OnSetConstraintFunction,
     onRemoveConstraint: OnRemoveConstraintFunction,
-    onToggleFeatureGroupType: OnToggleFeatureGroupTypeFunction
+    onToggleFeatureGroupType: OnToggleFeatureGroupTypeFunction,
+    onSetMyselfName: OnSetMyselfNameFunction
 }>;

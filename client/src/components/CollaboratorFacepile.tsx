@@ -8,14 +8,16 @@ import {PersonaSize, PersonaInitialsColor} from 'office-ui-fabric-react/lib/Pers
 import {Tooltip} from 'office-ui-fabric-react/lib/Tooltip';
 import {Settings} from '../store/settings';
 import withDimensions from '../helpers/withDimensions';
-import {Collaborator} from '../store/types';
+import {Collaborator, OnShowOverlayFunction} from '../store/types';
+import {OverlayType} from 'src/types';
 
 interface Props {
     user?: Collaborator,
     users: Collaborator[],
     settings: Settings,
     width: number,
-    height: number
+    height: number,
+    onShowOverlay: OnShowOverlayFunction
 };
 
 interface State {
@@ -32,7 +34,7 @@ class UserFacepile extends React.Component<Props, State> {
     }
 
     render() {
-        const toPersona = (collaborator: Collaborator) => ({
+        const toPersona = (collaborator: Collaborator, args = {}) => ({
             personaName: collaborator.name,
             onMouseMove: (e?: React.MouseEvent, persona?: IFacepilePersona) => {
                 if (typeof e === 'undefined')
@@ -46,7 +48,8 @@ class UserFacepile extends React.Component<Props, State> {
                     return;
                 if (e.relatedTarget && !(e.relatedTarget as HTMLElement).closest('.ms-Facepile-member'))
                     this.setState({tooltipTarget: undefined, persona: undefined});
-            }
+            },
+            ...args
         }),
             personas = this.props.users.map(toPersona),
             {maxDisplayableCollaborators, overflowBreakpoint, gapSpace} = this.props.settings.collaboratorFacepile,
@@ -86,7 +89,9 @@ class UserFacepile extends React.Component<Props, State> {
                     calloutProps={{gapSpace}}/>}
                 {this.props.user &&
                 <Facepile
-                    personas={[toPersona(this.props.user)]}
+                    personas={[toPersona(this.props.user, {
+                        onClick: () => this.props.onShowOverlay({overlay: OverlayType.myselfPanel, overlayProps: {}})
+                    })]}
                     personaSize={PersonaSize.size28}
                     getPersonaProps={_persona => ({
                         hidePersonaDetails: true,

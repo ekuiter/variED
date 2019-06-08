@@ -46,7 +46,10 @@ class FeatureDiagramRoute extends React.Component<FeatureDiagramRouteProps> {
                         {...this.props}
                         style={style}/>
                     : this.props.conflictDescriptor
-                        ? <ConflictView conflictDescriptor={this.props.conflictDescriptor}/>
+                        ? <ConflictView
+                            conflictDescriptor={this.props.conflictDescriptor}
+                            myself={this.props.myself}
+                            collaborators={this.props.collaborators!}/>
                         : <div style={{display: 'flex'}}>
                             <Spinner size={SpinnerSize.large}/>
                     </div>}
@@ -62,7 +65,8 @@ export default withRouter(connect(
                 settings: state.settings,
                 collaborativeSessions: state.collaborativeSessions,
                 overlay: state.overlay,
-                overlayProps: state.overlayProps
+                overlayProps: state.overlayProps,
+                myself: state.myself
             };
             if (!collaborativeSession || !isFeatureDiagramCollaborativeSession(collaborativeSession))
                 return props;
@@ -73,7 +77,8 @@ export default withRouter(connect(
             currentArtifactPath: collaborativeSession.artifactPath,
             featureDiagramLayout: collaborativeSession.layout,
             isSelectMultipleFeatures: collaborativeSession.isSelectMultipleFeatures,
-            selectedFeatureIDs: collaborativeSession.selectedFeatureIDs
+            selectedFeatureIDs: collaborativeSession.selectedFeatureIDs,
+            collaborators: collaborativeSession.collaborators
         };
     }),
     (dispatch): StateDerivedProps => ({

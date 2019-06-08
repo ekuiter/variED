@@ -22,6 +22,7 @@ public class Api {
         REMOVE_ARTIFACT,
         COLLABORATOR_JOINED,
         COLLABORATOR_LEFT,
+        MYSELF_SET_NAME,
         JOIN_REQUEST,
         LEAVE_REQUEST,
         INITIALIZE,
@@ -76,6 +77,11 @@ public class Api {
             super(TypeEnum.COLLABORATOR_LEFT, artifactPath);
             this.collaborator = collaborator;
         }
+    }
+
+    public static class MyselfSetName extends Message implements Message.IDecodable {
+        @Expose
+        public String name;
     }
 
     public static class JoinRequest extends Message implements Message.IDecodable {

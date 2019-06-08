@@ -215,6 +215,10 @@ export default class extends React.Component<Props, State> {
                 }],
                 (project, artifact) => this.props.onLeaveRequest({artifactPath: {project, artifact}}))
         }, {
+            text: i18n.t('commandPalette.myself'),
+            icon: 'Contact',
+            action: this.action(() => this.props.onShowOverlay({overlay: OverlayType.myselfPanel, overlayProps: {}}))
+        }, {
             text: i18n.t('commandPalette.settings'),
             icon: 'Settings',
             shortcut: getShortcutText('settings'),

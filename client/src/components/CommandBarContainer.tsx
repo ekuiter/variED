@@ -116,7 +116,8 @@ const CommandBarContainer = (props: StateDerivedProps & RouteProps) => (
                 <CollaboratorFacepile
                     users={props.collaborators!}
                     settings={props.settings!}
-                    user={props.myself}/>
+                    user={props.myself}
+                    onShowOverlay={props.onShowOverlay!}/>
         }]}/>
 );
 

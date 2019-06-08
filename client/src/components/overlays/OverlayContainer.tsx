@@ -26,6 +26,7 @@ import AddArtifactPanel from './AddArtifactPanel';
 import ShareDialog from './ShareDialog';
 import {getCurrentArtifactPath} from '../../router';
 import {withRouter} from 'react-router';
+import MyselfPanel from './MyselfPanel';
 
 const OverlayContainer = (props: StateDerivedProps & RouteProps) => (
     <React.Fragment>
@@ -129,6 +130,14 @@ const OverlayContainer = (props: StateDerivedProps & RouteProps) => (
             artifactPaths={props.artifactPaths!}
             {...props.overlayProps}/>}
 
+        {props.overlay === OverlayType.myselfPanel &&
+        <MyselfPanel
+            isOpen={true}
+            onDismissed={() => props.onHideOverlay!({overlay: OverlayType.myselfPanel})}
+            onSetMyselfName={props.onSetMyselfName!}
+            myself={props.myself!}
+            {...props.overlayProps}/>}
+
         {props.overlay === OverlayType.shareDialog &&
         <ShareDialog
             isOpen={true}
@@ -201,7 +210,8 @@ export default withRouter(connect(
                 overlayProps: state.overlayProps,
                 artifactPaths: state.artifactPaths,
                 currentArtifactPath: getCurrentArtifactPath(state.collaborativeSessions),
-                collaborativeSessions: state.collaborativeSessions
+                collaborativeSessions: state.collaborativeSessions,
+                myself: state.myself
             };
         if (!collaborativeSession || !isFeatureDiagramCollaborativeSession(collaborativeSession))
             return props;
@@ -247,6 +257,7 @@ export default withRouter(connect(
         onSetConstraint: payload => dispatch<any>(actions.server.featureDiagram.constraint.set(payload)),
         onRemoveConstraint: payload => dispatch<any>(actions.server.featureDiagram.constraint.remove(payload)),
         onSetFeatureName: payload => dispatch<any>(actions.server.featureDiagram.feature.setName(payload)),
-        onSetFeatureDescription: payload => dispatch<any>(actions.server.featureDiagram.feature.setDescription(payload))
+        onSetFeatureDescription: payload => dispatch<any>(actions.server.featureDiagram.feature.setDescription(payload)),
+        onSetMyselfName: payload => dispatch<any>(actions.server.myself.setName(payload))
     })
 )(OverlayContainer));

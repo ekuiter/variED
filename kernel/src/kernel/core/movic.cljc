@@ -65,7 +65,7 @@
                                             {:description (CO/get-description CO)
                                              :icon        (CO/get-icon CO)
                                              :timestamp   (CO/get-timestamp CO)
-                                             :site-ID     (CO/get-site-ID CO)}))
+                                             :siteID      (CO/get-site-ID CO)}))
                             {} (reduce set/union MCGS))]
        {:versions  versions
         :conflicts conflicts

@@ -5,13 +5,16 @@ import i18n from '../../i18n';
 import {Link} from 'office-ui-fabric-react/lib/Link';
 import {KernelConflictDescriptor} from '../../modeling/types';
 import {distanceInWordsToNow} from 'date-fns';
+import {Collaborator} from '../../store/types';
 
 interface Props {
     conflictDescriptor: KernelConflictDescriptor,
     versionID: string,
     operationID: string,
     activeOperationID?: string,
-    onSetActiveOperationID: (activeOperationID?: string) => void
+    onSetActiveOperationID: (activeOperationID?: string) => void,
+    myself?: Collaborator,
+    collaborators: Collaborator[]
 };
 
 interface State {
@@ -32,15 +35,20 @@ export default class extends React.Component<Props, State> {
     }
 
     render()  {
-        const {conflictDescriptor, versionID, operationID, activeOperationID, onSetActiveOperationID} = this.props;
-        const metadata = conflictDescriptor.metadata[operationID],
+        const {conflictDescriptor, versionID, operationID,
+            activeOperationID, onSetActiveOperationID, myself, collaborators} = this.props,
+            metadata = conflictDescriptor.metadata[operationID],
             hasConflicts = conflictDescriptor.conflicts[versionID][operationID],
             conflictKeys = hasConflicts && Object.keys(conflictDescriptor.conflicts[versionID][operationID]),
-            conflictEntries = hasConflicts && Object.entries(conflictDescriptor.conflicts[versionID][operationID]);
+            conflictEntries = hasConflicts && Object.entries(conflictDescriptor.conflicts[versionID][operationID]),
+            collaborator = myself && myself.siteID === metadata.siteID
+                ? myself
+                : collaborators.find(collaborator => collaborator.siteID === metadata.siteID);
+
         return (
         <ActivityItem
             key={operationID}
-            activityDescription={<span>A user has <span dangerouslySetInnerHTML={{__html: metadata.description}} />.</span>}
+            activityDescription={<span>{collaborator === myself ? 'You have' : collaborator ? <span><strong>{collaborator.name}</strong> has</span> : 'A collaborator has'} <span dangerouslySetInnerHTML={{__html: metadata.description}} />.</span>}
             activityIcon={<Icon iconName={metadata.icon} />}
             className={activeOperationID &&
                 (operationID === activeOperationID ||

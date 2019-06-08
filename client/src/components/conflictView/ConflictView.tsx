@@ -3,9 +3,12 @@ import {KernelConflictDescriptor} from '../../modeling/types';
 import '../../stylesheets/conflict.css';
 import i18n from '../../i18n';
 import Operation from './Operation';
+import {Collaborator} from '../../store/types';
 
 interface Props {
-    conflictDescriptor: KernelConflictDescriptor
+    conflictDescriptor: KernelConflictDescriptor,
+    myself?: Collaborator,
+    collaborators: Collaborator[]
 };
 
 interface State {
@@ -18,7 +21,7 @@ export default class extends React.Component<Props> {
     onSetActiveOperationID = (activeOperationID?: string) => this.setState({activeOperationID});
 
     render(): JSX.Element {
-        const {conflictDescriptor} = this.props;
+        const {conflictDescriptor, myself, collaborators} = this.props;
 
         return (
             <div className="conflict">
@@ -37,7 +40,9 @@ export default class extends React.Component<Props> {
                                         versionID={versionID}
                                         operationID={operationID}
                                         activeOperationID={this.state.activeOperationID}
-                                        onSetActiveOperationID={this.onSetActiveOperationID}/>)}
+                                        onSetActiveOperationID={this.onSetActiveOperationID}
+                                        myself={myself}
+                                        collaborators={collaborators}/>)}
                             </div>
                         </div>)}
             </div>
