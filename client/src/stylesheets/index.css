@@ -52,7 +52,7 @@
     overflow-y: auto;
 }
 
-.ms-Spinner {
+.ms-Fabric.fabricRoot .content > div > .ms-Spinner {
     margin: auto;
 }
 

@@ -5,6 +5,7 @@ import i18n from '../../i18n';
 import Operation from './Operation';
 import {Collaborator} from '../../store/types';
 import {Link} from 'office-ui-fabric-react/lib/Link';
+import {Spinner, SpinnerSize} from 'office-ui-fabric-react/lib/Spinner';
 
 interface Props {
     conflictDescriptor: KernelConflictDescriptor,
@@ -30,13 +31,17 @@ export default class extends React.Component<Props> {
         return (
             <div className="conflict">
                 <div className="header">
-                    <span>{i18n.t('conflictResolution.header')}</span>&nbsp;&nbsp;
-                    <Link
-                        onClick={() => window.alert('Under development')}
-                        onMouseOver={this.onDiscardActive}
-                        onMouseOut={this.onDiscardInactive}>
-                        {i18n.t('conflictResolution.cancel')}
-                    </Link>
+                    <div className="heading">{i18n.t('conflictResolution.header')}</div>&nbsp;&nbsp;
+                    {!conflictDescriptor.synchronized && <Spinner size={SpinnerSize.small}/>}
+                    <div>
+                        <Link
+                            onClick={() => window.alert('Still under development. In the meantime, use "Developer: Reset entire system".')}
+                            onMouseOver={this.onDiscardActive}
+                            onMouseOut={this.onDiscardInactive}
+                            {...conflictDescriptor.synchronized ? {} : {disabled: true}}>
+                            {i18n.t('conflictResolution.cancel')}
+                        </Link>
+                    </div>
                 </div>
                 <div className="versions">
                     {Object.entries(conflictDescriptor.versions).map(

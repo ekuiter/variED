@@ -617,12 +617,7 @@ export default class extends React.Component<Props, State> {
         }, {
             text: i18n.t('commandPalette.developer.reset'),
             icon: 'DeveloperTools',
-            action: () => {
-                if (window.confirm(i18n.t('commandPalette.developer.confirmReset'))) {
-                    this.props.onReset();
-                    deferred(clearLocalStorage)();
-                }
-            }
+            action: () => window.confirm(i18n.t('commandPalette.developer.confirmReset')) && this.props.onReset()
         }
     ];
 

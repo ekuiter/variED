@@ -78,7 +78,8 @@ export interface KernelConflictDescriptor {
         icon: string,
         timestamp: number,
         siteID: string
-    }}
+    }},
+    synchronized: boolean
 };
 
 export type KernelCombinedEffect = KernelFeatureModel | KernelConflictDescriptor;

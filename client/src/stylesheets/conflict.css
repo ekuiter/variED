@@ -11,9 +11,21 @@
     line-height: 1.4em;
 }
 
-.conflict > .header span {
+.conflict > .header > .heading {
     font-size: 1.3em;
     font-weight: bold;
+    float: left;
+}
+
+.conflict > .header button {
+    padding-top: 5px;
+}
+
+.conflict > .header > .ms-Spinner {
+    display: block;
+    float: left;
+    padding-left: 10px;
+    padding-top: 2px;
 }
 
 .conflict .versions {
