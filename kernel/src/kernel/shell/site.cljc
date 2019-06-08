@@ -40,13 +40,23 @@
   "Based on the result the MOVIC algorithm returned, checks whether
   one CG was produced, in that case applying and returning the correct
   feature model. Otherwise, returns a conflict descriptor."
-  [MCGS CDAG HB CC base-FM GC]
-  (if (= (count MCGS) 1)
-    (log "no conflict occured, producing feature model")
+  [MCGS CDAG HB CC base-FM GC own-site-ID]
+  (case (count MCGS)
+    0 (log "no operations submitted yet, producing feature model")
+    1 (log "no conflict occured, producing feature model")
     (log "conflicts occured," (count MCGS) "maximum compatible groups created"))
-  (if (= (count MCGS) 1)
-    (topological-sort/apply-compatible* CDAG HB base-FM (first MCGS))
-    (conflict-resolution/conflict-descriptor MCGS CDAG HB CC GC)))
+  (case (count MCGS)
+    0 base-FM
+    1 (topological-sort/apply-compatible* CDAG HB base-FM (first MCGS))
+    (conflict-resolution/conflict-descriptor MCGS CDAG HB CC GC own-site-ID)))
+
+(defn next-FM!
+  "Calculates the next feature model or conflict descriptor, stores it
+  in the context and returns it."
+  []
+  (let [next-FM (next-FM @(*context* :MCGS) @(*context* :CDAG) @(*context* :HB) @(*context* :CC) @(*context* :base-FM) @(*context* :GC) (*context* :site-ID))]
+    (reset! (*context* :FM) next-FM)
+    next-FM))
 
 (defn receive-operation!
   "Receives an operation message at a site.
@@ -64,9 +74,7 @@
   (swap! (*context* :CC) #(CC/with-most-recent % (CO/get-ID CO)))
   (swap! (*context* :MCGS) #(MOVIC/MOVIC % CO @(*context* :CDAG) @(*context* :HB) @(*context* :base-FM) (*context* :CC)))
   (swap! (*context* :CC) #(CC/with-most-recent % nil))      ; not required, just to be clear
-  (let [next-FM (next-FM @(*context* :MCGS) @(*context* :CDAG) @(*context* :HB) @(*context* :CC) @(*context* :base-FM) @(*context* :GC))]
-    (reset! (*context* :FM) next-FM)
-    next-FM))
+  (next-FM!))
 
 (defn receive-heartbeat!
   "Receives a heartbeat message at a site.
@@ -75,7 +83,7 @@
   (log "receiving heartbeat message from" (message/get-site-ID message))
   (swap! (*context* :VC) #(VC/_merge (VC/increment % (*context* :site-ID)) (message/get-VC message)))
   (swap! (*context* :GC) #(GC/insert % (message/get-site-ID message) (message/get-VC message)))
-  @(*context* :FM))
+  (next-FM!))
 
 (defn receive-leave!
   "Receives a leave message at a site.

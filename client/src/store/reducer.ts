@@ -213,7 +213,7 @@ function serverReceiveReducer(state: State, action: Action): State {
                                 enqueueMessage({type: MessageType.KERNEL, message: heartbeat}, artifactPath);
                                 deferred(flushMessageQueue)();
                             }
-                            return {...collaborativeSession, kernelContext, kernelCombinedEffect};  // TODO: do not change on heartbeats
+                            return {...collaborativeSession, kernelContext, kernelCombinedEffect};
                         }));
                 if (isEditingFeatureModel(state))
                     state = updateFeatureModel(state, action.payload.artifactPath!);

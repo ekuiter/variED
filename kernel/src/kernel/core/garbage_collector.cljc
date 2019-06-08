@@ -65,6 +65,17 @@
   [GC]
   (keys GC))
 
+(defn get-other-client-site-IDs
+  "Returns all sites known to the local site but the server and local site.
+  This is done for synchronization, where the server need not be considered as it does not
+  participate in conflict resolution. Also, the server is not per se obliged to send heartbeats
+  as clients when they become conflict-aware.
+  The local site is, when synchronizing, already conflict-aware by definition."
+  [GC own-site-ID]
+  (->> (get-site-IDs GC)
+       (remove #(= % :server))
+       (remove #(= % own-site-ID))))
+
 (defn get-site-VC
   "Returns the garbage collector's most recently received vector clock for a given site.
   This is useful to determine whether a site has succeeded some other vector clock."

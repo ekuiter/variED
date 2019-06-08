@@ -20,24 +20,24 @@
   site need not already have seen the same conflicts as the checked site)."
   [GC site-ID HB CC]
   (p ::conflict-aware?
-     (let [res (some #(let [CO-ID-a (first %)
-                            CO-ID-b (first (disj % CO-ID-a))]
-                        (and (VC/_< ((HB/lookup HB CO-ID-a) :VC) (GC/get-site-VC GC site-ID))
-                             (VC/_< ((HB/lookup HB CO-ID-b) :VC) (GC/get-site-VC GC site-ID))))
-                     (CC/get-all-conflicts CC))]
-       (log "conflict-aware?" site-ID res)
-       res)))
+     (boolean
+       (some #(let [CO-ID-a (first %)
+                    CO-ID-b (first (disj % CO-ID-a))]
+                (and (VC/_< ((HB/lookup HB CO-ID-a) :VC) (GC/get-site-VC GC site-ID))
+                     (VC/_< ((HB/lookup HB CO-ID-b) :VC) (GC/get-site-VC GC site-ID))))
+             (CC/get-all-conflicts CC)))))
 
 (defn synchronized?
   "Determines whether all sites are aware of a conflict, i.e., are in conflict resolution mode.
   Until synchronization, no resolution and voting is allowed.
   When all sites are conflict-aware (i.e., frozen), no more operations can be in flight - because
   if there were some, they would have been generated in a frozen state, which is not allowed."
-  [GC HB CC]
+  [GC HB CC own-site-ID]
   (p ::synchronized?
-     (let [res (every? #(conflict-aware? GC % HB CC) (GC/get-site-IDs GC))]
-       (log "synchronized?" res)
-       res)))
+     (let [other-client-site-IDS (GC/get-other-client-site-IDs GC own-site-ID)
+           synchronized? (every? #(conflict-aware? GC % HB CC) other-client-site-IDS)]
+       (log (count other-client-site-IDS) "sites are" (if synchronized? "synchronized" "not synchronized"))
+       synchronized?)))
 
 (defn conflict-descriptor
   "A conflict descriptor contains information about a conflict situation.
@@ -47,7 +47,7 @@
   in turn map from operations to another map, which maps from operations to conflicts.
   The :metadata key maps from operation IDs to metadata, e.g., human-readable descriptions.
   The :synchronized key maps to a boolean which indicates whether all sites are synchronized yet."
-  [MCGS CDAG HB CC GC]
+  [MCGS CDAG HB CC GC own-site-ID]
   (p ::conflict-descriptor
      (let [versions (reduce (fn [acc MCG]
                               (assoc acc (MOVIC/MCG-identifier MCG)
@@ -70,4 +70,4 @@
        {:versions     versions
         :conflicts    conflicts
         :metadata     metadata
-        :synchronized (synchronized? GC HB CC)})))
+        :synchronized (synchronized? GC HB CC own-site-ID)})))
