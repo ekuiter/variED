@@ -64,7 +64,8 @@
            metadata (reduce #(assoc %1 %2 (let [CO (HB/lookup HB %2)]
                                             {:description (CO/get-description CO)
                                              :icon        (CO/get-icon CO)
-                                             :timestamp   (CO/get-timestamp CO)}))
+                                             :timestamp   (CO/get-timestamp CO)
+                                             :site-ID     (CO/get-site-ID CO)}))
                             {} (reduce set/union MCGS))]
        {:versions  versions
         :conflicts conflicts

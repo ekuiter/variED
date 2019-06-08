@@ -19,11 +19,6 @@
 
 ; constructors
 
-(defn make-operation
-  "Creates an operation message from a compound operation."
-  [CO site-ID]
-  (assoc CO :site-ID site-ID))
-
 (defn make-heartbeat
   "Creates a heartbeat message."
   [VC site-ID]
@@ -77,13 +72,3 @@
   This is the site that issued the message, or a site that has left."
   [message]
   (message :site-ID))
-
-; methods
-
-(defn operation->CO
-  "Extracts the compound operation from an operation message.
-  This is done by discarding the site that generated the operation.
-  Advised because an operation's site may leave at any time,
-  and no orphaned site identifiers should remain in the system."
-  [operation]
-  (dissoc operation :site-ID))

@@ -63,12 +63,15 @@
   "For a sequence of primitive operations, creates a compound operation.
   Every compound operation has an identifier to distinguish it from other
   compound operations with the same PO sequence and to allow for undo/redo.
-  Every CO carries a vector clock to relate it causally to other operations."
-  [PO-sequence ID VC]
+  Every CO carries a vector clock to relate it causally to other operations.
+  Every CO also stores the generating site, but this is just informational and
+  a site identifier can easily be invalidated when a site leaves."
+  [PO-sequence ID VC site-ID]
   {:PO-sequence PO-sequence
    :ID          ID
    :VC          VC
-   :timestamp   (helpers/timestamp)})
+   :timestamp   (helpers/timestamp)
+   :site-ID     site-ID})
 
 ; getters and setters
 
@@ -81,6 +84,12 @@
   "Returns the vector clock of a compound operation."
   [CO]
   (CO :VC))
+
+(defn get-site-ID
+  "Returns the generating site of a compound operation.
+  This is the site that issued the compound operation, or a site that has left."
+  [CO]
+  (CO :site-ID))
 
 (defn get-timestamp
   "Returns the timestamp of a compound operation (only for UI purposes)."

@@ -78,18 +78,17 @@
   (log "generating next feature model and operation message from" (count PO-sequence) "primitive operations")
   (p ::generate-operation!
      (swap! (*context* :VC) #(VC/increment % (*context* :site-ID)))
-     (let [CO (CO/make PO-sequence (helpers/generate-ID) @(*context* :VC))
-           operation (message/make-operation CO (*context* :site-ID))]
+     (let [CO (CO/make PO-sequence (helpers/generate-ID) @(*context* :VC) (*context* :site-ID))]
        (swap! (*context* :CDAG) #(CDAG/insert % @(*context* :HB) CO))
        (swap! (*context* :HB) #(HB/insert % CO))
-       (swap! (*context* :GC) #(GC/insert % (message/get-site-ID operation) (CO/get-VC CO)))
+       (swap! (*context* :GC) #(GC/insert % (CO/get-site-ID CO) (CO/get-VC CO)))
        (swap! (*context* :CC) #(CC/with-most-recent % (CO/get-ID CO)))
        (swap! (*context* :MCGS) #(MOVIC/MOVIC % CO @(*context* :CDAG) @(*context* :HB) @(*context* :base-FM) (*context* :CC)))
        ; not required, just to be clear that this information is only needed by the MOVIC call
        (swap! (*context* :CC) #(CC/with-most-recent % nil))
        (let [next-FM (site/next-FM @(*context* :MCGS) @(*context* :CDAG) @(*context* :HB) @(*context* :CC) @(*context* :base-FM))]
          (reset! (*context* :FM) next-FM)
-         [next-FM operation]))))
+         [next-FM CO]))))
 
 (defn generate-inverse-operation!
   "**TODO**: Generates an inverse operation concurrent to all following operations.

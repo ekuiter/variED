@@ -76,7 +76,8 @@ export interface KernelConflictDescriptor {
     metadata: {[operationID: string]: {
         description: string,
         icon: string,
-        timestamp: number
+        timestamp: number,
+        siteID: string
     }}
 };
 
