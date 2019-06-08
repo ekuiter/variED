@@ -97,6 +97,19 @@ public class Collaborator {
         Objects.requireNonNull(message, "no message given");
         Logger.info("received {} message from collaborator {}", message.getType(), this);
 
+        if (message.isType(Api.TypeEnum.RESET)) {
+            Logger.info("resetting server");
+            ProjectManager.getInstance().resetInstance();
+            CollaboratorManager.getInstance().resetInstance();
+            return;
+        }
+
+        if (message.isType(Api.TypeEnum.SET_USER_PROFILE)) {
+            Logger.info("setting user profile of collaborator {}", this);
+            this.setName(((Api.SetUserProfile) message).name);
+            return;
+        }
+
         Artifact.Path artifactPath = message.getArtifactPath();
         if (artifactPath == null)
             throw new Message.InvalidMessageException("no artifact path given");
@@ -151,12 +164,6 @@ public class Collaborator {
                 joinCollaborativeSession(collaborativeSession);
             if (message.isType(Api.TypeEnum.LEAVE_REQUEST))
                 leaveCollaborativeSession(collaborativeSession);
-            return;
-        }
-
-        if (message.isType(Api.TypeEnum.SET_USER_PROFILE)) {
-            Logger.info("setting user profile of collaborator {}", this);
-            this.setName(((Api.SetUserProfile) message).name);
             return;
         }
 

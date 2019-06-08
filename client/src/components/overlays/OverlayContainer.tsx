@@ -65,7 +65,8 @@ const OverlayContainer = (props: StateDerivedProps & RouteProps) => (
             onCreateConstraint={props.onCreateConstraint!}
             onSetConstraint={props.onSetConstraint!}
             onRemoveConstraint={props.onRemoveConstraint!}
-            onSetSetting={props.onSetSetting!}/>
+            onSetSetting={props.onSetSetting!}
+            onReset={props.onReset!}/>
 
         <SettingsPanel
             isOpen={props.overlay === OverlayType.settingsPanel}
@@ -258,6 +259,7 @@ export default withRouter(connect(
         onRemoveConstraint: payload => dispatch<any>(actions.server.featureDiagram.constraint.remove(payload)),
         onSetFeatureName: payload => dispatch<any>(actions.server.featureDiagram.feature.setName(payload)),
         onSetFeatureDescription: payload => dispatch<any>(actions.server.featureDiagram.feature.setDescription(payload)),
-        onSetUserProfile: payload => dispatch<any>(actions.server.setUserProfile(payload))
+        onSetUserProfile: payload => dispatch<any>(actions.server.setUserProfile(payload)),
+        onReset: () => dispatch<any>(actions.server.reset({}))
     })
 )(OverlayContainer));

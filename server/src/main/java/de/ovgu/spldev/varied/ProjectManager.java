@@ -16,20 +16,30 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ProjectManager {
     private static ProjectManager instance;
     private ConcurrentHashMap<String, Project> projects = new ConcurrentHashMap<>();
-
-    private Project examplesProject = new Project("Examples");
-    private Project featureIDEProject = new Project("FeatureIDE");
-    public static String EMPTY = "Empty";
+    static String EMPTY = "Empty";
 
     {
+        resetInstance();
+    }
+
+    private ProjectManager() {
+    }
+
+    public static ProjectManager getInstance() {
+        return instance == null ? instance = new ProjectManager() : instance;
+    }
+
+    public void resetInstance() {
+        projects.clear();
+        Project examplesProject = new Project("Examples");
+        Project featureIDEProject = new Project("FeatureIDE");
+
         for (String artifactName : new String[]{
                 EMPTY, "uvr2web", "CollaborativeModeling"
         })
             addExampleArtifact(examplesProject, artifactName);
         addProject(examplesProject);
-    }
 
-    {
         // adds the FeatureIDE examples as of June 2018
         for (String artifactName : new String[]{
                 "aaed2000", "adderII", "adder", "aeb", "aim711", "aki3068net", "am31_sim", "APL-Model", "APL",
@@ -56,13 +66,6 @@ public class ProjectManager {
                     "https://raw.githubusercontent.com/FeatureIDE/FeatureIDE/56bb944775e2a3087a1bd8f93334aa4f7a6712dc" +
                             "/plugins/de.ovgu.featureide.examples/featureide_examples/FeatureModels/" + artifactName + "/model.xml");
         addProject(featureIDEProject);
-    }
-
-    private ProjectManager() {
-    }
-
-    public static ProjectManager getInstance() {
-        return instance == null ? instance = new ProjectManager() : instance;
     }
 
     Project getProject(String name) {

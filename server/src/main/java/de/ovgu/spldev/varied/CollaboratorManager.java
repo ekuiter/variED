@@ -18,6 +18,10 @@ public class CollaboratorManager {
         return instance == null ? instance = new CollaboratorManager() : instance;
     }
 
+    public void resetInstance() {
+        collaborators.clear();
+    }
+
     public UUID register(WebSocket webSocket, UUID siteID) {
         Collaborator collaborator;
         if (siteID != null) {

@@ -9,7 +9,7 @@ import {Tooltip} from 'office-ui-fabric-react/lib/Tooltip';
 import {Settings} from '../store/settings';
 import withDimensions from '../helpers/withDimensions';
 import {Collaborator, OnShowOverlayFunction} from '../store/types';
-import {OverlayType} from 'src/types';
+import {OverlayType} from '../types';
 
 interface Props {
     user?: Collaborator,

@@ -6,6 +6,7 @@ import {Selection} from 'd3-selection';
 
 export enum MessageType {
     ERROR = 'ERROR',
+    RESET = 'RESET',
     COLLABORATOR_JOINED = 'COLLABORATOR_JOINED',
     COLLABORATOR_LEFT = 'COLLABORATOR_LEFT',
     SET_USER_PROFILE = 'SET_USER_PROFILE',

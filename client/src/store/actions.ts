@@ -84,6 +84,7 @@ const actions = {
         undo: createMessageAction(() => ({type: MessageType.ERROR})), // TODO
         redo: createMessageAction(() => ({type: MessageType.ERROR})), // TODO
         setUserProfile: createMessageAction(({name}: {name: string}) => ({type: MessageType.SET_USER_PROFILE, name})),
+        reset: createMessageAction(() => ({type: MessageType.RESET})),
         featureDiagram: {
             feature: {
                 createBelow: createOperationAction(({featureParentID}: {featureParentID: string}, kernel) =>

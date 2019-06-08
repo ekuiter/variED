@@ -1,6 +1,6 @@
 import React from 'react';
 import i18n from '../../i18n';
-import {OnShowOverlayFunction, OnUndoFunction, OnRedoFunction, OnSetFeatureDiagramLayoutFunction, OnFitToScreenFunction, OnCreateFeatureAboveFunction, OnCreateFeatureBelowFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnRemoveFeatureFunction, OnRemoveFeatureSubtreeFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureOptionalFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction, OnExpandAllFeaturesFunction, OnCollapseAllFeaturesFunction, OnLeaveRequestFunction, CollaborativeSession, OnSetSettingFunction, OnMoveFeatureSubtreeFunction, OnCreateConstraintFunction, OnSetConstraintFunction, OnRemoveConstraintFunction, OnRemoveArtifactFunction} from '../../store/types';
+import {OnShowOverlayFunction, OnUndoFunction, OnRedoFunction, OnSetFeatureDiagramLayoutFunction, OnFitToScreenFunction, OnCreateFeatureAboveFunction, OnCreateFeatureBelowFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnRemoveFeatureFunction, OnRemoveFeatureSubtreeFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureOptionalFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction, OnExpandAllFeaturesFunction, OnCollapseAllFeaturesFunction, OnLeaveRequestFunction, CollaborativeSession, OnSetSettingFunction, OnMoveFeatureSubtreeFunction, OnCreateConstraintFunction, OnSetConstraintFunction, OnRemoveConstraintFunction, OnRemoveArtifactFunction, OnResetFunction} from '../../store/types';
 import {getShortcutText} from '../../shortcuts';
 import {OverlayType, Omit, FeatureDiagramLayoutType, FormatType, isArtifactPathEqual, ArtifactPath} from '../../types';
 import Palette, {PaletteItem, PaletteAction, getKey} from '../../helpers/Palette';
@@ -50,7 +50,8 @@ interface Props {
     onSetConstraint: OnSetConstraintFunction,
     onRemoveConstraint: OnRemoveConstraintFunction,
     onSetFeatureDiagramLayout: OnSetFeatureDiagramLayoutFunction,
-    onSetSetting: OnSetSettingFunction
+    onSetSetting: OnSetSettingFunction,
+    onReset: OnResetFunction
 };
 
 interface State {
@@ -71,6 +72,18 @@ interface ArgumentDescriptor {
     transformFreeform?: (value: string) => string,
     title?: string
 };
+
+function clearLocalStorage() {
+    const persistor: Persistor | undefined =
+        (window as any).app && (window as any).app.persistor;
+    if (!persistor)
+        logger.warn(() => 'can not obtain persistor');
+    else {
+        persistor.pause();
+        persistor.purge();
+        window.location.reload();
+    }
+}
 
 export default class extends React.Component<Props, State> {
     state: State = {rerenderPalette: +new Date()};
@@ -600,15 +613,14 @@ export default class extends React.Component<Props, State> {
         }, {
             text: i18n.t('commandPalette.developer.clearLocalStorage'),
             icon: 'DeveloperTools',
+            action: clearLocalStorage
+        }, {
+            text: i18n.t('commandPalette.developer.reset'),
+            icon: 'DeveloperTools',
             action: () => {
-                const persistor: Persistor | undefined =
-                    (window as any).app && (window as any).app.persistor;
-                if (!persistor)
-                    logger.warn(() => 'can not obtain persistor');
-                else {
-                    persistor.pause();
-                    persistor.purge();
-                    window.location.reload();
+                if (window.confirm(i18n.t('commandPalette.developer.confirmReset'))) {
+                    this.props.onReset();
+                    deferred(clearLocalStorage)();
                 }
             }
         }

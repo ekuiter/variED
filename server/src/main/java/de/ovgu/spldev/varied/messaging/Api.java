@@ -17,6 +17,7 @@ public class Api {
      */
     public enum TypeEnum {
         ERROR,
+        RESET,
         ADD_ARTIFACT,
         REMOVE_ARTIFACT,
         COLLABORATOR_JOINED,
@@ -26,6 +27,20 @@ public class Api {
         LEAVE_REQUEST,
         INITIALIZE,
         KERNEL
+    }
+
+    public static class Error extends Message implements Message.IEncodable {
+        @Expose
+        String error;
+
+        public Error(Throwable throwable) {
+            super(TypeEnum.ERROR, null);
+            this.error = throwable.toString();
+            Logger.error(throwable);
+        }
+    }
+
+    public static class Reset extends Message implements Message.IDecodable {
     }
 
     public static class AddArtifact extends Message implements Message.IEncodable, Message.IDecodable {
@@ -44,17 +59,6 @@ public class Api {
     public static class RemoveArtifact extends Message implements Message.IEncodable, Message.IDecodable {
         public RemoveArtifact(de.ovgu.spldev.varied.Artifact.Path artifactPath) {
             super(TypeEnum.REMOVE_ARTIFACT, artifactPath);
-        }
-    }
-
-    public static class Error extends Message implements Message.IEncodable {
-        @Expose
-        String error;
-
-        public Error(Throwable throwable) {
-            super(TypeEnum.ERROR, null);
-            this.error = throwable.toString();
-            Logger.error(throwable);
         }
     }
 
