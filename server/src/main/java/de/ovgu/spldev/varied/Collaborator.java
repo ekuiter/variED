@@ -154,10 +154,9 @@ public class Collaborator {
             return;
         }
 
-        if (message.isType(Api.TypeEnum.MYSELF_SET_NAME)) {
-            String name = ((Api.MyselfSetName) message).name;
-            Logger.info("renaming user {} to {}", this.name, name);
-            this.setName(name);
+        if (message.isType(Api.TypeEnum.SET_USER_PROFILE)) {
+            Logger.info("setting user profile of collaborator {}", this);
+            this.setName(((Api.SetUserProfile) message).name);
             return;
         }
 

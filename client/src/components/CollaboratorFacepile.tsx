@@ -90,7 +90,7 @@ class UserFacepile extends React.Component<Props, State> {
                 {this.props.user &&
                 <Facepile
                     personas={[toPersona(this.props.user, {
-                        onClick: () => this.props.onShowOverlay({overlay: OverlayType.myselfPanel, overlayProps: {}})
+                        onClick: () => this.props.onShowOverlay({overlay: OverlayType.userProfilePanel, overlayProps: {}})
                     })]}
                     personaSize={PersonaSize.size28}
                     getPersonaProps={_persona => ({

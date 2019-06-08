@@ -3,22 +3,22 @@ import i18n from '../../i18n';
 import {TextField} from 'office-ui-fabric-react/lib/TextField';
 import logger from '../../helpers/logger';
 import {PrimaryButton} from 'office-ui-fabric-react/lib/Button';
-import {OnSetMyselfNameFunction, Collaborator} from '../../store/types';
+import {OnSetUserProfileFunction, Collaborator} from '../../store/types';
 import {Panel, PanelType} from 'office-ui-fabric-react/lib/Panel';
 
-interface MyselfPanelProps {
+interface UserProfilePanelProps {
     isOpen: boolean,
     onDismissed: () => void,
-    onSetMyselfName: OnSetMyselfNameFunction,
+    onSetUserProfile: OnSetUserProfileFunction,
     myself: Collaborator
 };
 
-interface MyselfPanelState {
+interface UserProfilePanelState {
     name?: string
 };
 
-export default class extends React.Component<MyselfPanelProps, MyselfPanelState> {
-    state: MyselfPanelState = {};
+export default class extends React.Component<UserProfilePanelProps, UserProfilePanelState> {
+    state: UserProfilePanelState = {};
    
     getValue = (): string => typeof this.state.name === 'undefined' ? this.props.myself.name || '' : this.state.name;
     onNameChange = (_event: any, name?: string) => this.setState({name});
@@ -32,13 +32,13 @@ export default class extends React.Component<MyselfPanelProps, MyselfPanelState>
             return;
         }
 
-        this.props.onSetMyselfName({name});
+        this.props.onSetUserProfile({name});
         this.setState({name: undefined});
         this.props.onDismissed();
     };
 
     onRenderFooterContent = () =>
-        <PrimaryButton onClick={this.onSubmit} text={i18n.t('overlays.myselfPanel.save')}/>;
+        <PrimaryButton onClick={this.onSubmit} text={i18n.t('overlays.userProfilePanel.save')}/>;
 
     render() {
         const {isOpen, onDismissed} = this.props;
@@ -49,10 +49,10 @@ export default class extends React.Component<MyselfPanelProps, MyselfPanelState>
                 isOpen={isOpen}
                 onDismissed={onDismissed}
                 isLightDismiss={true}
-                headerText={i18n.t('overlays.myselfPanel.title')}
+                headerText={i18n.t('overlays.userProfilePanel.title')}
                 onRenderFooterContent={this.onRenderFooterContent}>
                 <TextField
-                    label={i18n.t('overlays.myselfPanel.name')}
+                    label={i18n.t('overlays.userProfilePanel.name')}
                     value={this.getValue()}
                     onChange={this.onNameChange}/>
             </Panel>

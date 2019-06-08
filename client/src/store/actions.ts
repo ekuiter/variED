@@ -83,9 +83,7 @@ const actions = {
         leaveRequest: createMessageAction(({artifactPath}: {artifactPath: ArtifactPath}) => ({type: MessageType.LEAVE_REQUEST, artifactPath})),
         undo: createMessageAction(() => ({type: MessageType.ERROR})), // TODO
         redo: createMessageAction(() => ({type: MessageType.ERROR})), // TODO
-        myself: {
-            setName: createMessageAction(({name}: {name: string}) => ({type: MessageType.MYSELF_SET_NAME, name}))
-        },
+        setUserProfile: createMessageAction(({name}: {name: string}) => ({type: MessageType.SET_USER_PROFILE, name})),
         featureDiagram: {
             feature: {
                 createBelow: createOperationAction(({featureParentID}: {featureParentID: string}, kernel) =>

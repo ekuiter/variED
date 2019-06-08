@@ -26,7 +26,7 @@ import AddArtifactPanel from './AddArtifactPanel';
 import ShareDialog from './ShareDialog';
 import {getCurrentArtifactPath} from '../../router';
 import {withRouter} from 'react-router';
-import MyselfPanel from './MyselfPanel';
+import UserProfilePanel from './UserProfilePanel';
 
 const OverlayContainer = (props: StateDerivedProps & RouteProps) => (
     <React.Fragment>
@@ -130,11 +130,11 @@ const OverlayContainer = (props: StateDerivedProps & RouteProps) => (
             artifactPaths={props.artifactPaths!}
             {...props.overlayProps}/>}
 
-        {props.overlay === OverlayType.myselfPanel &&
-        <MyselfPanel
+        {props.overlay === OverlayType.userProfilePanel &&
+        <UserProfilePanel
             isOpen={true}
-            onDismissed={() => props.onHideOverlay!({overlay: OverlayType.myselfPanel})}
-            onSetMyselfName={props.onSetMyselfName!}
+            onDismissed={() => props.onHideOverlay!({overlay: OverlayType.userProfilePanel})}
+            onSetUserProfile={props.onSetUserProfile!}
             myself={props.myself!}
             {...props.overlayProps}/>}
 
@@ -258,6 +258,6 @@ export default withRouter(connect(
         onRemoveConstraint: payload => dispatch<any>(actions.server.featureDiagram.constraint.remove(payload)),
         onSetFeatureName: payload => dispatch<any>(actions.server.featureDiagram.feature.setName(payload)),
         onSetFeatureDescription: payload => dispatch<any>(actions.server.featureDiagram.feature.setDescription(payload)),
-        onSetMyselfName: payload => dispatch<any>(actions.server.myself.setName(payload))
+        onSetUserProfile: payload => dispatch<any>(actions.server.setUserProfile(payload))
     })
 )(OverlayContainer));

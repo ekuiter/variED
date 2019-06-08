@@ -134,7 +134,7 @@ const translationMap = {
         switch: 'Switch to collaborative session',
         joinRequest: 'Join collaborative session',
         leaveRequest: 'Leave collaborative session',
-        myself: 'User profile',
+        userProfile: 'User profile',
         settings: 'Settings',
         about: 'About',
         addArtifact: 'New feature model',
@@ -283,7 +283,7 @@ const translationMap = {
                 </p>
             ),
         },
-        myselfPanel: {
+        userProfilePanel: {
             title: 'User profile',
             save: 'Save',
             name: 'Name (publicly visible)'

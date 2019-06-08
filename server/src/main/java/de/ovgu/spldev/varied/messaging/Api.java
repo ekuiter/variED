@@ -6,7 +6,6 @@ import de.ovgu.spldev.varied.Collaborator;
 import org.pmw.tinylog.Logger;
 
 import java.util.Collection;
-import java.util.UUID;
 
 /**
  * To add a new kind of message: Add a type below and create a camel-cased inner class
@@ -22,7 +21,7 @@ public class Api {
         REMOVE_ARTIFACT,
         COLLABORATOR_JOINED,
         COLLABORATOR_LEFT,
-        MYSELF_SET_NAME,
+        SET_USER_PROFILE,
         JOIN_REQUEST,
         LEAVE_REQUEST,
         INITIALIZE,
@@ -79,7 +78,7 @@ public class Api {
         }
     }
 
-    public static class MyselfSetName extends Message implements Message.IDecodable {
+    public static class SetUserProfile extends Message implements Message.IDecodable {
         @Expose
         public String name;
     }
