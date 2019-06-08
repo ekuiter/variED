@@ -15,13 +15,10 @@
   be divided in unrelated objects."
   (:require [clojure.set :as set]
             [kernel.core.history-buffer :as HB]
-            [kernel.core.conflict-cache :as CC]
             [kernel.core.conflict-relation :as conflict-relation]
-            [kernel.core.topological-sort :as topological-sort]
             [kernel.helpers :refer [log]]
             #?(:clj  [taoensso.tufte :as tufte :refer (defnp p profiled profile)]
-               :cljs [taoensso.tufte :as tufte :refer-macros (defnp p profiled profile)])
-            [kernel.core.compound-operation :as CO]))
+               :cljs [taoensso.tufte :as tufte :refer-macros (defnp p profiled profile)])))
 
 ; constructor
 
@@ -39,37 +36,31 @@
   (p ::MCGS-remove
      (reduce #(conj %1 (disj %2 CO-ID)) #{} MCGS)))
 
-(defn conflict-descriptor
-  "A conflict descriptor contains information about a conflict situation.
-  It consists of a map of versions, where a CG's string hash is mapped to a sequence
-  of topologically ordered operations. Further, a neutral CG is included under
-  they key :neutral. The :conflicts key then maps from CG hashes to maps, which
-  in turn map from operations to another map, which maps from operations to conflicts.
-  The :metadata key maps from operation IDs to metadata, e.g., human-readable descriptions."
-  [MCGS CDAG HB CC]
-  (p ::conflict-descriptor
-     (let [versions (reduce (fn [acc MCG]
-                              (assoc acc (str (hash MCG))
-                                         (topological-sort/CO-topological-sort CDAG MCG)))
-                            {} MCGS)
-           versions (assoc versions :neutral (topological-sort/CO-topological-sort
-                                               CDAG (reduce set/intersection MCGS)))
-           conflicts (reduce (fn [acc MCG]
-                               (assoc acc (str (hash MCG))
-                                          (reduce (fn [acc CO-ID]
-                                                    (assoc acc CO-ID (CC/get-conflicts CC CO-ID)))
-                                                  {} MCG)))
-                             {} MCGS)
-           conflicts (assoc conflicts :neutral #{})
-           metadata (reduce #(assoc %1 %2 (let [CO (HB/lookup HB %2)]
-                                            {:description (CO/get-description CO)
-                                             :icon        (CO/get-icon CO)
-                                             :timestamp   (CO/get-timestamp CO)
-                                             :siteID      (CO/get-site-ID CO)}))
-                            {} (reduce set/union MCGS))]
-       {:versions  versions
-        :conflicts conflicts
-        :metadata  metadata})))
+(defn MCGs
+  "Returns all MCGs contained in an MCGS. This is, in the trivial implementation, just the MCGS."
+  [MCGS]
+  MCGS)
+
+(defn get-all-operations
+  "Returns all operations contained in an MCGS."
+  [MCGS]
+  (reduce set/union MCGS))
+
+(defn neutral-CG
+  "Returns the neutral CG by intersecting all MCGs."
+  [MCGS]
+  (reduce set/intersection MCGS))
+
+(defn MCG-identifier
+  "Returns a string that uniquely identifies an MCG (up to hash collisions).
+  In deviation to Sun and Chen's original paper, we do not use the COID scheme for identification.
+  This is easier to implement, but has the disadvantage that MCGs can not be identified
+  as they evolve - when an operation arrives that is inserted into MCG to produce MCG',
+  the identifiers of MCG and MCG' are in no obvious relation to each other.
+  Consequently, versions may \"jump\" in the user interface until synchronization.
+  We may come back to COID if this turns out to be a problem."
+  [MCG]
+  (str (hash MCG)))
 
 (defn MOVIC
   "Incrementally constructs an MCGS independent of operation ordering.

@@ -86,7 +86,7 @@
        (swap! (*context* :MCGS) #(MOVIC/MOVIC % CO @(*context* :CDAG) @(*context* :HB) @(*context* :base-FM) (*context* :CC)))
        ; not required, just to be clear that this information is only needed by the MOVIC call
        (swap! (*context* :CC) #(CC/with-most-recent % nil))
-       (let [next-FM (site/next-FM @(*context* :MCGS) @(*context* :CDAG) @(*context* :HB) @(*context* :CC) @(*context* :base-FM))]
+       (let [next-FM (site/next-FM @(*context* :MCGS) @(*context* :CDAG) @(*context* :HB) @(*context* :CC) @(*context* :base-FM) @(*context* :GC))]
          (reset! (*context* :FM) next-FM)
          [next-FM CO]))))
 

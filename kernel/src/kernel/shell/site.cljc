@@ -15,6 +15,7 @@
             [kernel.core.compound-operation :as CO]
             [kernel.core.feature-model :as FM]
             [kernel.core.message :as message]
+            [kernel.core.conflict-resolution :as conflict-resolution]
             [kernel.shell.context :refer [*context*]]
             [kernel.helpers :refer [log]]
             #?(:clj  [taoensso.tufte :as tufte :refer (defnp p profiled profile)]
@@ -39,13 +40,13 @@
   "Based on the result the MOVIC algorithm returned, checks whether
   one CG was produced, in that case applying and returning the correct
   feature model. Otherwise, returns a conflict descriptor."
-  [MCGS CDAG HB CC base-FM]
+  [MCGS CDAG HB CC base-FM GC]
   (if (= (count MCGS) 1)
     (log "no conflict occured, producing feature model")
     (log "conflicts occured," (count MCGS) "maximum compatible groups created"))
   (if (= (count MCGS) 1)
     (topological-sort/apply-compatible* CDAG HB base-FM (first MCGS))
-    (MOVIC/conflict-descriptor MCGS CDAG HB CC)))
+    (conflict-resolution/conflict-descriptor MCGS CDAG HB CC GC)))
 
 (defn receive-operation!
   "Receives an operation message at a site.
@@ -63,7 +64,7 @@
   (swap! (*context* :CC) #(CC/with-most-recent % (CO/get-ID CO)))
   (swap! (*context* :MCGS) #(MOVIC/MOVIC % CO @(*context* :CDAG) @(*context* :HB) @(*context* :base-FM) (*context* :CC)))
   (swap! (*context* :CC) #(CC/with-most-recent % nil))      ; not required, just to be clear
-  (let [next-FM (next-FM @(*context* :MCGS) @(*context* :CDAG) @(*context* :HB) @(*context* :CC) @(*context* :base-FM))]
+  (let [next-FM (next-FM @(*context* :MCGS) @(*context* :CDAG) @(*context* :HB) @(*context* :CC) @(*context* :base-FM) @(*context* :GC))]
     (reset! (*context* :FM) next-FM)
     next-FM))
 

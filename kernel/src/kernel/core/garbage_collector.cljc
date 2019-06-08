@@ -58,6 +58,19 @@
   [GC site-ID]
   (dissoc GC site-ID))
 
+(defn get-site-IDs
+  "Returns all sites known to the local site.
+  Notably, this need not include recently joined sites (for which no heartbeat has arrived yet)
+  and sites which have just left (for which no leave message has arrived yet)."
+  [GC]
+  (keys GC))
+
+(defn get-site-VC
+  "Returns the garbage collector's most recently received vector clock for a given site.
+  This is useful to determine whether a site has succeeded some other vector clock."
+  [GC site-ID]
+  (GC site-ID))
+
 (defn GC
   "Performs garbage collection in O(n) for n operations.
   Returns the given data structures, only pruned from any operations [[eligible?]] for garbage collection.

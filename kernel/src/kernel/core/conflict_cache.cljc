@@ -65,9 +65,16 @@
   ((CC :conflicts) (hash-set CO-ID-a CO-ID-b)))
 
 (defn get-conflicts
+  "Returns all operations conflicting with a given operation as a mapping from operation IDs
+  to Conflict records."
   [CC CO-ID]
   (reduce-kv (fn [acc k v] (if (k CO-ID) (assoc acc (first (disj k CO-ID)) v) acc))
              {} (CC :conflicts)))
+
+(defn get-all-conflicts
+  "Returns all conflicts stored in the conflict cache, which are all conflicts known to the system."
+  [CC]
+  (keys (CC :conflicts)))
 
 (defn with-most-recent
   "Sets the conflict cache's most recently arrived operation."
