@@ -313,7 +313,7 @@ const translationMap = {
     conflictResolution: {
         version: 'Version',
         neutralVersion: 'Neutral Version',
-        conflict: 'Conflict'
+        conflict: (numberOfConflicts: number) => numberOfConflicts > 1 ? `${numberOfConflicts} conflicts`: 'Conflict'
     }
 };
 
