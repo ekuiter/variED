@@ -73,9 +73,9 @@
   been generated and valid (and targeted at that CG), i.e., the new MCGS will simply be
   MCGS = {old-CG + {CO}} (CO conjoined on the old CG).
 
-  Returns the (updated) current feature model and the generated operation message."
+  Returns the (updated) combined effect and the generated operation message."
   [PO-sequence]
-  (log "generating next feature model and operation message from" (count PO-sequence) "primitive operations")
+  (log "generating combined effect and operation message from" (count PO-sequence) "primitive operations")
   (p ::generate-operation!
      (swap! (*context* :VC) #(VC/increment % (*context* :site-ID)))
      (let [CO (CO/make PO-sequence (helpers/generate-ID) @(*context* :VC) (*context* :site-ID))]

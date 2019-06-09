@@ -114,6 +114,6 @@
        message)))
 
 (def GC!
-  "Runs the garbage collector at a client site.
+  "Runs the garbage collector at the server site.
   Updates the global context."
   site/GC!)

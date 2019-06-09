@@ -64,7 +64,7 @@
   context.
   Calls the MOVIC algorithm with the new operation *after* the CDAG,
   HB and CC have been updated.
-  Returns the (updated) current feature model."
+  Returns the (updated) combined effect."
   [CO]
   (log "receiving operation message from" (CO/get-site-ID CO))
   (swap! (*context* :VC) #(VC/_merge (VC/increment % (*context* :site-ID)) (CO/get-VC CO)))
@@ -78,7 +78,7 @@
 
 (defn receive-heartbeat!
   "Receives a heartbeat message at a site.
-  Updates the global context and returns the current feature model."
+  Updates the global context and returns the (updated) combined effect."
   [message]
   (log "receiving heartbeat message from" (message/get-site-ID message))
   (swap! (*context* :VC) #(VC/_merge (VC/increment % (*context* :site-ID)) (message/get-VC message)))
@@ -87,7 +87,7 @@
 
 (defn receive-leave!
   "Receives a leave message at a site.
-  Updates the global context and returns the current feature model."
+  Updates the global context and returns the (updated) combined effect."
   [message]
   (log "receiving leave message from" (message/get-site-ID message))
   (let [site-ID (message/get-site-ID message)]
@@ -100,7 +100,7 @@
   "Receives a message at a site.
   If a server vector clock is attached, updates its garbage collector (irrelevant for mesh topologies).
   Checks which kind of message has been received and dispatches to the according receive function.
-  Returns the (updated) current feature model."
+  Returns the (updated) combined effect."
   [message]
   (p ::receive-message!
      (when (message/get-server-VC message)

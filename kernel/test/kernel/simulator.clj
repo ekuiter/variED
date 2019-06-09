@@ -38,7 +38,7 @@
 
 (defn generate-at-site!
   "Shorthand for generating an operation message in the context of a specific site.
-  Returns the next feature model and the operation message."
+  Returns the (updated) combined effect and the operation message."
   [site-ID CO-or-CO-fn]
   (do-at-site
     site-ID
