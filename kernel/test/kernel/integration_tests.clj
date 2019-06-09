@@ -47,14 +47,14 @@
     (testing "create feature below"
       (initialize-mesh-topology! (example-FM) :A)
       (let [op (generate! :A #(CO/create-feature-below % :Eclipse))
-            FM (FM :A)]
+            FM (combined-effect :A)]
         (is (= (FM/get-feature-parent-ID FM (CO-created-ID op)) :Eclipse))))
 
     (testing "create feature above"
       (initialize-mesh-topology! (example-FM) :A)
       (let [op (generate! :A #(CO/create-feature-above % :AHEAD :FeatureHouse))
             ID (CO-created-ID op)
-            FM (FM :A)]
+            FM (combined-effect :A)]
         (is (= (FM/get-feature-parent-ID FM ID) :FeatureIDE))
         (is (= (FM/get-feature-group-type FM ID) :or))
         (is (= (FM/get-feature-parent-ID FM :AHEAD) ID))
@@ -63,20 +63,20 @@
     (testing "move feature tree"
       (initialize-mesh-topology! (example-FM) :A)
       (let [_ (generate! :A #(CO/move-feature-subtree % :AHEAD :Eclipse))
-            FM (FM :A)]
+            FM (combined-effect :A)]
         (is (= (FM/get-feature-parent-ID FM :AHEAD) :Eclipse))))
 
     (testing "remove feature tree"
       (initialize-mesh-topology! (example-FM) :A)
       (let [_ (generate! :A #(CO/remove-feature-subtree % :FeatureIDE))
-            FM (FM :A)]
+            FM (combined-effect :A)]
         (is (= (FM/get-feature-parent-ID FM :FeatureIDE) :graveyard))
         (is (= (FM/get-feature-parent-ID FM :AHEAD) :FeatureIDE))))
 
     (testing "remove feature"
       (initialize-mesh-topology! (example-FM) :A)
       (let [_ (generate! :A #(CO/remove-feature % :FeatureModeling))
-            FM (FM :A)]
+            FM (combined-effect :A)]
         (is (= (FM/get-feature-parent-ID FM :FeatureModeling) :graveyard))
         (is (= (FM/get-feature-parent-ID FM :CIDE) :Eclipse))
         (is (= (FM/get-feature-parent-ID FM :FAMILIAR) :Eclipse))
@@ -87,31 +87,31 @@
     (testing "set feature optional"
       (initialize-mesh-topology! (example-FM) :A)
       (let [_ (generate! :A #(CO/set-feature-optional? % :JDT false))
-            FM (FM :A)]
+            FM (combined-effect :A)]
         (is (= (FM/get-feature-optional? FM :JDT) false))))
 
     (testing "set feature group type"
       (initialize-mesh-topology! (example-FM) :A)
       (let [_ (generate! :A #(CO/set-feature-group-type % :JDT :or))
-            FM (FM :A)]
+            FM (combined-effect :A)]
         (is (= (FM/get-feature-group-type FM :JDT) :or))))
 
     (testing "create constraint"
       (initialize-mesh-topology! (example-FM) :A)
       (let [op (generate! :A #(CO/create-constraint % "formula"))
-            FM (FM :A)]
+            FM (combined-effect :A)]
         (is (= (FM/get-constraint-formula FM (CO-created-ID op)) "formula"))))
 
     (testing "set constraint"
       (initialize-mesh-topology! (example-FM) :A)
       (let [_ (generate! :A #(CO/set-constraint % :1 "formula"))
-            FM (FM :A)]
+            FM (combined-effect :A)]
         (is (= (FM/get-constraint-formula FM :1) "formula"))))
 
     (testing "remove constraint"
       (initialize-mesh-topology! (example-FM) :A)
       (let [_ (generate! :A #(CO/remove-constraint % :1))
-            FM (FM :A)]
+            FM (combined-effect :A)]
         (is (= (FM/get-constraint-graveyarded? FM :1) true)))))
 
   (testing "scenario with two sites, no concurrency"
@@ -126,7 +126,7 @@
           B2 (generate! :B #(CO/set-feature-optional? % :DeltaJEclipsePlugin false))
           _ (receive! :A B1 B2)
           _ (is-sync)
-          FM (FM :A)]
+          FM (combined-effect :A)]
       (is (= (FM/get-feature-parent-ID FM (CO-created-ID A1)) :DeltaJEclipsePlugin))
       (is (= (FM/get-feature-group-type FM :MoSoPoLiTe) :alternative))
       (is (= (FM/get-feature-optional? FM :DeltaJEclipsePlugin) false))))
@@ -146,7 +146,7 @@
           _ (receive! :A B2 B3)
           _ (receive! :B A2 A3 A4)
           _ (is-sync)
-          FM (FM :A)]
+          FM (combined-effect :A)]
       (is (= (FM/get-feature-optional? FM :CIDE) false))
       (is (= (FM/get-feature-optional? FM :FAMILIAR) false))
       (is (= (FM/get-feature-parent-ID FM :DeltaJ) :graveyard))
@@ -171,7 +171,7 @@
           _ (receive! :B A3)
           _ (receive! :A B2)
           _ (is-sync)
-          FM (FM :A)]
+          FM (combined-effect :A)]
       (is (= (FM/get-feature-optional? FM :CIDE) false))
       (is (= (FM/get-feature-optional? FM :FAMILIAR) false))
       (is (= (FM/get-feature-parent-ID FM (CO-created-ID A2)) :FeatureModeling))
@@ -201,7 +201,7 @@
           _ (receive! :B A2 A3 C2 A4)
           _ (receive! :C A2 B2 A3 B3 A4)
           _ (is-sync)
-          FM (FM :A)]
+          FM (combined-effect :A)]
       (is (= (FM/get-feature-optional? FM :CIDE) true))
       (is (= (FM/get-feature-optional? FM :FAMILIAR) false))
       (is (= (FM/get-feature-parent-ID FM :DeltaJ) :graveyard))
@@ -227,7 +227,7 @@
           _ (receive! :A B2 B3 B4)
           _ (receive! :B A2 A3 A4)
           _ (is-sync)
-          FM (FM :A)
+          FM (combined-effect :A)
           MCGS (MCGS :A)]
       (is (FM :conflicts))
       ; B4 is in conflict with A2, A3, A4
@@ -254,7 +254,7 @@
           _ (receive! :A B2 B3 B4)
           _ (receive! :B A3 A4)
           _ (is-sync)
-          FM (FM :A)
+          FM (combined-effect :A)
           MCGS (MCGS :A)]
       (is (FM :conflicts))
       ; B4 is in conflict with A3, A4
@@ -285,7 +285,7 @@
           _ (receive! :B A2 A3 C1 A4 C2)
           _ (receive! :C B2 A3 B3 A4)
           _ (is-sync)
-          FM (FM :A)
+          FM (combined-effect :A)
           MCGS (MCGS :A)]
       (is (FM :conflicts))
       ; C2 is in conflict with A3, A4, B2, B3
@@ -318,7 +318,7 @@
           _ (receive! :C B2 A3 B3 D1 A4)
           _ (receive! :D C2 B2 A4 B3)
           _ (is-sync)
-          FM (FM :A)
+          FM (combined-effect :A)
           MCGS (MCGS :A)]
       (is (FM :conflicts))
       ; C2 is in conflict with A3, A4, B2, B3; D1 is in conflict with A4, C2
@@ -361,7 +361,7 @@
           _ (GC! :C)
           _ (GC! :D)
           _ (is-sync)
-          FM (FM :A)
+          FM (combined-effect :A)
           MCGS (MCGS :A)]
       (is (FM :conflicts))
       ; A1, B1 and C1 are garbage collected because they are the only

@@ -87,14 +87,14 @@
        (swap! (*context* :GC) #(GC/insert % (message/get-site-ID message) (message/get-VC message)))
        ; if a site re-joins, it is online again (but passed a completely new context)
        (swap! (*context* :offline-sites) #(disj % site-ID))
-       [{:VC      site-VC
-         :CDAG    @(*context* :CDAG)
-         :base-FM @(*context* :base-FM)
-         :HB      @(*context* :HB)
-         :CC      @(*context* :CC)
-         :MCGS    @(*context* :MCGS)
-         :FM      @(*context* :FM)                          ; TODO: optimize this away
-         :GC      @(*context* :GC)}
+       [{:VC              site-VC
+         :CDAG            @(*context* :CDAG)
+         :base-FM         @(*context* :base-FM)
+         :HB              @(*context* :HB)
+         :CC              @(*context* :CC)
+         :MCGS            @(*context* :MCGS)
+         :combined-effect @(*context* :combined-effect)     ; TODO: optimize this away
+         :GC              @(*context* :GC)}
         (message/with-server-VC message (GC-filter @(*context* :VC)))])))
 
 (defn site-left!

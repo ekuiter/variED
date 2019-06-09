@@ -44,7 +44,7 @@
     site-ID
     #(client/generate-operation!
        (if (fn? CO-or-CO-fn)
-         (CO-or-CO-fn @(*context* :FM))
+         (CO-or-CO-fn @(*context* :combined-effect))
          CO-or-CO-fn))))
 
 (defn receive-at-site!
@@ -148,8 +148,8 @@
       (is (= MCGS-a MCGS-b))
       ; the current feature model always has to be equal,
       ; this is one major correctness criterion for our system
-      (is (= @(get-in *contexts* [site-ID-a :FM])
-             @(get-in *contexts* [site-ID-b :FM]))))))
+      (is (= @(get-in *contexts* [site-ID-a :combined-effect])
+             @(get-in *contexts* [site-ID-b :combined-effect]))))))
 
 (defn is-sync
   "Asserts that all sites have converged to the same state.
@@ -159,10 +159,10 @@
           site-ID-b (keys *contexts*)]
     (is-site= site-ID-a site-ID-b)))
 
-(defn FM
+(defn combined-effect
   "Returns the current feature model at a specific site."
   [site-ID]
-  @(get-in *contexts* [site-ID :FM]))
+  @(get-in *contexts* [site-ID :combined-effect]))
 
 (defn MCGS
   "Returns the current maximum compatible group set at a specific site."

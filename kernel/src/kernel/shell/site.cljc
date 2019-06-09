@@ -26,17 +26,17 @@
   Called when the site is ready to generate and receive operations."
   [site-ID initial-FM]
   (let [initial-FM (FM/initialize initial-FM)]
-    {:site-ID site-ID
-     :VC      (atom (VC/initialize))
-     :CDAG    (atom (CDAG/initialize))
-     :base-FM (atom initial-FM)
-     :HB      (atom (HB/initialize))
-     :CC      (atom (CC/initialize))
-     :MCGS    (atom (MOVIC/MCGS-initialize))
-     :FM      (atom initial-FM)
-     :GC      (atom (GC/initialize))}))
+    {:site-ID         site-ID
+     :VC              (atom (VC/initialize))
+     :CDAG            (atom (CDAG/initialize))
+     :base-FM         (atom initial-FM)
+     :HB              (atom (HB/initialize))
+     :CC              (atom (CC/initialize))
+     :MCGS            (atom (MOVIC/MCGS-initialize))
+     :combined-effect (atom initial-FM)
+     :GC              (atom (GC/initialize))}))
 
-(defn next-FM
+(defn combined-effect
   "Based on the result the MOVIC algorithm returned, checks whether
   one CG was produced, in that case applying and returning the correct
   feature model. Otherwise, returns a conflict descriptor."
@@ -50,13 +50,13 @@
     1 (topological-sort/apply-compatible* CDAG HB base-FM (first MCGS))
     (conflict-resolution/conflict-descriptor MCGS CDAG HB CC GC own-site-ID)))
 
-(defn next-FM!
-  "Calculates the next feature model or conflict descriptor, stores it
-  in the context and returns it."
+(defn combined-effect!
+  "Calculates the next combined effect, which is a feature model or conflict descriptor,
+  stores it in the context and returns it."
   []
-  (let [next-FM (next-FM @(*context* :MCGS) @(*context* :CDAG) @(*context* :HB) @(*context* :CC) @(*context* :base-FM) @(*context* :GC) (*context* :site-ID))]
-    (reset! (*context* :FM) next-FM)
-    next-FM))
+  (let [combined-effect (combined-effect @(*context* :MCGS) @(*context* :CDAG) @(*context* :HB) @(*context* :CC) @(*context* :base-FM) @(*context* :GC) (*context* :site-ID))]
+    (reset! (*context* :combined-effect) combined-effect)
+    combined-effect))
 
 (defn receive-operation!
   "Receives an operation message at a site.
@@ -74,7 +74,7 @@
   (swap! (*context* :CC) #(CC/with-most-recent % (CO/get-ID CO)))
   (swap! (*context* :MCGS) #(MOVIC/MOVIC % CO @(*context* :CDAG) @(*context* :HB) @(*context* :base-FM) (*context* :CC)))
   (swap! (*context* :CC) #(CC/with-most-recent % nil))      ; not required, just to be clear
-  (next-FM!))
+  (combined-effect!))
 
 (defn receive-heartbeat!
   "Receives a heartbeat message at a site.
@@ -83,7 +83,7 @@
   (log "receiving heartbeat message from" (message/get-site-ID message))
   (swap! (*context* :VC) #(VC/_merge (VC/increment % (*context* :site-ID)) (message/get-VC message)))
   (swap! (*context* :GC) #(GC/insert % (message/get-site-ID message) (message/get-VC message)))
-  (next-FM!))
+  (combined-effect!))
 
 (defn receive-leave!
   "Receives a leave message at a site.
@@ -94,7 +94,7 @@
     (swap! (*context* :VC) #(VC/remove-site % site-ID))
     (swap! (*context* :HB) #(HB/remove-site % site-ID))
     (swap! (*context* :GC) #(GC/remove-site % site-ID)))
-  (next-FM!))
+  (combined-effect!))
 
 (defn receive-message!
   "Receives a message at a site.

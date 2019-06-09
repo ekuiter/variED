@@ -26,24 +26,24 @@
   Called when the site is ready to generate and receive operations
   and the server has transmitted the initial context."
   [site-ID
-   {VC      :VC
-    CDAG    :CDAG
-    base-FM :base-FM
-    HB      :HB
-    CC      :CC
-    MCGS    :MCGS
-    FM      :FM
-    GC      :GC}]
+   {VC              :VC
+    CDAG            :CDAG
+    base-FM         :base-FM
+    HB              :HB
+    CC              :CC
+    MCGS            :MCGS
+    combined-effect :combined-effect
+    GC              :GC}]
   (log "initializing client context")
-  {:site-ID site-ID
-   :VC      (atom VC)
-   :CDAG    (atom CDAG)
-   :base-FM (atom base-FM)
-   :HB      (atom HB)
-   :CC      (atom CC)
-   :MCGS    (atom MCGS)
-   :FM      (atom FM)
-   :GC      (atom GC)})
+  {:site-ID         site-ID
+   :VC              (atom VC)
+   :CDAG            (atom CDAG)
+   :base-FM         (atom base-FM)
+   :HB              (atom HB)
+   :CC              (atom CC)
+   :MCGS            (atom MCGS)
+   :combined-effect (atom combined-effect)
+   :GC              (atom GC)})
 
 (defn initialize-context-star-topology!
   "Initializes global context for a new client site in a star topology.
@@ -86,7 +86,7 @@
        (swap! (*context* :MCGS) #(MOVIC/MOVIC % CO @(*context* :CDAG) @(*context* :HB) @(*context* :base-FM) (*context* :CC)))
        ; not required, just to be clear that this information is only needed by the MOVIC call
        (swap! (*context* :CC) #(CC/with-most-recent % nil))
-       [(site/next-FM!) CO])))
+       [(site/combined-effect!) CO])))
 
 (defn generate-inverse-operation!
   "**TODO**: Generates an inverse operation concurrent to all following operations.

@@ -45,9 +45,9 @@
         :cljs (let [reader (transit/reader :json)]
                    (transit/read reader str)))))
 
-(defn FM-encode [FM]
-  (p ::FM-encode
-     #?(:cljs (clj->js FM))))
+(defn combined-effect-encode [combined-effect]
+  (p ::combined-effect-encode
+     #?(:cljs (clj->js combined-effect))))
 
 (defn formula-decode [formula]
   (p ::formula-decode
