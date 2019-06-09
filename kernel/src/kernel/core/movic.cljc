@@ -51,7 +51,7 @@
   [MCGS]
   (reduce set/intersection MCGS))
 
-(defn MCG-identifier
+(defn MCG-ID
   "Returns a string that uniquely identifies an MCG (up to hash collisions).
   In deviation to Sun and Chen's original paper, we do not use the COID scheme for identification.
   This is easier to implement, but has the disadvantage that MCGs can not be identified

@@ -50,12 +50,12 @@
   [MCGS CDAG HB CC GC own-site-ID]
   (p ::conflict-descriptor
      (let [versions (reduce (fn [acc MCG]
-                              (assoc acc (MOVIC/MCG-identifier MCG)
+                              (assoc acc (MOVIC/MCG-ID MCG)
                                          (topological-sort/CO-topological-sort CDAG MCG)))
                             {} (MOVIC/MCGs MCGS))
            versions (assoc versions :neutral (topological-sort/CO-topological-sort CDAG (MOVIC/neutral-CG MCGS)))
            conflicts (reduce (fn [acc MCG]
-                               (assoc acc (MOVIC/MCG-identifier MCG)
+                               (assoc acc (MOVIC/MCG-ID MCG)
                                           (reduce (fn [acc CO-ID]
                                                     (assoc acc CO-ID (CC/get-conflicts CC CO-ID)))
                                                   {} MCG)))
@@ -71,3 +71,26 @@
         :conflicts    conflicts
         :metadata     metadata
         :synchronized (synchronized? GC HB CC own-site-ID)})))
+
+(defn combined-effect
+  "Based on the result the MOVIC algorithm returned, checks whether
+  one CG was produced, in that case applying and returning the correct
+  feature model. Otherwise, returns a conflict descriptor."
+  [MCGS CDAG HB CC base-FM GC own-site-ID]
+  (case (count MCGS)
+    0 (log "no operations submitted yet, producing feature model")
+    1 (log "no conflict occured, producing feature model")
+    (log "conflicts occured," (count MCGS) "maximum compatible groups created"))
+  (case (count MCGS)
+    0 base-FM
+    1 (topological-sort/apply-compatible* CDAG HB base-FM (first MCGS))
+    (conflict-descriptor MCGS CDAG HB CC GC own-site-ID)))
+
+(defn voting?
+  "Determines whether the system is in the voting phase.
+  This is the case when a conflict has been detected (i.e., at least two versions have been created)
+  and the synchronization phase is done."
+  [MCGS combined-effect]
+  (and (> (count MCGS) 1)                                   ; in that case, combined-effect is always a conflict descriptor
+       (let [_conflict-descriptor combined-effect]
+         (_conflict-descriptor :synchronized))))

@@ -69,13 +69,18 @@ public abstract class CollaborativeSession {
             this.kernel = new Kernel(artifactPath, initialFeatureModel);
         }
 
+        private void processResponse(Collaborator collaborator, Object[] votingAndMessage) {
+            boolean voting = (boolean) votingAndMessage[0];
+            String newMessage = (String) votingAndMessage[1];
+            Logger.info("voting? {}", voting);
+            CollaboratorUtils.broadcastToOtherCollaborators(collaborators, new Api.Kernel(artifactPath, newMessage), collaborator);
+        }
+
         protected boolean _onMessage(Collaborator collaborator, Message.IDecodable message) {
             if (!(message instanceof Api.Kernel))
                 return false;
 
-            Api.Kernel kernelMessage = (Api.Kernel) message;
-            String newMessage = kernel.forwardMessage(kernelMessage.message);
-            CollaboratorUtils.broadcastToOtherCollaborators(collaborators, new Api.Kernel(artifactPath, newMessage), collaborator);
+            processResponse(collaborator, kernel.forwardMessage(((Api.Kernel) message).message));
             return true;
         }
 
@@ -89,9 +94,7 @@ public abstract class CollaborativeSession {
         }
 
         protected void _leave(Collaborator oldCollaborator) {
-            UUID siteID = oldCollaborator.getSiteID();
-            String leaveMessage = kernel.siteLeft(siteID);
-            CollaboratorUtils.broadcastToOtherCollaborators(collaborators, new Api.Kernel(artifactPath, leaveMessage), oldCollaborator);
+            processResponse(oldCollaborator, kernel.siteLeft(oldCollaborator.getSiteID()));
         }
     }
 }

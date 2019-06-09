@@ -84,11 +84,11 @@ public class Kernel {
         return heartbeatMessage;
     }
 
-    public String forwardMessage(String message) {
+    public Object[] forwardMessage(String message) {
         callPrepare();
-        String newMessage = (String) callKernel("serverForwardMessage", message);
+        Object[] votingAndNewMessage = (Object[]) callKernel("serverForwardMessage", message);
         callDone();
-        return newMessage;
+        return votingAndNewMessage;
     }
 
     public String[] siteJoined(UUID siteID) {
@@ -98,11 +98,11 @@ public class Kernel {
         return contextAndHeartbeatMessage;
     }
 
-    public String siteLeft(UUID siteID) {
+    public Object[] siteLeft(UUID siteID) {
         callPrepare();
-        String leaveMessage = (String) callKernel("serverSiteLeft", siteID.toString());
+        Object[] votingAndLeaveMessage = (Object[]) callKernel("serverSiteLeft", siteID.toString());
         callDone();
-        return leaveMessage;
+        return votingAndLeaveMessage;
     }
 
     public void GC() {

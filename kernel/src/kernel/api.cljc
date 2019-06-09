@@ -140,7 +140,10 @@
   [message]
   (profile
     {}
-    (helpers/encode (server/forward-message! (helpers/decode message)))))
+    (let [[voting? message] (server/forward-message! (helpers/decode message))]
+      (into-array Object
+                  [voting?
+                   (helpers/encode message)]))))
 
 (defn serverSiteJoined
   "Whenever a new site requests to join, the server must call serverSiteJoined
@@ -171,7 +174,10 @@
   [site-ID]
   (profile
     {}
-    (helpers/encode (server/site-left! site-ID))))
+    (let [[voting? message] (server/site-left! site-ID)]
+      (into-array Object
+                  [voting?
+                   (helpers/encode message)]))))
 
 (defn serverGC
   "Periodically (and when no other API calls are in progress and the system

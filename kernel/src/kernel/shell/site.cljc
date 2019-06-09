@@ -36,25 +36,13 @@
      :combined-effect (atom initial-FM)
      :GC              (atom (GC/initialize))}))
 
-(defn combined-effect
-  "Based on the result the MOVIC algorithm returned, checks whether
-  one CG was produced, in that case applying and returning the correct
-  feature model. Otherwise, returns a conflict descriptor."
-  [MCGS CDAG HB CC base-FM GC own-site-ID]
-  (case (count MCGS)
-    0 (log "no operations submitted yet, producing feature model")
-    1 (log "no conflict occured, producing feature model")
-    (log "conflicts occured," (count MCGS) "maximum compatible groups created"))
-  (case (count MCGS)
-    0 base-FM
-    1 (topological-sort/apply-compatible* CDAG HB base-FM (first MCGS))
-    (conflict-resolution/conflict-descriptor MCGS CDAG HB CC GC own-site-ID)))
-
 (defn combined-effect!
   "Calculates the next combined effect, which is a feature model or conflict descriptor,
   stores it in the context and returns it."
   []
-  (let [combined-effect (combined-effect @(*context* :MCGS) @(*context* :CDAG) @(*context* :HB) @(*context* :CC) @(*context* :base-FM) @(*context* :GC) (*context* :site-ID))]
+  (let [combined-effect (conflict-resolution/combined-effect
+                          @(*context* :MCGS) @(*context* :CDAG) @(*context* :HB) @(*context* :CC)
+                          @(*context* :base-FM) @(*context* :GC) (*context* :site-ID))]
     (reset! (*context* :combined-effect) combined-effect)
     combined-effect))
 

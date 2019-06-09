@@ -8,6 +8,7 @@
   (:require [kernel.core.vector-clock :as VC]
             [kernel.core.garbage-collector :as GC]
             [kernel.core.message :as message]
+            [kernel.core.conflict-resolution :as conflict-resolution]
             [kernel.shell.site :as site]
             [kernel.shell.context :refer [*context* set-context]]
             [kernel.helpers :refer [log]]
@@ -68,7 +69,8 @@
        (site/receive-message! new-message)                  ; ignore returned feature model on the server
        (generate-heartbeat!)
        (swap! (*context* :GC) #(GC/insert % :server (GC-filter @(*context* :VC))))
-       (message/with-server-VC new-message (GC-filter @(*context* :VC))))))
+       [(conflict-resolution/voting? @(*context* :MCGS) @(*context* :combined-effect))
+        (message/with-server-VC new-message (GC-filter @(*context* :VC)))])))
 
 (defn site-joined!
   "Processes a newly joined site.
@@ -111,7 +113,8 @@
      (let [message (message/make-leave site-ID)]
        (site/receive-leave! message)
        (swap! (*context* :offline-sites) #(conj % site-ID))
-       message)))
+       [(conflict-resolution/voting? @(*context* :MCGS) @(*context* :combined-effect))
+        message])))
 
 (def GC!
   "Runs the garbage collector at the server site.
