@@ -94,7 +94,7 @@
     (swap! (*context* :VC) #(VC/remove-site % site-ID))
     (swap! (*context* :HB) #(HB/remove-site % site-ID))
     (swap! (*context* :GC) #(GC/remove-site % site-ID)))
-  @(*context* :FM))
+  (next-FM!))
 
 (defn receive-message!
   "Receives a message at a site.
