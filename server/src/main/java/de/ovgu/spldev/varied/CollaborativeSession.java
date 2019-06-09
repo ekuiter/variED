@@ -7,10 +7,7 @@ import de.ovgu.spldev.varied.messaging.Message;
 import de.ovgu.spldev.varied.util.CollaboratorUtils;
 import org.pmw.tinylog.Logger;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * A collaborative session consists of a set of collaborators that view and edit a artifact together.
@@ -62,6 +59,7 @@ public abstract class CollaborativeSession {
 
     static class FeatureModel extends CollaborativeSession {
         private Kernel kernel;
+        private VotingPhase votingPhase;
 
         FeatureModel(Artifact.Path artifactPath, IFeatureModel initialFeatureModel) {
             super(artifactPath);
@@ -69,19 +67,35 @@ public abstract class CollaborativeSession {
             this.kernel = new Kernel(artifactPath, initialFeatureModel);
         }
 
-        private void processResponse(Collaborator collaborator, Object[] votingAndMessage) {
-            boolean voting = (boolean) votingAndMessage[0];
+        private void broadcastResponse(Collaborator collaborator, Object[] votingAndMessage) {
+            boolean isVoting = (boolean) votingAndMessage[0];
             String newMessage = (String) votingAndMessage[1];
-            Logger.info("voting? {}", voting);
             CollaboratorUtils.broadcastToOtherCollaborators(collaborators, new Api.Kernel(artifactPath, newMessage), collaborator);
+            if (isVoting && votingPhase == null)
+                votingPhase = new VotingPhase(VotingPhase.VotingStrategy.createSimple(collaborators));
         }
 
         protected boolean _onMessage(Collaborator collaborator, Message.IDecodable message) {
-            if (!(message instanceof Api.Kernel))
-                return false;
+            if (message instanceof Api.Kernel) {
+                broadcastResponse(collaborator, kernel.forwardMessage(((Api.Kernel) message).message));
+                return true;
+            }
 
-            processResponse(collaborator, kernel.forwardMessage(((Api.Kernel) message).message));
-            return true;
+            if (message instanceof Api.Vote) {
+                if (votingPhase == null)
+                    throw new RuntimeException("not currently in voting phase");
+                Api.Vote voteMessage = (Api.Vote) message;
+                if (!votingPhase.isEligible(collaborator))
+                    throw new RuntimeException("not eligible for voting");
+
+                voteMessage.collaborator = collaborator;
+                CollaboratorUtils.broadcastToOtherCollaborators(collaborators, voteMessage, collaborator);
+                if (votingPhase.vote(collaborator, voteMessage.versionID))
+                    votingPhase = null;
+                return true;
+            }
+
+            return false;
         }
 
         protected void _join(Collaborator newCollaborator) {
@@ -91,10 +105,14 @@ public abstract class CollaborativeSession {
                     heartbeatMessage = contextAndHeartbeatMessage[1];
             newCollaborator.send(new Api.Initialize(artifactPath, context));
             CollaboratorUtils.broadcastToOtherCollaborators(collaborators, new Api.Kernel(artifactPath, heartbeatMessage), newCollaborator);
+            if (votingPhase != null)
+                votingPhase.onJoin(newCollaborator);
         }
 
         protected void _leave(Collaborator oldCollaborator) {
-            processResponse(oldCollaborator, kernel.siteLeft(oldCollaborator.getSiteID()));
+            broadcastResponse(oldCollaborator, kernel.siteLeft(oldCollaborator.getSiteID()));
+            if (votingPhase != null)
+                votingPhase.onLeave(oldCollaborator);
         }
     }
 }

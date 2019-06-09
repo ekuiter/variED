@@ -26,7 +26,8 @@ public class Api {
         JOIN_REQUEST,
         LEAVE_REQUEST,
         INITIALIZE,
-        KERNEL
+        KERNEL,
+        VOTE
     }
 
     public static class Error extends Message implements Message.IEncodable {
@@ -110,6 +111,19 @@ public class Api {
         public Kernel(Artifact.Path artifactPath, String message) {
             super(TypeEnum.KERNEL, artifactPath);
             this.message = message;
+        }
+    }
+
+    public static class Vote extends Message implements Message.IEncodable, Message.IDecodable {
+        @Expose
+        public Collaborator collaborator;
+
+        @Expose
+        public String versionID;
+
+        public Vote(Artifact.Path artifactPath, Collaborator collaborator) {
+            super(TypeEnum.VOTE, artifactPath);
+            this.collaborator = collaborator;
         }
     }
 }
