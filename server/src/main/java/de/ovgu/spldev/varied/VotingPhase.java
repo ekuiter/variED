@@ -123,25 +123,22 @@ public class VotingPhase {
         return votingStrategy.voters.getVoters();
     }
 
-    public boolean vote(Collaborator collaborator, String versionID) {
+    public void vote(Collaborator collaborator, String versionID) {
         Logger.info("{} voted for version {}", collaborator, versionID);
         if (versionID == null)
             voteResults.remove(collaborator);
         else
             voteResults.put(collaborator, versionID);
-
-        if (votingStrategy.resolutionCriterion.isResolved(votingStrategy.voters, voteResults)) {
-            Logger.info("resolution criterion triggered, concluding voting phase");
-            conclude();
-            return true;
-        }
-        return false;
     }
 
-    private void conclude() {
+    public String getElectedVersionID() {
+        if (!votingStrategy.resolutionCriterion.isResolved(votingStrategy.voters, voteResults))
+            return null;
+
+        Logger.info("resolution criterion triggered, concluding voting phase");
         String electedVersionID = votingStrategy.resolutionOutcome.getElectedVersionID(voteResults);
         Logger.info("final elected version is {}", electedVersionID);
-        Logger.info("TODO: tell the kernel, tell everyone else (they should clean their voteSiteIDs/votes)");
+        return electedVersionID;
     }
 
     public boolean isEligible(Collaborator collaborator) {

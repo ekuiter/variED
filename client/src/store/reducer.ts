@@ -236,7 +236,6 @@ function serverReceiveReducer(state: State, action: Action): State {
                                 delete votes[action.payload.siteID];
                                 return {...collaborativeSession, votes};
                             }
-
                             return {
                                 ...collaborativeSession,
                                 votes: {
@@ -245,6 +244,25 @@ function serverReceiveReducer(state: State, action: Action): State {
                                 }
                             };
                         }));
+
+            case MessageType.RESOLUTION_OUTCOME:
+                state = getNewState(state, 'collaborativeSessions',
+                    getNewCollaborativeSessions(state, action.payload.artifactPath!,
+                        (collaborativeSession: CollaborativeSession) => {
+                            let [kernelContext, kernelCombinedEffect] =
+                                Kernel.run(state, collaborativeSession.artifactPath, kernel =>
+                                    kernel.resolveConflict(action.payload.versionID));
+                            return {
+                                ...collaborativeSession,
+                                kernelContext,
+                                kernelCombinedEffect,
+                                voterSiteIDs: undefined,
+                                votes: {}
+                            };
+                        }));
+                if (isEditingFeatureModel(state))
+                    state = updateFeatureModel(state, action.payload.artifactPath!);
+                return state;
 
             default:
                 logger.warn(() => `no message reducer defined for action type ${action.payload.type}`);

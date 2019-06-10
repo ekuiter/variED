@@ -17,7 +17,8 @@ export enum MessageType {
     INITIALIZE = 'INITIALIZE',
     KERNEL = 'KERNEL',
     VOTERS = 'VOTERS',
-    VOTE = 'VOTE'
+    VOTE = 'VOTE',
+    RESOLUTION_OUTCOME = 'RESOLUTION_OUTCOME'
 };
 
 export enum FeatureDiagramLayoutType {

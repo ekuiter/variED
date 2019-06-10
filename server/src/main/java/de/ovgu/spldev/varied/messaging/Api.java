@@ -29,7 +29,8 @@ public class Api {
         INITIALIZE,
         KERNEL,
         VOTERS,
-        VOTE
+        VOTE,
+        RESOLUTION_OUTCOME
     }
 
     public static class Error extends Message implements Message.IEncodable {
@@ -138,6 +139,16 @@ public class Api {
         public Vote(Artifact.Path artifactPath, Collaborator collaborator) {
             super(TypeEnum.VOTE, artifactPath);
             this.siteID = collaborator.getSiteID();
+        }
+    }
+
+    public static class ResolutionOutcome extends Message implements Message.IEncodable {
+        @Expose
+        public String versionID;
+
+        public ResolutionOutcome(Artifact.Path artifactPath, String versionID) {
+            super(TypeEnum.RESOLUTION_OUTCOME, artifactPath);
+            this.versionID = versionID;
         }
     }
 }

@@ -96,8 +96,13 @@ public abstract class CollaborativeSession {
                 Api.Vote voteMessage = (Api.Vote) message;
                 voteMessage.siteID = collaborator.getSiteID();
                 CollaboratorUtils.broadcast(collaborators, voteMessage);
-                if (votingPhase.vote(collaborator, voteMessage.versionID))
+                votingPhase.vote(collaborator, voteMessage.versionID);
+                String electedVersionID = votingPhase.getElectedVersionID();
+                if (electedVersionID != null) {
                     votingPhase = null;
+                    kernel.resolveConflict(electedVersionID);
+                    CollaboratorUtils.broadcast(collaborators, new Api.ResolutionOutcome(artifactPath, electedVersionID));
+                }
                 return true;
             }
 

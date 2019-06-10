@@ -99,7 +99,7 @@ public class Kernel {
     }
 
     public void resolveConflict(String versionID) {
-        callKernelAtomic("resolveConflict", versionID);
+        callKernelAtomic("serverResolveConflict", versionID);
     }
 
     public void GC() {
