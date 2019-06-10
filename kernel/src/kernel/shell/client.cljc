@@ -108,8 +108,13 @@
 
 (def receive-message!
   "Receives a message at a client site.
-  Returns the (updated) current feature model."
+  Returns the (updated) combined effect."
   site/receive-message!)
+
+(def resolve-conflict!
+  "Resolves a conflict to a given version.
+  Returns the (updated) combined effect."
+  site/resolve-conflict!)
 
 (def GC!
   "Runs the garbage collector at a client site.

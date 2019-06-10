@@ -70,44 +70,39 @@ public class Kernel {
         callKernel("logProfile");
     }
 
+    private Object callKernelAtomic(String function, Object... args) {
+        callPrepare();
+        Object result = callKernel(function, args);
+        callDone();
+        return result;
+    }
+
     public Kernel(Artifact.Path artifactPath, IFeatureModel initialFeatureModel) {
         this.artifactPath = artifactPath;
-        callPrepare();
-        callKernel("serverInitialize", FeatureModelFormat.toKernel(initialFeatureModel));
-        callDone();
+        callKernelAtomic("serverInitialize", FeatureModelFormat.toKernel(initialFeatureModel));
     }
 
     public String generateHeartbeat() {
-        callPrepare();
-        String heartbeatMessage = (String) callKernel("serverGenerateHeartbeat");
-        callDone();
-        return heartbeatMessage;
+        return (String) callKernelAtomic("serverGenerateHeartbeat");
     }
 
     public Object[] forwardMessage(String message) {
-        callPrepare();
-        Object[] votingAndNewMessage = (Object[]) callKernel("serverForwardMessage", message);
-        callDone();
-        return votingAndNewMessage;
+        return (Object[]) callKernelAtomic("serverForwardMessage", message);
     }
 
     public String[] siteJoined(UUID siteID) {
-        callPrepare();
-        String[] contextAndHeartbeatMessage = (String[]) callKernel("serverSiteJoined", siteID.toString());
-        callDone();
-        return contextAndHeartbeatMessage;
+        return (String[]) callKernelAtomic("serverSiteJoined", siteID.toString());
     }
 
     public Object[] siteLeft(UUID siteID) {
-        callPrepare();
-        Object[] votingAndLeaveMessage = (Object[]) callKernel("serverSiteLeft", siteID.toString());
-        callDone();
-        return votingAndLeaveMessage;
+        return (Object[]) callKernelAtomic("serverSiteLeft", siteID.toString());
+    }
+
+    public void resolveConflict(String versionID) {
+        callKernelAtomic("resolveConflict", versionID);
     }
 
     public void GC() {
-        callPrepare();
-        callKernel("serverGC");
-        callDone();
+        callKernelAtomic("serverGC");
     }
 }

@@ -99,6 +99,27 @@
          :leave (receive-leave! new-message)
          (receive-operation! new-message)))))
 
+(defn resolve-conflict!
+  "After all sites have (externally) agreed on a resolved version, this function resolves the
+  conflict by resetting the system to its initial state, only with the resolved MCG's operations
+  included in the new initial feature model. This is possible because all sites are synchronized
+  at this point, and all CDAGs, HBs etc. are equal across sites. In that case, they can all
+  effectively be garbage-collected, i.e. re-initialized."
+  [MCG-ID]
+  (p ::resolve-conflict!
+     (log "resolving conflict with version" MCG-ID)
+     (let [MCG (conflict-resolution/resolved-MCG @(*context* :MCGS) MCG-ID)
+           initial-FM (topological-sort/apply-compatible* @(*context* :CDAG) @(*context* :HB) @(*context* :base-FM) MCG)]
+       (reset! (*context* :VC) (VC/initialize))
+       (reset! (*context* :CDAG) (CDAG/initialize))
+       (reset! (*context* :base-FM) initial-FM)
+       (reset! (*context* :HB) (HB/initialize))
+       (reset! (*context* :CC) (CC/initialize))
+       (reset! (*context* :MCGS) (MOVIC/MCGS-initialize))
+       (reset! (*context* :combined-effect) initial-FM)
+       (reset! (*context* :GC) (GC/initialize))
+       (combined-effect!))))
+
 (defn GC!
   "Runs the garbage collector at a site.
   Updates the global context."

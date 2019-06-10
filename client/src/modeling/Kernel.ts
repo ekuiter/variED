@@ -85,6 +85,10 @@ class Kernel {
         return this._callKernel(api => api.clientReceiveMessage(message));
     }
 
+    resolveConflict(versionID: string): KernelFeatureModel {
+        return this._callKernel(api => api.clientResolveConflict(versionID));
+    }
+
     GC(): void {
         this._callKernel(api => api.clientGC());
     }

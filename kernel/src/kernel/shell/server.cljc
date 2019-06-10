@@ -116,6 +116,13 @@
        [(conflict-resolution/voting? @(*context* :MCGS) @(*context* :combined-effect))
         message])))
 
+(defn resolve-conflict!
+  "Resolves a conflict to a given version.
+  Returns the (updated) combined effect."
+  [MCG-ID]
+  (site/resolve-conflict! MCG-ID)
+  nil)
+
 (def GC!
   "Runs the garbage collector at the server site.
   Updates the global context."

@@ -97,13 +97,23 @@
   "When a message arrives from the server, the client must call
   clientReceiveMessage with the received message.
   The call returns either a new feature model that may be consumed by the
-  client, or **TODO** information about how emerged conflicts may be resolved.
-  **TODO**: When a conflict occurs, before un-freezing the system, all
-  conflicting operations have to be completely purged from the system."
+  client, or a conflict descriptor, which carries information about how
+  emerged conflicts may be resolved."
   [message]
   (profile
     {}
     (helpers/combined-effect-encode (client/receive-message! (helpers/decode message)))))
+
+(defn ^:export clientResolveConflict
+  "When all sites have agreed on one version after a conflict has been detected
+  (which is coordinated externally by the server), every client must call
+  clientResolveConflict with the agreed version.
+  The call returns the feature model that has been resolved to."
+  [MCG-ID]
+  (profile
+    {}
+    (let [MCG-ID (if (= MCG-ID "neutral") :neutral MCG-ID)]
+      (helpers/combined-effect-encode (client/resolve-conflict! MCG-ID)))))
 
 (defn ^:export clientGC
   "Periodically (and when no other API calls are in progress and the system
@@ -178,6 +188,17 @@
       (into-array Object
                   [voting?
                    (helpers/encode message)]))))
+
+
+(defn serverResolveConflict
+  "When all sites have agreed on one version after a conflict has been detected
+  (which is coordinated externally by the server), the server must call
+  serverResolveConflict with the agreed version."
+  [MCG-ID]
+  (profile
+    {}
+    (let [MCG-ID (if (= MCG-ID "neutral") :neutral MCG-ID)]
+      (server/resolve-conflict! MCG-ID))))
 
 (defn serverGC
   "Periodically (and when no other API calls are in progress and the system

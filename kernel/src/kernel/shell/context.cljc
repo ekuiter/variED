@@ -11,8 +11,9 @@
   - *HB*: the current history buffer, wrapped in an atom
   - *CC*: the current conflict cache, wrapped in an atom
   - *MCGS*: the current maximum compatible group set, wrapped in an atom
-  - *FM*: the current feature model, wrapped in an atom.
-    This is not strictly required, but useful for testing and caching.
+  - *combined-effect*: the current feature model or conflict descriptor,
+    wrapped in an atom. This is not strictly required, but useful for
+    testing and caching.
   - *GC*: the garbage collector's current state, wrapped in an atom
 
   The server additionally carries a *offline-sites* atom that contains

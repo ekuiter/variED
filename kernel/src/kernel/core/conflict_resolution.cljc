@@ -77,20 +77,30 @@
   one CG was produced, in that case applying and returning the correct
   feature model. Otherwise, returns a conflict descriptor."
   [MCGS CDAG HB CC base-FM GC own-site-ID]
-  (case (count MCGS)
-    0 (log "no operations submitted yet, producing feature model")
-    1 (log "no conflict occured, producing feature model")
-    (log "conflicts occured," (count MCGS) "maximum compatible groups created"))
-  (case (count MCGS)
-    0 base-FM
-    1 (topological-sort/apply-compatible* CDAG HB base-FM (first MCGS))
-    (conflict-descriptor MCGS CDAG HB CC GC own-site-ID)))
+  (p ::combined-effect
+     (case (count MCGS)
+       0 (log "no operations submitted yet, producing feature model")
+       1 (log "no conflict occured, producing feature model")
+       (log "conflicts occured," (count MCGS) "maximum compatible groups created"))
+     (case (count MCGS)
+       0 base-FM
+       1 (topological-sort/apply-compatible* CDAG HB base-FM (first MCGS))
+       (conflict-descriptor MCGS CDAG HB CC GC own-site-ID))))
 
 (defn voting?
   "Determines whether the system is in the voting phase.
   This is the case when a conflict has been detected (i.e., at least two versions have been created)
   and the synchronization phase is done."
   [MCGS combined-effect]
-  (and (> (count MCGS) 1)                                   ; in that case, combined-effect is always a conflict descriptor
-       (let [_conflict-descriptor combined-effect]
-         (_conflict-descriptor :synchronized))))
+  (p ::voting?
+     (and (> (count MCGS) 1)                                ; in that case, combined-effect is always a conflict descriptor
+          (let [_conflict-descriptor combined-effect]
+            (_conflict-descriptor :synchronized)))))
+
+(defn resolved-MCG
+  "For an agreed resolved version, extracts the according MCG from an MCGS."
+  [MCGS MCG-ID]
+  (p ::resolved-MCGS
+     (if (= MCG-ID :neutral)
+       (MOVIC/neutral-CG MCGS)
+       (first (filter #(= (MCG-ID %) MCG-ID) MCGS)))))
