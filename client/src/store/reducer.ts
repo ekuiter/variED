@@ -252,6 +252,11 @@ function serverReceiveReducer(state: State, action: Action): State {
                             let [kernelContext, kernelCombinedEffect] =
                                 Kernel.run(state, collaborativeSession.artifactPath, kernel =>
                                     kernel.resolveConflict(action.payload.versionID));
+                            const artifactPath = collaborativeSession.artifactPath;
+                            let heartbeat;
+                            [kernelContext, heartbeat] = Kernel.run(state, artifactPath, kernel => kernel.generateHeartbeat());
+                            enqueueMessage({type: MessageType.KERNEL, message: heartbeat}, artifactPath);
+                            deferred(flushMessageQueue)();
                             return {
                                 ...collaborativeSession,
                                 kernelContext,
