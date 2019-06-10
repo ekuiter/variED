@@ -71,7 +71,8 @@ interface ArgumentDescriptor {
     items?: PaletteItemsFunction,
     allowFreeform?: boolean,
     transformFreeform?: (value: string) => string,
-    title?: string
+    title?: string,
+    skipArguments?: (value: string) => number
 };
 
 function clearLocalStorage() {
@@ -128,12 +129,16 @@ export default class extends React.Component<Props, State> {
                     toPaletteItemsFunction = (items?: PaletteItemsFunction) => items || (() => []),
                 argumentDescriptor: ArgumentDescriptor = toArgumentDescriptor(args[0]),
                 // bind current argument and recurse (until all arguments are bound)
-                recurse = (value: string) =>
-                    this.actionWithArguments(
-                        args.slice(1).map(toArgumentDescriptor).map(argument => ({
+                recurse = (value: string) => {
+                    const currentArgument = toArgumentDescriptor(args[0]);
+                    return this.actionWithArguments(
+                        args.slice(currentArgument.skipArguments ? currentArgument.skipArguments(value) + 1 : 1)
+                            .map(toArgumentDescriptor)
+                            .map(argument => ({
                             ...argument, items: toPaletteItemsFunction(argument.items).bind(undefined, value)
                         })),
                         action.bind(undefined, value));
+                };
 
             this.setState({
                 rerenderPalette: +new Date(),
@@ -595,9 +600,17 @@ export default class extends React.Component<Props, State> {
                 [{
                     title: i18n.t('commandPalette.featureDiagram.votingStrategy'),
                     items: () => Object.values(VotingStrategy).map(votingStrategy =>
-                        ({text: i18n.t('commandPalette.featureDiagram', votingStrategy), key: votingStrategy}))
+                        ({text: i18n.t('commandPalette.featureDiagram', votingStrategy), key: votingStrategy})),
+                    skipArguments: (votingStrategy: string) => votingStrategy === VotingStrategy.reject ? 1 : 0
+                }, {
+                    title: i18n.t('commandPalette.featureDiagram.votingStrategy'),
+                    items: () => [
+                        {text: i18n.t('commandPalette.featureDiagram.everyone'), key: 'false'},
+                        {text: i18n.t('commandPalette.featureDiagram.onlyInvolved'), key: 'true'}
+                    ]
                 }],
-                votingStrategy => this.props.onSetVotingStrategy({votingStrategy}))
+                (votingStrategy, onlyInvolved) => this.props.onSetVotingStrategy(
+                    {votingStrategy, onlyInvolved: onlyInvolved === 'true'}))
         }, {
             text: i18n.t('commandPalette.developer.debug'),
             icon: 'DeveloperTools',

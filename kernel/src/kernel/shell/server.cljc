@@ -69,7 +69,7 @@
        (site/receive-message! new-message)                  ; ignore returned feature model on the server
        (generate-heartbeat!)
        (swap! (*context* :GC) #(GC/insert % :server (GC-filter @(*context* :VC))))
-       [(conflict-resolution/voting? @(*context* :MCGS) @(*context* :combined-effect))
+       [(conflict-resolution/involved-site-IDs @(*context* :MCGS) @(*context* :HB) @(*context* :combined-effect))
         (message/with-server-VC new-message (GC-filter @(*context* :VC)))])))
 
 (defn site-joined!
@@ -113,7 +113,7 @@
      (let [message (message/make-leave site-ID)]
        (site/receive-leave! message)
        (swap! (*context* :offline-sites) #(conj % site-ID))
-       [(conflict-resolution/voting? @(*context* :MCGS) @(*context* :combined-effect))
+       [(conflict-resolution/involved-site-IDs @(*context* :MCGS) @(*context* :HB) @(*context* :combined-effect))
         message])))
 
 (defn resolve-conflict!

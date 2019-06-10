@@ -157,5 +157,8 @@ public class Api {
     public static class SetVotingStrategy extends Message implements Message.IDecodable {
         @Expose
         public String votingStrategy;
+
+        @Expose
+        public boolean onlyInvolved;
     }
 }

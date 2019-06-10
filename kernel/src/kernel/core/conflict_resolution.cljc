@@ -1,6 +1,7 @@
 (ns kernel.core.conflict-resolution
   "Utilities for assisting in conflict resolution."
-  (:require [kernel.core.vector-clock :as VC]
+  (:require [clojure.set :as set]
+            [kernel.core.vector-clock :as VC]
             [kernel.core.history-buffer :as HB]
             [kernel.core.conflict-cache :as CC]
             [kernel.core.garbage-collector :as GC]
@@ -96,6 +97,16 @@
      (and (> (count MCGS) 1)                                ; in that case, combined-effect is always a conflict descriptor
           (let [_conflict-descriptor combined-effect]
             (_conflict-descriptor :synchronized)))))
+
+(defn involved-site-IDs
+  "Returns all sites which are involved in any conflict.
+  This is useful for only allowing those sites to participate in the voting phase."
+  [MCGS HB combined-effect]
+  (p ::involved-site-IDs
+     (when (voting? MCGS combined-effect)
+       ; these are all operations involved in some conflict (as they are not in the neutral CG)
+       (let [conflicting-operations (set/difference (MOVIC/get-all-operations MCGS) (MOVIC/neutral-CG MCGS))]
+         (distinct (map #(CO/get-site-ID (HB/lookup HB %)) conflicting-operations))))))
 
 (defn resolved-MCG
   "For an agreed resolved version, extracts the according MCG from an MCGS."

@@ -174,6 +174,8 @@ const translationMap = {
             },
             votingStrategy: 'Voting strategy',
             setVotingStrategy: 'Set voting strategy',
+            onlyInvolved: 'Only collaborators involved in a conflict may vote',
+            everyone: 'Everyone may vote (default)',
             reject: 'Reject conflicts',
             firstVote: 'First vote wins',
             plurality: 'Plurality vote',

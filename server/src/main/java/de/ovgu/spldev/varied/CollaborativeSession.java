@@ -8,6 +8,8 @@ import de.ovgu.spldev.varied.util.CollaboratorUtils;
 import org.pmw.tinylog.Logger;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * A collaborative session consists of a set of collaborators that view and edit a artifact together.
@@ -60,6 +62,7 @@ public abstract class CollaborativeSession {
     static class FeatureModel extends CollaborativeSession {
         private Kernel kernel;
         private String votingStrategy = "consensus";
+        private boolean onlyInvolved = false;
         private VotingPhase votingPhase;
 
         FeatureModel(Artifact.Path artifactPath, IFeatureModel initialFeatureModel) {
@@ -68,12 +71,21 @@ public abstract class CollaborativeSession {
             this.kernel = new Kernel(artifactPath, initialFeatureModel);
         }
 
-        private void broadcastResponse(Collaborator collaborator, Object[] votingAndMessage) {
-            boolean isVoting = (boolean) votingAndMessage[0];
-            String newMessage = (String) votingAndMessage[1];
+        private void broadcastResponse(Collaborator collaborator, Object[] involvedSiteIDsAndMessage) {
+            String[] involvedSiteIDs = (String[]) involvedSiteIDsAndMessage[0];
+            String newMessage = (String) involvedSiteIDsAndMessage[1];
             CollaboratorUtils.broadcastToOtherCollaborators(collaborators, new Api.Kernel(artifactPath, newMessage), collaborator);
-            if (isVoting && votingPhase == null) {
-                votingPhase = new VotingPhase(VotingPhase.VotingStrategy.fromString(votingStrategy, collaborators));
+            if (involvedSiteIDs != null && votingPhase == null) {
+                Logger.info("{} collaborators involved in the conflict", involvedSiteIDs.length);
+                Collection<Collaborator> involvedCollaborators =
+                        Stream.of(involvedSiteIDs)
+                            .map(siteID -> collaborators.stream()
+                                    .filter(_collaborator -> _collaborator.getSiteID().equals(UUID.fromString(siteID)))
+                                    .findFirst()
+                                    .get())
+                            .collect(Collectors.toCollection(HashSet::new));
+                votingPhase = new VotingPhase(VotingPhase.VotingStrategy.createInstance(
+                        votingStrategy, onlyInvolved, collaborators, involvedCollaborators));
                 broadcastVoters();
                 updateVotingPhase();
             }
@@ -102,8 +114,10 @@ public abstract class CollaborativeSession {
                 if (votingPhase != null)
                     throw new RuntimeException("can not change voting strategy while in voting phase");
                 String votingStrategy = ((Api.SetVotingStrategy) message).votingStrategy;
-                Logger.info("setting voting strategy to {}", votingStrategy);
+                boolean onlyInvolved = ((Api.SetVotingStrategy) message).onlyInvolved;
+                Logger.info("setting voting strategy to {} ({})", votingStrategy, onlyInvolved ? "only involved" : "everyone");
                 this.votingStrategy = votingStrategy;
+                this.onlyInvolved = onlyInvolved;
                 return true;
             }
 

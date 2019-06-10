@@ -52,6 +52,32 @@ public class VotingPhase {
                     return voters;
                 }
             }
+
+            class OnlyInvolved implements IVoters {
+                Set<Collaborator> involvedCollaborators, voters;
+
+                OnlyInvolved(Collection<Collaborator> involvedCollaborators) {
+                    this.involvedCollaborators = new HashSet<>(involvedCollaborators);
+                    voters = new HashSet<>(involvedCollaborators);
+                }
+
+                public void onJoin(Collaborator collaborator) {
+                    if (involvedCollaborators.contains(collaborator))
+                        voters.add(collaborator);
+                }
+
+                public void onLeave(Collaborator collaborator) {
+                    voters.remove(collaborator);
+                }
+
+                public boolean isEligible(Collaborator collaborator) {
+                    return voters.contains(collaborator);
+                }
+
+                public Collection<Collaborator> getVoters() {
+                    return voters;
+                }
+            }
         }
 
         interface IResolutionCriterion {
@@ -173,46 +199,51 @@ public class VotingPhase {
                     new IResolutionOutcome.Neutral());
         }
 
-        static VotingStrategy firstVote(Collection<Collaborator> collaborators) {
+        static VotingStrategy firstVote(IVoters voters) {
             return new VotingStrategy(
-                    new IVoters.Everyone(collaborators),
+                    voters,
                     new IResolutionCriterion.OnFirstVote(),
                     new IResolutionOutcome.Any());
         }
 
-        static VotingStrategy plurality(Collection<Collaborator> collaborators) {
+        static VotingStrategy plurality(IVoters voters) {
             return new VotingStrategy(
-                    new IVoters.Everyone(collaborators),
+                    voters,
                     new IResolutionCriterion.OnLastVote(),
                     new IResolutionOutcome.Plurality());
         }
 
-        static VotingStrategy majority(Collection<Collaborator> collaborators) {
+        static VotingStrategy majority(IVoters voters) {
             return new VotingStrategy(
-                    new IVoters.Everyone(collaborators),
+                    voters,
                     new IResolutionCriterion.OnLastVote(),
                     new IResolutionOutcome.Majority());
         }
 
-        static VotingStrategy consensus(Collection<Collaborator> collaborators) {
+        static VotingStrategy consensus(IVoters voters) {
             return new VotingStrategy(
-                    new IVoters.Everyone(collaborators),
+                    voters,
                     new IResolutionCriterion.OnLastVoteOrDissent(),
                     new IResolutionOutcome.Consensus());
         }
 
-        static VotingStrategy fromString(String votingStrategy, Collection<Collaborator> collaborators) {
+        static VotingStrategy createInstance(
+                String votingStrategy, boolean onlyInvolved,
+                Collection<Collaborator> collaborators, Collection<Collaborator> involvedCollaborators) {
+            IVoters voters = onlyInvolved
+                    ? new IVoters.OnlyInvolved(involvedCollaborators)
+                    : new IVoters.Everyone(collaborators);
             switch (votingStrategy) {
                 case "reject":
                     return reject();
                 case "firstVote":
-                    return firstVote(collaborators);
+                    return firstVote(voters);
                 case "plurality":
-                    return plurality(collaborators);
+                    return plurality(voters);
                 case "majority":
-                    return majority(collaborators);
+                    return majority(voters);
                 case "consensus":
-                    return consensus(collaborators);
+                    return consensus(voters);
                 default:
                     throw new RuntimeException("invalid voting strategy given");
             }

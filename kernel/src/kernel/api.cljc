@@ -150,9 +150,9 @@
   [message]
   (profile
     {}
-    (let [[voting? message] (server/forward-message! (helpers/decode message))]
+    (let [[involved-site-IDs message] (server/forward-message! (helpers/decode message))]
       (into-array Object
-                  [voting?
+                  [(when involved-site-IDs (into-array involved-site-IDs))
                    (helpers/encode message)]))))
 
 (defn serverSiteJoined
@@ -184,9 +184,9 @@
   [site-ID]
   (profile
     {}
-    (let [[voting? message] (server/site-left! site-ID)]
+    (let [[involved-site-IDs message] (server/site-left! site-ID)]
       (into-array Object
-                  [voting?
+                  [(when involved-site-IDs (into-array involved-site-IDs))
                    (helpers/encode message)]))))
 
 

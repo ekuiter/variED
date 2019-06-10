@@ -156,8 +156,8 @@ const actions = {
             },
 
             vote: createMessageAction(({versionID}: {versionID?: string}) => ({type: MessageType.VOTE, versionID})),
-            setVotingStrategy: createMessageAction(({votingStrategy}: {votingStrategy: string}) =>
-                ({type: MessageType.SET_VOTING_STRATEGY, votingStrategy}))
+            setVotingStrategy: createMessageAction(({votingStrategy, onlyInvolved}: {votingStrategy: string, onlyInvolved: boolean}) =>
+                ({type: MessageType.SET_VOTING_STRATEGY, votingStrategy, onlyInvolved}))
         }
     }
 };
