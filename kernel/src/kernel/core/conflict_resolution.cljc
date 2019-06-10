@@ -103,4 +103,4 @@
   (p ::resolved-MCGS
      (if (= MCG-ID :neutral)
        (MOVIC/neutral-CG MCGS)
-       (first (filter #(= (MCG-ID %) MCG-ID) MCGS)))))
+       (first (filter #(= (MOVIC/MCG-ID %) MCG-ID) MCGS)))))

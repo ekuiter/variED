@@ -17,16 +17,16 @@
     float: left;
 }
 
-.conflict > .header button {
-    padding-top: 5px;
-}
-
 .conflict > .header .info {
     float: left;
 }
 
 .conflict > .header .clear {
     clear: both;
+}
+
+.conflict > .header .clear > div {
+    margin-top: 8px;
 }
 
 .conflict > .header .info .ms-Spinner {
@@ -39,6 +39,7 @@
 .conflict > .header .info .status {
     float: left;
     padding-left: 8px;
+    padding-top: 1px;
 }
 
 .conflict .versions {
@@ -59,7 +60,11 @@
 .conflict .version > div > .header {
     font-size: 1.3em;
     font-weight: bold;
-    margin: 5px 0 5px 30px;
+    margin: 5px 0 8px 30px;
+}
+
+.conflict .version > div > .footer {
+    margin: 8px 0 5px 30px;
 }
 
 .conflict .version .ms-ActivityItem {
@@ -67,14 +72,23 @@
     margin-top: 7px;
     line-height: 1.5em;
     border-radius: 5px;
+    transition: all 100ms ease-in-out;
 }
 
-.conflict .version .ms-ActivityItem.highlight {
-    background-color: rgb(255, 220, 220);
+.conflict .version .ms-ActivityItem.highlightGreen {
+    background-color: rgb(200, 255, 200);
 }
 
-.conflict .version .ms-ActivityItem.hoverHighlight {
+.conflict .version .ms-ActivityItem.fade {
+    opacity: 0.5;
+}
+
+.conflict .version .ms-ActivityItem.highlightRed {
     background-color: rgb(255, 200, 200);
+}
+
+.conflict .version .ms-ActivityItem.highlightDarkRed {
+    background-color: rgb(255, 220, 220);
 }
 
 .conflict .version .ms-ActivityItem i {

@@ -13,7 +13,7 @@ interface Props {
     operationID: string,
     activeOperationID?: string,
     onSetActiveOperationID: (activeOperationID?: string) => void,
-    discardActive: boolean,
+    activeVersionID?: string,
     myself?: Collaborator,
     collaborators: Collaborator[]
 };
@@ -37,27 +37,32 @@ export default class extends React.Component<Props, State> {
 
     render()  {
         const {conflictDescriptor, versionID, operationID, activeOperationID,
-            onSetActiveOperationID, discardActive, myself, collaborators} = this.props,
+            onSetActiveOperationID, activeVersionID, myself, collaborators} = this.props,
             metadata = conflictDescriptor.metadata[operationID],
-            hasConflicts = conflictDescriptor.conflicts[versionID][operationID],
+            hasConflicts = !!conflictDescriptor.conflicts[versionID][operationID],
             conflictKeys = hasConflicts && Object.keys(conflictDescriptor.conflicts[versionID][operationID]),
             conflictEntries = hasConflicts && Object.entries(conflictDescriptor.conflicts[versionID][operationID]),
             collaborator = myself && myself.siteID === metadata.siteID
                 ? myself
-                : collaborators.find(collaborator => collaborator.siteID === metadata.siteID);
+                : collaborators.find(collaborator => collaborator.siteID === metadata.siteID),
+            isIncludedInVersion = (versionID: string) => conflictDescriptor.versions[versionID].includes(operationID);
 
         return (
         <ActivityItem
             activityDescription={<span>{collaborator === myself ? 'You have' : collaborator ? <span><strong>{collaborator.name}</strong> has</span> : 'A collaborator has'} <span dangerouslySetInnerHTML={{__html: metadata.description}} />.</span>}
             activityIcon={<Icon iconName={metadata.icon} />}
-            className={(hasConflicts && conflictEntries.length > 0 && discardActive) ||
-                (activeOperationID &&
-                    (operationID === activeOperationID ||
-                    (hasConflicts && conflictKeys.includes(activeOperationID))))
-                    ? 'hoverHighlight'
-                    : hasConflicts && conflictEntries.length > 0
-                        ? 'highlight'
-                        : undefined}
+            className={activeVersionID &&
+                (versionID === activeVersionID || isIncludedInVersion(activeVersionID))
+                ? 'highlightGreen'
+                : activeVersionID
+                    ? 'fade'
+                    : activeOperationID &&
+                        (operationID === activeOperationID ||
+                        (hasConflicts && conflictKeys.includes(activeOperationID)))
+                        ? 'highlightRed'
+                        : hasConflicts && conflictEntries.length > 0
+                            ? 'highlightDarkRed'
+                            : undefined}
             comments={hasConflicts && conflictEntries.length > 0
                 ? <span>
                     <Link

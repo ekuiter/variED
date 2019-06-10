@@ -323,10 +323,11 @@ const translationMap = {
         version: 'Version',
         conflict: (numberOfConflicts: number) => numberOfConflicts > 1 ? `${numberOfConflicts} conflicts`: 'Conflict',
         header: 'Conflicts detected!',
-        cancel: 'Discard all conflicting changes.',
+        cancel: 'Discard all conflicts',
         synchronizing: 'Synchronizing ...',
         pendingVotePermission: 'Waiting for vote permission ...',
-        disallowedToVote: 'You are not allowed to vote.'
+        disallowedToVote: 'You are not allowed to vote.',
+        vote: 'Vote'
     }
 };
 
