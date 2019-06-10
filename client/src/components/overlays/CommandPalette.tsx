@@ -1,8 +1,8 @@
 import React from 'react';
 import i18n from '../../i18n';
-import {OnShowOverlayFunction, OnUndoFunction, OnRedoFunction, OnSetFeatureDiagramLayoutFunction, OnFitToScreenFunction, OnCreateFeatureAboveFunction, OnCreateFeatureBelowFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnRemoveFeatureFunction, OnRemoveFeatureSubtreeFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureOptionalFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction, OnExpandAllFeaturesFunction, OnCollapseAllFeaturesFunction, OnLeaveRequestFunction, CollaborativeSession, OnSetSettingFunction, OnMoveFeatureSubtreeFunction, OnCreateConstraintFunction, OnSetConstraintFunction, OnRemoveConstraintFunction, OnRemoveArtifactFunction, OnResetFunction} from '../../store/types';
+import {OnShowOverlayFunction, OnUndoFunction, OnRedoFunction, OnSetFeatureDiagramLayoutFunction, OnFitToScreenFunction, OnCreateFeatureAboveFunction, OnCreateFeatureBelowFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnRemoveFeatureFunction, OnRemoveFeatureSubtreeFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureOptionalFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction, OnExpandAllFeaturesFunction, OnCollapseAllFeaturesFunction, OnLeaveRequestFunction, CollaborativeSession, OnSetSettingFunction, OnMoveFeatureSubtreeFunction, OnCreateConstraintFunction, OnSetConstraintFunction, OnRemoveConstraintFunction, OnRemoveArtifactFunction, OnResetFunction, OnSetVotingStrategyFunction} from '../../store/types';
 import {getShortcutText} from '../../shortcuts';
-import {OverlayType, Omit, FeatureDiagramLayoutType, FormatType, isArtifactPathEqual, ArtifactPath} from '../../types';
+import {OverlayType, Omit, FeatureDiagramLayoutType, FormatType, isArtifactPathEqual, ArtifactPath, VotingStrategy} from '../../types';
 import Palette, {PaletteItem, PaletteAction, getKey} from '../../helpers/Palette';
 import {canExport} from '../featureDiagramView/export';
 import FeatureModel, {Constraint, paletteConstraintRenderer} from '../../modeling/FeatureModel';
@@ -51,7 +51,8 @@ interface Props {
     onRemoveConstraint: OnRemoveConstraintFunction,
     onSetFeatureDiagramLayout: OnSetFeatureDiagramLayoutFunction,
     onSetSetting: OnSetSettingFunction,
-    onReset: OnResetFunction
+    onReset: OnResetFunction,
+    onSetVotingStrategy: OnSetVotingStrategyFunction
 };
 
 interface State {
@@ -288,7 +289,8 @@ export default class extends React.Component<Props, State> {
             action: this.actionWithArguments(
                 [{
                     title: i18n.t('commandPalette.format'),
-                    items: () => Object.values(FormatType).map(format => ({text: i18n.t('commandPalette.featureDiagram', format), key: format}))
+                    items: () => Object.values(FormatType).map(format =>
+                        ({text: i18n.t('commandPalette.featureDiagram', format), key: format}))
                 }],
                 formatString => {
                     const format = FormatType[formatString];
@@ -585,6 +587,17 @@ export default class extends React.Component<Props, State> {
             icon: 'ExploreContent',
             disabled: () => !this.props.featureModel,
             action: this.action(this.props.onExpandAllFeatures)
+        }, {
+            text: i18n.t('commandPalette.featureDiagram.setVotingStrategy'),
+            icon: 'Commitments',
+            disabled: () => !this.props.featureModel,
+            action: this.actionWithArguments(
+                [{
+                    title: i18n.t('commandPalette.featureDiagram.votingStrategy'),
+                    items: () => Object.values(VotingStrategy).map(votingStrategy =>
+                        ({text: i18n.t('commandPalette.featureDiagram', votingStrategy), key: votingStrategy}))
+                }],
+                votingStrategy => this.props.onSetVotingStrategy({votingStrategy}))
         }, {
             text: i18n.t('commandPalette.developer.debug'),
             icon: 'DeveloperTools',

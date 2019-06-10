@@ -171,7 +171,14 @@ const translationMap = {
                 set: 'Set constraint',
                 remove: 'Remove constraint',
                 invalid: 'Invalid constraint.'
-            }
+            },
+            votingStrategy: 'Voting strategy',
+            setVotingStrategy: 'Set voting strategy',
+            reject: 'Reject conflicts',
+            firstVote: 'First vote wins',
+            plurality: 'Plurality vote',
+            majority: 'Majority vote',
+            consensus: 'Consensus (default)'
         },
         developer: {
             debug: 'Developer: Toggle debug mode',

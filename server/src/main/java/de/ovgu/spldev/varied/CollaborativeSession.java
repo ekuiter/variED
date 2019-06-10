@@ -59,6 +59,7 @@ public abstract class CollaborativeSession {
 
     static class FeatureModel extends CollaborativeSession {
         private Kernel kernel;
+        private String votingStrategy = "consensus";
         private VotingPhase votingPhase;
 
         FeatureModel(Artifact.Path artifactPath, IFeatureModel initialFeatureModel) {
@@ -72,7 +73,7 @@ public abstract class CollaborativeSession {
             String newMessage = (String) votingAndMessage[1];
             CollaboratorUtils.broadcastToOtherCollaborators(collaborators, new Api.Kernel(artifactPath, newMessage), collaborator);
             if (isVoting && votingPhase == null) {
-                votingPhase = new VotingPhase(VotingPhase.VotingStrategy.plurality(collaborators));
+                votingPhase = new VotingPhase(VotingPhase.VotingStrategy.fromString(votingStrategy, collaborators));
                 broadcastVoters();
                 updateVotingPhase();
             }
@@ -94,6 +95,15 @@ public abstract class CollaborativeSession {
         protected boolean _onMessage(Collaborator collaborator, Message.IDecodable message) {
             if (message instanceof Api.Kernel) {
                 broadcastResponse(collaborator, kernel.forwardMessage(((Api.Kernel) message).message));
+                return true;
+            }
+
+            if (message instanceof Api.SetVotingStrategy) {
+                if (votingPhase != null)
+                    throw new RuntimeException("can not change voting strategy while in voting phase");
+                String votingStrategy = ((Api.SetVotingStrategy) message).votingStrategy;
+                Logger.info("setting voting strategy to {}", votingStrategy);
+                this.votingStrategy = votingStrategy;
                 return true;
             }
 

@@ -66,7 +66,8 @@ const OverlayContainer = (props: StateDerivedProps & RouteProps) => (
             onSetConstraint={props.onSetConstraint!}
             onRemoveConstraint={props.onRemoveConstraint!}
             onSetSetting={props.onSetSetting!}
-            onReset={props.onReset!}/>
+            onReset={props.onReset!}
+            onSetVotingStrategy={props.onSetVotingStrategy!}/>
 
         <SettingsPanel
             isOpen={props.overlay === OverlayType.settingsPanel}
@@ -260,6 +261,7 @@ export default withRouter(connect(
         onSetFeatureName: payload => dispatch<any>(actions.server.featureDiagram.feature.setName(payload)),
         onSetFeatureDescription: payload => dispatch<any>(actions.server.featureDiagram.feature.setDescription(payload)),
         onSetUserProfile: payload => dispatch<any>(actions.server.setUserProfile(payload)),
-        onReset: () => dispatch<any>(actions.server.reset({}))
+        onReset: () => dispatch<any>(actions.server.reset({})),
+        onSetVotingStrategy: payload => dispatch<any>(actions.server.featureDiagram.setVotingStrategy(payload))
     })
 )(OverlayContainer));

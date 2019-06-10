@@ -30,7 +30,8 @@ public class Api {
         KERNEL,
         VOTERS,
         VOTE,
-        RESOLUTION_OUTCOME
+        RESOLUTION_OUTCOME,
+        SET_VOTING_STRATEGY
     }
 
     public static class Error extends Message implements Message.IEncodable {
@@ -151,5 +152,10 @@ public class Api {
             super(TypeEnum.RESOLUTION_OUTCOME, artifactPath);
             this.versionID = versionID;
         }
+    }
+
+    public static class SetVotingStrategy extends Message implements Message.IDecodable {
+        @Expose
+        public String votingStrategy;
     }
 }

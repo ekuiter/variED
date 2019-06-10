@@ -200,6 +200,23 @@ public class VotingPhase {
                     new IResolutionCriterion.OnLastVoteOrDissent(),
                     new IResolutionOutcome.Consensus());
         }
+
+        static VotingStrategy fromString(String votingStrategy, Collection<Collaborator> collaborators) {
+            switch (votingStrategy) {
+                case "reject":
+                    return reject();
+                case "firstVote":
+                    return firstVote(collaborators);
+                case "plurality":
+                    return plurality(collaborators);
+                case "majority":
+                    return majority(collaborators);
+                case "consensus":
+                    return consensus(collaborators);
+                default:
+                    throw new RuntimeException("invalid voting strategy given");
+            }
+        }
     }
 
     private VotingStrategy votingStrategy;

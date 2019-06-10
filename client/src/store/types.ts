@@ -109,6 +109,7 @@ export type OnToggleFeatureGroupTypeFunction = (payload: {feature: Feature}) => 
 export type OnSetUserProfileFunction = (payload: {name: string}) => Promise<void>;
 export type OnResetFunction = () => Promise<void>;
 export type OnVoteFunction = (payload: {versionID?: string}) => Promise<void>;
+export type OnSetVotingStrategyFunction = (payload: {votingStrategy: string}) => Promise<void>;
 
 // Props that may derived from the state to use in React components.
 // This enforces the convention that a prop called 'on...' has the same type in all components.
@@ -174,5 +175,6 @@ export type StateDerivedProps = Partial<{
     onToggleFeatureGroupType: OnToggleFeatureGroupTypeFunction,
     onSetUserProfile: OnSetUserProfileFunction,
     onReset: OnResetFunction,
-    onVote: OnVoteFunction
+    onVote: OnVoteFunction,
+    onSetVotingStrategy: OnSetVotingStrategyFunction
 }>;

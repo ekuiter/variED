@@ -18,7 +18,8 @@ export enum MessageType {
     KERNEL = 'KERNEL',
     VOTERS = 'VOTERS',
     VOTE = 'VOTE',
-    RESOLUTION_OUTCOME = 'RESOLUTION_OUTCOME'
+    RESOLUTION_OUTCOME = 'RESOLUTION_OUTCOME',
+    SET_VOTING_STRATEGY = 'SET_VOTING_STRATEGY'
 };
 
 export enum FeatureDiagramLayoutType {
@@ -56,6 +57,14 @@ export enum FormatType {
     png = 'png',
     jpg = 'jpg',
     pdf = 'pdf'
+};
+
+export enum VotingStrategy {
+    reject = 'reject',
+    firstVote = 'firstVote',
+    plurality = 'plurality',
+    majority = 'majority',
+    consensus = 'consensus'
 };
 
 export interface FormatOptions {
