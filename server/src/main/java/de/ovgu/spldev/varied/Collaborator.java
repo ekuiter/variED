@@ -74,14 +74,10 @@ public class Collaborator {
 
     public void setName(String name) {
         this.name = name;
-        send(new Api.CollaboratorJoined(null, this));
-        for (CollaborativeSession collaborativeSession : collaborativeSessions)
-            CollaboratorUtils.broadcastToOtherCollaborators(collaborativeSession.collaborators,
-                    new Api.CollaboratorJoined(collaborativeSession.artifactPath, this), this);
-
+        broadcastUpdatedProfile();
     }
 
-    UUID getSiteID() {
+    public UUID getSiteID() {
         return siteID;
     }
 
@@ -190,5 +186,12 @@ public class Collaborator {
         for (CollaborativeSession collaborativeSession : collaborativeSessions)
             collaborativeSession.leave(this);
         collaborativeSessions.clear();
+    }
+
+    private void broadcastUpdatedProfile() {
+        send(new Api.CollaboratorJoined(null, this));
+        for (CollaborativeSession collaborativeSession : collaborativeSessions)
+            CollaboratorUtils.broadcastToOtherCollaborators(collaborativeSession.collaborators,
+                    new Api.CollaboratorJoined(collaborativeSession.artifactPath, this), this);
     }
 }

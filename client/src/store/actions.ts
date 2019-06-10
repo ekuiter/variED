@@ -153,8 +153,10 @@ const actions = {
 
                 remove: createOperationAction(({constraintID}: {constraintID: string}, kernel) =>
                     kernel.operationRemoveConstraint(constraintID)),
-            }
-        } 
+            },
+
+            vote: createMessageAction(({versionID}: {versionID: string}) => ({type: MessageType.VOTE, versionID}))
+        }
     }
 };
 

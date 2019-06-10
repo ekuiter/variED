@@ -3,14 +3,15 @@ import {KernelConflictDescriptor} from '../../modeling/types';
 import '../../stylesheets/conflict.css';
 import i18n from '../../i18n';
 import Operation from './Operation';
-import {Collaborator} from '../../store/types';
+import {Collaborator, OnVoteFunction} from '../../store/types';
 import {Link} from 'office-ui-fabric-react/lib/Link';
 import {Spinner, SpinnerSize} from 'office-ui-fabric-react/lib/Spinner';
 
 interface Props {
     conflictDescriptor: KernelConflictDescriptor,
     myself?: Collaborator,
-    collaborators: Collaborator[]
+    collaborators: Collaborator[],
+    onVote: OnVoteFunction
 };
 
 interface State {
@@ -24,6 +25,7 @@ export default class extends React.Component<Props> {
     onDiscardActive = () => this.setState({discardActive: true});
     onDiscardInactive = () => this.setState({discardActive: false});
     onSetActiveOperationID = (activeOperationID?: string) => this.setState({activeOperationID});
+    onVoteNeutral = () => this.props.onVote({versionID: 'neutral'});
 
     render(): JSX.Element {
         const {conflictDescriptor, myself, collaborators} = this.props;
@@ -35,7 +37,7 @@ export default class extends React.Component<Props> {
                     {!conflictDescriptor.synchronized && <Spinner size={SpinnerSize.small}/>}
                     <div>
                         <Link
-                            onClick={() => window.alert('Still under development. In the meantime, use "Developer: Reset entire system".')}
+                            onClick={this.onVoteNeutral}
                             onMouseOver={this.onDiscardActive}
                             onMouseOut={this.onDiscardInactive}
                             {...conflictDescriptor.synchronized ? {} : {disabled: true}}>

@@ -71,8 +71,10 @@ public abstract class CollaborativeSession {
             boolean isVoting = (boolean) votingAndMessage[0];
             String newMessage = (String) votingAndMessage[1];
             CollaboratorUtils.broadcastToOtherCollaborators(collaborators, new Api.Kernel(artifactPath, newMessage), collaborator);
-            if (isVoting && votingPhase == null)
-                votingPhase = new VotingPhase(VotingPhase.VotingStrategy.createSimple(collaborators));
+            if (isVoting && votingPhase == null) {
+                votingPhase = new VotingPhase(VotingPhase.VotingStrategy.firstVoteWins(collaborators));
+                CollaboratorUtils.broadcast(collaborators, new Api.Voters(artifactPath, votingPhase.getVoters()), _collaborator -> true);
+            }
         }
 
         protected boolean _onMessage(Collaborator collaborator, Message.IDecodable message) {
@@ -84,11 +86,11 @@ public abstract class CollaborativeSession {
             if (message instanceof Api.Vote) {
                 if (votingPhase == null)
                     throw new RuntimeException("not currently in voting phase");
-                Api.Vote voteMessage = (Api.Vote) message;
                 if (!votingPhase.isEligible(collaborator))
                     throw new RuntimeException("not eligible for voting");
 
-                voteMessage.collaborator = collaborator;
+                Api.Vote voteMessage = (Api.Vote) message;
+                voteMessage.siteID = collaborator.getSiteID();
                 CollaboratorUtils.broadcastToOtherCollaborators(collaborators, voteMessage, collaborator);
                 if (votingPhase.vote(collaborator, voteMessage.versionID))
                     votingPhase = null;

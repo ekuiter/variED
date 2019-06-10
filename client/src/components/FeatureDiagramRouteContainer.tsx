@@ -49,7 +49,8 @@ class FeatureDiagramRoute extends React.Component<FeatureDiagramRouteProps> {
                         ? <ConflictView
                             conflictDescriptor={this.props.conflictDescriptor}
                             myself={this.props.myself}
-                            collaborators={this.props.collaborators!}/>
+                            collaborators={this.props.collaborators!}
+                            onVote={this.props.onVote!}/>
                         : <div style={{display: 'flex'}}>
                             <Spinner size={SpinnerSize.large}/>
                     </div>}
@@ -92,6 +93,7 @@ export default withRouter(connect(
         onExpandFeatures: payload => dispatch(actions.ui.featureDiagram.feature.expand(payload)),
         onDeselectAllFeatures: () => dispatch(actions.ui.featureDiagram.feature.deselectAll()),
         onToggleFeatureGroupType: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.toggleGroup(payload)),
-        onToggleFeatureOptional: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.toggleOptional(payload))
+        onToggleFeatureOptional: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.toggleOptional(payload)),
+        onVote: payload => dispatch<any>(actions.server.featureDiagram.vote(payload))
     })
 )(FeatureDiagramRoute));

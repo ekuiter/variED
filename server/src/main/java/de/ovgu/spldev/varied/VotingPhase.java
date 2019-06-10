@@ -10,9 +10,10 @@ public class VotingPhase {
             void onJoin(Collaborator collaborator);
             void onLeave(Collaborator collaborator);
             boolean isEligible(Collaborator collaborator);
+            Collection<Collaborator> getVoters();
 
             class Everyone implements IVoters {
-                private Set<Collaborator> voters;
+                Set<Collaborator> voters;
 
                 Everyone(Collection<Collaborator> collaborators) {
                     voters = new HashSet<>(collaborators);
@@ -29,6 +30,10 @@ public class VotingPhase {
                 public boolean isEligible(Collaborator collaborator) {
                     return voters.contains(collaborator);
                 }
+
+                public Collection<Collaborator> getVoters() {
+                    return voters;
+                }
             }
         }
 
@@ -43,10 +48,10 @@ public class VotingPhase {
         }
 
         interface IResolutionOutcome {
-            String getVersionID(Map<Collaborator, String> voteResults);
+            String getElectedVersionID(Map<Collaborator, String> voteResults);
 
             class Any implements IResolutionOutcome {
-                public String getVersionID(Map<Collaborator, String> voteResults) {
+                public String getElectedVersionID(Map<Collaborator, String> voteResults) {
                     return voteResults.entrySet().iterator().next().getValue();
                 }
             }
@@ -62,7 +67,7 @@ public class VotingPhase {
             this.resolutionOutcome = resolutionOutcome;
         }
 
-        static VotingStrategy createSimple(Collection<Collaborator> collaborators) {
+        static VotingStrategy firstVoteWins(Collection<Collaborator> collaborators) {
             return new VotingStrategy(
                     new IVoters.Everyone(collaborators),
                     new IResolutionCriterion.OnFirstVote(),
@@ -79,6 +84,10 @@ public class VotingPhase {
         voteResults = new HashMap<>();
     }
 
+    public Collection<Collaborator> getVoters() {
+        return votingStrategy.voters.getVoters();
+    }
+
     public boolean vote(Collaborator collaborator, String versionID) {
         Logger.info("{} voted for version {}", collaborator, versionID);
         if (versionID == null)
@@ -87,7 +96,7 @@ public class VotingPhase {
             voteResults.put(collaborator, versionID);
 
         if (votingStrategy.resolutionCriterion.isResolved(votingStrategy.voters, voteResults)) {
-            Logger.info("resolution criterion triggered, concluding voting phsae");
+            Logger.info("resolution criterion triggered, concluding voting phase");
             conclude();
             return true;
         }
@@ -95,8 +104,8 @@ public class VotingPhase {
     }
 
     private void conclude() {
-        String versionID = votingStrategy.resolutionOutcome.getVersionID(voteResults);
-        Logger.info("resolution outcome is version {}", versionID);
+        String electedVersionID = votingStrategy.resolutionOutcome.getElectedVersionID(voteResults);
+        Logger.info("final elected version is {}", electedVersionID);
         Logger.info("TODO: tell the kernel, tell everyone else");
     }
 

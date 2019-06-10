@@ -15,7 +15,9 @@ export enum MessageType {
     JOIN_REQUEST = 'JOIN_REQUEST',
     LEAVE_REQUEST = 'LEAVE_REQUEST',
     INITIALIZE = 'INITIALIZE',
-    KERNEL = 'KERNEL'
+    KERNEL = 'KERNEL',
+    VOTERS = 'VOTERS',
+    VOTE = 'VOTE'
 };
 
 export enum FeatureDiagramLayoutType {

@@ -6,6 +6,7 @@ import de.ovgu.spldev.varied.Collaborator;
 import org.pmw.tinylog.Logger;
 
 import java.util.Collection;
+import java.util.UUID;
 
 /**
  * To add a new kind of message: Add a type below and create a camel-cased inner class
@@ -27,6 +28,7 @@ public class Api {
         LEAVE_REQUEST,
         INITIALIZE,
         KERNEL,
+        VOTERS,
         VOTE
     }
 
@@ -114,16 +116,28 @@ public class Api {
         }
     }
 
+    public static class Voters extends Message implements Message.IEncodable {
+        @Expose
+        public UUID[] siteIDs;
+
+        public Voters(Artifact.Path artifactPath, Collection<Collaborator> collaborators) {
+            super(TypeEnum.VOTERS, artifactPath);
+            this.siteIDs = collaborators.stream()
+                    .map(Collaborator::getSiteID)
+                    .toArray(UUID[]::new);
+        }
+    }
+
     public static class Vote extends Message implements Message.IEncodable, Message.IDecodable {
         @Expose
-        public Collaborator collaborator;
+        public UUID siteID;
 
         @Expose
         public String versionID;
 
         public Vote(Artifact.Path artifactPath, Collaborator collaborator) {
             super(TypeEnum.VOTE, artifactPath);
-            this.collaborator = collaborator;
+            this.siteID = collaborator.getSiteID();
         }
     }
 }
