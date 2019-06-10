@@ -13,7 +13,7 @@ import {PersonaSize} from 'office-ui-fabric-react/lib/Persona';
 
 interface Props {
     conflictDescriptor: KernelConflictDescriptor,
-    myself?: Collaborator,
+    myself: Collaborator,
     collaborators: Collaborator[],
     voterSiteIDs?: string[],
     votes: Votes,
@@ -31,15 +31,17 @@ export default class extends React.Component<Props> {
 
     onSetActiveVersionID = (activeVersionID?: string) => () => this.setState({activeVersionID});
     onSetActiveOperationID = (activeOperationID?: string) => this.setState({activeOperationID});
-    onVote = (versionID: string) => () => this.props.onVote({versionID});
+    ownVote = () => this.props.votes[this.props.myself.siteID];
+    onVote = (versionID: string) => () =>
+        this.props.onVote({versionID: versionID === this.ownVote() ? undefined : versionID});
 
     render(): JSX.Element {
         const {conflictDescriptor, myself, collaborators, voterSiteIDs, votes, settings} = this.props,
             synchronized = conflictDescriptor.synchronized,
             pendingVotePermission = synchronized && !voterSiteIDs,
-            allowedToVote = synchronized && !pendingVotePermission && voterSiteIDs!.includes(myself!.siteID),
+            allowedToVote = synchronized && !pendingVotePermission && voterSiteIDs!.includes(myself.siteID),
             disallowedToVote = synchronized && !pendingVotePermission && !allowedToVote,
-            ownVotedVersionID = votes[myself!.siteID],
+            ownVotedVersionID = votes[myself.siteID],
             NeutralButtonComponent = ownVotedVersionID === 'neutral' ? PrimaryButton : DefaultButton,
             collaboratorsInFavor = (versionID: string) =>
                 Object.entries(votes)

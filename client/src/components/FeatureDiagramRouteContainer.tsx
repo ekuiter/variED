@@ -48,7 +48,7 @@ class FeatureDiagramRoute extends React.Component<FeatureDiagramRouteProps> {
                     : this.props.conflictDescriptor
                         ? <ConflictView
                             conflictDescriptor={this.props.conflictDescriptor}
-                            myself={this.props.myself}
+                            myself={this.props.myself!}
                             collaborators={this.props.collaborators!}
                             voterSiteIDs={this.props.voterSiteIDs}
                             votes={this.props.votes!}
