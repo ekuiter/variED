@@ -70,15 +70,25 @@ public abstract class CollaborativeSession {
         private void broadcastResponse(Collaborator collaborator, Object[] votingAndMessage) {
             boolean isVoting = (boolean) votingAndMessage[0];
             String newMessage = (String) votingAndMessage[1];
-            if (isVoting && votingPhase == null) {
-                votingPhase = new VotingPhase(VotingPhase.VotingStrategy.firstVoteWins(collaborators));
-                broadcastVoters();
-            }
             CollaboratorUtils.broadcastToOtherCollaborators(collaborators, new Api.Kernel(artifactPath, newMessage), collaborator);
+            if (isVoting && votingPhase == null) {
+                votingPhase = new VotingPhase(VotingPhase.VotingStrategy.plurality(collaborators));
+                broadcastVoters();
+                updateVotingPhase();
+            }
         }
 
         void broadcastVoters() {
             CollaboratorUtils.broadcast(collaborators, new Api.Voters(artifactPath, votingPhase.getVoters()));
+        }
+
+        void updateVotingPhase() {
+            String electedVersionID = votingPhase.getElectedVersionID();
+            if (electedVersionID != null) {
+                votingPhase = null;
+                kernel.resolveConflict(electedVersionID);
+                CollaboratorUtils.broadcast(collaborators, new Api.ResolutionOutcome(artifactPath, electedVersionID));
+            }
         }
 
         protected boolean _onMessage(Collaborator collaborator, Message.IDecodable message) {
@@ -97,12 +107,7 @@ public abstract class CollaborativeSession {
                 voteMessage.siteID = collaborator.getSiteID();
                 CollaboratorUtils.broadcast(collaborators, voteMessage);
                 votingPhase.vote(collaborator, voteMessage.versionID);
-                String electedVersionID = votingPhase.getElectedVersionID();
-                if (electedVersionID != null) {
-                    votingPhase = null;
-                    kernel.resolveConflict(electedVersionID);
-                    CollaboratorUtils.broadcast(collaborators, new Api.ResolutionOutcome(artifactPath, electedVersionID));
-                }
+                updateVotingPhase();
                 return true;
             }
 
@@ -119,6 +124,7 @@ public abstract class CollaborativeSession {
             if (votingPhase != null) {
                 votingPhase.onJoin(newCollaborator);
                 broadcastVoters();
+                updateVotingPhase();
             }
         }
 
@@ -126,6 +132,7 @@ public abstract class CollaborativeSession {
             if (votingPhase != null) {
                 votingPhase.onLeave(oldCollaborator);
                 broadcastVoters();
+                updateVotingPhase();
             }
             broadcastResponse(oldCollaborator, kernel.siteLeft(oldCollaborator.getSiteID()));
         }
