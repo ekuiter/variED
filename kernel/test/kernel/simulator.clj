@@ -84,7 +84,8 @@
   "Shorthand for receiving a message in the context of the server.
   Returns the message that is to be forwarded to all other sites."
   [CO]
-  (do-at-site :server #(server/forward-message! CO)))
+  (do-at-site :server #(let [[_ message] (server/forward-message! CO)]
+                         message)))
 
 (defn generate-heartbeat*!
   "Shorthand for generating a heartbeat message in the context of the server.
@@ -108,7 +109,8 @@
   Returns the leave message that is to be forwarded to all other sites."
   [site-ID]
   (def ^:dynamic *contexts* (dissoc *contexts* site-ID))
-  (do-at-site :server #(server/site-left! site-ID)))
+  (do-at-site :server #(let [[_ message] (server/site-left! site-ID)]
+                         message)))
 
 (defn is-site=
   "Asserts that two given sites arrived at the same state."
