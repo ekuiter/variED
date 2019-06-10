@@ -17,7 +17,8 @@ interface Props {
     settings: Settings,
     width: number,
     height: number,
-    onShowOverlay: OnShowOverlayFunction
+    onShowOverlay?: OnShowOverlayFunction,
+    personaSize?: PersonaSize
 };
 
 interface State {
@@ -73,13 +74,13 @@ class UserFacepile extends React.Component<Props, State> {
                         },
                         onRenderMenuIcon: () => null
                     }}
-                    personaSize={PersonaSize.size28}
+                    personaSize={this.props.personaSize || PersonaSize.size28}
                     getPersonaProps={_persona => ({hidePersonaDetails: true})}
                     styles={{
                         root: {
                             padding: '0 10px',
                             margin: '6px 10px',
-                            borderRight: '1px solid #ddd'
+                            borderRight: this.props.user ? '1px solid #ddd' : undefined
                         }
                     }}/>
                 {this.state.tooltipTarget && this.state.persona &&
@@ -90,7 +91,7 @@ class UserFacepile extends React.Component<Props, State> {
                 {this.props.user &&
                 <Facepile
                     personas={[toPersona(this.props.user, {
-                        onClick: () => this.props.onShowOverlay({overlay: OverlayType.userProfilePanel, overlayProps: {}})
+                        onClick: () => this.props.onShowOverlay!({overlay: OverlayType.userProfilePanel, overlayProps: {}})
                     })]}
                     personaSize={PersonaSize.size28}
                     getPersonaProps={_persona => ({

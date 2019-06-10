@@ -21,7 +21,7 @@
     float: left;
 }
 
-.conflict > .header .clear {
+.conflict .clear {
     clear: both;
 }
 
@@ -42,6 +42,20 @@
     padding-top: 1px;
 }
 
+.conflict > .header .neutral {
+    margin-top: 16px;
+}
+
+.conflict > .header .neutral .ms-Button {
+    float: left;
+}
+
+.conflict > .header .neutral .ms-Facepile {
+    float: left;
+    margin: 0;
+    padding: 3px 0 0 12px;
+}
+
 .conflict .versions {
     flex-grow: 1;
     display: flex;
@@ -58,9 +72,20 @@
 }
 
 .conflict .version > div > .header {
+    margin: 5px 0 8px 30px;
+}
+
+.conflict .version > div > .header > .heading {
     font-size: 1.3em;
     font-weight: bold;
-    margin: 5px 0 8px 30px;
+    float: left;
+    padding: 1px 0 4px 0;
+}
+
+.conflict .version > div > .header > .ms-Facepile {
+    float: left;
+    margin: 0;
+    padding-left: 12px;
 }
 
 .conflict .version > div > .footer {

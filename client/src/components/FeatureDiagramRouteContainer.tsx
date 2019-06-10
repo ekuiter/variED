@@ -52,7 +52,8 @@ class FeatureDiagramRoute extends React.Component<FeatureDiagramRouteProps> {
                             collaborators={this.props.collaborators!}
                             voterSiteIDs={this.props.voterSiteIDs}
                             votes={this.props.votes!}
-                            onVote={this.props.onVote!}/>
+                            onVote={this.props.onVote!}
+                            settings={this.props.settings!}/>
                         : <div style={{display: 'flex'}}>
                             <Spinner size={SpinnerSize.large}/>
                     </div>}
