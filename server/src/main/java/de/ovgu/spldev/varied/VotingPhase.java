@@ -215,6 +215,10 @@ public class VotingPhase {
         return votingStrategy.voters.getVoters();
     }
 
+    public Map<Collaborator, String> getVoteResults() {
+        return voteResults;
+    }
+
     public void vote(Collaborator collaborator, String versionID) {
         Logger.info("{} voted for version {}", collaborator, versionID);
         if (versionID == null)

@@ -124,6 +124,8 @@ public abstract class CollaborativeSession {
             if (votingPhase != null) {
                 votingPhase.onJoin(newCollaborator);
                 broadcastVoters();
+                for (Map.Entry<Collaborator, String> entry : votingPhase.getVoteResults().entrySet())
+                    newCollaborator.send(new Api.Vote(artifactPath, entry.getKey(), entry.getValue()));
                 updateVotingPhase();
             }
         }

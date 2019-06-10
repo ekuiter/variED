@@ -136,9 +136,10 @@ public class Api {
         @Expose
         public String versionID;
 
-        public Vote(Artifact.Path artifactPath, Collaborator collaborator) {
+        public Vote(Artifact.Path artifactPath, Collaborator collaborator, String versionID) {
             super(TypeEnum.VOTE, artifactPath);
             this.siteID = collaborator.getSiteID();
+            this.versionID = versionID;
         }
     }
 
