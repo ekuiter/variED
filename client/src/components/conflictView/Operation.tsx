@@ -48,7 +48,6 @@ export default class extends React.Component<Props, State> {
 
         return (
         <ActivityItem
-            key={operationID}
             activityDescription={<span>{collaborator === myself ? 'You have' : collaborator ? <span><strong>{collaborator.name}</strong> has</span> : 'A collaborator has'} <span dangerouslySetInnerHTML={{__html: metadata.description}} />.</span>}
             activityIcon={<Icon iconName={metadata.icon} />}
             className={(hasConflicts && conflictEntries.length > 0 && discardActive) ||

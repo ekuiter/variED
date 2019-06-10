@@ -21,11 +21,24 @@
     padding-top: 5px;
 }
 
-.conflict > .header > .ms-Spinner {
+.conflict > .header .info {
+    float: left;
+}
+
+.conflict > .header .clear {
+    clear: both;
+}
+
+.conflict > .header .info .ms-Spinner {
     display: block;
     float: left;
-    padding-left: 10px;
+    padding-left: 16px;
     padding-top: 2px;
+}
+
+.conflict > .header .info .status {
+    float: left;
+    padding-left: 8px;
 }
 
 .conflict .versions {

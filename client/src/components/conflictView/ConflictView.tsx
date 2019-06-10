@@ -3,7 +3,7 @@ import {KernelConflictDescriptor} from '../../modeling/types';
 import '../../stylesheets/conflict.css';
 import i18n from '../../i18n';
 import Operation from './Operation';
-import {Collaborator, OnVoteFunction} from '../../store/types';
+import {Collaborator, OnVoteFunction, Votes} from '../../store/types';
 import {Link} from 'office-ui-fabric-react/lib/Link';
 import {Spinner, SpinnerSize} from 'office-ui-fabric-react/lib/Spinner';
 
@@ -11,6 +11,8 @@ interface Props {
     conflictDescriptor: KernelConflictDescriptor,
     myself?: Collaborator,
     collaborators: Collaborator[],
+    voterSiteIDs?: string[],
+    votes: Votes,
     onVote: OnVoteFunction
 };
 
@@ -28,21 +30,31 @@ export default class extends React.Component<Props> {
     onVoteNeutral = () => this.props.onVote({versionID: 'neutral'});
 
     render(): JSX.Element {
-        const {conflictDescriptor, myself, collaborators} = this.props;
+        const {conflictDescriptor, myself, collaborators, voterSiteIDs} = this.props,
+            synchronized = conflictDescriptor.synchronized,
+            pendingVotePermission = synchronized && !voterSiteIDs,
+            allowedToVote = synchronized && !pendingVotePermission && voterSiteIDs!.includes(myself!.siteID),
+            disallowedToVote = synchronized && !pendingVotePermission && !allowedToVote;
 
         return (
             <div className="conflict">
                 <div className="header">
                     <div className="heading">{i18n.t('conflictResolution.header')}</div>&nbsp;&nbsp;
-                    {!conflictDescriptor.synchronized && <Spinner size={SpinnerSize.small}/>}
-                    <div>
+                    {(!synchronized || pendingVotePermission) &&
+                        <div className="info">
+                            <Spinner size={SpinnerSize.small}/>
+                            {!synchronized && <div className="status">{i18n.t('conflictResolution.synchronizing')}</div>}
+                            {pendingVotePermission && <div className="status">{i18n.t('conflictResolution.pendingVotePermission')}</div>}
+                        </div>}
+                    <div className="clear">
                         <Link
                             onClick={this.onVoteNeutral}
                             onMouseOver={this.onDiscardActive}
                             onMouseOut={this.onDiscardInactive}
-                            {...conflictDescriptor.synchronized ? {} : {disabled: true}}>
+                            {...allowedToVote ? {} : {disabled: true}}>
                             {i18n.t('conflictResolution.cancel')}
                         </Link>
+                        {disallowedToVote && <span>&nbsp;{i18n.t('conflictResolution.disallowedToVote')}</span>}
                     </div>
                 </div>
                 <div className="versions">
@@ -56,6 +68,7 @@ export default class extends React.Component<Props> {
                                     </div>
                                     {operationIDs.map(operationID =>
                                         <Operation
+                                            key={operationID}
                                             conflictDescriptor={conflictDescriptor}
                                             versionID={versionID}
                                             operationID={operationID}

@@ -219,6 +219,33 @@ function serverReceiveReducer(state: State, action: Action): State {
                     state = updateFeatureModel(state, action.payload.artifactPath!);
                 return state;
 
+            case MessageType.VOTERS:
+                return getNewState(state, 'collaborativeSessions',
+                    getNewCollaborativeSessions(state, action.payload.artifactPath!,
+                        (collaborativeSession: CollaborativeSession) => ({
+                            ...collaborativeSession,
+                            voterSiteIDs: action.payload.siteIDs
+                        })));
+
+            case MessageType.VOTE:
+                return getNewState(state, 'collaborativeSessions',
+                    getNewCollaborativeSessions(state, action.payload.artifactPath!,
+                        (collaborativeSession: CollaborativeSession) => {
+                            if (!action.payload.versionID) {
+                                const votes = {...(<FeatureDiagramCollaborativeSession>collaborativeSession).votes};
+                                delete votes[action.payload.siteID];
+                                return {...collaborativeSession, votes};
+                            }
+
+                            return {
+                                ...collaborativeSession,
+                                votes: {
+                                    ...(<FeatureDiagramCollaborativeSession>collaborativeSession).votes,
+                                    [action.payload.siteID]: action.payload.versionID
+                                }
+                            };
+                        }));
+
             default:
                 logger.warn(() => `no message reducer defined for action type ${action.payload.type}`);
                 return state;

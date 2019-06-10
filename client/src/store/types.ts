@@ -16,13 +16,19 @@ export interface CollaborativeSession {
 export type KernelContext = object;
 export type KernelData = any;
 
+export interface Votes {
+    [siteID: string]: string
+};
+
 export interface FeatureDiagramCollaborativeSession extends CollaborativeSession {
     kernelContext: KernelContext,
     kernelCombinedEffect: KernelCombinedEffect,
     layout: FeatureDiagramLayoutType,
     isSelectMultipleFeatures: boolean,
     selectedFeatureIDs: string[],
-    collapsedFeatureIDs: string[]
+    collapsedFeatureIDs: string[],
+    voterSiteIDs?: string[],
+    votes: Votes
 };
 
 export interface State {
@@ -53,7 +59,9 @@ export const initialFeatureDiagramCollaborativeSessionState =
         layout: FeatureDiagramLayoutType.verticalTree,
         isSelectMultipleFeatures: false,
         selectedFeatureIDs: [],
-        collapsedFeatureIDs: []
+        collapsedFeatureIDs: [],
+        voterSiteIDs: undefined,
+        votes: {}
     });
 
 export type OnSelectFeatureFunction = (payload: {featureID: string}) => void;
@@ -119,6 +127,8 @@ export type StateDerivedProps = Partial<{
     conflictDescriptor: KernelConflictDescriptor,
     overlay: OverlayType,
     overlayProps: OverlayProps,
+    voterSiteIDs: string[],
+    votes: Votes,
 
     onSelectFeature: OnSelectFeatureFunction,
     onDeselectFeature: OnDeselectFeatureFunction,

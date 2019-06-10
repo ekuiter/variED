@@ -179,8 +179,8 @@ const translationMap = {
             simulateOffline: 'Developer: Simulate offline',
             clearLocalStorage: 'Developer: Clear local storage',
             reset: 'Developer: Reset entire system',
-            confirmReset: `WARNING: This will interrupt all modeling activities and discard all changes.
-            Each connected collaborator will have to run "Developer: Clear local storage".`
+            confirmReset: 'WARNING: This will interrupt all modeling activities and discard all changes. ' +
+                'Each connected collaborator will have to run "Developer: Clear local storage".'
         }
     },
     overlays: {
@@ -323,7 +323,10 @@ const translationMap = {
         version: 'Version',
         conflict: (numberOfConflicts: number) => numberOfConflicts > 1 ? `${numberOfConflicts} conflicts`: 'Conflict',
         header: 'Conflicts detected!',
-        cancel: 'Discard all conflicting changes.'
+        cancel: 'Discard all conflicting changes.',
+        synchronizing: 'Synchronizing ...',
+        pendingVotePermission: 'Waiting for vote permission ...',
+        disallowedToVote: 'You are not allowed to vote.'
     }
 };
 

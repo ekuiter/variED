@@ -12,6 +12,22 @@ public class VotingPhase {
             boolean isEligible(Collaborator collaborator);
             Collection<Collaborator> getVoters();
 
+            class Noone implements IVoters {
+                public void onJoin(Collaborator collaborator) {
+                }
+
+                public void onLeave(Collaborator collaborator) {
+                }
+
+                public boolean isEligible(Collaborator collaborator) {
+                    return false;
+                }
+
+                public Collection<Collaborator> getVoters() {
+                    return new HashSet<>();
+                }
+            }
+
             class Everyone implements IVoters {
                 Set<Collaborator> voters;
 
@@ -40,6 +56,12 @@ public class VotingPhase {
         interface IResolutionCriterion {
             boolean isResolved(IVoters voters, Map<Collaborator, String> voteResults);
 
+            class Immediately implements IResolutionCriterion {
+                public boolean isResolved(IVoters voters, Map<Collaborator, String> voteResults) {
+                    return true;
+                }
+            }
+
             class OnFirstVote implements IResolutionCriterion {
                 public boolean isResolved(IVoters voters, Map<Collaborator, String> voteResults) {
                     return voteResults.entrySet().size() > 0;
@@ -49,6 +71,12 @@ public class VotingPhase {
 
         interface IResolutionOutcome {
             String getElectedVersionID(Map<Collaborator, String> voteResults);
+
+            class Neutral implements IResolutionOutcome {
+                public String getElectedVersionID(Map<Collaborator, String> voteResults) {
+                    return "neutral";
+                }
+            }
 
             class Any implements IResolutionOutcome {
                 public String getElectedVersionID(Map<Collaborator, String> voteResults) {
@@ -65,6 +93,13 @@ public class VotingPhase {
             this.voters = voters;
             this.resolutionCriterion = resolutionCriterion;
             this.resolutionOutcome = resolutionOutcome;
+        }
+
+        static VotingStrategy neutralWinsImmediately() {
+            return new VotingStrategy(
+                    new IVoters.Noone(),
+                    new IResolutionCriterion.Immediately(),
+                    new IResolutionOutcome.Neutral());
         }
 
         static VotingStrategy firstVoteWins(Collection<Collaborator> collaborators) {
@@ -106,7 +141,7 @@ public class VotingPhase {
     private void conclude() {
         String electedVersionID = votingStrategy.resolutionOutcome.getElectedVersionID(voteResults);
         Logger.info("final elected version is {}", electedVersionID);
-        Logger.info("TODO: tell the kernel, tell everyone else");
+        Logger.info("TODO: tell the kernel, tell everyone else (they should clean their voteSiteIDs/votes)");
     }
 
     public boolean isEligible(Collaborator collaborator) {

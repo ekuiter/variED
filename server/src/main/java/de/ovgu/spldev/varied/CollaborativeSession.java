@@ -70,11 +70,15 @@ public abstract class CollaborativeSession {
         private void broadcastResponse(Collaborator collaborator, Object[] votingAndMessage) {
             boolean isVoting = (boolean) votingAndMessage[0];
             String newMessage = (String) votingAndMessage[1];
-            CollaboratorUtils.broadcastToOtherCollaborators(collaborators, new Api.Kernel(artifactPath, newMessage), collaborator);
             if (isVoting && votingPhase == null) {
                 votingPhase = new VotingPhase(VotingPhase.VotingStrategy.firstVoteWins(collaborators));
-                CollaboratorUtils.broadcast(collaborators, new Api.Voters(artifactPath, votingPhase.getVoters()), _collaborator -> true);
+                broadcastVoters();
             }
+            CollaboratorUtils.broadcastToOtherCollaborators(collaborators, new Api.Kernel(artifactPath, newMessage), collaborator);
+        }
+
+        void broadcastVoters() {
+            CollaboratorUtils.broadcast(collaborators, new Api.Voters(artifactPath, votingPhase.getVoters()));
         }
 
         protected boolean _onMessage(Collaborator collaborator, Message.IDecodable message) {
@@ -91,7 +95,7 @@ public abstract class CollaborativeSession {
 
                 Api.Vote voteMessage = (Api.Vote) message;
                 voteMessage.siteID = collaborator.getSiteID();
-                CollaboratorUtils.broadcastToOtherCollaborators(collaborators, voteMessage, collaborator);
+                CollaboratorUtils.broadcast(collaborators, voteMessage);
                 if (votingPhase.vote(collaborator, voteMessage.versionID))
                     votingPhase = null;
                 return true;
@@ -107,14 +111,18 @@ public abstract class CollaborativeSession {
                     heartbeatMessage = contextAndHeartbeatMessage[1];
             newCollaborator.send(new Api.Initialize(artifactPath, context));
             CollaboratorUtils.broadcastToOtherCollaborators(collaborators, new Api.Kernel(artifactPath, heartbeatMessage), newCollaborator);
-            if (votingPhase != null)
+            if (votingPhase != null) {
                 votingPhase.onJoin(newCollaborator);
+                broadcastVoters();
+            }
         }
 
         protected void _leave(Collaborator oldCollaborator) {
-            broadcastResponse(oldCollaborator, kernel.siteLeft(oldCollaborator.getSiteID()));
-            if (votingPhase != null)
+            if (votingPhase != null) {
                 votingPhase.onLeave(oldCollaborator);
+                broadcastVoters();
+            }
+            broadcastResponse(oldCollaborator, kernel.siteLeft(oldCollaborator.getSiteID()));
         }
     }
 }

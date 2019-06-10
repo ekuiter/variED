@@ -16,6 +16,10 @@ public class CollaboratorUtils {
                 .forEach(collaborator -> collaborator.send(message));
     }
 
+    public static void broadcast(Collection<Collaborator> collaborators, Message.IEncodable message) {
+        broadcast(collaborators, message, collaborator -> true);
+    }
+
     public static void broadcastToOtherCollaborators(Collection<Collaborator> collaborators, Message.IEncodable message, Collaborator collaborator) {
         broadcast(collaborators, message, otherCollaborator -> otherCollaborator != collaborator);
     }

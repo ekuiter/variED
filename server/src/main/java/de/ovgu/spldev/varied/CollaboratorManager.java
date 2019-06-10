@@ -41,7 +41,7 @@ public class CollaboratorManager {
     }
 
     public void broadcast(Message.IEncodable message) {
-        CollaboratorUtils.broadcast(collaborators.values(), message, collaborator -> true);
+        CollaboratorUtils.broadcast(collaborators.values(), message);
     }
 
     void onMessage(UUID siteID, Message message) throws Message.InvalidMessageException {

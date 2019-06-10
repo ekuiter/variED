@@ -50,6 +50,8 @@ class FeatureDiagramRoute extends React.Component<FeatureDiagramRouteProps> {
                             conflictDescriptor={this.props.conflictDescriptor}
                             myself={this.props.myself}
                             collaborators={this.props.collaborators!}
+                            voterSiteIDs={this.props.voterSiteIDs}
+                            votes={this.props.votes!}
                             onVote={this.props.onVote!}/>
                         : <div style={{display: 'flex'}}>
                             <Spinner size={SpinnerSize.large}/>
@@ -79,7 +81,9 @@ export default withRouter(connect(
             featureDiagramLayout: collaborativeSession.layout,
             isSelectMultipleFeatures: collaborativeSession.isSelectMultipleFeatures,
             selectedFeatureIDs: collaborativeSession.selectedFeatureIDs,
-            collaborators: collaborativeSession.collaborators
+            collaborators: collaborativeSession.collaborators,
+            voterSiteIDs: collaborativeSession.voterSiteIDs,
+            votes: collaborativeSession.votes
         };
     }),
     (dispatch): StateDerivedProps => ({
