@@ -28,7 +28,9 @@ export interface FeatureDiagramCollaborativeSession extends CollaborativeSession
     selectedFeatureIDs: string[],
     collapsedFeatureIDs: string[],
     voterSiteIDs?: string[],
-    votes: Votes
+    votes: Votes,
+    transitionResolutionOutcome?: string,
+    transitionConflictDescriptor?: KernelConflictDescriptor
 };
 
 export interface State {
@@ -81,6 +83,7 @@ export type OnHideOverlayFunction = (payload: {overlay: OverlayType}) => void;
 export type OnFitToScreenFunction = () => void;
 export type OnSetSettingFunction = (payload: {path: string, value: any}) => void;
 export type OnResetSettingsFunction = () => void;
+export type OnEndConflictViewTransitionFunction = () => void;
 
 export type OnAddArtifactFunction = (payload: {artifactPath: ArtifactPath, source?: string}) => Promise<void>;
 export type OnRemoveArtifactFunction = (payload: {artifactPath: ArtifactPath}) => Promise<void>;
@@ -126,6 +129,8 @@ export type StateDerivedProps = Partial<{
     selectedFeatureIDs: string[],
     featureModel: FeatureModel,
     conflictDescriptor: KernelConflictDescriptor,
+    transitionResolutionOutcome: string,
+    transitionConflictDescriptor: KernelConflictDescriptor,
     overlay: OverlayType,
     overlayProps: OverlayProps,
     voterSiteIDs: string[],
@@ -148,6 +153,7 @@ export type StateDerivedProps = Partial<{
     onFitToScreen: OnFitToScreenFunction,
     onSetSetting: OnSetSettingFunction,
     onResetSettings: OnResetSettingsFunction,
+    onEndConflictTransition: OnEndConflictViewTransitionFunction,
 
     onAddArtifact: OnAddArtifactFunction,
     onRemoveArtifact: OnRemoveArtifactFunction,

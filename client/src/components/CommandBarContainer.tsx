@@ -83,7 +83,7 @@ const CommandBarContainer = (props: StateDerivedProps & RouteProps) => (
                             commands.featureDiagram.setLayout(
                                 props.featureDiagramLayout!,
                                 props.onSetFeatureDiagramLayout!),
-                            ...enableConstraintsView(props.featureModel)
+                            ...enableConstraintsView(props.featureModel, props.transitionConflictDescriptor)
                                 ? [makeDivider(),
                                     commands.featureDiagram.showConstraintView(
                                         props.onSetSetting!, props.settings!.views.splitAt),
@@ -138,6 +138,7 @@ export default withRouter(connect(
             isSelectMultipleFeatures: collaborativeSession.isSelectMultipleFeatures,
             selectedFeatureIDs: collaborativeSession.selectedFeatureIDs,
             collaborators: collaborativeSession.collaborators,
+            transitionConflictDescriptor: collaborativeSession.transitionConflictDescriptor,
             featureModel: getCurrentFeatureModel(state),
             currentArtifactPath: collaborativeSession.artifactPath
         };

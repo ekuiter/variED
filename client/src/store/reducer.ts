@@ -262,7 +262,9 @@ function serverReceiveReducer(state: State, action: Action): State {
                                 kernelContext,
                                 kernelCombinedEffect,
                                 voterSiteIDs: undefined,
-                                votes: {}
+                                votes: {},
+                                transitionResolutionOutcome: action.payload.versionID,
+                                transitionConflictDescriptor: (<FeatureDiagramCollaborativeSession>collaborativeSession).kernelCombinedEffect
                             };
                         }));
                 if (isEditingFeatureModel(state))
@@ -413,7 +415,7 @@ function uiReducer(state: State, action: Action): State {
                             (<FeatureDiagramCollaborativeSession>collaborativeSession).collapsedFeatureIDs,
                             getFeatureIDsBelowWithActualChildren(state, currentArtifactPath!, action.payload.featureIDs))
                     })))
-                    : state;
+                : state;
 
         case getType(actions.ui.overlay.show):
             state = updateOverlay(state, action.payload.overlay, action.payload.overlayProps);
@@ -426,6 +428,16 @@ function uiReducer(state: State, action: Action): State {
         case getType(actions.ui.overlay.hide):
             return state.overlay === action.payload.overlay
                 ? updateOverlay(state, OverlayType.none, {})
+                : state;
+
+        case getType(actions.ui.endConflictViewTransition):
+            return isEditingFeatureModel(state)
+                ? getNewState(state, 'collaborativeSessions',
+                    getNewCollaborativeSessions(state, currentArtifactPath!, (collaborativeSession: CollaborativeSession) => ({
+                        ...collaborativeSession,
+                        transitionResolutionOutcome: undefined,
+                        transitionConflictDescriptor: undefined
+                    })))
                 : state;
     }
 

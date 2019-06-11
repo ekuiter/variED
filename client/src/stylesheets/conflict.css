@@ -68,7 +68,18 @@
 }
 
 .conflict .version > div {
-    padding: 10px;
+    padding: 5px;
+    margin: 5px;
+    border-radius: 5px;
+    transition: all 600ms ease-in;
+}
+
+.conflict .version > div.outcome {
+    background-color: rgb(200, 255, 200);
+}
+
+.conflict .version > div.discarded {
+    opacity: 0;
 }
 
 .conflict .version > div > .header {
@@ -97,7 +108,11 @@
     margin-top: 7px;
     line-height: 1.5em;
     border-radius: 5px;
-    transition: all 70ms ease-in-out;
+    transition: all 70ms ease;
+}
+
+.conflict .version > div.outcome .ms-ActivityItem, .conflict .version > div.discarded .ms-ActivityItem {
+    transition: all 600ms ease-in;
 }
 
 .conflict .version .ms-ActivityItem.highlightGreen {

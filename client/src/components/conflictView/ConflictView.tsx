@@ -10,6 +10,7 @@ import {present} from '../../helpers/present';
 import {Settings} from '../../store/settings';
 import {PersonaSize} from 'office-ui-fabric-react/lib/Persona';
 import Version from './Version';
+import constants from '../../constants';
 
 interface Props {
     conflictDescriptor: KernelConflictDescriptor,
@@ -18,7 +19,10 @@ interface Props {
     voterSiteIDs?: string[],
     votes: Votes,
     onVote: OnVoteFunction,
-    settings: Settings
+    settings: Settings,
+    transitioning: boolean,
+    transitionResolutionOutcome?: string,
+    onEndConflictViewTransition: () => void
 };
 
 interface State {
@@ -42,8 +46,17 @@ export default class extends React.Component<Props> {
                 .map(([siteID, _]) => this.props.collaborators.find(collaborator => collaborator.siteID === siteID))
                 .filter(present);
 
+    componentDidUpdate(prevProps: Props) {
+        if (!prevProps.transitioning && this.props.transitioning)
+            window.setTimeout(this.props.onEndConflictViewTransition,
+                this.props.transitionResolutionOutcome === 'neutral'
+                    ? constants.featureDiagram.conflictView.transitionNeutral
+                    : constants.featureDiagram.conflictView.transition);
+    }
+
     render(): JSX.Element {
-        const {conflictDescriptor, myself, collaborators, voterSiteIDs, settings} = this.props,
+        const {conflictDescriptor, myself, collaborators, voterSiteIDs, settings,
+            transitioning, transitionResolutionOutcome} = this.props,
             synchronized = conflictDescriptor.synchronized,
             pendingVotePermission = synchronized && !voterSiteIDs,
             allowedToVote = synchronized && !pendingVotePermission && voterSiteIDs!.includes(myself.siteID),
@@ -54,7 +67,7 @@ export default class extends React.Component<Props> {
             <div className="conflict">
                 <div className="header">
                     <div className="heading">{i18n.t('conflictResolution.header')}</div>&nbsp;&nbsp;
-                    {(!synchronized || pendingVotePermission || disallowedToVote) &&
+                    {!transitioning && (!synchronized || pendingVotePermission || disallowedToVote) &&
                         <div className="info">
                             {(!synchronized || pendingVotePermission) &&
                                 <Spinner size={SpinnerSize.small}/>}
@@ -88,16 +101,18 @@ export default class extends React.Component<Props> {
                                 ownVotedVersionID={this.ownVotedVersionID()}
                                 versionID={versionID}
                                 versionIndex={versionIndex}
-                                activeOperationID={this.state.activeOperationID}
+                                activeOperationID={!transitioning ? this.state.activeOperationID : undefined}
                                 onSetActiveOperationID={this.onSetActiveOperationID}
-                                activeVersionID={this.state.activeVersionID}
+                                activeVersionID={!transitioning ? this.state.activeVersionID : undefined}
                                 onSetActiveVersionID={this.onSetActiveVersionID}
                                 myself={myself}
                                 collaborators={collaborators}
                                 collaboratorsInFavor={this.collaboratorsInFavor(versionID)}
                                 settings={settings}
                                 onVote={this.onVote}
-                                allowedToVote={allowedToVote}/>)}
+                                allowedToVote={allowedToVote}
+                                transitioning={transitioning}
+                                transitionResolutionOutcome={transitionResolutionOutcome}/>)}
                 </div>
             </div>
         );

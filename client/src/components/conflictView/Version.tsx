@@ -22,7 +22,9 @@ interface Props {
     collaboratorsInFavor: Collaborator[],
     settings: Settings,
     onVote: (versionID: string) => () => void,
-    allowedToVote: boolean
+    allowedToVote: boolean,
+    transitioning: boolean,
+    transitionResolutionOutcome?: string
 };
 
 interface State {
@@ -45,13 +47,16 @@ export default class extends React.Component<Props, State> {
     render()  {
         const {ownVotedVersionID, conflictDescriptor, versionID, versionIndex, activeOperationID,
             onSetActiveOperationID, activeVersionID, onSetActiveVersionID, myself, collaborators,
-            collaboratorsInFavor, settings, onVote, allowedToVote} = this.props,
+            collaboratorsInFavor, settings, onVote, allowedToVote, transitioning,
+            transitionResolutionOutcome} = this.props,
             operationIDs = conflictDescriptor.versions[versionID],
             ButtonComponent = ownVotedVersionID === versionID ? PrimaryButton : DefaultButton;
 
         return versionID !== 'neutral' &&
             <div className="version">
-                <div>
+                <div className={transitioning
+                ? (transitionResolutionOutcome === versionID ? 'outcome' : 'discarded')
+                : undefined}>
                     <div className="header">
                         <div className="heading">
                             {i18n.t('conflictResolution.version')} {String.fromCharCode(65 + versionIndex)}
@@ -72,7 +77,8 @@ export default class extends React.Component<Props, State> {
                             onSetActiveOperationID={onSetActiveOperationID}
                             activeVersionID={activeVersionID}
                             myself={myself}
-                            collaborators={collaborators}/>)}
+                            collaborators={collaborators}
+                            transitioning={transitioning}/>)}
                     <div className="footer">
                         <ButtonComponent
                             onClick={onVote(versionID)}

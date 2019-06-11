@@ -38,27 +38,30 @@ class FeatureDiagramRoute extends React.Component<FeatureDiagramRouteProps> {
             settings={this.props.settings!}
             onSetSetting={this.props.onSetSetting!}
             renderPrimaryView={(style: CSSProperties) =>
-                this.props.featureModel
-                    ? <FeatureDiagramView
-                        featureDiagramLayout={this.props.featureDiagramLayout!}
-                        currentArtifactPath={this.props.currentArtifactPath!}
+                this.props.transitionConflictDescriptor || this.props.conflictDescriptor
+                    ? <ConflictView
+                        conflictDescriptor={(this.props.transitionConflictDescriptor || this.props.conflictDescriptor)!}
+                        myself={this.props.myself!}
+                        collaborators={this.props.collaborators!}
+                        voterSiteIDs={this.props.voterSiteIDs}
+                        votes={this.props.votes!}
+                        onVote={this.props.onVote!}
                         settings={this.props.settings!}
-                        {...this.props}
-                        style={style}/>
-                    : this.props.conflictDescriptor
-                        ? <ConflictView
-                            conflictDescriptor={this.props.conflictDescriptor}
-                            myself={this.props.myself!}
-                            collaborators={this.props.collaborators!}
-                            voterSiteIDs={this.props.voterSiteIDs}
-                            votes={this.props.votes!}
-                            onVote={this.props.onVote!}
-                            settings={this.props.settings!}/>
+                        transitioning={!!this.props.transitionConflictDescriptor}
+                        transitionResolutionOutcome={this.props.transitionResolutionOutcome}
+                        onEndConflictViewTransition={this.props.onEndConflictTransition!}/>
+                    : this.props.featureModel
+                        ? <FeatureDiagramView
+                            featureDiagramLayout={this.props.featureDiagramLayout!}
+                            currentArtifactPath={this.props.currentArtifactPath!}
+                            settings={this.props.settings!}
+                            {...this.props}
+                            style={style}/>
                         : <div style={{display: 'flex'}}>
                             <Spinner size={SpinnerSize.large}/>
-                    </div>}
+                        </div>}
             renderSecondaryView={() => <ConstraintsView featureModel={this.props.featureModel!}/>}
-            enableSecondaryView={() => enableConstraintsView(this.props.featureModel)}/>;
+            enableSecondaryView={() => enableConstraintsView(this.props.featureModel, this.props.transitionConflictDescriptor)}/>;
     }
 }
 
@@ -78,6 +81,8 @@ export default withRouter(connect(
             ...props,
             featureModel: getCurrentFeatureModel(state),
             conflictDescriptor: getCurrentConflictDescriptor(state),
+            transitionResolutionOutcome: collaborativeSession.transitionResolutionOutcome,
+            transitionConflictDescriptor: collaborativeSession.transitionConflictDescriptor,
             currentArtifactPath: collaborativeSession.artifactPath,
             featureDiagramLayout: collaborativeSession.layout,
             isSelectMultipleFeatures: collaborativeSession.isSelectMultipleFeatures,
@@ -99,6 +104,7 @@ export default withRouter(connect(
         onDeselectAllFeatures: () => dispatch(actions.ui.featureDiagram.feature.deselectAll()),
         onToggleFeatureGroupType: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.toggleGroup(payload)),
         onToggleFeatureOptional: payload => dispatch<any>(actions.server.featureDiagram.feature.properties.toggleOptional(payload)),
-        onVote: payload => dispatch<any>(actions.server.featureDiagram.vote(payload))
+        onVote: payload => dispatch<any>(actions.server.featureDiagram.vote(payload)),
+        onEndConflictTransition: () => dispatch(actions.ui.endConflictViewTransition())
     })
 )(FeatureDiagramRoute));

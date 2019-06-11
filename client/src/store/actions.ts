@@ -71,7 +71,8 @@ const actions = {
         overlay: {
             show: createStandardAction('ui/overlay/show')<{overlay: OverlayType, overlayProps: OverlayProps, selectOneFeature?: string}>(),
             hide: createStandardAction('ui/overlay/hide')<{overlay: OverlayType}>()
-        }
+        },
+        endConflictViewTransition: createStandardAction('ui/endConflictViewTransition')<void>()
     },
     server: {
         receive: createStandardAction('server/receiveMessage')<Message>(),

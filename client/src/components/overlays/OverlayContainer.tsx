@@ -36,6 +36,7 @@ const OverlayContainer = (props: StateDerivedProps & RouteProps) => (
             isOpen={props.overlay === OverlayType.commandPalette}
             featureDiagramLayout={props.featureDiagramLayout}
             featureModel={props.featureModel}
+            transitionConflictDescriptor={props.transitionConflictDescriptor}
             settings={props.settings!}
             onDismiss={() => props.onHideOverlay!({overlay: OverlayType.commandPalette})}
             onShowOverlay={props.onShowOverlay!}
@@ -222,7 +223,8 @@ export default withRouter(connect(
             featureDiagramLayout: collaborativeSession.layout,
             isSelectMultipleFeatures: collaborativeSession.isSelectMultipleFeatures,
             selectedFeatureIDs: collaborativeSession.selectedFeatureIDs,
-            featureModel: getCurrentFeatureModel(state)
+            featureModel: getCurrentFeatureModel(state),
+            transitionConflictDescriptor: collaborativeSession.transitionConflictDescriptor
         };
     }),
     (dispatch): StateDerivedProps => ({

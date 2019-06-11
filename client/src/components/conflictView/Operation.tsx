@@ -15,7 +15,8 @@ interface Props {
     onSetActiveOperationID: (activeOperationID?: string) => void,
     activeVersionID?: string,
     myself?: Collaborator,
-    collaborators: Collaborator[]
+    collaborators: Collaborator[],
+    transitioning: boolean
 };
 
 interface State {
@@ -37,7 +38,7 @@ export default class extends React.Component<Props, State> {
 
     render()  {
         const {conflictDescriptor, versionID, operationID, activeOperationID,
-            onSetActiveOperationID, activeVersionID, myself, collaborators} = this.props,
+            onSetActiveOperationID, activeVersionID, myself, collaborators, transitioning} = this.props,
             metadata = conflictDescriptor.metadata[operationID],
             hasConflicts = !!conflictDescriptor.conflicts[versionID][operationID],
             conflictKeys = hasConflicts && Object.keys(conflictDescriptor.conflicts[versionID][operationID]),
@@ -60,7 +61,7 @@ export default class extends React.Component<Props, State> {
                         (operationID === activeOperationID ||
                         (hasConflicts && conflictKeys.includes(activeOperationID)))
                         ? 'highlightRed'
-                        : hasConflicts && conflictEntries.length > 0
+                        : !transitioning && hasConflicts && conflictEntries.length > 0
                             ? 'highlightDarkRed'
                             : undefined}
             comments={hasConflicts && conflictEntries.length > 0

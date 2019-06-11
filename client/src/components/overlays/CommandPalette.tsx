@@ -14,6 +14,7 @@ import {enableConstraintsView} from '../constraintsView/ConstraintsView';
 import {defaultSettings, Settings} from '../../store/settings';
 import {preconditions} from '../../modeling/preconditions';
 import {redirectToArtifactPath} from '../../router';
+import {KernelConflictDescriptor} from '../../modeling/types';
 
 interface Props {
     artifactPaths: ArtifactPath[],
@@ -21,6 +22,7 @@ interface Props {
     isOpen: boolean,
     featureDiagramLayout?: FeatureDiagramLayoutType,
     featureModel?: FeatureModel,
+    transitionConflictDescriptor?: KernelConflictDescriptor,
     settings: Settings,
     onDismiss: () => void,
     onShowOverlay: OnShowOverlayFunction,
@@ -320,14 +322,14 @@ export default class extends React.Component<Props, State> {
         }, {
             key: 'toggleConstraintView',
             text: i18n.t('commandPalette.featureDiagram.toggleConstraintView'),
-            disabled: () => !enableConstraintsView(this.props.featureModel),
+            disabled: () => !enableConstraintsView(this.props.featureModel, this.props.transitionConflictDescriptor),
             action: this.action(() => this.props.onSetSetting(
                 {path: 'views.splitAt', value: (splitAt: number) =>
                     splitAt > defaultSettings.views.splitAt ? defaultSettings.views.splitAt : 1}))
         }, {
             key: 'toggleConstraintViewSplitDirection',
             text: i18n.t('commandPalette.featureDiagram.toggleConstraintViewSplitDirection'),
-            disabled: () => !enableConstraintsView(this.props.featureModel),
+            disabled: () => !enableConstraintsView(this.props.featureModel, this.props.transitionConflictDescriptor),
             action: this.action(() => this.props.onSetSetting(
                 {path: 'views.splitDirection', value: (splitDirection: 'horizontal' | 'vertical') =>
                     splitDirection === 'horizontal' ? 'vertical' : 'horizontal'}))
@@ -516,7 +518,7 @@ export default class extends React.Component<Props, State> {
         }, {
             text: i18n.t('commandPalette.featureDiagram.constraint.set'),
             icon: 'Edit',
-            disabled: () => !enableConstraintsView(this.props.featureModel),
+            disabled: () => !enableConstraintsView(this.props.featureModel, this.props.transitionConflictDescriptor),
             action: this.actionWithArguments(
                 [{
                     title: i18n.t('commandPalette.oldConstraint'),
