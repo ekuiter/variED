@@ -6,18 +6,18 @@
 
 [![Build Status](https://travis-ci.com/ekuiter/variED.svg?branch=master)](https://travis-ci.com/ekuiter/variED)
 
-variED (the *vari*ability *ed*itor) is a software for viewing, editing and
-analyzing feature models that supports real-time collaboration.
-It is currently under active development.
+**What?** variED (the **vari**ability **ed**itor) is a research prototype for viewing, editing and analyzing feature models that supports real-time collaboration. It is currently under active development.
 
-variED relies on a client-server architecture where the client is implemented in
-TypeScript and the server in Java. It requires Java 1.8 and can be deployed on
-Java servlet containers such as Apache Tomcat or Jetty.
-It is a research prototype that allows for optimistic real-time collaboration using a modification of the *multi-version multi-display* technique ([Chen 2001](http://www.ict.griffith.edu.au/david/Thesis.pdf), [Sun and Chen 2002](https://dl.acm.org/citation.cfm?doid=505151.505152)).
+**Why?** In software product line engineering, a team of developers and other stakeholders may be involved in the feature modeling process. To facilitate live, light-weight editing, a real-time editing platform similar to Google Docs or Overleaf may be useful. This enables various use cases, such as sharing and editing feature models or teaching feature model concepts.
 
-### Resources
+**How?** variED relies on a client-server architecture where the client is implemented in TypeScript and the server in Java. It requires Java 1.8 and can be deployed on Java servlet containers such as Apache Tomcat or Jetty. variED allows for optimistic real-time collaboration using a modification of the *multi-version multi-display* (MVMD) technique ([Chen 2001](http://www.ict.griffith.edu.au/david/Thesis.pdf), [Sun and Chen 2002](https://dl.acm.org/citation.cfm?doid=505151.505152)).
 
-In our [FOSD'19 talk](http://elias-kuiter.de/fosd19-slides), we provide some motivation and a general overview of our approach.
+**Who?** This project is a research effort of the [DBSE working group](http://www.dbse.ovgu.de/) and released under the [LGPL v3 license](LICENSE.txt). [Contact me](mailto:kuiter@ovgu.de) (the main developer) if you have any questions. You can also leave some [feedback](https://goo.gl/forms/uUJmj68FYir9vEI13) if you like to.
+
+**Detailed resources** are available about ...
+
+- ... conceptual foundations: [**SPLC '19 paper**](http://elias-kuiter.de/splc19-foundations), [**Bachelor thesis**](http://elias-kuiter.de/thesis) + [slides](http://elias-kuiter.de/thesis-slides), [FOSD '19 slides](http://elias-kuiter.de/fosd19-slides)
+- ... implementation details: [**Tutorial**](http://elias-kuiter.de/splc19-foundations-artifact), [API documentation](API.md), [kernel documentation](https://s3.eu-central-1.amazonaws.com/de.ovgu.spldev.varied/kernel-documentation/index.html)
 
 ### Getting Started
 
@@ -96,10 +96,3 @@ These are some notes if you want to set up an IDE for development.
 
 - **WebStorm / VS Code**: Open the `client` directory in WebStorm. Add a *npm* run configuration and specify the `start` script to run the client from within WebStorm. Configuration files for Visual Studio Code are included as well. Use of the yarn, ESLint/TSLint and Debugger for Chrome plugins is recommended.
 - **IntelliJ IDEA**: Open the `server` directory in IntelliJ and choose *Import Gradle project*. Choose to *use local gradle distribution* and supply the Gradle home, e.g. `/usr/local/Cellar/gradle/4.9/libexec` (on macOS, this can be determined with `brew info gradle`). On Windows, use `C:\Users\...\.gradle\wrapper\dists\gradle-...-bin\...\gradle-...`. Add a *Gradle* run configuration with Gradle project `server` and task `run` to run the server from within IntelliJ. The `kernel` can also be developed in IntelliJ using [Cursive](https://cursive-ide.com/). Add a *Clojure REPL* run configuration to run the kernel interactively.
-
-### License
-
-This project is a research effort of
-the [DBSE working group](http://www.dbse.ovgu.de/) and released under the [LGPL v3 license](LICENSE.txt).
-[Contact me](mailto:kuiter@ovgu.de) if you have any questions.
-You can also leave some [feedback](https://goo.gl/forms/uUJmj68FYir9vEI13) if you like to.
