@@ -12,7 +12,7 @@
 
 **How?** variED relies on a client-server architecture where the client is implemented in TypeScript and the server in Java. It requires Java 1.8 and can be deployed on Java servlet containers such as Apache Tomcat or Jetty. variED allows for optimistic real-time collaboration using a modification of the *multi-version multi-display* (MVMD) technique ([Chen 2001](http://www.ict.griffith.edu.au/david/Thesis.pdf), [Sun and Chen 2002](https://dl.acm.org/citation.cfm?doid=505151.505152)).
 
-**Who?** This project is a research effort of the [DBSE working group](http://www.dbse.ovgu.de/) and released under the [LGPL v3 license](LICENSE.txt). [Contact me](mailto:kuiter@ovgu.de) (the main developer) if you have any questions. You can also leave some [feedback](https://goo.gl/forms/uUJmj68FYir9vEI13) if you like to.
+**Who?** This project is a research effort of the [DBSE working group](http://www.dbse.ovgu.de/) and has been supported by [pure-systems](https://www.pure-systems.com/news/gosplc). It is released under the [LGPL v3 license](LICENSE.txt). [Contact me](mailto:kuiter@ovgu.de) (the main developer) if you have any questions. You can also leave some [feedback](https://goo.gl/forms/uUJmj68FYir9vEI13) if you like to.
 
 **Detailed resources** are available about ...
 
