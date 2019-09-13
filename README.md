@@ -16,7 +16,7 @@
 
 **Detailed resources** are available about ...
 
-- ... conceptual foundations: [**SPLC '19 paper**](http://elias-kuiter.de/splc19-foundations), [**Bachelor thesis**](http://elias-kuiter.de/thesis) + [slides](http://elias-kuiter.de/thesis-slides), [FOSD '19 slides](http://elias-kuiter.de/fosd19-slides)
+- ... conceptual foundations: [**SPLC '19 paper**](http://elias-kuiter.de/splc19-foundations) + [slides](http://elias-kuiter.de/splc19-foundations-slides), [**Bachelor thesis**](http://elias-kuiter.de/thesis) + [slides](http://elias-kuiter.de/thesis-slides), [FOSD '19 slides](http://elias-kuiter.de/fosd19-slides)
 - ... implementation details: [**Tutorial**](http://elias-kuiter.de/splc19-foundations-artifact), [API documentation](API.md), [kernel documentation](https://s3.eu-central-1.amazonaws.com/de.ovgu.spldev.varied/kernel-documentation/index.html)
 
 ### Getting Started
