@@ -12,7 +12,7 @@ import ShortcutContainer from './ShortcutContainer';
 import actions from '../store/actions';
 import {StateDerivedProps, State} from '../store/types';
 import logger, {setLogLevel, LogLevel} from '../helpers/logger';
-import {flushMessageQueue} from '../server/messageQueue';
+import {flushOutgoingMessageQueue, queueingMessageHandler} from '../server/messageQueue';
 import {artifactPathToString} from '../types';
 import {history, getCurrentArtifactPath} from '../router';
 import {Router, Route, Switch} from 'react-router-dom';
@@ -20,20 +20,20 @@ import i18n from '../i18n';
 import FeatureDiagramRouteContainer from './FeatureDiagramRouteContainer';
 
 class AppContainer extends React.Component<StateDerivedProps> {
-    flushMessageQueueInterval: number;
+    flushOutgoingMessageQueueInterval: number;
 
     componentDidMount() {
-        openWebSocket(this.props.handleMessage);
+        openWebSocket(queueingMessageHandler(this.props.handleMessage));
 
-        this.flushMessageQueueInterval = window.setInterval(
-            flushMessageQueue, this.props.settings!.intervals.flushMessageQueue);
+        this.flushOutgoingMessageQueueInterval = window.setInterval(
+            flushOutgoingMessageQueue, this.props.settings!.intervals.flushOutgoingMessageQueue);
 
         if (this.props.settings!.developer.debug)
             setLogLevel(LogLevel.info);
     }
 
     componentWillUnmount() {
-        window.clearInterval(this.flushMessageQueueInterval);
+        window.clearInterval(this.flushOutgoingMessageQueueInterval);
     }
 
     componentDidUpdate() {

@@ -20,7 +20,7 @@ import {AnyAction, Store} from 'redux';
 import Kernel from '../modeling/Kernel';
 import {KernelFeatureModel, isKernelConflictDescriptor} from '../modeling/types';
 import {getCurrentArtifactPath, redirectToArtifactPath} from '../router';
-import {enqueueMessage, flushMessageQueue} from '../server/messageQueue';
+import {enqueueOutgoingMessage, flushOutgoingMessageQueue} from '../server/messageQueue';
 import deferred from '../helpers/deferred';
 
 function getNewState(state: State, ...args: any[]): State {
@@ -210,8 +210,8 @@ function serverReceiveReducer(state: State, action: Action): State {
                                 const artifactPath = collaborativeSession.artifactPath;
                                 let heartbeat;
                                 [kernelContext, heartbeat] = Kernel.run(state, artifactPath, kernel => kernel.generateHeartbeat());
-                                enqueueMessage({type: MessageType.KERNEL, message: heartbeat}, artifactPath);
-                                deferred(flushMessageQueue)();
+                                enqueueOutgoingMessage({type: MessageType.KERNEL, message: heartbeat}, artifactPath);
+                                deferred(flushOutgoingMessageQueue)();
                             }
                             return {...collaborativeSession, kernelContext, kernelCombinedEffect};
                         }));
@@ -255,8 +255,8 @@ function serverReceiveReducer(state: State, action: Action): State {
                             const artifactPath = collaborativeSession.artifactPath;
                             let heartbeat;
                             [kernelContext, heartbeat] = Kernel.run(state, artifactPath, kernel => kernel.generateHeartbeat());
-                            enqueueMessage({type: MessageType.KERNEL, message: heartbeat}, artifactPath);
-                            deferred(flushMessageQueue)();
+                            enqueueOutgoingMessage({type: MessageType.KERNEL, message: heartbeat}, artifactPath);
+                            deferred(flushOutgoingMessageQueue)();
                             return {
                                 ...collaborativeSession,
                                 kernelContext,

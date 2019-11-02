@@ -5,16 +5,17 @@
  */
 
 import i18n from '../i18n';
-import {FeatureDiagramLayoutType, OverlayType, FormatType} from '../types';
+import {FeatureDiagramLayoutType, OverlayType, FormatType, Message} from '../types';
 import {ContextualMenuItemType} from 'office-ui-fabric-react/lib/ContextualMenu';
 import {getShortcutText} from '../shortcuts';
 import {canExport} from './featureDiagramView/export';
 import {OnShowOverlayFunction, OnCollapseFeaturesFunction, OnExpandFeaturesFunction, OnSetFeatureDiagramLayoutFunction, OnFitToScreenFunction, OnDeselectAllFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesBelowFunction, OnSetSelectMultipleFeaturesFunction, OnSelectAllFeaturesFunction, OnCollapseAllFeaturesFunction, OnExpandAllFeaturesFunction, OnRemoveFeatureFunction, OnUndoFunction, OnRedoFunction, OnCreateFeatureBelowFunction, OnCreateFeatureAboveFunction, OnRemoveFeatureSubtreeFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureOptionalFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction, OnSetSettingFunction} from '../store/types';
 import FeatureModel from '../modeling/FeatureModel';
 import {Feature} from '../modeling/types';
-import {defaultSettings} from '../store/settings';
+import {defaultSettings, Settings} from '../store/settings';
 import {preconditions} from '../modeling/preconditions';
 import logger from '../helpers/logger';
+import {forceFlushMessageQueues} from '../server/messageQueue';
 
 const exportFormatItem = (featureDiagramLayout: FeatureDiagramLayoutType,
     onShowOverlay: OnShowOverlayFunction, format: FormatType) =>
@@ -77,6 +78,15 @@ const commands = {
         onClick: onRedo
     }),
     featureDiagram: {
+        manualSync: (settings: Settings, handleMessage?: (msg: Message) => void) =>
+            settings.featureDiagram.manualSync
+                ? [{
+                    key: 'manualSync',
+                    iconProps: {iconName: 'Sync'},
+                    text: i18n.t('commands.featureDiagram.manualSync'),
+                    iconOnly: true,
+                    onClick: () => forceFlushMessageQueues(handleMessage)
+                }] : [],
         addArtifact: (onShowOverlay: OnShowOverlayFunction) => ({
             key: 'addArtifact',
             text: i18n.t('commands.addArtifact'),

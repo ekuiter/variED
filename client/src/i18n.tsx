@@ -51,8 +51,8 @@ const translationMap = {
             </div>
         </div>
     ),
-    hasUnflushedMessages: (numberofUnflushedMessages: number) =>
-        `${numberofUnflushedMessages} messages have not yet been synchronized.\nIf you proceed, these messages will be lost.`,
+    hasUnflushedOutgoingMessages: (numberofUnflushedOutgoingMessages: number) =>
+        `${numberofUnflushedOutgoingMessages} messages have not yet been synchronized.\nIf you proceed, these messages will be lost.`,
     commands: {
         file: 'File',
         edit: 'Edit',
@@ -77,6 +77,7 @@ const translationMap = {
             fitToScreen: 'Fit feature model to screen',
             showConstraintView: 'Show constraint view',
             splitConstraintViewHorizontally: 'Constraint view sidebar',
+            manualSync: 'Synchronize',
             feature: {
                 newMenu: {
                     title: 'New',
@@ -180,7 +181,8 @@ const translationMap = {
             firstVote: 'First vote wins',
             plurality: 'Plurality vote',
             majority: 'Majority vote',
-            consensus: 'Consensus (default)'
+            consensus: 'Consensus (default)',
+            manualSync: 'Toggle manual synchronization'
         },
         developer: {
             debug: 'Developer: Toggle debug mode',

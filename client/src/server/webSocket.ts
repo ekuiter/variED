@@ -9,12 +9,14 @@ import {wait} from '../helpers/wait';
 import {State} from '../store/types';
 import Sockette from './Sockette';
 import {Persistor} from 'redux-persist';
+import {getCurrentFeatureModel} from '../store/selectors';
 
 type HandleMessageFunction = (data: Message) => void;
 
 let handleMessage: HandleMessageFunction;
 const tag = 'socket';
 
+// this is _not_ good code, but it gets the job done >_<
 function getSimulateDelay() {
     const state: State | undefined =
         (window as any).app && (window as any).app.store && (window as any).app.store.getState();
@@ -37,6 +39,14 @@ export function isSimulateOffline() {
     if (!state)
         logger.warn(() => 'store not accessible, can not simulate offline site');
     return state ? state.settings.developer.simulateOffline : 0;
+}
+
+export function isManualSync() {
+    const state: State | undefined =
+        (window as any).app && (window as any).app.store && (window as any).app.store.getState();
+    if (!state)
+        logger.warn(() => 'store not accessible, can not synchronize manually');
+    return state ? getCurrentFeatureModel(state) && state.settings.featureDiagram.manualSync : false;
 }
 
 const getWebSocket = ((): () => Promise<Sockette> => {

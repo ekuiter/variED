@@ -108,7 +108,10 @@ const CommandBarContainer = (props: StateDerivedProps & RouteProps) => (
                         commands.about(props.onShowOverlay!)
                     ]
                 }
-            }
+            },
+            ...props.featureModel
+                ? commands.featureDiagram.manualSync(props.settings!, props.handleMessage)
+                : []
         ]}
         farItems={[{
             key: 'collaboratorFacepile',
@@ -144,6 +147,7 @@ export default withRouter(connect(
         };
     }),
     (dispatch): StateDerivedProps => ({
+        handleMessage: message => dispatch(actions.server.receive(message)),
         onSetFeatureDiagramLayout: payload => dispatch(actions.ui.featureDiagram.setLayout(payload)),
         onSetSelectMultipleFeatures: payload => dispatch(actions.ui.featureDiagram.feature.setSelectMultiple(payload)),
         onSelectAllFeatures: () => dispatch(actions.ui.featureDiagram.feature.selectAll()),

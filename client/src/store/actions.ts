@@ -10,7 +10,7 @@ import {ThunkAction} from 'redux-thunk';
 import {State} from './types';
 import {Feature, PropertyType, GroupType, KernelConstraintFormula} from '../modeling/types';
 import Kernel from '../modeling/Kernel';
-import {enqueueMessage, flushMessageQueue} from '../server/messageQueue';
+import {enqueueOutgoingMessage, flushOutgoingMessageQueue} from '../server/messageQueue';
 import deferred from '../helpers/deferred';
 import {getCurrentArtifactPath} from '../router';
 
@@ -22,8 +22,8 @@ function createMessageAction<P>(fn: (payload: P) => Message): (payload: P) => Th
         return async (dispatch: Dispatch<AnyAction>, getState: () => State) => {
             const state = getState(),
                 artifactPath = getCurrentArtifactPath(state.collaborativeSessions),
-                message = enqueueMessage(fn(payload), artifactPath);
-            deferred(flushMessageQueue)();
+                message = enqueueOutgoingMessage(fn(payload), artifactPath);
+            deferred(flushOutgoingMessageQueue)();
             return dispatch(action(SERVER_SEND_MESSAGE, message));
         };
     };
@@ -38,8 +38,8 @@ function createOperationAction<P>(makePOSequence: (payload: P, kernel: Kernel) =
                 Kernel.run(state, artifactPath, kernel =>
                     kernel.generateOperation(makePOSequence(payload, kernel)));
             const message: Message = {type: MessageType.KERNEL, message: operation};
-            enqueueMessage(message, artifactPath);
-            deferred(flushMessageQueue)();
+            enqueueOutgoingMessage(message, artifactPath);
+            deferred(flushOutgoingMessageQueue)();
             return dispatch(action(KERNEL_GENERATE_OPERATION, {artifactPath, kernelFeatureModel, kernelContext}));
         };
     };

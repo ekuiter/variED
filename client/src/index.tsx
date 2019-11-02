@@ -21,7 +21,7 @@ import actions, {Action} from './store/actions';
 import {LogLevel, setLogLevel} from './helpers/logger';
 import Kernel from './modeling/Kernel';
 import {initialState, State} from './store/types';
-import {numberofUnflushedMessages} from './server/messageQueue';
+import {numberofUnflushedOutgoingMessages} from './server/messageQueue';
 import i18n from './i18n';
 import uuidv4 from 'uuid/v4';
 import {defaultSettings} from './store/settings';
@@ -52,8 +52,8 @@ if (!window.name)
     window.setInterval(updateLastActive, defaultSettings.intervals.lastActive);
 
     window.addEventListener('beforeunload', (e: BeforeUnloadEvent) => {
-        if (numberofUnflushedMessages() > 0)
-            e.returnValue = i18n.getFunction('hasUnflushedMessages')(numberofUnflushedMessages());
+        if (numberofUnflushedOutgoingMessages() > 0)
+            e.returnValue = i18n.getFunction('hasUnflushedOutgoingMessages')(numberofUnflushedOutgoingMessages());
     });
 
     if (window.location.protocol !== 'http:')

@@ -65,7 +65,8 @@ export interface Settings {
             throttleUpdate: number, // how often to reposition the overlay on zoom or pan in ms
             gapSpace: number, // space between node and overlay in px
             width: number // width of feature callout in px
-        }
+        },
+        manualSync: boolean // whether manual syncing is enabled or not
     },
     collaboratorFacepile: {
         maxDisplayableCollaborators: number, // number of users to display before overflowing
@@ -78,7 +79,7 @@ export interface Settings {
         }
     },
     intervals: {
-        flushMessageQueue: number, // how often the message queue should additionally be flushed, interval in ms
+        flushOutgoingMessageQueue: number, // how often the message queue should additionally be flushed, interval in ms
         lastActive: number // used to guarantee that only one tab is active at once, can not be changed at runtime!
         // TODO: GC, heartbeat
     }
@@ -138,7 +139,8 @@ export const defaultSettings: Settings = {
             throttleUpdate: 200,
             gapSpace: 5,
             width: 300
-        }
+        },
+        manualSync: false
     },
     collaboratorFacepile: {
         maxDisplayableCollaborators: 3,
@@ -151,7 +153,7 @@ export const defaultSettings: Settings = {
         }
     },
     intervals: {
-        flushMessageQueue: 2000,
+        flushOutgoingMessageQueue: 2000,
         lastActive: 2000
     }
 };

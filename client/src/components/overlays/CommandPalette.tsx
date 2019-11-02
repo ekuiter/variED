@@ -614,6 +614,11 @@ export default class extends React.Component<Props, State> {
                 (votingStrategy, onlyInvolved) => this.props.onSetVotingStrategy(
                     {votingStrategy, onlyInvolved: onlyInvolved === 'true'}))
         }, {
+            text: i18n.t('commandPalette.featureDiagram.manualSync'),
+            icon: 'Sync',
+            action: this.action(() => this.props.onSetSetting(
+                {path: 'featureDiagram.manualSync', value: (bool: boolean) => !bool}))
+        }, {
             text: i18n.t('commandPalette.developer.debug'),
             icon: 'DeveloperTools',
             action: this.action(() => this.props.onSetSetting(
