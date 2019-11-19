@@ -80,6 +80,8 @@ const actions = {
             ({type: MessageType.ADD_ARTIFACT, artifactPath, source})),
         removeArtifact: createMessageAction(({artifactPath}: {artifactPath: ArtifactPath}) =>
             ({type: MessageType.REMOVE_ARTIFACT, artifactPath})),
+        exportArtifact: createMessageAction(({artifactPath, format}: {artifactPath: ArtifactPath, format: string}) =>
+            ({type: MessageType.EXPORT_ARTIFACT, artifactPath, format})),
         joinRequest: createMessageAction(({artifactPath}: {artifactPath: ArtifactPath}) => ({type: MessageType.JOIN_REQUEST, artifactPath})),
         leaveRequest: createMessageAction(({artifactPath}: {artifactPath: ArtifactPath}) => ({type: MessageType.LEAVE_REQUEST, artifactPath})),
         undo: createMessageAction(() => ({type: MessageType.ERROR})), // TODO

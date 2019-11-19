@@ -123,14 +123,10 @@ public class Collaborator {
             }
             String source = ((Api.AddArtifact) message).source;
             Artifact artifact;
-            if (source == null) {
-                try {
-                    artifact = new Artifact.FeatureModel(project, artifactPath.getArtifactName(),
-                            Resources.getResource("examples/" + ProjectManager.EMPTY + ".xml"));
-                } catch (URISyntaxException e) {
-                    throw new RuntimeException("invalid resource path given");
-                }
-            } else
+            if (source == null)
+                artifact = new Artifact.FeatureModel(project, artifactPath.getArtifactName(),
+                        ProjectManager.getResourcePath("examples/" + ProjectManager.EMPTY + ".xml"));
+            else
                 artifact = new Artifact.FeatureModel(project, artifactPath.getArtifactName(), source);
             project.addArtifact(artifact);
             CollaboratorManager.getInstance().broadcast(new Api.AddArtifact(Arrays.asList(artifactPath)));

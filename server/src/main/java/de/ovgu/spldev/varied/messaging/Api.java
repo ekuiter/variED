@@ -21,6 +21,7 @@ public class Api {
         RESET,
         ADD_ARTIFACT,
         REMOVE_ARTIFACT,
+        EXPORT_ARTIFACT,
         COLLABORATOR_JOINED,
         COLLABORATOR_LEFT,
         SET_USER_PROFILE,
@@ -64,6 +65,18 @@ public class Api {
     public static class RemoveArtifact extends Message implements Message.IEncodable, Message.IDecodable {
         public RemoveArtifact(de.ovgu.spldev.varied.Artifact.Path artifactPath) {
             super(TypeEnum.REMOVE_ARTIFACT, artifactPath);
+        }
+    }
+
+    public static class ExportArtifact extends Message implements Message.IEncodable, Message.IDecodable {
+        @Expose
+        public String format;
+
+        @Expose
+        public String data;
+
+        public ExportArtifact(de.ovgu.spldev.varied.Artifact.Path artifactPath) {
+            super(TypeEnum.EXPORT_ARTIFACT, artifactPath);
         }
     }
 

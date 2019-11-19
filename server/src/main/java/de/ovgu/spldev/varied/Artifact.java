@@ -91,10 +91,6 @@ public abstract class Artifact {
             this(project, name, () -> FeatureModelUtils.loadFeatureModel(path));
         }
 
-        FeatureModel(Project project, String name, URL url) throws URISyntaxException {
-            this(project, name, Paths.get(url.toURI()));
-        }
-
         FeatureModel(Project project, String name, IFeatureModel initialFeatureModel) {
             this(project, name, () -> initialFeatureModel);
         }

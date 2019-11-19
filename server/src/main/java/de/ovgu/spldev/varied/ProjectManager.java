@@ -8,6 +8,8 @@ import org.pmw.tinylog.Logger;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Scanner;
@@ -98,13 +100,17 @@ public class ProjectManager {
                 }));
     }
 
-    void addExampleArtifact(Project project, String artifactName) {
+    public static Path getResourcePath(String fileName) {
         try {
-            project.addArtifact(new Artifact.FeatureModel(project, artifactName,
-                    Resources.getResource("examples/" + artifactName + ".xml")));
+            return Paths.get(Resources.getResource(fileName).toURI());
         } catch (URISyntaxException e) {
             throw new RuntimeException("invalid resource path given");
         }
+    }
+
+    void addExampleArtifact(Project project, String artifactName) {
+            project.addArtifact(new Artifact.FeatureModel(project, artifactName,
+                    getResourcePath("examples/" + artifactName + ".xml")));
     }
 
     public void removeProject(Project project) {

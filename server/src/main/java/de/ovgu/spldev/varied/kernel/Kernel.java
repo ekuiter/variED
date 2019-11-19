@@ -30,8 +30,8 @@ public class Kernel {
         return Clojure.read(":" + keywordString);
     }
 
-    static PersistentHashMap toPersistentHashMap(HashMap hashMap) {
-        return (PersistentHashMap) Clojure.var("clojure.core", "into").invoke(PersistentHashMap.EMPTY, hashMap);
+    static APersistentMap toPersistentMap(HashMap hashMap) {
+        return (APersistentMap) Clojure.var("clojure.core", "into").invoke(PersistentHashMap.EMPTY, hashMap);
     }
 
     static PersistentVector toPersistentVector(ArrayList arrayList) {
@@ -80,6 +80,10 @@ public class Kernel {
     public Kernel(Artifact.Path artifactPath, IFeatureModel initialFeatureModel) {
         this.artifactPath = artifactPath;
         callKernelAtomic("serverInitialize", FeatureModelFormat.toKernel(initialFeatureModel));
+    }
+
+    public IFeatureModel toFeatureModel() {
+        return FeatureModelFormat.toFeatureModel(context);
     }
 
     public String generateHeartbeat() {

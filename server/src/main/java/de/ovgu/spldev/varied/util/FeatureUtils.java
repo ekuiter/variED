@@ -20,6 +20,10 @@ public class FeatureUtils {
         feature.getCustomProperties().set(FeatureUtils.NAME_PROPERTY, IPropertyContainer.Type.STRING, name);
     }
 
+    public static void removeFeatureName(IFeature feature) {
+        feature.getCustomProperties().remove(FeatureUtils.NAME_PROPERTY);
+    }
+
     public static UUID getConstraintID(IConstraint constraint) {
         try {
             return UUID.fromString(constraint.getName());
@@ -30,5 +34,9 @@ public class FeatureUtils {
 
     public static void setConstraintID(IConstraint constraint, UUID id) {
         constraint.setName(id.toString());
+    }
+
+    public static void removeConstraintID(IConstraint constraint) {
+        constraint.setName(null);
     }
 }

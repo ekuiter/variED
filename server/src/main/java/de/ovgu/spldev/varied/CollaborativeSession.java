@@ -1,10 +1,14 @@
 package de.ovgu.spldev.varied;
 
 import de.ovgu.featureide.fm.core.base.IFeatureModel;
+import de.ovgu.featureide.fm.core.base.IFeatureModelFactory;
+import de.ovgu.featureide.fm.core.base.impl.DefaultFeatureModelFactory;
+import de.ovgu.featureide.fm.core.base.impl.FeatureModel;
 import de.ovgu.spldev.varied.kernel.Kernel;
 import de.ovgu.spldev.varied.messaging.Api;
 import de.ovgu.spldev.varied.messaging.Message;
 import de.ovgu.spldev.varied.util.CollaboratorUtils;
+import de.ovgu.spldev.varied.util.FeatureModelUtils;
 import org.pmw.tinylog.Logger;
 
 import java.util.*;
@@ -71,6 +75,10 @@ public abstract class CollaborativeSession {
             this.kernel = new Kernel(artifactPath, initialFeatureModel);
         }
 
+        public IFeatureModel toFeatureModel() {
+            return kernel.toFeatureModel();
+        }
+
         private void broadcastResponse(Collaborator collaborator, Object[] involvedSiteIDsAndMessage) {
             String[] involvedSiteIDs = (String[]) involvedSiteIDsAndMessage[0];
             String newMessage = (String) involvedSiteIDsAndMessage[1];
@@ -133,6 +141,12 @@ public abstract class CollaborativeSession {
                 votingPhase.vote(collaborator, voteMessage.versionID);
                 updateVotingPhase();
                 return true;
+            }
+
+            if (message instanceof Api.ExportArtifact) {
+                Api.ExportArtifact exportArtifactMessage = (Api.ExportArtifact) message;
+                exportArtifactMessage.data = FeatureModelUtils.serializeFeatureModel(toFeatureModel(), exportArtifactMessage.format);
+                collaborator.send(exportArtifactMessage);
             }
 
             return false;
