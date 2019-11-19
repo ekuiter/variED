@@ -32,8 +32,7 @@ const translationMap = {
             <div>
                 <p>You are not currently participating in any collaborative session.</p>
                 <p>To join one, open the <Link
-                    onClick={() => onShowOverlay({overlay: OverlayType.commandPalette, overlayProps: {}})}><strong>command palette</strong></Link> <strong>(
-                {getShortcutText('commandPalette')})</strong> or create a <Link
+                    onClick={() => onShowOverlay({overlay: OverlayType.commandPalette, overlayProps: {}})}><strong>command palette</strong></Link> or create a <Link
                     onClick={() => onShowOverlay({overlay: OverlayType.addArtifactPanel, overlayProps: {}})}><strong>new feature model</strong></Link>.</p>
             </div>
         </div>
