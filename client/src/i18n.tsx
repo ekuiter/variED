@@ -7,7 +7,6 @@ import objectPath from 'object-path';
 import {Link} from 'office-ui-fabric-react/lib/Link';
 import React from 'react';
 import constants from './constants';
-import {getShortcutText} from './shortcuts';
 import {OverlayType} from './types';
 import {OnShowOverlayFunction} from './store/types';
 
