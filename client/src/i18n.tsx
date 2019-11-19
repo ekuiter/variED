@@ -65,6 +65,12 @@ const translationMap = {
         share: 'Share…',
         featureDiagram: {
             export: 'Export as',
+            XmlFeatureModelFormat: 'XML (FeatureIDE)',
+            DIMACSFormat: 'DIMACS',
+            SXFMFormat: 'XML (SXFM)',
+            GuidslFormat: 'Guidsl',
+            ConquererFMWriter: 'XML (SPL Conqueror)',
+            CNFFormat: 'CNF',
             svg: 'SVG…',
             png: 'PNG…',
             jpg: 'JPEG…',

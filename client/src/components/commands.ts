@@ -5,10 +5,10 @@
  */
 
 import i18n from '../i18n';
-import {FeatureDiagramLayoutType, OverlayType, FormatType, Message} from '../types';
+import {FeatureDiagramLayoutType, OverlayType, Message, ClientFormatType, ServerFormatType} from '../types';
 import {ContextualMenuItemType} from 'office-ui-fabric-react/lib/ContextualMenu';
 import {getShortcutText} from '../shortcuts';
-import {canExport} from './featureDiagramView/export';
+import {canExport, doExport} from './featureDiagramView/export';
 import {OnShowOverlayFunction, OnCollapseFeaturesFunction, OnExpandFeaturesFunction, OnSetFeatureDiagramLayoutFunction, OnFitToScreenFunction, OnDeselectAllFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesBelowFunction, OnSetSelectMultipleFeaturesFunction, OnSelectAllFeaturesFunction, OnCollapseAllFeaturesFunction, OnExpandAllFeaturesFunction, OnRemoveFeatureFunction, OnUndoFunction, OnRedoFunction, OnCreateFeatureBelowFunction, OnCreateFeatureAboveFunction, OnRemoveFeatureSubtreeFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureOptionalFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction, OnSetSettingFunction} from '../store/types';
 import FeatureModel from '../modeling/FeatureModel';
 import {Feature} from '../modeling/types';
@@ -17,8 +17,17 @@ import {preconditions} from '../modeling/preconditions';
 import logger from '../helpers/logger';
 import {forceFlushMessageQueues} from '../server/messageQueue';
 
-const exportFormatItem = (featureDiagramLayout: FeatureDiagramLayoutType,
-    onShowOverlay: OnShowOverlayFunction, format: FormatType) =>
+const exportServerFormatItem = (featureDiagramLayout: FeatureDiagramLayoutType, format: ServerFormatType) =>
+    canExport(featureDiagramLayout, format)
+        ? [{
+            key: format,
+            text: i18n.t('commands.featureDiagram', format),
+            onClick: () => doExport(featureDiagramLayout, ServerFormatType[format], {})
+        }]
+        : [];
+
+const exportClientFormatItem = (featureDiagramLayout: FeatureDiagramLayoutType,
+    onShowOverlay: OnShowOverlayFunction, format: ClientFormatType) =>
     canExport(featureDiagramLayout, format)
         ? [{
             key: format,
@@ -105,11 +114,18 @@ const commands = {
             iconProps: {iconName: 'CloudDownload'},
             subMenuProps: {
                 items: [
-                    ...exportFormatItem(featureDiagramLayout, onShowOverlay, FormatType.png),
-                    ...exportFormatItem(featureDiagramLayout, onShowOverlay, FormatType.jpg),
+                    ...exportServerFormatItem(featureDiagramLayout, ServerFormatType.XmlFeatureModelFormat),
+                    ...exportServerFormatItem(featureDiagramLayout, ServerFormatType.SXFMFormat),
+                    ...exportServerFormatItem(featureDiagramLayout, ServerFormatType.ConquererFMWriter),
+                    ...exportServerFormatItem(featureDiagramLayout, ServerFormatType.DIMACSFormat),
+                    ...exportServerFormatItem(featureDiagramLayout, ServerFormatType.CNFFormat),
+                    ...exportServerFormatItem(featureDiagramLayout, ServerFormatType.GuidslFormat),
                     makeDivider(),
-                    ...exportFormatItem(featureDiagramLayout, onShowOverlay, FormatType.svg),
-                    ...exportFormatItem(featureDiagramLayout, onShowOverlay, FormatType.pdf)
+                    ...exportClientFormatItem(featureDiagramLayout, onShowOverlay, ClientFormatType.png),
+                    ...exportClientFormatItem(featureDiagramLayout, onShowOverlay, ClientFormatType.jpg),
+                    makeDivider(),
+                    ...exportClientFormatItem(featureDiagramLayout, onShowOverlay, ClientFormatType.svg),
+                    ...exportClientFormatItem(featureDiagramLayout, onShowOverlay, ClientFormatType.pdf)
                 ]
             }
         }),

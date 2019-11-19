@@ -2,7 +2,7 @@ import React from 'react';
 import i18n from '../../i18n';
 import {OnShowOverlayFunction, OnUndoFunction, OnRedoFunction, OnSetFeatureDiagramLayoutFunction, OnFitToScreenFunction, OnCreateFeatureAboveFunction, OnCreateFeatureBelowFunction, OnCollapseFeaturesFunction, OnCollapseFeaturesBelowFunction, OnExpandFeaturesFunction, OnExpandFeaturesBelowFunction, OnRemoveFeatureFunction, OnRemoveFeatureSubtreeFunction, OnSetFeatureAbstractFunction, OnSetFeatureHiddenFunction, OnSetFeatureOptionalFunction, OnSetFeatureAndFunction, OnSetFeatureOrFunction, OnSetFeatureAlternativeFunction, OnExpandAllFeaturesFunction, OnCollapseAllFeaturesFunction, OnLeaveRequestFunction, CollaborativeSession, OnSetSettingFunction, OnMoveFeatureSubtreeFunction, OnCreateConstraintFunction, OnSetConstraintFunction, OnRemoveConstraintFunction, OnRemoveArtifactFunction, OnResetFunction, OnSetVotingStrategyFunction} from '../../store/types';
 import {getShortcutText} from '../../shortcuts';
-import {OverlayType, Omit, FeatureDiagramLayoutType, FormatType, isArtifactPathEqual, ArtifactPath, VotingStrategy} from '../../types';
+import {OverlayType, Omit, FeatureDiagramLayoutType, ClientFormatType, isArtifactPathEqual, ArtifactPath, VotingStrategy} from '../../types';
 import Palette, {PaletteItem, PaletteAction, getKey} from '../../helpers/Palette';
 import {canExport} from '../featureDiagramView/export';
 import FeatureModel, {Constraint, paletteConstraintRenderer} from '../../modeling/FeatureModel';
@@ -296,11 +296,11 @@ export default class extends React.Component<Props, State> {
             action: this.actionWithArguments(
                 [{
                     title: i18n.t('commandPalette.format'),
-                    items: () => Object.values(FormatType).map(format =>
+                    items: () => Object.values(ClientFormatType).map(format =>
                         ({text: i18n.t('commandPalette.featureDiagram', format), key: format}))
                 }],
                 formatString => {
-                    const format = FormatType[formatString];
+                    const format = ClientFormatType[formatString];
                     if (canExport(this.props.featureDiagramLayout!, format))
                         this.props.onShowOverlay({overlay: OverlayType.exportDialog, overlayProps: {format}});
                 })

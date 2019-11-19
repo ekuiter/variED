@@ -4,7 +4,7 @@
  */
 
 import {createStandardAction, ActionType, action} from 'typesafe-actions';
-import {Message, MessageType, FeatureDiagramLayoutType, OverlayType, OverlayProps, ArtifactPath} from '../types';
+import {Message, MessageType, FeatureDiagramLayoutType, OverlayType, OverlayProps, ArtifactPath, ServerFormatType} from '../types';
 import {Dispatch, AnyAction, Action as ReduxAction} from 'redux';
 import {ThunkAction} from 'redux-thunk';
 import {State} from './types';
@@ -80,7 +80,7 @@ const actions = {
             ({type: MessageType.ADD_ARTIFACT, artifactPath, source})),
         removeArtifact: createMessageAction(({artifactPath}: {artifactPath: ArtifactPath}) =>
             ({type: MessageType.REMOVE_ARTIFACT, artifactPath})),
-        exportArtifact: createMessageAction(({artifactPath, format}: {artifactPath: ArtifactPath, format: string}) =>
+        exportArtifact: createMessageAction(({artifactPath, format}: {artifactPath: ArtifactPath, format: ServerFormatType}) =>
             ({type: MessageType.EXPORT_ARTIFACT, artifactPath, format})),
         joinRequest: createMessageAction(({artifactPath}: {artifactPath: ArtifactPath}) => ({type: MessageType.JOIN_REQUEST, artifactPath})),
         leaveRequest: createMessageAction(({artifactPath}: {artifactPath: ArtifactPath}) => ({type: MessageType.LEAVE_REQUEST, artifactPath})),

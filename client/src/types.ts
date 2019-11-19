@@ -53,12 +53,23 @@ export function isFloatingFeatureOverlay(type: OverlayType): boolean {
     return type === OverlayType.featureCallout || type === OverlayType.featureContextualMenu;
 }
 
-export enum FormatType {
+export enum ClientFormatType {
     svg = 'svg',
     png = 'png',
     jpg = 'jpg',
     pdf = 'pdf'
 };
+
+export enum ServerFormatType {
+    XmlFeatureModelFormat = 'XmlFeatureModelFormat',
+    DIMACSFormat = 'DIMACSFormat',
+    SXFMFormat = 'SXFMFormat',
+    GuidslFormat = 'GuidslFormat',
+    ConquererFMWriter = 'ConquererFMWriter',
+    CNFFormat = 'CNFFormat'
+};
+
+export type FormatType = ClientFormatType | ServerFormatType;
 
 export enum VotingStrategy {
     reject = 'reject',

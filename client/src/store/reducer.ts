@@ -22,6 +22,8 @@ import {KernelFeatureModel, isKernelConflictDescriptor} from '../modeling/types'
 import {getCurrentArtifactPath, redirectToArtifactPath} from '../router';
 import {enqueueOutgoingMessage, flushOutgoingMessageQueue} from '../server/messageQueue';
 import deferred from '../helpers/deferred';
+import {saveAs} from 'file-saver';
+import {getExportFileName} from '../components/featureDiagramView/export';
 
 function getNewState(state: State, ...args: any[]): State {
     if (args.length % 2 === 1)
@@ -177,6 +179,12 @@ function serverReceiveReducer(state: State, action: Action): State {
                 return getNewState(state, 'artifactPaths', setRemove(
                     state.artifactPaths, action.payload.artifactPath!,
                     artifactPath => artifactPath, isArtifactPathEqual));
+
+            case MessageType.EXPORT_ARTIFACT:
+                saveAs(
+                    new Blob([action.payload.data], {type: 'text/plain'}),
+                    getExportFileName(action.payload.format));
+                return state;
 
             case MessageType.INITIALIZE:
                 if (!state.myself)

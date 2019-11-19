@@ -11,7 +11,7 @@ import SpinButton from '../../helpers/SpinButton';
 import {Settings} from '../../store/settings';
 import {doExport} from '../featureDiagramView/export';
 import {FeatureDiagramLayoutType} from '../../types';
-import {FormatType} from '../../types';
+import {FormatType, ClientFormatType} from '../../types';
 import {OnSetSettingFunction} from '../../store/types';
 
 interface Props {
@@ -66,9 +66,9 @@ export default class extends React.Component<Props, State> {
                 hidden={!this.props.isOpen}
                 onDismiss={this.props.onDismiss}
                 dialogContentProps={{title: i18n.t('overlays.exportDialog', this.props.format!, 'title')}}>
-                {this.props.format === FormatType.svg && this.renderFontComboBox()}
-                {this.props.format === FormatType.png && this.renderZoomSpinButton()}
-                {this.props.format === FormatType.jpg &&
+                {this.props.format === ClientFormatType.svg && this.renderFontComboBox()}
+                {this.props.format === ClientFormatType.png && this.renderZoomSpinButton()}
+                {this.props.format === ClientFormatType.jpg &&
                 <React.Fragment>
                     {this.renderZoomSpinButton()}
                     <SpinButton
@@ -78,7 +78,7 @@ export default class extends React.Component<Props, State> {
                         value={this.state.quality}
                         min={10} max={100} suffix=" %"/>
                 </React.Fragment>}
-                {this.props.format === FormatType.pdf && this.renderFontComboBox()}
+                {this.props.format === ClientFormatType.pdf && this.renderFontComboBox()}
                 <DialogFooter>
                     <PrimaryButton onClick={this.onSubmit} text={i18n.t('overlays.exportDialog.export')}/>
                 </DialogFooter>

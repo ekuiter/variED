@@ -5,8 +5,11 @@
 import FeatureModel from '../../modeling/FeatureModel';
 import {saveAs} from 'file-saver';
 import {importSvg2PdfJs, importJspdfYworks, importCanvg} from '../../imports';
-import {FeatureDiagramLayoutType, FormatType, FormatOptions} from '../../types';
+import {FeatureDiagramLayoutType, FormatType, FormatOptions, ArtifactPath, ClientFormatType, ServerFormatType} from '../../types';
 import logger from '../../helpers/logger';
+import actions from '../../store/actions';
+import {State} from '../../store/types';
+import {getCurrentArtifactPath} from '../../router';
 
 type BlobPromise = Promise<Blob | null>;
 const BlobPromise = Promise; // see https://github.com/Microsoft/TypeScript/issues/12776
@@ -74,31 +77,74 @@ async function exportPdf({}, fileName: string): BlobPromise {
     return null;
 }
 
+const exportServer = (format: ServerFormatType) => async (): BlobPromise => {
+    const store = (window as any).app && (window as any).app.store;
+    if (!store)
+        throw 'store not accessible, can not export';
+    const state: State = store.getState();
+    const artifactPath: ArtifactPath | undefined = getCurrentArtifactPath(state.collaborativeSessions);
+    if (!artifactPath)
+        throw 'no current artifact path';
+    store.dispatch(actions.server.exportArtifact({artifactPath, format}));
+    return null;
+};
+
 const exportMap: {
     [x in FeatureDiagramLayoutType]: {
         [x in FormatType]: (options: FormatOptions, fileName: string) => BlobPromise
     }
 } = {
     [FeatureDiagramLayoutType.verticalTree]: {
-        [FormatType.svg]: exportSvg,
-        [FormatType.png]: exportPng,
-        [FormatType.jpg]: exportJpg,
-        [FormatType.pdf]: exportPdf
+        [ClientFormatType.svg]: exportSvg,
+        [ClientFormatType.png]: exportPng,
+        [ClientFormatType.jpg]: exportJpg,
+        [ClientFormatType.pdf]: exportPdf,
+        [ServerFormatType.XmlFeatureModelFormat]: exportServer(ServerFormatType.XmlFeatureModelFormat),
+        [ServerFormatType.DIMACSFormat]: exportServer(ServerFormatType.DIMACSFormat),
+        [ServerFormatType.SXFMFormat]: exportServer(ServerFormatType.SXFMFormat),
+        [ServerFormatType.GuidslFormat]: exportServer(ServerFormatType.GuidslFormat),
+        [ServerFormatType.ConquererFMWriter]: exportServer(ServerFormatType.ConquererFMWriter),
+        [ServerFormatType.CNFFormat]: exportServer(ServerFormatType.CNFFormat)
     },
     [FeatureDiagramLayoutType.horizontalTree]: {
-        [FormatType.svg]: exportSvg,
-        [FormatType.png]: exportPng,
-        [FormatType.jpg]: exportJpg,
-        [FormatType.pdf]: exportPdf
+        [ClientFormatType.svg]: exportSvg,
+        [ClientFormatType.png]: exportPng,
+        [ClientFormatType.jpg]: exportJpg,
+        [ClientFormatType.pdf]: exportPdf,
+        [ServerFormatType.XmlFeatureModelFormat]: exportServer(ServerFormatType.XmlFeatureModelFormat),
+        [ServerFormatType.DIMACSFormat]: exportServer(ServerFormatType.DIMACSFormat),
+        [ServerFormatType.SXFMFormat]: exportServer(ServerFormatType.SXFMFormat),
+        [ServerFormatType.GuidslFormat]: exportServer(ServerFormatType.GuidslFormat),
+        [ServerFormatType.ConquererFMWriter]: exportServer(ServerFormatType.ConquererFMWriter),
+        [ServerFormatType.CNFFormat]: exportServer(ServerFormatType.CNFFormat)
     }
 };
+
+const extensionMap: {
+    [x in FormatType]: string
+} = {
+    [ClientFormatType.svg]: 'svg',
+    [ClientFormatType.png]: 'png',
+    [ClientFormatType.jpg]: 'jpg',
+    [ClientFormatType.pdf]: 'pdf',
+    [ServerFormatType.XmlFeatureModelFormat]: 'xml',
+    [ServerFormatType.DIMACSFormat]: 'dimacs',
+    [ServerFormatType.SXFMFormat]: 'xml',
+    [ServerFormatType.GuidslFormat]: 'm',
+    [ServerFormatType.ConquererFMWriter]: 'xml',
+    [ServerFormatType.CNFFormat]: 'txt'
+};
+
+export function getExportFileName(format: FormatType) {
+    return `featureModel-${new Date().toLocaleDateString()}.${extensionMap[format]}`;
+}
 
 export function canExport(featureDiagramLayout: FeatureDiagramLayoutType, format: FormatType): boolean {
     return !!exportMap[featureDiagramLayout][format];
 }
 
 export function doExport(featureDiagramLayout: FeatureDiagramLayoutType, format: FormatType, options: FormatOptions): void {
-    const fileName = `featureModel-${new Date().toLocaleDateString()}.${format}`,
+    const fileName = getExportFileName(format),
         promise: BlobPromise = exportMap[featureDiagramLayout][format](options, fileName);
     promise.then(blob => blob && saveAs(blob, fileName));
 }

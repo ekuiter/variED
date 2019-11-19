@@ -147,6 +147,7 @@ public abstract class CollaborativeSession {
                 Api.ExportArtifact exportArtifactMessage = (Api.ExportArtifact) message;
                 exportArtifactMessage.data = FeatureModelUtils.serializeFeatureModel(toFeatureModel(), exportArtifactMessage.format);
                 collaborator.send(exportArtifactMessage);
+                return true;
             }
 
             return false;
