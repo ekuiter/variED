@@ -7,8 +7,6 @@ import {saveAs} from 'file-saver';
 import {importSvg2PdfJs, importJspdfYworks, importCanvg} from '../../imports';
 import {FeatureDiagramLayoutType, FormatType, FormatOptions, ArtifactPath, ClientFormatType, ServerFormatType} from '../../types';
 import logger from '../../helpers/logger';
-import actions from '../../store/actions';
-import {State} from '../../store/types';
 import {getCurrentArtifactPath} from '../../router';
 
 type BlobPromise = Promise<Blob | null>;
@@ -81,8 +79,10 @@ const exportServer = (format: ServerFormatType) => async (): BlobPromise => {
     const store = (window as any).app && (window as any).app.store;
     if (!store)
         throw 'store not accessible, can not export';
-    const state: State = store.getState();
-    const artifactPath: ArtifactPath | undefined = getCurrentArtifactPath(state.collaborativeSessions);
+    const actions = (window as any).app && (window as any).app.actions;
+    if (!actions)
+        throw 'actions not accessible, can not export';
+    const artifactPath: ArtifactPath | undefined = getCurrentArtifactPath(store.getState().collaborativeSessions);
     if (!artifactPath)
         throw 'no current artifact path';
     store.dispatch(actions.server.exportArtifact({artifactPath, format}));
