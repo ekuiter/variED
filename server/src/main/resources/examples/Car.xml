@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+	<featureModel>
+		<properties/>
+		<struct>
+			<and name="Car">
+				<feature name="Carbody"/>
+				<and mandatory="true" name="Radio">
+					<or mandatory="true" name="Ports">
+						<feature mandatory="true" name="USB"/>
+						<feature mandatory="true" name="CD"/>
+					</or>
+					<and mandatory="true" name="Navigation">
+						<alt mandatory="true" name="DigitalCards">
+							<feature mandatory="true" name="Europe"/>
+							<feature mandatory="true" name="USA"/>
+						</alt>
+						<feature name="GPSAntenna"/>
+					</and>
+					<feature mandatory="true" name="Bluetooth"/>
+				</and>
+				<alt name="Gearbox">
+					<feature mandatory="true" name="Manual"/>
+					<feature mandatory="true" name="Automatic"/>
+				</alt>
+				<feature name="GearboxTest"/>
+			</and>
+		</struct>
+		<constraints>
+			<rule>
+				<imp>
+					<var>Navigation</var>
+					<var>USB</var>
+				</imp>
+			</rule>
+			<rule>
+				<imp>
+					<var>Europe</var>
+					<var>Gearbox</var>
+				</imp>
+			</rule>
+			<rule>
+				<imp>
+					<var>GPSAntenna</var>
+					<var>USB</var>
+				</imp>
+			</rule>
+			<rule>
+				<conj>
+					<var>Carbody</var>
+					<var>Gearbox</var>
+				</conj>
+			</rule>
+			<rule>
+				<imp>
+					<conj>
+						<var>Gearbox</var>
+						<var>Radio</var>
+					</conj>
+					<var>Navigation</var>
+				</imp>
+			</rule>
+			<rule>
+				<imp>
+					<var>Carbody</var>
+					<conj>
+						<var>Automatic</var>
+						<not>
+							<var>Bluetooth</var>
+						</not>
+					</conj>
+				</imp>
+			</rule>
+		</constraints>
+		<calculations Auto="true" Constraints="true" Features="true" Redundant="true" Tautology="true"/>
+		<comments/>
+		<featureOrder userDefined="false"/>
+	</featureModel>

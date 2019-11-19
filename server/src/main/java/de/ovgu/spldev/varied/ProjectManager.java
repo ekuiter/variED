@@ -37,7 +37,7 @@ public class ProjectManager {
         Project featureIDEProject = new Project("FeatureIDE");
 
         for (String artifactName : new String[]{
-                EMPTY, "uvr2web", "CollaborativeModeling"
+                EMPTY, "uvr2web", "CollaborativeModeling", "Car", "FameDB"
         })
             addExampleArtifact(examplesProject, artifactName);
         addProject(examplesProject);
