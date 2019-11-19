@@ -4,6 +4,7 @@ import de.ovgu.spldev.varied.messaging.Message;
 import de.ovgu.spldev.varied.util.CollaboratorUtils;
 import org.pmw.tinylog.Logger;
 
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -38,6 +39,14 @@ public class CollaboratorManager {
         collaborator.sendInitialInformation();
         Logger.info("registered site {}", collaborator.getSiteID());
         return collaborator.getSiteID();
+    }
+
+    public void unregister(UUID siteID) {
+        Objects.requireNonNull(siteID, "site ID not provided");
+        if (collaborators.containsKey(siteID)) {
+            collaborators.get(siteID).leaveAllCollaborativeSessions();
+            Logger.info("unregistered site {}", siteID);
+        }
     }
 
     public void broadcast(Message.IEncodable message) {

@@ -51,6 +51,8 @@ public class WebSocket {
             // maintained if they do not properly leave a collaborative session. They should
             // be removed and kernel-GC'ed after a timeout has passed, allowing some offline
             // editing period, and while they are offline, shown as "inactive" in the UI.
+            // UPDATE: changed this for the meantime, does not allow offline editing at all
+            CollaboratorManager.getInstance().unregister(siteID);
         }
     }
 
