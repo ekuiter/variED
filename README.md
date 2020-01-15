@@ -16,8 +16,9 @@
 
 **Detailed resources** are available about ...
 
-- ... conceptual foundations: [**SPLC '19 paper**](http://elias-kuiter.de/splc19-foundations) + [slides](http://elias-kuiter.de/splc19-foundations-slides), [**Bachelor thesis**](http://elias-kuiter.de/thesis) + [slides](http://elias-kuiter.de/thesis-slides), [FOSD '19 slides](http://elias-kuiter.de/fosd19-slides)
-- ... implementation details: [**Tutorial**](http://elias-kuiter.de/splc19-foundations-artifact), [API documentation](API.md), [kernel documentation](https://s3.eu-central-1.amazonaws.com/de.ovgu.spldev.varied/kernel-documentation/index.html)
+- ... conceptual foundations: [**SPLC '19 paper**](https://github.com/ekuiter/variED-meta/blob/master/splc19-foundations.pdf) + [slides](https://github.com/ekuiter/variED-meta/blob/master/splc19-foundations-slides.pdf), [**Bachelor thesis**](https://github.com/ekuiter/variED-meta/blob/master/thesis.pdf) + [slides](https://github.com/ekuiter/variED-meta/blob/master/thesis-slides.pdf), [FOSD '19 slides](https://github.com/ekuiter/variED-meta/blob/master/fosd19-slides.pdf)
+- ... implementation details: [**Tutorial**](https://github.com/ekuiter/variED-meta/blob/master/splc19-foundations-artifact.pdf), [API documentation](API.md), [kernel documentation](https://s3.eu-central-1.amazonaws.com/de.ovgu.spldev.varied/kernel-documentation/index.html)
+- ... [evaluation results](https://github.com/ekuiter/variED-meta/tree/master/evaluation) (questionnaire and anonymized responses)
 
 ### Getting Started
 
