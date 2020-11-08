@@ -5,6 +5,7 @@
 [![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/ekuiter/variED/tree/build) [![Deploy to Amazon AWS](https://s3.eu-central-1.amazonaws.com/de.ovgu.spldev.varied/awsdeploy.png)](https://console.aws.amazon.com/elasticbeanstalk/?region=eu-central-1#/newApplication?applicationName=variED&platform=Tomcat%208.5%20with%20Java%208%20running%20on%2064bit%20Amazon%20Linux&sourceBundleUrl=https%3A%2F%2Fs3.eu-central-1.amazonaws.com%2Fde.ovgu.spldev.varied%2Fserver.war&environmentType=SingleInstance&tierName=WebServer)
 
 [![Build Status](https://travis-ci.com/ekuiter/variED.svg?branch=master)](https://travis-ci.com/ekuiter/variED)
+[![DOI](https://zenodo.org/badge/144635700.svg)](https://zenodo.org/badge/latestdoi/144635700)
 
 **What?** variED (the **vari**ability **ed**itor) is a research prototype for viewing, editing and analyzing feature models that supports real-time collaboration. It is currently under active development.
 
