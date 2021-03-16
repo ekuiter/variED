@@ -67,6 +67,8 @@ On Windows, unit tests for the client can not currently be run from the default
 command line or PowerShell. Instead, run `yarn test` inside the `client` directory
 from a [WSL](https://docs.microsoft.com/en-us/windows/wsl/install-win10) shell.
 
+Also, if you are on Windows and receive the message `leiningen-2.8.3-standalone.jar can not be found`, you may need to run `lein self-install` within the `kernel` directory and try again.
+
 ### Implementation
 
 ![variED architecture](https://s3.eu-central-1.amazonaws.com/de.ovgu.spldev.varied/architecture.svg)

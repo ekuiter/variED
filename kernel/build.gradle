@@ -1,6 +1,6 @@
 task _buildServer(type: Exec) {
     if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
-        commandLine 'lein.bat', 'uberjar'
+        commandLine 'cmd', '/c', 'lein.bat', 'uberjar'
     } else {
         commandLine 'bash', 'lein', 'uberjar'
     }
@@ -8,7 +8,7 @@ task _buildServer(type: Exec) {
 
 task buildClient(type: Exec) {
     if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
-        commandLine 'lein.bat', 'with-profile', 'client', 'cljsbuild', 'once'
+        commandLine 'cmd', '/c', 'lein.bat', 'with-profile', 'client', 'cljsbuild', 'once'
     } else {
         commandLine 'bash', 'lein', 'with-profile', 'client', 'cljsbuild', 'once'
     }
@@ -16,7 +16,7 @@ task buildClient(type: Exec) {
 
 task check(type: Exec) {
     if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
-        commandLine 'lein.bat', 'test'
+        commandLine 'cmd', '/c', 'lein.bat', 'test'
     } else {
         commandLine 'bash', 'lein', 'test'
     }
@@ -24,7 +24,7 @@ task check(type: Exec) {
 
 task doc(type: Exec) {
     if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
-        commandLine 'lein.bat', 'codox'
+        commandLine 'cmd', '/c', 'lein.bat', 'codox'
     } else {
         commandLine 'bash', 'lein', 'codox'
     }
@@ -47,7 +47,7 @@ task build {
 
 task clean(type: Exec) {
     if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
-        commandLine 'lein.bat', 'clean'
+        commandLine 'cmd', '/c', 'lein.bat', 'clean'
     } else {
         commandLine 'bash', 'lein', 'clean'
     }
