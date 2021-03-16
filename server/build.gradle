@@ -1,20 +1,8 @@
-buildscript {
-    repositories {
-        maven { url "http://repository.jsweet.org/artifactory/libs-snapshot-local" }
-        maven { url "http://repository.jsweet.org/artifactory/plugins-snapshot-local" }
-    }
-    dependencies {
-        classpath('org.jsweet:jsweet-gradle-plugin:2.2.0-SNAPSHOT') { transitive = true }
-    }
-}
-
 plugins {
     id 'war'
     id 'idea'
     id 'org.gretty' version '2.2.0'
 }
-
-apply plugin: 'org.jsweet.jsweet-gradle-plugin'
 
 configurations {
     copyOnly
@@ -22,7 +10,6 @@ configurations {
 
 repositories {
     jcenter()
-    maven { url "http://repository.jsweet.org/artifactory/libs-snapshot-local" }
 }
 
 dependencies {
@@ -31,7 +18,6 @@ dependencies {
     copyOnly 'org.apache.tomcat.embed:tomcat-embed-websocket:9.0.8'
     compile 'com.google.code.gson:gson:2.8.5'
     compile 'me.atrox.haikunator:Haikunator:1.3'
-    compile 'org.jsweet:jsweet-core:6-SNAPSHOT'
     compile 'org.tinylog:tinylog:1.3.5'
     compile 'com.github.tobiasrm:tinylog-coloredconsole:1.3.1'
     compile fileTree(dir: 'lib', include: '*.jar')
@@ -41,18 +27,6 @@ idea {
     module {
         outputDir file('build/classes/main')
     }
-}
-
-jsweet {
-    includes = ['de/ovgu/spldev/varied/common/**/*.java']
-    outDir = file('../client/src/common')
-    tsOut = file('.jsweet/ts')
-    workingDir = file('.jsweet')
-    noRootDirectories = true
-    module = 'es2015'
-    targetVersion = 'ES6'
-    // this is needed because we bridge FeatureIDE manually at runtime
-    ignoreTypeScriptErrors = true
 }
 
 task copyWebappRunner {
@@ -88,14 +62,3 @@ task run {
         }
     }
 }
-
-// As of now, this has to be run MANUALLY if any common classes changed.
-task transpileCommon(dependsOn: 'jsweet')
-
-task cleanCommon {
-    doLast {
-        delete fileTree(dir: '../client/src/common')
-    }
-}
-
-clean.dependsOn 'cleanCommon'

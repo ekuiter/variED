@@ -87,13 +87,6 @@ For the Clojure kernel,
 [documentation](https://s3.eu-central-1.amazonaws.com/de.ovgu.spldev.varied/kernel-documentation/index.html) 
 is available as well.
 
-<!-- Parts of the server code are reused in the client (`common` package) by
-transpiling them to JavaScript. Because of this, classes in the `common` package
-may only use certain APIs (`java.util.*`, a subset of the FeatureIDE API
-implemented in the client, and other classes in the `common` package). When in
-development, `./gradlew server:transpileCommon` has to be run manually whenever
-a `common` class is changed (this is not needed when building). -->
-
 ### Development
 
 These are some notes if you want to set up an IDE for development.
