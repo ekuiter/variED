@@ -156,9 +156,12 @@ public class FeatureModelFormat {
                 feature.getStructure().setAlternative();
             else if (groupType.equals("or"))
                 feature.getStructure().setOr();
-            feature.getStructure().setMandatory(!((boolean) featureHashMap.get(Kernel.keyword("optional?"))));
-            feature.getStructure().setAbstract((boolean) featureHashMap.get(Kernel.keyword("abstract?")));
-            feature.getStructure().setHidden((boolean) featureHashMap.get(Kernel.keyword("hidden?")));
+            Object isOptional = featureHashMap.get(Kernel.keyword("optional?"));
+            Object isAbstract = featureHashMap.get(Kernel.keyword("abstract?"));
+            Object isHidden = featureHashMap.get(Kernel.keyword("hidden?"));
+            feature.getStructure().setMandatory(isOptional == null || !((boolean) isOptional));
+            feature.getStructure().setAbstract(isAbstract != null && (boolean) isAbstract);
+            feature.getStructure().setHidden(isHidden != null && (boolean) isHidden);
             String description = (String) featureHashMap.get(Kernel.keyword("description"));
             if (description != null && !description.trim().isEmpty())
                 feature.getProperty().setDescription(description.replace("\r", ""));
