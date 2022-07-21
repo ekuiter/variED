@@ -1,5 +1,7 @@
 ## variED
 
+**A more up-to-date fork with simpler collaboration facilities is available at [FeatJAR/variED](https://github.com/FeatJAR/variED).**
+
 ![variED running on desktop device](https://s3.eu-central-1.amazonaws.com/de.ovgu.spldev.varied/varied.png)
 
 [![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/ekuiter/variED/tree/build) [![Deploy to Amazon AWS](https://s3.eu-central-1.amazonaws.com/de.ovgu.spldev.varied/awsdeploy.png)](https://console.aws.amazon.com/elasticbeanstalk/?region=eu-central-1#/newApplication?applicationName=variED&platform=Tomcat%208.5%20with%20Java%208%20running%20on%2064bit%20Amazon%20Linux&sourceBundleUrl=https%3A%2F%2Fs3.eu-central-1.amazonaws.com%2Fde.ovgu.spldev.varied%2Fserver.war&environmentType=SingleInstance&tierName=WebServer)
