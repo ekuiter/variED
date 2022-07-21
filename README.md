@@ -9,7 +9,7 @@
 [![Build Status](https://travis-ci.com/ekuiter/variED.svg?branch=master)](https://travis-ci.com/ekuiter/variED)
 [![DOI](https://zenodo.org/badge/144635700.svg)](https://zenodo.org/badge/latestdoi/144635700)
 
-**What?** variED (the **vari**ability **ed**itor) is a research prototype for viewing, editing and analyzing feature models that supports real-time collaboration. It is currently under active development.
+**What?** variED (the **vari**ability **ed**itor) is a research prototype for viewing, editing and analyzing feature models that supports real-time collaboration.
 
 **Why?** In software product line engineering, a team of developers and other stakeholders may be involved in the feature modeling process. To facilitate live, light-weight editing, a real-time editing platform similar to Google Docs or Overleaf may be useful. This enables various use cases, such as sharing and editing feature models or teaching feature model concepts.
 
