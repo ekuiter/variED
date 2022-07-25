@@ -1,6 +1,6 @@
 ## variED
 
-**A more up-to-date fork with simpler collaboration facilities is available at [FeatJAR/variED](https://github.com/FeatJAR/variED).**
+**A more up-to-date fork with simpler collaboration facilities is available at [ekuiter/variED-NG](https://github.com/ekuiter/variED-NG).**
 
 ![variED running on desktop device](https://s3.eu-central-1.amazonaws.com/de.ovgu.spldev.varied/varied.png)
 
