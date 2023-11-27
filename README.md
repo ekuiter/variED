@@ -27,11 +27,6 @@
 
 We provide different ways to get started using variED.
 
-#### Demo
-
-The easiest way to get started with variED is to use our [online demo](http://varied.herokuapp.com). This is a standard Heroku deployment, as described below.
-Note that this deployment is restarted regularly, so you should not expect it to persist any changes.
-
 #### Deploy to the Cloud
 
 Using the buttons above, you can simply deploy variED to a number of cloud
